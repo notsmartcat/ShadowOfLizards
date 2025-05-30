@@ -1,8 +1,0 @@
-C:\Users\User\Downloads\Shadow of Lizards\newest\plugins\ShadowOfLizards.dll
-C:\Users\User\Downloads\Shadow of Lizards\newest\plugins\ShadowOfLizards.pdb
-C:\Users\User\Downloads\Archive\obj\Release\ShadowOfLizards.csproj.AssemblyReference.cache
-C:\Users\User\Downloads\Archive\obj\Release\ShadowOfLizards.GeneratedMSBuildEditorConfig.editorconfig
-C:\Users\User\Downloads\Archive\obj\Release\ShadowOfLizards.csproj.CoreCompileInputs.cache
-C:\Users\User\Downloads\Archive\obj\Release\ShadowOfLizards.csproj.CopyComplete
-C:\Users\User\Downloads\Archive\obj\Release\ShadowOfLizards.dll
-C:\Users\User\Downloads\Archive\obj\Release\ShadowOfLizards.pdb

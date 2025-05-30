@@ -26,6 +26,15 @@
         </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Remove="LizardSpriteStorage\**" />
+    <EmbeddedResource Remove="LizardSpriteStorage\**" />
+    <None Remove="LizardSpriteStorage\**" />
+    <Reference Remove="LizardSpriteStorage\**" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Remove=".gitignore" />
+  </ItemGroup>
+  <ItemGroup>
     <Reference Include="BepInEx">
       <HintPath>..\..\..\..\Program Files (x86)\Steam\steamapps\common\Rain World\BepInEx\core\BepInEx.dll</HintPath>
     </Reference>
