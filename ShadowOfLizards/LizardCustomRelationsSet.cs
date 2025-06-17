@@ -2,6 +2,7 @@ using MoreSlugcats;
 using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+using UnityEngine;
 using static CreatureTemplate;
 using static RelationshipTracker;
 using static Tracker;
@@ -77,7 +78,8 @@ internal class LizardCustomRelationsSet
 
     public static bool LizardSpiderTransformationTemplateCheck(Creature crit)
     {
-        if (crit != null && crit is Lizard liz && (!ShadowOfOptions.valid_lizards.Value || ShadowOfLizards.IsLizardValid(liz)) && crit.abstractCreature.state.unrecognizedSaveStrings["SpiderTransformation"] == "True")
+        if (crit != null && crit is Lizard liz && ShadowOfLizards.lizardstorage.TryGetValue(liz.abstractCreature, out ShadowOfLizards.LizardData data) 
+            && data.transformation == "SpiderTransformation")
         {
             return true;
         }
@@ -86,7 +88,8 @@ internal class LizardCustomRelationsSet
 
     public static bool LizardSpiderMotherTemplateCheck(Creature crit)
     {
-        if (crit != null && crit is Lizard liz && (!ShadowOfOptions.valid_lizards.Value || ShadowOfLizards.IsLizardValid(liz)) && crit.abstractCreature.state.unrecognizedSaveStrings["SpiderMother"] == "True" && crit.abstractCreature.state.unrecognizedSaveStrings["SpiderTransformation"] == "False")
+        if (crit != null && crit is Lizard liz && ShadowOfLizards.lizardstorage.TryGetValue(liz.abstractCreature, out ShadowOfLizards.LizardData data)
+            && data.transformation == "Spider")
         {
             return true;
         }
@@ -95,7 +98,8 @@ internal class LizardCustomRelationsSet
 
     public static bool LizardElectricTransformationTemplateCheck(Creature crit)
     {
-        if (crit != null && crit is Lizard liz && (!ShadowOfOptions.valid_lizards.Value || ShadowOfLizards.IsLizardValid(liz)) && crit.abstractCreature.state.unrecognizedSaveStrings["ElectricTransformation"] == "True")
+        if (crit != null && crit is Lizard liz && ShadowOfLizards.lizardstorage.TryGetValue(liz.abstractCreature, out ShadowOfLizards.LizardData data)
+            && data.transformation == "ElectricTransformation")
         {
             return true;
         }
@@ -104,7 +108,8 @@ internal class LizardCustomRelationsSet
 
     public static bool LizardElectricTemplateCheck(Creature crit)
     {
-        if (crit != null && crit is Lizard liz && (!ShadowOfOptions.valid_lizards.Value || ShadowOfLizards.IsLizardValid(liz)) && crit.abstractCreature.state.unrecognizedSaveStrings["Electric"] == "True" && crit.abstractCreature.state.unrecognizedSaveStrings["ElectricTransformation"] == "False")
+        if (crit != null && crit is Lizard liz && ShadowOfLizards.lizardstorage.TryGetValue(liz.abstractCreature, out ShadowOfLizards.LizardData data) 
+            && (data.transformation == "Electric" || data.transformation == "ElectricTransformation"))
         {
             return true;
         }
@@ -113,15 +118,15 @@ internal class LizardCustomRelationsSet
 
     public static void Apply(CreatureTemplate.Type type, Lizard self)
     {
-        if (self == null)
+        if (self == null || !ShadowOfLizards.lizardstorage.TryGetValue(self.abstractCreature, out ShadowOfLizards.LizardData data))
         {
             return;
         }
 
-        Dictionary<string, string> liz = self.abstractCreature.state.unrecognizedSaveStrings;
-
-        if (liz["SpiderMother"] == "True" && liz["SpiderTransformation"] == "False")
+        if (data.transformation == "Spider")
         {
+            //Debug.Log("Spider Relations set for " + self);
+
             On.BigSpiderAI.IUseARelationshipTracker_UpdateDynamicRelationship += (orig, self, dRelation) =>
             {
                 return TemplateCheck(RelationNullCheck(dRelation), type) ? new Relationship(StayOutOfWay, 0.9f) : orig.Invoke(self, dRelation);
@@ -142,8 +147,10 @@ internal class LizardCustomRelationsSet
                 return LizardSpiderTransformationTemplateCheck(RelationNullCheck(dRelation)) ? new Relationship(Attacks, intensity) : orig.Invoke(self, dRelation);
             };
         }
-        else if (liz["SpiderTransformation"] == "True")
+        else if (data.transformation == "SpiderTransformation")
         {
+            //Debug.Log("SpiderTransformation Relations set for " + self);
+
             On.BigSpiderAI.IUseARelationshipTracker_UpdateDynamicRelationship += (orig, self, dRelation) =>
             {
                 return TemplateCheck(RelationNullCheck(dRelation), type) ? new Relationship(Ignores, 0.0f) : orig.Invoke(self, dRelation);
@@ -164,9 +171,10 @@ internal class LizardCustomRelationsSet
                 return LizardSpiderMotherTemplateCheck(RelationNullCheck(dRelation)) ? new Relationship(StayOutOfWay, 0.9f) : orig.Invoke(self, dRelation);
             };
         }
-
-        else if(!(liz["Electric"] == "True") || !(liz["ElectricTransformation"] == "False"))
+        else if (data.transformation == "Electric")
         {
+            //Debug.Log("Electric set for " + self);
+
             On.LizardAI.IUseARelationshipTracker_UpdateDynamicRelationship += (orig, self, dRelation) =>
             {
                 return CentipedeTemplateCheck(RelationNullCheck(dRelation)) ? new Relationship(Relationship.Type.Eats, 0.9f) : orig.Invoke(self, dRelation);

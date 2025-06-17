@@ -12,8 +12,10 @@ internal class MeltedTransformation
     {
         On.LizardSpit.DrawSprites += MeltingSpitDraw;
         On.LizardSpit.Update += MeltingSpitSpit;
+
         On.Lizard.Bite += BiteMeltingCheck;
         On.Lizard.Update += MeltedLegUpdate;
+
         On.LizardAI.DetermineBehavior += NoBehavior;
         On.LizardAI.AggressiveBehavior += NoBite;
 
@@ -22,21 +24,23 @@ internal class MeltedTransformation
     static void MeltingSpitDraw(On.LizardSpit.orig_DrawSprites orig, LizardSpit self, RoomCamera.SpriteLeaser sLeaser, RoomCamera rCam, float timeStacker, Vector2 camPos)
     {
         orig.Invoke(self, sLeaser, rCam, timeStacker, camPos);
-        if (ShadowOfOptions.melted_transformation.Value && ShadowOfOptions.melted_spit.Value && self != null && self.lizard != null && ShadowOfLizards.lizardstorage.TryGetValue(self.lizard, out ShadowOfLizards.LizardData value) && value.liz["Melted"] == "True")
+
+        if (!ShadowOfOptions.melted_transformation.Value || !ShadowOfOptions.melted_spit.Value || self == null && self.lizard == null || !ShadowOfLizards.lizardstorage.TryGetValue(self.lizard.abstractCreature, out ShadowOfLizards.LizardData data) 
+            || !data.liz.TryGetValue("MeltedR", out _) || (data.transformation != "Melted" && data.transformation != "MeltedTransformation"))
         {
-            Color color = new(float.Parse(value.liz["MeltedR"]), float.Parse(value.liz["MeltedG"]), float.Parse(value.liz["MeltedB"]));
-            for (int i = 0; i < self.slime.GetLength(0); i++)
-            {
-                sLeaser.sprites[self.SlimeSprite(i)].color = color;
-            }
+            return;
         }
+
+        Color color = new(float.Parse(data.liz["MeltedR"]), float.Parse(data.liz["MeltedG"]), float.Parse(data.liz["MeltedB"]));
+
+        sLeaser.sprites[self.DotSprite].color = color;
     }
 
     static void MeltingSpitSpit(On.LizardSpit.orig_Update orig, LizardSpit self, bool eu)
     {
         orig.Invoke(self, eu);
-        if (!ShadowOfOptions.melted_transformation.Value || !ShadowOfOptions.melted_spit.Value || self == null || self.lizard == null || !ShadowOfLizards.lizardstorage.TryGetValue(self.lizard, out ShadowOfLizards.LizardData value) || !(value.liz["Melted"] == "True") 
-            || !(Random.value < 0.1f) || self.stickChunk == null || self.stickChunk.owner == null || self.stickChunk.owner.room != self.room || !Custom.DistLess(self.stickChunk.pos, self.pos, self.stickChunk.rad + 40f) || self.fallOff <= 0)
+        if (!ShadowOfOptions.melted_transformation.Value || !ShadowOfOptions.melted_spit.Value || self == null || self.lizard == null || !ShadowOfLizards.lizardstorage.TryGetValue(self.lizard.abstractCreature, out ShadowOfLizards.LizardData data) || (data.transformation != "Melted" && 
+            data.transformation != "MeltedTransformation") || !(Random.value < 0.1f) || self.stickChunk == null || self.stickChunk.owner == null || self.stickChunk.owner.room != self.room || !Custom.DistLess(self.stickChunk.pos, self.pos, self.stickChunk.rad + 40f) || self.fallOff <= 0)
         {
             return;
         }
@@ -61,26 +65,25 @@ internal class MeltedTransformation
 
     static void BiteMeltingCheck(On.Lizard.orig_Bite orig, Lizard self, BodyChunk chunk)
     {
-        if (ShadowOfOptions.melted_transformation.Value && ShadowOfLizards.lizardstorage.TryGetValue(self, out ShadowOfLizards.LizardData value) && value.liz["Melted"] == "True" && 
-            chunk != null && chunk.owner != null && chunk.owner is Creature owner && !owner.abstractCreature.lavaImmune)
+        if (!ShadowOfOptions.melted_transformation.Value || !ShadowOfLizards.lizardstorage.TryGetValue(self.abstractCreature, out ShadowOfLizards.LizardData data) || (data.transformation != "Melted" && data.transformation != "MeltedTransformation") 
+            || chunk == null || chunk.owner == null || chunk.owner is not Creature owner || owner.dead || owner.abstractCreature.lavaImmune)
         {
-            if (owner is Lizard && ShadowOfLizards.lizardstorage.TryGetValue((Lizard)owner, out ShadowOfLizards.LizardData _))
-            {
-                ShadowOfLizards.PreViolenceCheck(owner);
-            }
-
-            LethatWaterDamage(owner, self.mainBodyChunk);
-
             orig.Invoke(self, chunk);
-
-            if (owner is Lizard liz && ShadowOfLizards.lizardstorage.TryGetValue(liz, out ShadowOfLizards.LizardData _))
-            {
-                ShadowOfLizards.PostViolenceCheck(liz, "Melted", self);
-            }
+            return;
         }
-        else
+
+        if (owner is Lizard && ShadowOfLizards.lizardstorage.TryGetValue(owner.abstractCreature, out ShadowOfLizards.LizardData _))
         {
-            orig.Invoke(self, chunk);
+            ShadowOfLizards.PreViolenceCheck(owner);
+        }
+
+        LethatWaterDamage(owner, self.mainBodyChunk);
+
+        orig.Invoke(self, chunk);
+
+        if (owner is Lizard liz && ShadowOfLizards.lizardstorage.TryGetValue(liz.abstractCreature, out ShadowOfLizards.LizardData _))
+        {
+            ShadowOfLizards.PostViolenceCheck(liz, "Melted", self);
         }
     }
 
@@ -161,11 +164,14 @@ internal class MeltedTransformation
     static void MeltedLegUpdate(On.Lizard.orig_Update orig, Lizard self, bool eu)
     {
         orig.Invoke(self, eu);
-        if (!ShadowOfLizards.lizardstorage.TryGetValue(self, out ShadowOfLizards.LizardData data) || !ShadowOfOptions.melted_transformation.Value)
+
+        if (!ShadowOfOptions.melted_transformation.Value || !ShadowOfLizards.lizardstorage.TryGetValue(self.abstractCreature, out ShadowOfLizards.LizardData data))
         {
             return;
         }
-        if (data.liz["Melted"] == "True" && data.liz["MeltedTransformation"] == "False")
+
+        /*
+        if (data.transformation == "Melted")
         {
             self.AI.redSpitAI ??= new LizardAI.LizardSpitTracker(self.AI);
 
@@ -185,7 +191,7 @@ internal class MeltedTransformation
                 num++;
             }
         }
-        else if (data.liz["MeltedTransformation"] == "True")
+        else if (data.transformation == "MeltedTransformation")
         {
             self.AI.redSpitAI ??= new LizardAI.LizardSpitTracker(self.AI);
 
@@ -195,16 +201,19 @@ internal class MeltedTransformation
 
                 for (int i = 0; i < 6; i++)
                 {
-                    if (data.liz["ArmState" + i] != "Normal" && Random.value < 0.015f)
+                    if (data.ArmState[i] != "Normal" && Random.value < 0.015f)
                     {
                         self.room.AddObject(new LizardSpit(graphicsModule.limbs[0].pos, new Vector2(0f, 0f), self));
                     }        
                 }
             }
         }
+        */
 
-        if (!(data.liz["PreMeltedTime"] == "False") || !(self.Submersion > 0.1f) || self.room.waterObject == null || !self.room.waterObject.WaterIsLethal || !(data.liz["Electric"] != "True") || !(data.liz["Melted"] != "True") || !(data.liz["SpiderMother"] != "True") 
-            || !self.dead)
+        bool isStorySession = self.abstractCreature.world.game.IsStorySession;
+        int cycleNumber = isStorySession ? self.abstractCreature.world.game.GetStorySession.saveState.cycleNumber : -1;
+
+        if (!self.dead || !(self.Submersion > 0.1f) || self.room.waterObject == null || !self.room.waterObject.WaterIsLethal || (data.transformation != "Null" && data.transformation != "Melted") || !data.liz.TryGetValue("PreMeltedTime", out string preMeltedTime) || preMeltedTime == (isStorySession ? cycleNumber.ToString() : "-1"))
         {
             return;
         }
@@ -212,7 +221,7 @@ internal class MeltedTransformation
         if (ShadowOfOptions.debug_logs.Value)
             Debug.Log(self.ToString() + " in Lethal Water");
 
-        data.liz["PreMeltedTime"] = "True";
+        data.liz["PreMeltedTime"] = isStorySession ? cycleNumber.ToString() : "-1";
         if (Random.Range(0, 100) < ShadowOfOptions.melted_transformation_chance.Value)
         {
             return;
@@ -221,31 +230,34 @@ internal class MeltedTransformation
         if (ShadowOfOptions.debug_logs.Value)
             Debug.Log(self.ToString() + " was made Melted due to swimming in Lethal Water");
 
-        data.liz["MeltedTime"] = self.abstractCreature.world.game.IsStorySession ? self.abstractCreature.world.game.GetStorySession.saveState.cycleNumber.ToString() : "1";
-        data.liz["Electric"] = "False";
-        data.liz["Melted"] = "True";
-        data.liz["SpiderMother"] = "False";
+        data.transformation = "Melted";
+        data.transformationTimer = isStorySession ? cycleNumber : -1;
 
-        data.liz["MeltedR"] = data.rCam != null ? data.rCam.currentPalette.waterColor1.r.ToString() : "0.4078431";
-        data.liz["MeltedG"] = data.rCam != null ? data.rCam.currentPalette.waterColor1.g.ToString() : "0.5843138";
-        data.liz["MeltedB"] = data.rCam != null ? data.rCam.currentPalette.waterColor1.b.ToString() : "0.1843137";
+        data.liz.Remove("PreMeltedTime");
 
-        if (ShadowOfOptions.melted_transformation_skip.Value)
+        if (!data.liz.TryGetValue("MeltedR", out _))
         {
-            data.liz["MeltedTime"] = "-4";
-            data.liz["MeltedTransformation"] = "True";
+            data.liz.Add("MeltedR", data.rCam != null ? data.rCam.currentPalette.waterColor1.r.ToString() : "0.4078431");
+            data.liz.Add("MeltedG", data.rCam != null ? data.rCam.currentPalette.waterColor1.g.ToString() : "0.5843138");
+            data.liz.Add("MeltedB", data.rCam != null ? data.rCam.currentPalette.waterColor1.b.ToString() : "0.1843137");
+        }
+        else
+        {
+            data.liz["MeltedR"] = data.rCam != null ? data.rCam.currentPalette.waterColor1.r.ToString() : "0.4078431";
+            data.liz["MeltedG"] = data.rCam != null ? data.rCam.currentPalette.waterColor1.g.ToString() : "0.5843138";
+            data.liz["MeltedB"] = data.rCam != null ? data.rCam.currentPalette.waterColor1.b.ToString() : "0.1843137";
         }
     }
 
     static LizardAI.Behavior NoBehavior(On.LizardAI.orig_DetermineBehavior orig, LizardAI self)
     {
-        if (ShadowOfOptions.melted_transformation.Value && ShadowOfLizards.lizardstorage.TryGetValue(self.lizard, out ShadowOfLizards.LizardData data))
+        if (ShadowOfOptions.melted_transformation.Value && ShadowOfLizards.lizardstorage.TryGetValue(self.lizard.abstractCreature, out ShadowOfLizards.LizardData data))
         {
-            if (data.liz["Melted"] == "True" && data.liz["MeltedTransformation"] == "False")
+            if (data.transformation == "Melted")
             {
                 return LizardAI.Behavior.Frustrated;
             }
-            if (data.liz["MeltedTransformation"] == "True")
+            if (data.transformation == "MeltedTransformation")
             {
                 return LizardAI.Behavior.Hunt;
             }
@@ -255,10 +267,11 @@ internal class MeltedTransformation
 
     static void NoBite(On.LizardAI.orig_AggressiveBehavior orig, LizardAI self, Tracker.CreatureRepresentation target, float tongueChance)
     {
-        if (ShadowOfOptions.melted_transformation.Value && ShadowOfLizards.lizardstorage.TryGetValue(self.lizard, out ShadowOfLizards.LizardData data) && (data.liz["Melted"] == "True") && (data.liz["MeltedTransformation"] == "False"))
+        if (ShadowOfOptions.melted_transformation.Value && ShadowOfLizards.lizardstorage.TryGetValue(self.lizard.abstractCreature, out ShadowOfLizards.LizardData data) && data.transformation == "Melted")
         {
             return;
         }
+
         orig.Invoke(self, target, tongueChance);
     }
 }

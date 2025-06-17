@@ -1222,8 +1222,8 @@
 		},
 		"LeftLizardEyes3.3Normal.png": {
 			"frame": {
-				"x": 1,
-				"y": 63,
+				"x": 1789,
+				"y": 1,
 				"w": 30,
 				"h": 60
 			},
@@ -1242,7 +1242,7 @@
 		},
 		"LeftLizardEyes3.3Scar.png": {
 			"frame": {
-				"x": 33,
+				"x": 1,
 				"y": 63,
 				"w": 30,
 				"h": 60
@@ -1262,7 +1262,7 @@
 		},
 		"LeftLizardEyes3.3Scar2.png": {
 			"frame": {
-				"x": 65,
+				"x": 33,
 				"y": 63,
 				"w": 34,
 				"h": 60
@@ -1282,7 +1282,7 @@
 		},
 		"LizardArmColor_01Cut.png": {
 			"frame": {
-				"x": 101,
+				"x": 69,
 				"y": 63,
 				"w": 100,
 				"h": 50
@@ -1302,7 +1302,7 @@
 		},
 		"LizardArmColor_01Cut2.png": {
 			"frame": {
-				"x": 203,
+				"x": 171,
 				"y": 63,
 				"w": 100,
 				"h": 50
@@ -1322,7 +1322,7 @@
 		},
 		"LizardArmColor_01Cut2Blood.png": {
 			"frame": {
-				"x": 305,
+				"x": 273,
 				"y": 63,
 				"w": 100,
 				"h": 50
@@ -1342,7 +1342,7 @@
 		},
 		"LizardArmColor_01Cut3.png": {
 			"frame": {
-				"x": 407,
+				"x": 375,
 				"y": 63,
 				"w": 100,
 				"h": 50
@@ -1362,7 +1362,7 @@
 		},
 		"LizardArmColor_01Cut4.png": {
 			"frame": {
-				"x": 509,
+				"x": 477,
 				"y": 63,
 				"w": 100,
 				"h": 50
@@ -1382,7 +1382,7 @@
 		},
 		"LizardArmColor_01Cut4Blood.png": {
 			"frame": {
-				"x": 611,
+				"x": 579,
 				"y": 63,
 				"w": 100,
 				"h": 50
@@ -1402,7 +1402,7 @@
 		},
 		"LizardArmColor_02Cut.png": {
 			"frame": {
-				"x": 713,
+				"x": 681,
 				"y": 63,
 				"w": 100,
 				"h": 50
@@ -1422,7 +1422,7 @@
 		},
 		"LizardArmColor_02Cut2.png": {
 			"frame": {
-				"x": 815,
+				"x": 783,
 				"y": 63,
 				"w": 100,
 				"h": 50
@@ -1442,7 +1442,7 @@
 		},
 		"LizardArmColor_02Cut2Blood.png": {
 			"frame": {
-				"x": 917,
+				"x": 885,
 				"y": 63,
 				"w": 100,
 				"h": 50
@@ -1462,7 +1462,7 @@
 		},
 		"LizardArmColor_02Cut3.png": {
 			"frame": {
-				"x": 1019,
+				"x": 987,
 				"y": 63,
 				"w": 100,
 				"h": 50
@@ -1482,7 +1482,7 @@
 		},
 		"LizardArmColor_02Cut4.png": {
 			"frame": {
-				"x": 1121,
+				"x": 1089,
 				"y": 63,
 				"w": 100,
 				"h": 50
@@ -1502,7 +1502,7 @@
 		},
 		"LizardArmColor_02Cut4Blood.png": {
 			"frame": {
-				"x": 1223,
+				"x": 1191,
 				"y": 63,
 				"w": 100,
 				"h": 50
@@ -1522,7 +1522,7 @@
 		},
 		"LizardArmColor_03Cut.png": {
 			"frame": {
-				"x": 1325,
+				"x": 1293,
 				"y": 63,
 				"w": 100,
 				"h": 50
@@ -1542,7 +1542,7 @@
 		},
 		"LizardArmColor_03Cut2.png": {
 			"frame": {
-				"x": 1427,
+				"x": 1395,
 				"y": 63,
 				"w": 100,
 				"h": 50
@@ -1562,7 +1562,7 @@
 		},
 		"LizardArmColor_03Cut2Blood.png": {
 			"frame": {
-				"x": 1529,
+				"x": 1497,
 				"y": 63,
 				"w": 100,
 				"h": 50
@@ -1582,7 +1582,7 @@
 		},
 		"LizardArmColor_03Cut3.png": {
 			"frame": {
-				"x": 1631,
+				"x": 1599,
 				"y": 63,
 				"w": 100,
 				"h": 50
@@ -1602,8 +1602,8 @@
 		},
 		"LizardArmColor_03Cut4.png": {
 			"frame": {
-				"x": 101,
-				"y": 115,
+				"x": 1701,
+				"y": 63,
 				"w": 100,
 				"h": 50
 			},
@@ -1622,7 +1622,7 @@
 		},
 		"LizardArmColor_03Cut4Blood.png": {
 			"frame": {
-				"x": 203,
+				"x": 69,
 				"y": 115,
 				"w": 100,
 				"h": 50
@@ -1642,7 +1642,7 @@
 		},
 		"LizardArmColor_04Cut.png": {
 			"frame": {
-				"x": 305,
+				"x": 171,
 				"y": 115,
 				"w": 100,
 				"h": 50
@@ -1662,7 +1662,7 @@
 		},
 		"LizardArmColor_04Cut2.png": {
 			"frame": {
-				"x": 407,
+				"x": 273,
 				"y": 115,
 				"w": 100,
 				"h": 50
@@ -1682,7 +1682,7 @@
 		},
 		"LizardArmColor_04Cut2Blood.png": {
 			"frame": {
-				"x": 509,
+				"x": 375,
 				"y": 115,
 				"w": 100,
 				"h": 50
@@ -1702,7 +1702,7 @@
 		},
 		"LizardArmColor_04Cut3.png": {
 			"frame": {
-				"x": 611,
+				"x": 477,
 				"y": 115,
 				"w": 100,
 				"h": 50
@@ -1722,7 +1722,7 @@
 		},
 		"LizardArmColor_04Cut4.png": {
 			"frame": {
-				"x": 713,
+				"x": 579,
 				"y": 115,
 				"w": 100,
 				"h": 50
@@ -1742,7 +1742,7 @@
 		},
 		"LizardArmColor_04Cut4Blood.png": {
 			"frame": {
-				"x": 815,
+				"x": 681,
 				"y": 115,
 				"w": 100,
 				"h": 50
@@ -1762,7 +1762,7 @@
 		},
 		"LizardArmColor_05Cut.png": {
 			"frame": {
-				"x": 917,
+				"x": 783,
 				"y": 115,
 				"w": 100,
 				"h": 50
@@ -1782,7 +1782,7 @@
 		},
 		"LizardArmColor_05Cut2.png": {
 			"frame": {
-				"x": 1019,
+				"x": 885,
 				"y": 115,
 				"w": 100,
 				"h": 50
@@ -1802,7 +1802,7 @@
 		},
 		"LizardArmColor_05Cut2Blood.png": {
 			"frame": {
-				"x": 1121,
+				"x": 987,
 				"y": 115,
 				"w": 100,
 				"h": 50
@@ -1822,7 +1822,7 @@
 		},
 		"LizardArmColor_05Cut3.png": {
 			"frame": {
-				"x": 1223,
+				"x": 1089,
 				"y": 115,
 				"w": 100,
 				"h": 50
@@ -1842,7 +1842,7 @@
 		},
 		"LizardArmColor_05Cut4.png": {
 			"frame": {
-				"x": 1325,
+				"x": 1191,
 				"y": 115,
 				"w": 100,
 				"h": 50
@@ -1862,7 +1862,7 @@
 		},
 		"LizardArmColor_05Cut4Blood.png": {
 			"frame": {
-				"x": 1427,
+				"x": 1293,
 				"y": 115,
 				"w": 100,
 				"h": 50
@@ -1882,7 +1882,7 @@
 		},
 		"LizardArmColor_06Cut.png": {
 			"frame": {
-				"x": 1529,
+				"x": 1395,
 				"y": 115,
 				"w": 100,
 				"h": 50
@@ -1902,7 +1902,7 @@
 		},
 		"LizardArmColor_06Cut2.png": {
 			"frame": {
-				"x": 1631,
+				"x": 1497,
 				"y": 115,
 				"w": 100,
 				"h": 50
@@ -1922,8 +1922,8 @@
 		},
 		"LizardArmColor_06Cut2Blood.png": {
 			"frame": {
-				"x": 1,
-				"y": 167,
+				"x": 1599,
+				"y": 115,
 				"w": 100,
 				"h": 50
 			},
@@ -1942,8 +1942,8 @@
 		},
 		"LizardArmColor_06Cut3.png": {
 			"frame": {
-				"x": 103,
-				"y": 167,
+				"x": 1701,
+				"y": 115,
 				"w": 100,
 				"h": 50
 			},
@@ -1962,7 +1962,7 @@
 		},
 		"LizardArmColor_06Cut4.png": {
 			"frame": {
-				"x": 205,
+				"x": 1,
 				"y": 167,
 				"w": 100,
 				"h": 50
@@ -1982,7 +1982,7 @@
 		},
 		"LizardArmColor_06Cut4Blood.png": {
 			"frame": {
-				"x": 307,
+				"x": 103,
 				"y": 167,
 				"w": 100,
 				"h": 50
@@ -2002,7 +2002,7 @@
 		},
 		"LizardArmColor_07Cut.png": {
 			"frame": {
-				"x": 409,
+				"x": 205,
 				"y": 167,
 				"w": 100,
 				"h": 50
@@ -2022,7 +2022,7 @@
 		},
 		"LizardArmColor_07Cut2.png": {
 			"frame": {
-				"x": 511,
+				"x": 307,
 				"y": 167,
 				"w": 100,
 				"h": 50
@@ -2042,7 +2042,7 @@
 		},
 		"LizardArmColor_07Cut2Blood.png": {
 			"frame": {
-				"x": 613,
+				"x": 409,
 				"y": 167,
 				"w": 100,
 				"h": 50
@@ -2062,7 +2062,7 @@
 		},
 		"LizardArmColor_07Cut3.png": {
 			"frame": {
-				"x": 715,
+				"x": 511,
 				"y": 167,
 				"w": 100,
 				"h": 50
@@ -2082,7 +2082,7 @@
 		},
 		"LizardArmColor_07Cut4.png": {
 			"frame": {
-				"x": 817,
+				"x": 613,
 				"y": 167,
 				"w": 100,
 				"h": 50
@@ -2102,7 +2102,7 @@
 		},
 		"LizardArmColor_07Cut4Blood.png": {
 			"frame": {
-				"x": 919,
+				"x": 715,
 				"y": 167,
 				"w": 100,
 				"h": 50
@@ -2122,7 +2122,7 @@
 		},
 		"LizardArmColor_08Cut.png": {
 			"frame": {
-				"x": 1021,
+				"x": 817,
 				"y": 167,
 				"w": 100,
 				"h": 50
@@ -2142,7 +2142,7 @@
 		},
 		"LizardArmColor_08Cut2.png": {
 			"frame": {
-				"x": 1123,
+				"x": 919,
 				"y": 167,
 				"w": 100,
 				"h": 50
@@ -2162,7 +2162,7 @@
 		},
 		"LizardArmColor_08Cut2Blood.png": {
 			"frame": {
-				"x": 1225,
+				"x": 1021,
 				"y": 167,
 				"w": 100,
 				"h": 50
@@ -2182,7 +2182,7 @@
 		},
 		"LizardArmColor_08Cut3.png": {
 			"frame": {
-				"x": 1327,
+				"x": 1123,
 				"y": 167,
 				"w": 100,
 				"h": 50
@@ -2202,7 +2202,7 @@
 		},
 		"LizardArmColor_08Cut4.png": {
 			"frame": {
-				"x": 1429,
+				"x": 1225,
 				"y": 167,
 				"w": 100,
 				"h": 50
@@ -2222,7 +2222,7 @@
 		},
 		"LizardArmColor_08Cut4Blood.png": {
 			"frame": {
-				"x": 1531,
+				"x": 1327,
 				"y": 167,
 				"w": 100,
 				"h": 50
@@ -2242,7 +2242,7 @@
 		},
 		"LizardArmColor_09Cut.png": {
 			"frame": {
-				"x": 1633,
+				"x": 1429,
 				"y": 167,
 				"w": 100,
 				"h": 50
@@ -2262,8 +2262,8 @@
 		},
 		"LizardArmColor_09Cut2.png": {
 			"frame": {
-				"x": 1,
-				"y": 219,
+				"x": 1531,
+				"y": 167,
 				"w": 100,
 				"h": 50
 			},
@@ -2282,8 +2282,8 @@
 		},
 		"LizardArmColor_09Cut2Blood.png": {
 			"frame": {
-				"x": 103,
-				"y": 219,
+				"x": 1633,
+				"y": 167,
 				"w": 100,
 				"h": 50
 			},
@@ -2302,7 +2302,7 @@
 		},
 		"LizardArmColor_09Cut3.png": {
 			"frame": {
-				"x": 205,
+				"x": 1,
 				"y": 219,
 				"w": 100,
 				"h": 50
@@ -2322,7 +2322,7 @@
 		},
 		"LizardArmColor_09Cut4.png": {
 			"frame": {
-				"x": 307,
+				"x": 103,
 				"y": 219,
 				"w": 100,
 				"h": 50
@@ -2342,7 +2342,7 @@
 		},
 		"LizardArmColor_09Cut4Blood.png": {
 			"frame": {
-				"x": 409,
+				"x": 205,
 				"y": 219,
 				"w": 100,
 				"h": 50
@@ -2362,7 +2362,7 @@
 		},
 		"LizardArmColor_10Cut.png": {
 			"frame": {
-				"x": 511,
+				"x": 307,
 				"y": 219,
 				"w": 100,
 				"h": 50
@@ -2382,7 +2382,7 @@
 		},
 		"LizardArmColor_10Cut2.png": {
 			"frame": {
-				"x": 613,
+				"x": 409,
 				"y": 219,
 				"w": 100,
 				"h": 50
@@ -2402,7 +2402,7 @@
 		},
 		"LizardArmColor_10Cut2Blood.png": {
 			"frame": {
-				"x": 715,
+				"x": 511,
 				"y": 219,
 				"w": 100,
 				"h": 50
@@ -2422,7 +2422,7 @@
 		},
 		"LizardArmColor_10Cut3.png": {
 			"frame": {
-				"x": 817,
+				"x": 613,
 				"y": 219,
 				"w": 100,
 				"h": 50
@@ -2442,7 +2442,7 @@
 		},
 		"LizardArmColor_10Cut4.png": {
 			"frame": {
-				"x": 919,
+				"x": 715,
 				"y": 219,
 				"w": 100,
 				"h": 50
@@ -2462,7 +2462,7 @@
 		},
 		"LizardArmColor_10Cut4Blood.png": {
 			"frame": {
-				"x": 1021,
+				"x": 817,
 				"y": 219,
 				"w": 100,
 				"h": 50
@@ -2482,7 +2482,7 @@
 		},
 		"LizardArmColor_11Cut.png": {
 			"frame": {
-				"x": 1123,
+				"x": 919,
 				"y": 219,
 				"w": 100,
 				"h": 50
@@ -2502,7 +2502,7 @@
 		},
 		"LizardArmColor_11Cut2.png": {
 			"frame": {
-				"x": 1225,
+				"x": 1021,
 				"y": 219,
 				"w": 100,
 				"h": 50
@@ -2522,7 +2522,7 @@
 		},
 		"LizardArmColor_11Cut2Blood.png": {
 			"frame": {
-				"x": 1327,
+				"x": 1123,
 				"y": 219,
 				"w": 100,
 				"h": 50
@@ -2542,7 +2542,7 @@
 		},
 		"LizardArmColor_11Cut3.png": {
 			"frame": {
-				"x": 1429,
+				"x": 1225,
 				"y": 219,
 				"w": 100,
 				"h": 50
@@ -2562,7 +2562,7 @@
 		},
 		"LizardArmColor_11Cut4.png": {
 			"frame": {
-				"x": 1531,
+				"x": 1327,
 				"y": 219,
 				"w": 100,
 				"h": 50
@@ -2582,7 +2582,7 @@
 		},
 		"LizardArmColor_11Cut4Blood.png": {
 			"frame": {
-				"x": 1633,
+				"x": 1429,
 				"y": 219,
 				"w": 100,
 				"h": 50
@@ -2602,8 +2602,8 @@
 		},
 		"LizardArmColor_12Cut.png": {
 			"frame": {
-				"x": 1,
-				"y": 271,
+				"x": 1531,
+				"y": 219,
 				"w": 100,
 				"h": 50
 			},
@@ -2622,8 +2622,8 @@
 		},
 		"LizardArmColor_12Cut2.png": {
 			"frame": {
-				"x": 103,
-				"y": 271,
+				"x": 1633,
+				"y": 219,
 				"w": 100,
 				"h": 50
 			},
@@ -2642,7 +2642,7 @@
 		},
 		"LizardArmColor_12Cut2Blood.png": {
 			"frame": {
-				"x": 205,
+				"x": 1,
 				"y": 271,
 				"w": 100,
 				"h": 50
@@ -2662,7 +2662,7 @@
 		},
 		"LizardArmColor_12Cut3.png": {
 			"frame": {
-				"x": 307,
+				"x": 103,
 				"y": 271,
 				"w": 100,
 				"h": 50
@@ -2682,7 +2682,7 @@
 		},
 		"LizardArmColor_12Cut4.png": {
 			"frame": {
-				"x": 409,
+				"x": 205,
 				"y": 271,
 				"w": 100,
 				"h": 50
@@ -2702,7 +2702,7 @@
 		},
 		"LizardArmColor_12Cut4Blood.png": {
 			"frame": {
-				"x": 511,
+				"x": 307,
 				"y": 271,
 				"w": 100,
 				"h": 50
@@ -2722,7 +2722,7 @@
 		},
 		"LizardArmColor_13Cut.png": {
 			"frame": {
-				"x": 613,
+				"x": 409,
 				"y": 271,
 				"w": 100,
 				"h": 50
@@ -2742,7 +2742,7 @@
 		},
 		"LizardArmColor_13Cut2.png": {
 			"frame": {
-				"x": 715,
+				"x": 511,
 				"y": 271,
 				"w": 100,
 				"h": 50
@@ -2762,7 +2762,7 @@
 		},
 		"LizardArmColor_13Cut2Blood.png": {
 			"frame": {
-				"x": 817,
+				"x": 613,
 				"y": 271,
 				"w": 100,
 				"h": 50
@@ -2782,7 +2782,7 @@
 		},
 		"LizardArmColor_13Cut3.png": {
 			"frame": {
-				"x": 919,
+				"x": 715,
 				"y": 271,
 				"w": 100,
 				"h": 50
@@ -2802,7 +2802,7 @@
 		},
 		"LizardArmColor_13Cut4.png": {
 			"frame": {
-				"x": 1021,
+				"x": 817,
 				"y": 271,
 				"w": 100,
 				"h": 50
@@ -2822,7 +2822,7 @@
 		},
 		"LizardArmColor_13Cut4Blood.png": {
 			"frame": {
-				"x": 1123,
+				"x": 919,
 				"y": 271,
 				"w": 100,
 				"h": 50
@@ -2842,7 +2842,7 @@
 		},
 		"LizardArmColor_14Cut.png": {
 			"frame": {
-				"x": 1225,
+				"x": 1021,
 				"y": 271,
 				"w": 100,
 				"h": 50
@@ -2862,7 +2862,7 @@
 		},
 		"LizardArmColor_14Cut2.png": {
 			"frame": {
-				"x": 1327,
+				"x": 1123,
 				"y": 271,
 				"w": 100,
 				"h": 50
@@ -2882,7 +2882,7 @@
 		},
 		"LizardArmColor_14Cut2Blood.png": {
 			"frame": {
-				"x": 1429,
+				"x": 1225,
 				"y": 271,
 				"w": 100,
 				"h": 50
@@ -2902,7 +2902,7 @@
 		},
 		"LizardArmColor_14Cut3.png": {
 			"frame": {
-				"x": 1531,
+				"x": 1327,
 				"y": 271,
 				"w": 100,
 				"h": 50
@@ -2922,7 +2922,7 @@
 		},
 		"LizardArmColor_14Cut4.png": {
 			"frame": {
-				"x": 1633,
+				"x": 1429,
 				"y": 271,
 				"w": 100,
 				"h": 50
@@ -2942,8 +2942,8 @@
 		},
 		"LizardArmColor_14Cut4Blood.png": {
 			"frame": {
-				"x": 1,
-				"y": 323,
+				"x": 1531,
+				"y": 271,
 				"w": 100,
 				"h": 50
 			},
@@ -2962,8 +2962,8 @@
 		},
 		"LizardArmColor_15Cut.png": {
 			"frame": {
-				"x": 103,
-				"y": 323,
+				"x": 1633,
+				"y": 271,
 				"w": 100,
 				"h": 50
 			},
@@ -2982,7 +2982,7 @@
 		},
 		"LizardArmColor_15Cut2.png": {
 			"frame": {
-				"x": 205,
+				"x": 1,
 				"y": 323,
 				"w": 100,
 				"h": 50
@@ -3002,7 +3002,7 @@
 		},
 		"LizardArmColor_15Cut2Blood.png": {
 			"frame": {
-				"x": 307,
+				"x": 103,
 				"y": 323,
 				"w": 100,
 				"h": 50
@@ -3022,7 +3022,7 @@
 		},
 		"LizardArmColor_15Cut3.png": {
 			"frame": {
-				"x": 409,
+				"x": 205,
 				"y": 323,
 				"w": 100,
 				"h": 50
@@ -3042,7 +3042,7 @@
 		},
 		"LizardArmColor_15Cut4.png": {
 			"frame": {
-				"x": 511,
+				"x": 307,
 				"y": 323,
 				"w": 100,
 				"h": 50
@@ -3062,7 +3062,7 @@
 		},
 		"LizardArmColor_15Cut4Blood.png": {
 			"frame": {
-				"x": 613,
+				"x": 409,
 				"y": 323,
 				"w": 100,
 				"h": 50
@@ -3082,7 +3082,7 @@
 		},
 		"LizardArmColor_16Cut.png": {
 			"frame": {
-				"x": 715,
+				"x": 511,
 				"y": 323,
 				"w": 100,
 				"h": 50
@@ -3102,7 +3102,7 @@
 		},
 		"LizardArmColor_16Cut2.png": {
 			"frame": {
-				"x": 817,
+				"x": 613,
 				"y": 323,
 				"w": 100,
 				"h": 50
@@ -3122,7 +3122,7 @@
 		},
 		"LizardArmColor_16Cut2Blood.png": {
 			"frame": {
-				"x": 919,
+				"x": 715,
 				"y": 323,
 				"w": 100,
 				"h": 50
@@ -3142,7 +3142,7 @@
 		},
 		"LizardArmColor_16Cut3.png": {
 			"frame": {
-				"x": 1021,
+				"x": 817,
 				"y": 323,
 				"w": 100,
 				"h": 50
@@ -3162,7 +3162,7 @@
 		},
 		"LizardArmColor_16Cut4.png": {
 			"frame": {
-				"x": 1123,
+				"x": 919,
 				"y": 323,
 				"w": 100,
 				"h": 50
@@ -3182,7 +3182,7 @@
 		},
 		"LizardArmColor_16Cut4Blood.png": {
 			"frame": {
-				"x": 1225,
+				"x": 1021,
 				"y": 323,
 				"w": 100,
 				"h": 50
@@ -3202,7 +3202,7 @@
 		},
 		"LizardArmColor_17Cut.png": {
 			"frame": {
-				"x": 1327,
+				"x": 1123,
 				"y": 323,
 				"w": 100,
 				"h": 50
@@ -3222,7 +3222,7 @@
 		},
 		"LizardArmColor_17Cut2.png": {
 			"frame": {
-				"x": 1429,
+				"x": 1225,
 				"y": 323,
 				"w": 100,
 				"h": 50
@@ -3242,7 +3242,7 @@
 		},
 		"LizardArmColor_17Cut2Blood.png": {
 			"frame": {
-				"x": 1531,
+				"x": 1327,
 				"y": 323,
 				"w": 100,
 				"h": 50
@@ -3262,7 +3262,7 @@
 		},
 		"LizardArmColor_17Cut3.png": {
 			"frame": {
-				"x": 1633,
+				"x": 1429,
 				"y": 323,
 				"w": 100,
 				"h": 50
@@ -3282,8 +3282,8 @@
 		},
 		"LizardArmColor_17Cut4.png": {
 			"frame": {
-				"x": 1,
-				"y": 375,
+				"x": 1531,
+				"y": 323,
 				"w": 100,
 				"h": 50
 			},
@@ -3302,8 +3302,8 @@
 		},
 		"LizardArmColor_17Cut4Blood.png": {
 			"frame": {
-				"x": 103,
-				"y": 375,
+				"x": 1633,
+				"y": 323,
 				"w": 100,
 				"h": 50
 			},
@@ -3322,7 +3322,7 @@
 		},
 		"LizardArmColor_18Cut.png": {
 			"frame": {
-				"x": 205,
+				"x": 1,
 				"y": 375,
 				"w": 100,
 				"h": 50
@@ -3342,7 +3342,7 @@
 		},
 		"LizardArmColor_18Cut2.png": {
 			"frame": {
-				"x": 307,
+				"x": 103,
 				"y": 375,
 				"w": 100,
 				"h": 50
@@ -3362,7 +3362,7 @@
 		},
 		"LizardArmColor_18Cut2Blood.png": {
 			"frame": {
-				"x": 409,
+				"x": 205,
 				"y": 375,
 				"w": 100,
 				"h": 50
@@ -3382,7 +3382,7 @@
 		},
 		"LizardArmColor_18Cut3.png": {
 			"frame": {
-				"x": 511,
+				"x": 307,
 				"y": 375,
 				"w": 100,
 				"h": 50
@@ -3402,7 +3402,7 @@
 		},
 		"LizardArmColor_18Cut4.png": {
 			"frame": {
-				"x": 613,
+				"x": 409,
 				"y": 375,
 				"w": 100,
 				"h": 50
@@ -3422,7 +3422,7 @@
 		},
 		"LizardArmColor_18Cut4Blood.png": {
 			"frame": {
-				"x": 715,
+				"x": 511,
 				"y": 375,
 				"w": 100,
 				"h": 50
@@ -3442,7 +3442,7 @@
 		},
 		"LizardArmColor_19Cut.png": {
 			"frame": {
-				"x": 817,
+				"x": 613,
 				"y": 375,
 				"w": 100,
 				"h": 50
@@ -3462,7 +3462,7 @@
 		},
 		"LizardArmColor_19Cut2.png": {
 			"frame": {
-				"x": 919,
+				"x": 715,
 				"y": 375,
 				"w": 100,
 				"h": 50
@@ -3482,7 +3482,7 @@
 		},
 		"LizardArmColor_19Cut2Blood.png": {
 			"frame": {
-				"x": 1021,
+				"x": 817,
 				"y": 375,
 				"w": 100,
 				"h": 50
@@ -3502,7 +3502,7 @@
 		},
 		"LizardArmColor_19Cut3.png": {
 			"frame": {
-				"x": 1123,
+				"x": 919,
 				"y": 375,
 				"w": 100,
 				"h": 50
@@ -3522,7 +3522,7 @@
 		},
 		"LizardArmColor_19Cut4.png": {
 			"frame": {
-				"x": 1225,
+				"x": 1021,
 				"y": 375,
 				"w": 100,
 				"h": 50
@@ -3542,7 +3542,7 @@
 		},
 		"LizardArmColor_19Cut4Blood.png": {
 			"frame": {
-				"x": 1327,
+				"x": 1123,
 				"y": 375,
 				"w": 100,
 				"h": 50
@@ -3562,7 +3562,7 @@
 		},
 		"LizardArmColor_20Cut.png": {
 			"frame": {
-				"x": 1429,
+				"x": 1225,
 				"y": 375,
 				"w": 100,
 				"h": 50
@@ -3582,7 +3582,7 @@
 		},
 		"LizardArmColor_20Cut2.png": {
 			"frame": {
-				"x": 1531,
+				"x": 1327,
 				"y": 375,
 				"w": 100,
 				"h": 50
@@ -3602,7 +3602,7 @@
 		},
 		"LizardArmColor_20Cut2Blood.png": {
 			"frame": {
-				"x": 1633,
+				"x": 1429,
 				"y": 375,
 				"w": 100,
 				"h": 50
@@ -3622,8 +3622,8 @@
 		},
 		"LizardArmColor_20Cut3.png": {
 			"frame": {
-				"x": 1,
-				"y": 427,
+				"x": 1531,
+				"y": 375,
 				"w": 100,
 				"h": 50
 			},
@@ -3642,8 +3642,8 @@
 		},
 		"LizardArmColor_20Cut4.png": {
 			"frame": {
-				"x": 103,
-				"y": 427,
+				"x": 1633,
+				"y": 375,
 				"w": 100,
 				"h": 50
 			},
@@ -3662,7 +3662,7 @@
 		},
 		"LizardArmColor_20Cut4Blood.png": {
 			"frame": {
-				"x": 205,
+				"x": 1,
 				"y": 427,
 				"w": 100,
 				"h": 50
@@ -3682,7 +3682,7 @@
 		},
 		"LizardArmColor_21Cut.png": {
 			"frame": {
-				"x": 307,
+				"x": 103,
 				"y": 427,
 				"w": 100,
 				"h": 50
@@ -3702,7 +3702,7 @@
 		},
 		"LizardArmColor_21Cut2.png": {
 			"frame": {
-				"x": 409,
+				"x": 205,
 				"y": 427,
 				"w": 100,
 				"h": 50
@@ -3722,7 +3722,7 @@
 		},
 		"LizardArmColor_21Cut2Blood.png": {
 			"frame": {
-				"x": 511,
+				"x": 307,
 				"y": 427,
 				"w": 100,
 				"h": 50
@@ -3742,7 +3742,7 @@
 		},
 		"LizardArmColor_21Cut3.png": {
 			"frame": {
-				"x": 613,
+				"x": 409,
 				"y": 427,
 				"w": 100,
 				"h": 50
@@ -3762,7 +3762,7 @@
 		},
 		"LizardArmColor_21Cut4.png": {
 			"frame": {
-				"x": 715,
+				"x": 511,
 				"y": 427,
 				"w": 100,
 				"h": 50
@@ -3782,7 +3782,7 @@
 		},
 		"LizardArmColor_21Cut4Blood.png": {
 			"frame": {
-				"x": 817,
+				"x": 613,
 				"y": 427,
 				"w": 100,
 				"h": 50
@@ -3802,7 +3802,7 @@
 		},
 		"LizardArmColor_22Cut.png": {
 			"frame": {
-				"x": 919,
+				"x": 715,
 				"y": 427,
 				"w": 100,
 				"h": 50
@@ -3822,7 +3822,7 @@
 		},
 		"LizardArmColor_22Cut2.png": {
 			"frame": {
-				"x": 1021,
+				"x": 817,
 				"y": 427,
 				"w": 100,
 				"h": 50
@@ -3842,7 +3842,7 @@
 		},
 		"LizardArmColor_22Cut2Blood.png": {
 			"frame": {
-				"x": 1123,
+				"x": 919,
 				"y": 427,
 				"w": 100,
 				"h": 50
@@ -3862,7 +3862,7 @@
 		},
 		"LizardArmColor_22Cut3.png": {
 			"frame": {
-				"x": 1225,
+				"x": 1021,
 				"y": 427,
 				"w": 100,
 				"h": 50
@@ -3882,7 +3882,7 @@
 		},
 		"LizardArmColor_22Cut4.png": {
 			"frame": {
-				"x": 1327,
+				"x": 1123,
 				"y": 427,
 				"w": 100,
 				"h": 50
@@ -3902,7 +3902,7 @@
 		},
 		"LizardArmColor_22Cut4Blood.png": {
 			"frame": {
-				"x": 1429,
+				"x": 1225,
 				"y": 427,
 				"w": 100,
 				"h": 50
@@ -3922,7 +3922,7 @@
 		},
 		"LizardArmColor_23Cut.png": {
 			"frame": {
-				"x": 1531,
+				"x": 1327,
 				"y": 427,
 				"w": 100,
 				"h": 50
@@ -3942,7 +3942,7 @@
 		},
 		"LizardArmColor_23Cut2.png": {
 			"frame": {
-				"x": 1633,
+				"x": 1429,
 				"y": 427,
 				"w": 100,
 				"h": 50
@@ -3962,8 +3962,8 @@
 		},
 		"LizardArmColor_23Cut2Blood.png": {
 			"frame": {
-				"x": 1,
-				"y": 479,
+				"x": 1531,
+				"y": 427,
 				"w": 100,
 				"h": 50
 			},
@@ -3982,8 +3982,8 @@
 		},
 		"LizardArmColor_23Cut3.png": {
 			"frame": {
-				"x": 103,
-				"y": 479,
+				"x": 1633,
+				"y": 427,
 				"w": 100,
 				"h": 50
 			},
@@ -4002,7 +4002,7 @@
 		},
 		"LizardArmColor_23Cut4.png": {
 			"frame": {
-				"x": 205,
+				"x": 1,
 				"y": 479,
 				"w": 100,
 				"h": 50
@@ -4022,7 +4022,7 @@
 		},
 		"LizardArmColor_23Cut4Blood.png": {
 			"frame": {
-				"x": 307,
+				"x": 103,
 				"y": 479,
 				"w": 100,
 				"h": 50
@@ -4042,7 +4042,7 @@
 		},
 		"LizardArmColor_24Cut.png": {
 			"frame": {
-				"x": 409,
+				"x": 205,
 				"y": 479,
 				"w": 100,
 				"h": 50
@@ -4062,7 +4062,7 @@
 		},
 		"LizardArmColor_24Cut2.png": {
 			"frame": {
-				"x": 511,
+				"x": 307,
 				"y": 479,
 				"w": 100,
 				"h": 50
@@ -4082,7 +4082,7 @@
 		},
 		"LizardArmColor_24Cut2Blood.png": {
 			"frame": {
-				"x": 613,
+				"x": 409,
 				"y": 479,
 				"w": 100,
 				"h": 50
@@ -4102,7 +4102,7 @@
 		},
 		"LizardArmColor_24Cut3.png": {
 			"frame": {
-				"x": 715,
+				"x": 511,
 				"y": 479,
 				"w": 100,
 				"h": 50
@@ -4122,7 +4122,7 @@
 		},
 		"LizardArmColor_24Cut4.png": {
 			"frame": {
-				"x": 817,
+				"x": 613,
 				"y": 479,
 				"w": 100,
 				"h": 50
@@ -4142,7 +4142,7 @@
 		},
 		"LizardArmColor_24Cut4Blood.png": {
 			"frame": {
-				"x": 919,
+				"x": 715,
 				"y": 479,
 				"w": 100,
 				"h": 50
@@ -4162,7 +4162,7 @@
 		},
 		"LizardArmColor_25Cut.png": {
 			"frame": {
-				"x": 1021,
+				"x": 817,
 				"y": 479,
 				"w": 100,
 				"h": 50
@@ -4182,7 +4182,7 @@
 		},
 		"LizardArmColor_25Cut2.png": {
 			"frame": {
-				"x": 1123,
+				"x": 919,
 				"y": 479,
 				"w": 100,
 				"h": 50
@@ -4202,7 +4202,7 @@
 		},
 		"LizardArmColor_25Cut2Blood.png": {
 			"frame": {
-				"x": 1225,
+				"x": 1021,
 				"y": 479,
 				"w": 100,
 				"h": 50
@@ -4222,7 +4222,7 @@
 		},
 		"LizardArmColor_25Cut3.png": {
 			"frame": {
-				"x": 1327,
+				"x": 1123,
 				"y": 479,
 				"w": 100,
 				"h": 50
@@ -4242,7 +4242,7 @@
 		},
 		"LizardArmColor_25Cut4.png": {
 			"frame": {
-				"x": 1429,
+				"x": 1225,
 				"y": 479,
 				"w": 100,
 				"h": 50
@@ -4262,7 +4262,7 @@
 		},
 		"LizardArmColor_25Cut4Blood.png": {
 			"frame": {
-				"x": 1531,
+				"x": 1327,
 				"y": 479,
 				"w": 100,
 				"h": 50
@@ -4282,7 +4282,7 @@
 		},
 		"LizardArmColor_26Cut.png": {
 			"frame": {
-				"x": 1633,
+				"x": 1429,
 				"y": 479,
 				"w": 100,
 				"h": 50
@@ -4302,8 +4302,8 @@
 		},
 		"LizardArmColor_26Cut2.png": {
 			"frame": {
-				"x": 1,
-				"y": 531,
+				"x": 1531,
+				"y": 479,
 				"w": 100,
 				"h": 50
 			},
@@ -4322,8 +4322,8 @@
 		},
 		"LizardArmColor_26Cut2Blood.png": {
 			"frame": {
-				"x": 103,
-				"y": 531,
+				"x": 1633,
+				"y": 479,
 				"w": 100,
 				"h": 50
 			},
@@ -4342,7 +4342,7 @@
 		},
 		"LizardArmColor_26Cut3.png": {
 			"frame": {
-				"x": 205,
+				"x": 1,
 				"y": 531,
 				"w": 100,
 				"h": 50
@@ -4362,7 +4362,7 @@
 		},
 		"LizardArmColor_26Cut4.png": {
 			"frame": {
-				"x": 307,
+				"x": 103,
 				"y": 531,
 				"w": 100,
 				"h": 50
@@ -4382,7 +4382,7 @@
 		},
 		"LizardArmColor_26Cut4Blood.png": {
 			"frame": {
-				"x": 409,
+				"x": 205,
 				"y": 531,
 				"w": 100,
 				"h": 50
@@ -4402,7 +4402,7 @@
 		},
 		"LizardArmColor_27Cut.png": {
 			"frame": {
-				"x": 511,
+				"x": 307,
 				"y": 531,
 				"w": 100,
 				"h": 50
@@ -4422,7 +4422,7 @@
 		},
 		"LizardArmColor_27Cut2.png": {
 			"frame": {
-				"x": 613,
+				"x": 409,
 				"y": 531,
 				"w": 100,
 				"h": 50
@@ -4442,7 +4442,7 @@
 		},
 		"LizardArmColor_27Cut2Blood.png": {
 			"frame": {
-				"x": 715,
+				"x": 511,
 				"y": 531,
 				"w": 100,
 				"h": 50
@@ -4462,7 +4462,7 @@
 		},
 		"LizardArmColor_27Cut3.png": {
 			"frame": {
-				"x": 817,
+				"x": 613,
 				"y": 531,
 				"w": 100,
 				"h": 50
@@ -4482,7 +4482,7 @@
 		},
 		"LizardArmColor_27Cut4.png": {
 			"frame": {
-				"x": 919,
+				"x": 715,
 				"y": 531,
 				"w": 100,
 				"h": 50
@@ -4502,7 +4502,7 @@
 		},
 		"LizardArmColor_27Cut4Blood.png": {
 			"frame": {
-				"x": 1021,
+				"x": 817,
 				"y": 531,
 				"w": 100,
 				"h": 50
@@ -4522,7 +4522,7 @@
 		},
 		"LizardArmColor_28Cut.png": {
 			"frame": {
-				"x": 1123,
+				"x": 919,
 				"y": 531,
 				"w": 100,
 				"h": 50
@@ -4542,7 +4542,7 @@
 		},
 		"LizardArmColor_28Cut2.png": {
 			"frame": {
-				"x": 1225,
+				"x": 1021,
 				"y": 531,
 				"w": 100,
 				"h": 50
@@ -4562,7 +4562,7 @@
 		},
 		"LizardArmColor_28Cut2Blood.png": {
 			"frame": {
-				"x": 1327,
+				"x": 1123,
 				"y": 531,
 				"w": 100,
 				"h": 50
@@ -4582,7 +4582,7 @@
 		},
 		"LizardArmColor_28Cut3.png": {
 			"frame": {
-				"x": 1429,
+				"x": 1225,
 				"y": 531,
 				"w": 100,
 				"h": 50
@@ -4602,7 +4602,7 @@
 		},
 		"LizardArmColor_28Cut4.png": {
 			"frame": {
-				"x": 1531,
+				"x": 1327,
 				"y": 531,
 				"w": 100,
 				"h": 50
@@ -4622,7 +4622,7 @@
 		},
 		"LizardArmColor_28Cut4Blood.png": {
 			"frame": {
-				"x": 1633,
+				"x": 1429,
 				"y": 531,
 				"w": 100,
 				"h": 50
@@ -4642,8 +4642,8 @@
 		},
 		"LizardArmColor_29Cut.png": {
 			"frame": {
-				"x": 1,
-				"y": 583,
+				"x": 1531,
+				"y": 531,
 				"w": 100,
 				"h": 50
 			},
@@ -4662,8 +4662,8 @@
 		},
 		"LizardArmColor_29Cut2.png": {
 			"frame": {
-				"x": 103,
-				"y": 583,
+				"x": 1633,
+				"y": 531,
 				"w": 100,
 				"h": 50
 			},
@@ -4682,7 +4682,7 @@
 		},
 		"LizardArmColor_29Cut2Blood.png": {
 			"frame": {
-				"x": 205,
+				"x": 1,
 				"y": 583,
 				"w": 100,
 				"h": 50
@@ -4702,7 +4702,7 @@
 		},
 		"LizardArmColor_29Cut3.png": {
 			"frame": {
-				"x": 307,
+				"x": 103,
 				"y": 583,
 				"w": 100,
 				"h": 50
@@ -4722,7 +4722,7 @@
 		},
 		"LizardArmColor_29Cut4.png": {
 			"frame": {
-				"x": 409,
+				"x": 205,
 				"y": 583,
 				"w": 100,
 				"h": 50
@@ -4742,7 +4742,7 @@
 		},
 		"LizardArmColor_29Cut4Blood.png": {
 			"frame": {
-				"x": 511,
+				"x": 307,
 				"y": 583,
 				"w": 100,
 				"h": 50
@@ -4762,7 +4762,7 @@
 		},
 		"LizardArmColor_30Cut.png": {
 			"frame": {
-				"x": 613,
+				"x": 409,
 				"y": 583,
 				"w": 100,
 				"h": 50
@@ -4782,7 +4782,7 @@
 		},
 		"LizardArmColor_30Cut2.png": {
 			"frame": {
-				"x": 715,
+				"x": 511,
 				"y": 583,
 				"w": 100,
 				"h": 50
@@ -4802,7 +4802,7 @@
 		},
 		"LizardArmColor_30Cut2Blood.png": {
 			"frame": {
-				"x": 817,
+				"x": 613,
 				"y": 583,
 				"w": 100,
 				"h": 50
@@ -4822,7 +4822,7 @@
 		},
 		"LizardArmColor_30Cut3.png": {
 			"frame": {
-				"x": 919,
+				"x": 715,
 				"y": 583,
 				"w": 100,
 				"h": 50
@@ -4842,7 +4842,7 @@
 		},
 		"LizardArmColor_30Cut4.png": {
 			"frame": {
-				"x": 1021,
+				"x": 817,
 				"y": 583,
 				"w": 100,
 				"h": 50
@@ -4862,7 +4862,7 @@
 		},
 		"LizardArmColor_30Cut4Blood.png": {
 			"frame": {
-				"x": 1123,
+				"x": 919,
 				"y": 583,
 				"w": 100,
 				"h": 50
@@ -4882,7 +4882,7 @@
 		},
 		"LizardArmColor_31Cut.png": {
 			"frame": {
-				"x": 1225,
+				"x": 1021,
 				"y": 583,
 				"w": 100,
 				"h": 50
@@ -4902,7 +4902,7 @@
 		},
 		"LizardArmColor_31Cut2.png": {
 			"frame": {
-				"x": 1327,
+				"x": 1123,
 				"y": 583,
 				"w": 100,
 				"h": 50
@@ -4922,7 +4922,7 @@
 		},
 		"LizardArmColor_31Cut2Blood.png": {
 			"frame": {
-				"x": 1429,
+				"x": 1225,
 				"y": 583,
 				"w": 100,
 				"h": 50
@@ -4942,7 +4942,7 @@
 		},
 		"LizardArmColor_31Cut3.png": {
 			"frame": {
-				"x": 1531,
+				"x": 1327,
 				"y": 583,
 				"w": 100,
 				"h": 50
@@ -4962,7 +4962,7 @@
 		},
 		"LizardArmColor_31Cut4.png": {
 			"frame": {
-				"x": 1633,
+				"x": 1429,
 				"y": 583,
 				"w": 100,
 				"h": 50
@@ -4982,8 +4982,8 @@
 		},
 		"LizardArmColor_31Cut4Blood.png": {
 			"frame": {
-				"x": 1,
-				"y": 635,
+				"x": 1531,
+				"y": 583,
 				"w": 100,
 				"h": 50
 			},
@@ -5002,8 +5002,8 @@
 		},
 		"LizardArmColor_32Cut.png": {
 			"frame": {
-				"x": 103,
-				"y": 635,
+				"x": 1633,
+				"y": 583,
 				"w": 100,
 				"h": 50
 			},
@@ -5022,7 +5022,7 @@
 		},
 		"LizardArmColor_32Cut2.png": {
 			"frame": {
-				"x": 205,
+				"x": 1,
 				"y": 635,
 				"w": 100,
 				"h": 50
@@ -5042,7 +5042,7 @@
 		},
 		"LizardArmColor_32Cut2Blood.png": {
 			"frame": {
-				"x": 307,
+				"x": 103,
 				"y": 635,
 				"w": 100,
 				"h": 50
@@ -5062,7 +5062,7 @@
 		},
 		"LizardArmColor_32Cut3.png": {
 			"frame": {
-				"x": 409,
+				"x": 205,
 				"y": 635,
 				"w": 100,
 				"h": 50
@@ -5082,7 +5082,7 @@
 		},
 		"LizardArmColor_32Cut4.png": {
 			"frame": {
-				"x": 511,
+				"x": 307,
 				"y": 635,
 				"w": 100,
 				"h": 50
@@ -5102,7 +5102,7 @@
 		},
 		"LizardArmColor_32Cut4Blood.png": {
 			"frame": {
-				"x": 613,
+				"x": 409,
 				"y": 635,
 				"w": 100,
 				"h": 50
@@ -5122,7 +5122,7 @@
 		},
 		"LizardArmColor_33Cut.png": {
 			"frame": {
-				"x": 715,
+				"x": 511,
 				"y": 635,
 				"w": 100,
 				"h": 50
@@ -5142,7 +5142,7 @@
 		},
 		"LizardArmColor_33Cut2.png": {
 			"frame": {
-				"x": 817,
+				"x": 613,
 				"y": 635,
 				"w": 100,
 				"h": 50
@@ -5162,7 +5162,7 @@
 		},
 		"LizardArmColor_33Cut2Blood.png": {
 			"frame": {
-				"x": 919,
+				"x": 715,
 				"y": 635,
 				"w": 100,
 				"h": 50
@@ -5182,7 +5182,7 @@
 		},
 		"LizardArmColor_33Cut3.png": {
 			"frame": {
-				"x": 1021,
+				"x": 817,
 				"y": 635,
 				"w": 100,
 				"h": 50
@@ -5202,7 +5202,7 @@
 		},
 		"LizardArmColor_33Cut4.png": {
 			"frame": {
-				"x": 1123,
+				"x": 919,
 				"y": 635,
 				"w": 100,
 				"h": 50
@@ -5222,7 +5222,7 @@
 		},
 		"LizardArmColor_33Cut4Blood.png": {
 			"frame": {
-				"x": 1225,
+				"x": 1021,
 				"y": 635,
 				"w": 100,
 				"h": 50
@@ -5242,7 +5242,7 @@
 		},
 		"LizardArmColor_34Cut.png": {
 			"frame": {
-				"x": 1327,
+				"x": 1123,
 				"y": 635,
 				"w": 100,
 				"h": 50
@@ -5262,7 +5262,7 @@
 		},
 		"LizardArmColor_34Cut2.png": {
 			"frame": {
-				"x": 1429,
+				"x": 1225,
 				"y": 635,
 				"w": 100,
 				"h": 50
@@ -5282,7 +5282,7 @@
 		},
 		"LizardArmColor_34Cut2Blood.png": {
 			"frame": {
-				"x": 1531,
+				"x": 1327,
 				"y": 635,
 				"w": 100,
 				"h": 50
@@ -5302,7 +5302,7 @@
 		},
 		"LizardArmColor_34Cut3.png": {
 			"frame": {
-				"x": 1633,
+				"x": 1429,
 				"y": 635,
 				"w": 100,
 				"h": 50
@@ -5322,8 +5322,8 @@
 		},
 		"LizardArmColor_34Cut4.png": {
 			"frame": {
-				"x": 1,
-				"y": 687,
+				"x": 1531,
+				"y": 635,
 				"w": 100,
 				"h": 50
 			},
@@ -5342,8 +5342,8 @@
 		},
 		"LizardArmColor_34Cut4Blood.png": {
 			"frame": {
-				"x": 103,
-				"y": 687,
+				"x": 1633,
+				"y": 635,
 				"w": 100,
 				"h": 50
 			},
@@ -5362,7 +5362,7 @@
 		},
 		"LizardArmColor_35Cut.png": {
 			"frame": {
-				"x": 205,
+				"x": 1,
 				"y": 687,
 				"w": 100,
 				"h": 50
@@ -5382,7 +5382,7 @@
 		},
 		"LizardArmColor_35Cut2.png": {
 			"frame": {
-				"x": 307,
+				"x": 103,
 				"y": 687,
 				"w": 100,
 				"h": 50
@@ -5402,7 +5402,7 @@
 		},
 		"LizardArmColor_35Cut2Blood.png": {
 			"frame": {
-				"x": 409,
+				"x": 205,
 				"y": 687,
 				"w": 100,
 				"h": 50
@@ -5422,7 +5422,7 @@
 		},
 		"LizardArmColor_35Cut3.png": {
 			"frame": {
-				"x": 511,
+				"x": 307,
 				"y": 687,
 				"w": 100,
 				"h": 50
@@ -5442,7 +5442,7 @@
 		},
 		"LizardArmColor_35Cut4.png": {
 			"frame": {
-				"x": 613,
+				"x": 409,
 				"y": 687,
 				"w": 100,
 				"h": 50
@@ -5462,7 +5462,7 @@
 		},
 		"LizardArmColor_35Cut4Blood.png": {
 			"frame": {
-				"x": 715,
+				"x": 511,
 				"y": 687,
 				"w": 100,
 				"h": 50
@@ -5482,7 +5482,7 @@
 		},
 		"LizardArmColor_36Cut.png": {
 			"frame": {
-				"x": 817,
+				"x": 613,
 				"y": 687,
 				"w": 100,
 				"h": 50
@@ -5502,7 +5502,7 @@
 		},
 		"LizardArmColor_36Cut2.png": {
 			"frame": {
-				"x": 919,
+				"x": 715,
 				"y": 687,
 				"w": 100,
 				"h": 50
@@ -5522,7 +5522,7 @@
 		},
 		"LizardArmColor_36Cut2Blood.png": {
 			"frame": {
-				"x": 1021,
+				"x": 817,
 				"y": 687,
 				"w": 100,
 				"h": 50
@@ -5542,7 +5542,7 @@
 		},
 		"LizardArmColor_36Cut3.png": {
 			"frame": {
-				"x": 1123,
+				"x": 919,
 				"y": 687,
 				"w": 100,
 				"h": 50
@@ -5562,7 +5562,7 @@
 		},
 		"LizardArmColor_36Cut4.png": {
 			"frame": {
-				"x": 1225,
+				"x": 1021,
 				"y": 687,
 				"w": 100,
 				"h": 50
@@ -5582,7 +5582,7 @@
 		},
 		"LizardArmColor_36Cut4Blood.png": {
 			"frame": {
-				"x": 1327,
+				"x": 1123,
 				"y": 687,
 				"w": 100,
 				"h": 50
@@ -5602,7 +5602,7 @@
 		},
 		"LizardArmColor_37Cut.png": {
 			"frame": {
-				"x": 1429,
+				"x": 1225,
 				"y": 687,
 				"w": 100,
 				"h": 50
@@ -5622,7 +5622,7 @@
 		},
 		"LizardArmColor_37Cut2.png": {
 			"frame": {
-				"x": 1531,
+				"x": 1327,
 				"y": 687,
 				"w": 100,
 				"h": 50
@@ -5642,7 +5642,7 @@
 		},
 		"LizardArmColor_37Cut2Blood.png": {
 			"frame": {
-				"x": 1633,
+				"x": 1429,
 				"y": 687,
 				"w": 100,
 				"h": 50
@@ -5662,8 +5662,8 @@
 		},
 		"LizardArmColor_37Cut3.png": {
 			"frame": {
-				"x": 1,
-				"y": 739,
+				"x": 1531,
+				"y": 687,
 				"w": 100,
 				"h": 50
 			},
@@ -5682,8 +5682,8 @@
 		},
 		"LizardArmColor_37Cut4.png": {
 			"frame": {
-				"x": 103,
-				"y": 739,
+				"x": 1633,
+				"y": 687,
 				"w": 100,
 				"h": 50
 			},
@@ -5702,7 +5702,7 @@
 		},
 		"LizardArmColor_37Cut4Blood.png": {
 			"frame": {
-				"x": 205,
+				"x": 1,
 				"y": 739,
 				"w": 100,
 				"h": 50
@@ -5722,7 +5722,7 @@
 		},
 		"LizardArmColor_38Cut.png": {
 			"frame": {
-				"x": 307,
+				"x": 103,
 				"y": 739,
 				"w": 100,
 				"h": 50
@@ -5742,7 +5742,7 @@
 		},
 		"LizardArmColor_38Cut2.png": {
 			"frame": {
-				"x": 409,
+				"x": 205,
 				"y": 739,
 				"w": 100,
 				"h": 50
@@ -5762,7 +5762,7 @@
 		},
 		"LizardArmColor_38Cut2Blood.png": {
 			"frame": {
-				"x": 511,
+				"x": 307,
 				"y": 739,
 				"w": 100,
 				"h": 50
@@ -5782,7 +5782,7 @@
 		},
 		"LizardArmColor_38Cut3.png": {
 			"frame": {
-				"x": 613,
+				"x": 409,
 				"y": 739,
 				"w": 100,
 				"h": 50
@@ -5802,7 +5802,7 @@
 		},
 		"LizardArmColor_38Cut4.png": {
 			"frame": {
-				"x": 715,
+				"x": 511,
 				"y": 739,
 				"w": 100,
 				"h": 50
@@ -5822,7 +5822,7 @@
 		},
 		"LizardArmColor_38Cut4Blood.png": {
 			"frame": {
-				"x": 817,
+				"x": 613,
 				"y": 739,
 				"w": 100,
 				"h": 50
@@ -5842,7 +5842,7 @@
 		},
 		"LizardArmColor_39Cut.png": {
 			"frame": {
-				"x": 919,
+				"x": 715,
 				"y": 739,
 				"w": 100,
 				"h": 50
@@ -5862,7 +5862,7 @@
 		},
 		"LizardArmColor_39Cut2.png": {
 			"frame": {
-				"x": 1021,
+				"x": 817,
 				"y": 739,
 				"w": 100,
 				"h": 50
@@ -5882,7 +5882,7 @@
 		},
 		"LizardArmColor_39Cut2Blood.png": {
 			"frame": {
-				"x": 1123,
+				"x": 919,
 				"y": 739,
 				"w": 100,
 				"h": 50
@@ -5902,7 +5902,7 @@
 		},
 		"LizardArmColor_39Cut3.png": {
 			"frame": {
-				"x": 1225,
+				"x": 1021,
 				"y": 739,
 				"w": 100,
 				"h": 50
@@ -5922,7 +5922,7 @@
 		},
 		"LizardArmColor_39Cut4.png": {
 			"frame": {
-				"x": 1327,
+				"x": 1123,
 				"y": 739,
 				"w": 100,
 				"h": 50
@@ -5942,7 +5942,7 @@
 		},
 		"LizardArmColor_39Cut4Blood.png": {
 			"frame": {
-				"x": 1429,
+				"x": 1225,
 				"y": 739,
 				"w": 100,
 				"h": 50
@@ -5962,7 +5962,7 @@
 		},
 		"LizardArmColor_40Cut.png": {
 			"frame": {
-				"x": 1531,
+				"x": 1327,
 				"y": 739,
 				"w": 100,
 				"h": 50
@@ -5982,7 +5982,7 @@
 		},
 		"LizardArmColor_40Cut2.png": {
 			"frame": {
-				"x": 1633,
+				"x": 1429,
 				"y": 739,
 				"w": 100,
 				"h": 50
@@ -6002,8 +6002,8 @@
 		},
 		"LizardArmColor_40Cut2Blood.png": {
 			"frame": {
-				"x": 1,
-				"y": 791,
+				"x": 1531,
+				"y": 739,
 				"w": 100,
 				"h": 50
 			},
@@ -6022,8 +6022,8 @@
 		},
 		"LizardArmColor_40Cut3.png": {
 			"frame": {
-				"x": 103,
-				"y": 791,
+				"x": 1633,
+				"y": 739,
 				"w": 100,
 				"h": 50
 			},
@@ -6042,7 +6042,7 @@
 		},
 		"LizardArmColor_40Cut4.png": {
 			"frame": {
-				"x": 205,
+				"x": 1,
 				"y": 791,
 				"w": 100,
 				"h": 50
@@ -6062,7 +6062,7 @@
 		},
 		"LizardArmColor_40Cut4Blood.png": {
 			"frame": {
-				"x": 307,
+				"x": 103,
 				"y": 791,
 				"w": 100,
 				"h": 50
@@ -6082,7 +6082,7 @@
 		},
 		"LizardArmColor_41Cut.png": {
 			"frame": {
-				"x": 409,
+				"x": 205,
 				"y": 791,
 				"w": 100,
 				"h": 50
@@ -6102,7 +6102,7 @@
 		},
 		"LizardArmColor_41Cut2.png": {
 			"frame": {
-				"x": 511,
+				"x": 307,
 				"y": 791,
 				"w": 100,
 				"h": 50
@@ -6122,7 +6122,7 @@
 		},
 		"LizardArmColor_41Cut2Blood.png": {
 			"frame": {
-				"x": 613,
+				"x": 409,
 				"y": 791,
 				"w": 100,
 				"h": 50
@@ -6142,7 +6142,7 @@
 		},
 		"LizardArmColor_41Cut3.png": {
 			"frame": {
-				"x": 715,
+				"x": 511,
 				"y": 791,
 				"w": 100,
 				"h": 50
@@ -6162,7 +6162,7 @@
 		},
 		"LizardArmColor_41Cut4.png": {
 			"frame": {
-				"x": 817,
+				"x": 613,
 				"y": 791,
 				"w": 100,
 				"h": 50
@@ -6182,7 +6182,7 @@
 		},
 		"LizardArmColor_41Cut4Blood.png": {
 			"frame": {
-				"x": 919,
+				"x": 715,
 				"y": 791,
 				"w": 100,
 				"h": 50
@@ -6202,7 +6202,7 @@
 		},
 		"LizardArmColor_42Cut.png": {
 			"frame": {
-				"x": 1021,
+				"x": 817,
 				"y": 791,
 				"w": 100,
 				"h": 50
@@ -6222,7 +6222,7 @@
 		},
 		"LizardArmColor_42Cut2.png": {
 			"frame": {
-				"x": 1123,
+				"x": 919,
 				"y": 791,
 				"w": 100,
 				"h": 50
@@ -6242,7 +6242,7 @@
 		},
 		"LizardArmColor_42Cut2Blood.png": {
 			"frame": {
-				"x": 1225,
+				"x": 1021,
 				"y": 791,
 				"w": 100,
 				"h": 50
@@ -6262,7 +6262,7 @@
 		},
 		"LizardArmColor_42Cut3.png": {
 			"frame": {
-				"x": 1327,
+				"x": 1123,
 				"y": 791,
 				"w": 100,
 				"h": 50
@@ -6282,7 +6282,7 @@
 		},
 		"LizardArmColor_42Cut4.png": {
 			"frame": {
-				"x": 1429,
+				"x": 1225,
 				"y": 791,
 				"w": 100,
 				"h": 50
@@ -6302,7 +6302,7 @@
 		},
 		"LizardArmColor_42Cut4Blood.png": {
 			"frame": {
-				"x": 1531,
+				"x": 1327,
 				"y": 791,
 				"w": 100,
 				"h": 50
@@ -6322,7 +6322,7 @@
 		},
 		"LizardArmColor_43Cut.png": {
 			"frame": {
-				"x": 1633,
+				"x": 1429,
 				"y": 791,
 				"w": 100,
 				"h": 50
@@ -6342,8 +6342,8 @@
 		},
 		"LizardArmColor_43Cut2.png": {
 			"frame": {
-				"x": 1,
-				"y": 843,
+				"x": 1531,
+				"y": 791,
 				"w": 100,
 				"h": 50
 			},
@@ -6362,8 +6362,8 @@
 		},
 		"LizardArmColor_43Cut2Blood.png": {
 			"frame": {
-				"x": 103,
-				"y": 843,
+				"x": 1633,
+				"y": 791,
 				"w": 100,
 				"h": 50
 			},
@@ -6382,7 +6382,7 @@
 		},
 		"LizardArmColor_43Cut3.png": {
 			"frame": {
-				"x": 205,
+				"x": 1,
 				"y": 843,
 				"w": 100,
 				"h": 50
@@ -6402,7 +6402,7 @@
 		},
 		"LizardArmColor_43Cut4.png": {
 			"frame": {
-				"x": 307,
+				"x": 103,
 				"y": 843,
 				"w": 100,
 				"h": 50
@@ -6422,7 +6422,7 @@
 		},
 		"LizardArmColor_43Cut4Blood.png": {
 			"frame": {
-				"x": 409,
+				"x": 205,
 				"y": 843,
 				"w": 100,
 				"h": 50
@@ -6442,7 +6442,7 @@
 		},
 		"LizardArmColor_44Cut.png": {
 			"frame": {
-				"x": 511,
+				"x": 307,
 				"y": 843,
 				"w": 100,
 				"h": 50
@@ -6462,7 +6462,7 @@
 		},
 		"LizardArmColor_44Cut2.png": {
 			"frame": {
-				"x": 613,
+				"x": 409,
 				"y": 843,
 				"w": 100,
 				"h": 50
@@ -6482,7 +6482,7 @@
 		},
 		"LizardArmColor_44Cut2Blood.png": {
 			"frame": {
-				"x": 715,
+				"x": 511,
 				"y": 843,
 				"w": 100,
 				"h": 50
@@ -6502,7 +6502,7 @@
 		},
 		"LizardArmColor_44Cut3.png": {
 			"frame": {
-				"x": 817,
+				"x": 613,
 				"y": 843,
 				"w": 100,
 				"h": 50
@@ -6522,7 +6522,7 @@
 		},
 		"LizardArmColor_44Cut4.png": {
 			"frame": {
-				"x": 919,
+				"x": 715,
 				"y": 843,
 				"w": 100,
 				"h": 50
@@ -6542,7 +6542,7 @@
 		},
 		"LizardArmColor_44Cut4Blood.png": {
 			"frame": {
-				"x": 1021,
+				"x": 817,
 				"y": 843,
 				"w": 100,
 				"h": 50
@@ -6562,7 +6562,7 @@
 		},
 		"LizardArmColor_45Cut.png": {
 			"frame": {
-				"x": 1123,
+				"x": 919,
 				"y": 843,
 				"w": 100,
 				"h": 50
@@ -6582,7 +6582,7 @@
 		},
 		"LizardArmColor_45Cut2.png": {
 			"frame": {
-				"x": 1225,
+				"x": 1021,
 				"y": 843,
 				"w": 100,
 				"h": 50
@@ -6602,7 +6602,7 @@
 		},
 		"LizardArmColor_45Cut2Blood.png": {
 			"frame": {
-				"x": 1327,
+				"x": 1123,
 				"y": 843,
 				"w": 100,
 				"h": 50
@@ -6622,7 +6622,7 @@
 		},
 		"LizardArmColor_45Cut3.png": {
 			"frame": {
-				"x": 1429,
+				"x": 1225,
 				"y": 843,
 				"w": 100,
 				"h": 50
@@ -6642,7 +6642,7 @@
 		},
 		"LizardArmColor_45Cut4.png": {
 			"frame": {
-				"x": 1531,
+				"x": 1327,
 				"y": 843,
 				"w": 100,
 				"h": 50
@@ -6662,7 +6662,7 @@
 		},
 		"LizardArmColor_45Cut4Blood.png": {
 			"frame": {
-				"x": 1633,
+				"x": 1429,
 				"y": 843,
 				"w": 100,
 				"h": 50
@@ -6682,8 +6682,8 @@
 		},
 		"LizardArmColor_46Cut.png": {
 			"frame": {
-				"x": 1,
-				"y": 895,
+				"x": 1531,
+				"y": 843,
 				"w": 100,
 				"h": 50
 			},
@@ -6702,8 +6702,8 @@
 		},
 		"LizardArmColor_46Cut2.png": {
 			"frame": {
-				"x": 103,
-				"y": 895,
+				"x": 1633,
+				"y": 843,
 				"w": 100,
 				"h": 50
 			},
@@ -6722,7 +6722,7 @@
 		},
 		"LizardArmColor_46Cut2Blood.png": {
 			"frame": {
-				"x": 205,
+				"x": 1,
 				"y": 895,
 				"w": 100,
 				"h": 50
@@ -6742,7 +6742,7 @@
 		},
 		"LizardArmColor_46Cut3.png": {
 			"frame": {
-				"x": 307,
+				"x": 103,
 				"y": 895,
 				"w": 100,
 				"h": 50
@@ -6762,7 +6762,7 @@
 		},
 		"LizardArmColor_46Cut4.png": {
 			"frame": {
-				"x": 409,
+				"x": 205,
 				"y": 895,
 				"w": 100,
 				"h": 50
@@ -6782,7 +6782,7 @@
 		},
 		"LizardArmColor_46Cut4Blood.png": {
 			"frame": {
-				"x": 511,
+				"x": 307,
 				"y": 895,
 				"w": 100,
 				"h": 50
@@ -6802,7 +6802,7 @@
 		},
 		"LizardArmColor_47Cut.png": {
 			"frame": {
-				"x": 613,
+				"x": 409,
 				"y": 895,
 				"w": 100,
 				"h": 50
@@ -6822,7 +6822,7 @@
 		},
 		"LizardArmColor_47Cut2.png": {
 			"frame": {
-				"x": 715,
+				"x": 511,
 				"y": 895,
 				"w": 100,
 				"h": 50
@@ -6842,7 +6842,7 @@
 		},
 		"LizardArmColor_47Cut2Blood.png": {
 			"frame": {
-				"x": 817,
+				"x": 613,
 				"y": 895,
 				"w": 100,
 				"h": 50
@@ -6862,7 +6862,7 @@
 		},
 		"LizardArmColor_47Cut3.png": {
 			"frame": {
-				"x": 919,
+				"x": 715,
 				"y": 895,
 				"w": 100,
 				"h": 50
@@ -6882,7 +6882,7 @@
 		},
 		"LizardArmColor_47Cut4.png": {
 			"frame": {
-				"x": 1021,
+				"x": 817,
 				"y": 895,
 				"w": 100,
 				"h": 50
@@ -6902,7 +6902,7 @@
 		},
 		"LizardArmColor_47Cut4Blood.png": {
 			"frame": {
-				"x": 1123,
+				"x": 919,
 				"y": 895,
 				"w": 100,
 				"h": 50
@@ -6922,7 +6922,7 @@
 		},
 		"LizardArmColor_48Cut.png": {
 			"frame": {
-				"x": 1225,
+				"x": 1021,
 				"y": 895,
 				"w": 100,
 				"h": 50
@@ -6942,7 +6942,7 @@
 		},
 		"LizardArmColor_48Cut2.png": {
 			"frame": {
-				"x": 1327,
+				"x": 1123,
 				"y": 895,
 				"w": 100,
 				"h": 50
@@ -6962,7 +6962,7 @@
 		},
 		"LizardArmColor_48Cut2Blood.png": {
 			"frame": {
-				"x": 1429,
+				"x": 1225,
 				"y": 895,
 				"w": 100,
 				"h": 50
@@ -6982,7 +6982,7 @@
 		},
 		"LizardArmColor_48Cut3.png": {
 			"frame": {
-				"x": 1531,
+				"x": 1327,
 				"y": 895,
 				"w": 100,
 				"h": 50
@@ -7002,7 +7002,7 @@
 		},
 		"LizardArmColor_48Cut4.png": {
 			"frame": {
-				"x": 1633,
+				"x": 1429,
 				"y": 895,
 				"w": 100,
 				"h": 50
@@ -7022,8 +7022,8 @@
 		},
 		"LizardArmColor_48Cut4Blood.png": {
 			"frame": {
-				"x": 1,
-				"y": 947,
+				"x": 1531,
+				"y": 895,
 				"w": 100,
 				"h": 50
 			},
@@ -7042,8 +7042,8 @@
 		},
 		"LizardArmColor_49Cut.png": {
 			"frame": {
-				"x": 103,
-				"y": 947,
+				"x": 1633,
+				"y": 895,
 				"w": 100,
 				"h": 50
 			},
@@ -7062,7 +7062,7 @@
 		},
 		"LizardArmColor_49Cut2.png": {
 			"frame": {
-				"x": 205,
+				"x": 1,
 				"y": 947,
 				"w": 100,
 				"h": 50
@@ -7082,7 +7082,7 @@
 		},
 		"LizardArmColor_49Cut2Blood.png": {
 			"frame": {
-				"x": 307,
+				"x": 103,
 				"y": 947,
 				"w": 100,
 				"h": 50
@@ -7102,7 +7102,7 @@
 		},
 		"LizardArmColor_49Cut3.png": {
 			"frame": {
-				"x": 409,
+				"x": 205,
 				"y": 947,
 				"w": 100,
 				"h": 50
@@ -7122,7 +7122,7 @@
 		},
 		"LizardArmColor_49Cut4.png": {
 			"frame": {
-				"x": 511,
+				"x": 307,
 				"y": 947,
 				"w": 100,
 				"h": 50
@@ -7142,7 +7142,7 @@
 		},
 		"LizardArmColor_49Cut4Blood.png": {
 			"frame": {
-				"x": 613,
+				"x": 409,
 				"y": 947,
 				"w": 100,
 				"h": 50
@@ -7162,7 +7162,7 @@
 		},
 		"LizardArmColor_50Cut.png": {
 			"frame": {
-				"x": 715,
+				"x": 511,
 				"y": 947,
 				"w": 100,
 				"h": 50
@@ -7182,7 +7182,7 @@
 		},
 		"LizardArmColor_50Cut2.png": {
 			"frame": {
-				"x": 817,
+				"x": 613,
 				"y": 947,
 				"w": 100,
 				"h": 50
@@ -7202,7 +7202,7 @@
 		},
 		"LizardArmColor_50Cut2Blood.png": {
 			"frame": {
-				"x": 919,
+				"x": 715,
 				"y": 947,
 				"w": 100,
 				"h": 50
@@ -7222,7 +7222,7 @@
 		},
 		"LizardArmColor_50Cut3.png": {
 			"frame": {
-				"x": 1021,
+				"x": 817,
 				"y": 947,
 				"w": 100,
 				"h": 50
@@ -7242,7 +7242,7 @@
 		},
 		"LizardArmColor_50Cut4.png": {
 			"frame": {
-				"x": 1123,
+				"x": 919,
 				"y": 947,
 				"w": 100,
 				"h": 50
@@ -7262,7 +7262,7 @@
 		},
 		"LizardArmColor_50Cut4Blood.png": {
 			"frame": {
-				"x": 1225,
+				"x": 1021,
 				"y": 947,
 				"w": 100,
 				"h": 50
@@ -7282,7 +7282,7 @@
 		},
 		"LizardArmColor_51Cut.png": {
 			"frame": {
-				"x": 1327,
+				"x": 1123,
 				"y": 947,
 				"w": 100,
 				"h": 50
@@ -7302,7 +7302,7 @@
 		},
 		"LizardArmColor_51Cut2.png": {
 			"frame": {
-				"x": 1429,
+				"x": 1225,
 				"y": 947,
 				"w": 100,
 				"h": 50
@@ -7322,7 +7322,7 @@
 		},
 		"LizardArmColor_51Cut2Blood.png": {
 			"frame": {
-				"x": 1531,
+				"x": 1327,
 				"y": 947,
 				"w": 100,
 				"h": 50
@@ -7342,7 +7342,7 @@
 		},
 		"LizardArmColor_51Cut3.png": {
 			"frame": {
-				"x": 1633,
+				"x": 1429,
 				"y": 947,
 				"w": 100,
 				"h": 50
@@ -7362,8 +7362,8 @@
 		},
 		"LizardArmColor_51Cut4.png": {
 			"frame": {
-				"x": 1,
-				"y": 999,
+				"x": 1531,
+				"y": 947,
 				"w": 100,
 				"h": 50
 			},
@@ -7382,8 +7382,8 @@
 		},
 		"LizardArmColor_51Cut4Blood.png": {
 			"frame": {
-				"x": 103,
-				"y": 999,
+				"x": 1633,
+				"y": 947,
 				"w": 100,
 				"h": 50
 			},
@@ -7402,7 +7402,7 @@
 		},
 		"LizardArmColor_52Cut.png": {
 			"frame": {
-				"x": 205,
+				"x": 1,
 				"y": 999,
 				"w": 100,
 				"h": 50
@@ -7422,7 +7422,7 @@
 		},
 		"LizardArmColor_52Cut2.png": {
 			"frame": {
-				"x": 307,
+				"x": 103,
 				"y": 999,
 				"w": 100,
 				"h": 50
@@ -7442,7 +7442,7 @@
 		},
 		"LizardArmColor_52Cut2Blood.png": {
 			"frame": {
-				"x": 409,
+				"x": 205,
 				"y": 999,
 				"w": 100,
 				"h": 50
@@ -7462,7 +7462,7 @@
 		},
 		"LizardArmColor_52Cut3.png": {
 			"frame": {
-				"x": 511,
+				"x": 307,
 				"y": 999,
 				"w": 100,
 				"h": 50
@@ -7482,7 +7482,7 @@
 		},
 		"LizardArmColor_52Cut4.png": {
 			"frame": {
-				"x": 613,
+				"x": 409,
 				"y": 999,
 				"w": 100,
 				"h": 50
@@ -7502,7 +7502,7 @@
 		},
 		"LizardArmColor_52Cut4Blood.png": {
 			"frame": {
-				"x": 715,
+				"x": 511,
 				"y": 999,
 				"w": 100,
 				"h": 50
@@ -7522,7 +7522,7 @@
 		},
 		"LizardArmColor_53Cut.png": {
 			"frame": {
-				"x": 817,
+				"x": 613,
 				"y": 999,
 				"w": 100,
 				"h": 50
@@ -7542,7 +7542,7 @@
 		},
 		"LizardArmColor_53Cut2.png": {
 			"frame": {
-				"x": 919,
+				"x": 715,
 				"y": 999,
 				"w": 100,
 				"h": 50
@@ -7562,7 +7562,7 @@
 		},
 		"LizardArmColor_53Cut2Blood.png": {
 			"frame": {
-				"x": 1021,
+				"x": 817,
 				"y": 999,
 				"w": 100,
 				"h": 50
@@ -7582,7 +7582,7 @@
 		},
 		"LizardArmColor_53Cut3.png": {
 			"frame": {
-				"x": 1123,
+				"x": 919,
 				"y": 999,
 				"w": 100,
 				"h": 50
@@ -7602,7 +7602,7 @@
 		},
 		"LizardArmColor_53Cut4.png": {
 			"frame": {
-				"x": 1225,
+				"x": 1021,
 				"y": 999,
 				"w": 100,
 				"h": 50
@@ -7622,7 +7622,7 @@
 		},
 		"LizardArmColor_53Cut4Blood.png": {
 			"frame": {
-				"x": 1327,
+				"x": 1123,
 				"y": 999,
 				"w": 100,
 				"h": 50
@@ -7642,7 +7642,7 @@
 		},
 		"LizardArmColor_54Cut.png": {
 			"frame": {
-				"x": 1429,
+				"x": 1225,
 				"y": 999,
 				"w": 100,
 				"h": 50
@@ -7662,7 +7662,7 @@
 		},
 		"LizardArmColor_54Cut2.png": {
 			"frame": {
-				"x": 1531,
+				"x": 1327,
 				"y": 999,
 				"w": 100,
 				"h": 50
@@ -7682,7 +7682,7 @@
 		},
 		"LizardArmColor_54Cut2Blood.png": {
 			"frame": {
-				"x": 1633,
+				"x": 1429,
 				"y": 999,
 				"w": 100,
 				"h": 50
@@ -7702,8 +7702,8 @@
 		},
 		"LizardArmColor_54Cut3.png": {
 			"frame": {
-				"x": 1,
-				"y": 1051,
+				"x": 1531,
+				"y": 999,
 				"w": 100,
 				"h": 50
 			},
@@ -7722,8 +7722,8 @@
 		},
 		"LizardArmColor_54Cut4.png": {
 			"frame": {
-				"x": 103,
-				"y": 1051,
+				"x": 1633,
+				"y": 999,
 				"w": 100,
 				"h": 50
 			},
@@ -7742,7 +7742,7 @@
 		},
 		"LizardArmColor_54Cut4Blood.png": {
 			"frame": {
-				"x": 205,
+				"x": 1,
 				"y": 1051,
 				"w": 100,
 				"h": 50
@@ -7762,7 +7762,7 @@
 		},
 		"LizardArm_01Cut.png": {
 			"frame": {
-				"x": 307,
+				"x": 103,
 				"y": 1051,
 				"w": 100,
 				"h": 50
@@ -7782,7 +7782,7 @@
 		},
 		"LizardArm_01Cut2.png": {
 			"frame": {
-				"x": 409,
+				"x": 205,
 				"y": 1051,
 				"w": 100,
 				"h": 50
@@ -7802,7 +7802,7 @@
 		},
 		"LizardArm_01Cut3.png": {
 			"frame": {
-				"x": 511,
+				"x": 307,
 				"y": 1051,
 				"w": 100,
 				"h": 50
@@ -7822,7 +7822,7 @@
 		},
 		"LizardArm_01Cut4.png": {
 			"frame": {
-				"x": 613,
+				"x": 409,
 				"y": 1051,
 				"w": 100,
 				"h": 50
@@ -7842,7 +7842,7 @@
 		},
 		"LizardArm_02Cut.png": {
 			"frame": {
-				"x": 715,
+				"x": 511,
 				"y": 1051,
 				"w": 100,
 				"h": 50
@@ -7862,7 +7862,7 @@
 		},
 		"LizardArm_02Cut2.png": {
 			"frame": {
-				"x": 817,
+				"x": 613,
 				"y": 1051,
 				"w": 100,
 				"h": 50
@@ -7882,7 +7882,7 @@
 		},
 		"LizardArm_02Cut3.png": {
 			"frame": {
-				"x": 919,
+				"x": 715,
 				"y": 1051,
 				"w": 100,
 				"h": 50
@@ -7902,7 +7902,7 @@
 		},
 		"LizardArm_02Cut4.png": {
 			"frame": {
-				"x": 1021,
+				"x": 817,
 				"y": 1051,
 				"w": 100,
 				"h": 50
@@ -7922,7 +7922,7 @@
 		},
 		"LizardArm_03Cut.png": {
 			"frame": {
-				"x": 1123,
+				"x": 919,
 				"y": 1051,
 				"w": 100,
 				"h": 50
@@ -7942,7 +7942,7 @@
 		},
 		"LizardArm_03Cut2.png": {
 			"frame": {
-				"x": 1225,
+				"x": 1021,
 				"y": 1051,
 				"w": 100,
 				"h": 50
@@ -7962,7 +7962,7 @@
 		},
 		"LizardArm_03Cut3.png": {
 			"frame": {
-				"x": 1327,
+				"x": 1123,
 				"y": 1051,
 				"w": 100,
 				"h": 50
@@ -7982,7 +7982,7 @@
 		},
 		"LizardArm_03Cut4.png": {
 			"frame": {
-				"x": 1429,
+				"x": 1225,
 				"y": 1051,
 				"w": 100,
 				"h": 50
@@ -8002,7 +8002,7 @@
 		},
 		"LizardArm_04Cut.png": {
 			"frame": {
-				"x": 1531,
+				"x": 1327,
 				"y": 1051,
 				"w": 100,
 				"h": 50
@@ -8022,7 +8022,7 @@
 		},
 		"LizardArm_04Cut2.png": {
 			"frame": {
-				"x": 1633,
+				"x": 1429,
 				"y": 1051,
 				"w": 100,
 				"h": 50
@@ -8042,8 +8042,8 @@
 		},
 		"LizardArm_04Cut3.png": {
 			"frame": {
-				"x": 1,
-				"y": 1103,
+				"x": 1531,
+				"y": 1051,
 				"w": 100,
 				"h": 50
 			},
@@ -8062,8 +8062,8 @@
 		},
 		"LizardArm_04Cut4.png": {
 			"frame": {
-				"x": 103,
-				"y": 1103,
+				"x": 1633,
+				"y": 1051,
 				"w": 100,
 				"h": 50
 			},
@@ -8082,7 +8082,7 @@
 		},
 		"LizardArm_05Cut.png": {
 			"frame": {
-				"x": 205,
+				"x": 1,
 				"y": 1103,
 				"w": 100,
 				"h": 50
@@ -8102,7 +8102,7 @@
 		},
 		"LizardArm_05Cut2.png": {
 			"frame": {
-				"x": 307,
+				"x": 103,
 				"y": 1103,
 				"w": 100,
 				"h": 50
@@ -8122,7 +8122,7 @@
 		},
 		"LizardArm_05Cut3.png": {
 			"frame": {
-				"x": 409,
+				"x": 205,
 				"y": 1103,
 				"w": 100,
 				"h": 50
@@ -8142,7 +8142,7 @@
 		},
 		"LizardArm_05Cut4.png": {
 			"frame": {
-				"x": 511,
+				"x": 307,
 				"y": 1103,
 				"w": 100,
 				"h": 50
@@ -8162,7 +8162,7 @@
 		},
 		"LizardArm_06Cut.png": {
 			"frame": {
-				"x": 613,
+				"x": 409,
 				"y": 1103,
 				"w": 100,
 				"h": 50
@@ -8182,7 +8182,7 @@
 		},
 		"LizardArm_06Cut2.png": {
 			"frame": {
-				"x": 715,
+				"x": 511,
 				"y": 1103,
 				"w": 100,
 				"h": 50
@@ -8202,7 +8202,7 @@
 		},
 		"LizardArm_06Cut3.png": {
 			"frame": {
-				"x": 817,
+				"x": 613,
 				"y": 1103,
 				"w": 100,
 				"h": 50
@@ -8222,7 +8222,7 @@
 		},
 		"LizardArm_06Cut4.png": {
 			"frame": {
-				"x": 919,
+				"x": 715,
 				"y": 1103,
 				"w": 100,
 				"h": 50
@@ -8242,7 +8242,7 @@
 		},
 		"LizardArm_07Cut.png": {
 			"frame": {
-				"x": 1021,
+				"x": 817,
 				"y": 1103,
 				"w": 100,
 				"h": 50
@@ -8262,7 +8262,7 @@
 		},
 		"LizardArm_07Cut2.png": {
 			"frame": {
-				"x": 1123,
+				"x": 919,
 				"y": 1103,
 				"w": 100,
 				"h": 50
@@ -8282,7 +8282,7 @@
 		},
 		"LizardArm_07Cut3.png": {
 			"frame": {
-				"x": 1225,
+				"x": 1021,
 				"y": 1103,
 				"w": 100,
 				"h": 50
@@ -8302,7 +8302,7 @@
 		},
 		"LizardArm_07Cut4.png": {
 			"frame": {
-				"x": 1327,
+				"x": 1123,
 				"y": 1103,
 				"w": 100,
 				"h": 50
@@ -8322,7 +8322,7 @@
 		},
 		"LizardArm_08Cut.png": {
 			"frame": {
-				"x": 1429,
+				"x": 1225,
 				"y": 1103,
 				"w": 100,
 				"h": 50
@@ -8342,7 +8342,7 @@
 		},
 		"LizardArm_08Cut2.png": {
 			"frame": {
-				"x": 1531,
+				"x": 1327,
 				"y": 1103,
 				"w": 100,
 				"h": 50
@@ -8362,7 +8362,7 @@
 		},
 		"LizardArm_08Cut3.png": {
 			"frame": {
-				"x": 1633,
+				"x": 1429,
 				"y": 1103,
 				"w": 100,
 				"h": 50
@@ -8382,8 +8382,8 @@
 		},
 		"LizardArm_08Cut4.png": {
 			"frame": {
-				"x": 1,
-				"y": 1155,
+				"x": 1531,
+				"y": 1103,
 				"w": 100,
 				"h": 50
 			},
@@ -8402,8 +8402,8 @@
 		},
 		"LizardArm_09Cut.png": {
 			"frame": {
-				"x": 103,
-				"y": 1155,
+				"x": 1633,
+				"y": 1103,
 				"w": 100,
 				"h": 50
 			},
@@ -8422,7 +8422,7 @@
 		},
 		"LizardArm_09Cut2.png": {
 			"frame": {
-				"x": 205,
+				"x": 1,
 				"y": 1155,
 				"w": 100,
 				"h": 50
@@ -8442,7 +8442,7 @@
 		},
 		"LizardArm_09Cut3.png": {
 			"frame": {
-				"x": 307,
+				"x": 103,
 				"y": 1155,
 				"w": 100,
 				"h": 50
@@ -8462,7 +8462,7 @@
 		},
 		"LizardArm_09Cut4.png": {
 			"frame": {
-				"x": 409,
+				"x": 205,
 				"y": 1155,
 				"w": 100,
 				"h": 50
@@ -8482,7 +8482,7 @@
 		},
 		"LizardArm_10Cut.png": {
 			"frame": {
-				"x": 511,
+				"x": 307,
 				"y": 1155,
 				"w": 100,
 				"h": 50
@@ -8502,7 +8502,7 @@
 		},
 		"LizardArm_10Cut2.png": {
 			"frame": {
-				"x": 613,
+				"x": 409,
 				"y": 1155,
 				"w": 100,
 				"h": 50
@@ -8522,7 +8522,7 @@
 		},
 		"LizardArm_10Cut3.png": {
 			"frame": {
-				"x": 715,
+				"x": 511,
 				"y": 1155,
 				"w": 100,
 				"h": 50
@@ -8542,7 +8542,7 @@
 		},
 		"LizardArm_10Cut4.png": {
 			"frame": {
-				"x": 817,
+				"x": 613,
 				"y": 1155,
 				"w": 100,
 				"h": 50
@@ -8562,7 +8562,7 @@
 		},
 		"LizardArm_11Cut.png": {
 			"frame": {
-				"x": 919,
+				"x": 715,
 				"y": 1155,
 				"w": 100,
 				"h": 50
@@ -8582,7 +8582,7 @@
 		},
 		"LizardArm_11Cut2.png": {
 			"frame": {
-				"x": 1021,
+				"x": 817,
 				"y": 1155,
 				"w": 100,
 				"h": 50
@@ -8602,7 +8602,7 @@
 		},
 		"LizardArm_11Cut3.png": {
 			"frame": {
-				"x": 1123,
+				"x": 919,
 				"y": 1155,
 				"w": 100,
 				"h": 50
@@ -8622,7 +8622,7 @@
 		},
 		"LizardArm_11Cut4.png": {
 			"frame": {
-				"x": 1225,
+				"x": 1021,
 				"y": 1155,
 				"w": 100,
 				"h": 50
@@ -8642,7 +8642,7 @@
 		},
 		"LizardArm_12Cut.png": {
 			"frame": {
-				"x": 1327,
+				"x": 1123,
 				"y": 1155,
 				"w": 100,
 				"h": 50
@@ -8662,7 +8662,7 @@
 		},
 		"LizardArm_12Cut2.png": {
 			"frame": {
-				"x": 1429,
+				"x": 1225,
 				"y": 1155,
 				"w": 100,
 				"h": 50
@@ -8682,7 +8682,7 @@
 		},
 		"LizardArm_12Cut3.png": {
 			"frame": {
-				"x": 1531,
+				"x": 1327,
 				"y": 1155,
 				"w": 100,
 				"h": 50
@@ -8702,7 +8702,7 @@
 		},
 		"LizardArm_12Cut4.png": {
 			"frame": {
-				"x": 1633,
+				"x": 1429,
 				"y": 1155,
 				"w": 100,
 				"h": 50
@@ -8722,8 +8722,8 @@
 		},
 		"LizardArm_13Cut.png": {
 			"frame": {
-				"x": 1,
-				"y": 1207,
+				"x": 1531,
+				"y": 1155,
 				"w": 100,
 				"h": 50
 			},
@@ -8742,8 +8742,8 @@
 		},
 		"LizardArm_13Cut2.png": {
 			"frame": {
-				"x": 103,
-				"y": 1207,
+				"x": 1633,
+				"y": 1155,
 				"w": 100,
 				"h": 50
 			},
@@ -8762,7 +8762,7 @@
 		},
 		"LizardArm_13Cut3.png": {
 			"frame": {
-				"x": 205,
+				"x": 1,
 				"y": 1207,
 				"w": 100,
 				"h": 50
@@ -8782,7 +8782,7 @@
 		},
 		"LizardArm_13Cut4.png": {
 			"frame": {
-				"x": 307,
+				"x": 103,
 				"y": 1207,
 				"w": 100,
 				"h": 50
@@ -8802,7 +8802,7 @@
 		},
 		"LizardArm_14Cut.png": {
 			"frame": {
-				"x": 409,
+				"x": 205,
 				"y": 1207,
 				"w": 100,
 				"h": 50
@@ -8822,7 +8822,7 @@
 		},
 		"LizardArm_14Cut2.png": {
 			"frame": {
-				"x": 511,
+				"x": 307,
 				"y": 1207,
 				"w": 100,
 				"h": 50
@@ -8842,7 +8842,7 @@
 		},
 		"LizardArm_14Cut3.png": {
 			"frame": {
-				"x": 613,
+				"x": 409,
 				"y": 1207,
 				"w": 100,
 				"h": 50
@@ -8862,7 +8862,7 @@
 		},
 		"LizardArm_14Cut4.png": {
 			"frame": {
-				"x": 715,
+				"x": 511,
 				"y": 1207,
 				"w": 100,
 				"h": 50
@@ -8882,7 +8882,7 @@
 		},
 		"LizardArm_15Cut.png": {
 			"frame": {
-				"x": 817,
+				"x": 613,
 				"y": 1207,
 				"w": 100,
 				"h": 50
@@ -8902,7 +8902,7 @@
 		},
 		"LizardArm_15Cut2.png": {
 			"frame": {
-				"x": 919,
+				"x": 715,
 				"y": 1207,
 				"w": 100,
 				"h": 50
@@ -8922,7 +8922,7 @@
 		},
 		"LizardArm_15Cut3.png": {
 			"frame": {
-				"x": 1021,
+				"x": 817,
 				"y": 1207,
 				"w": 100,
 				"h": 50
@@ -8942,7 +8942,7 @@
 		},
 		"LizardArm_15Cut4.png": {
 			"frame": {
-				"x": 1123,
+				"x": 919,
 				"y": 1207,
 				"w": 100,
 				"h": 50
@@ -8962,7 +8962,7 @@
 		},
 		"LizardArm_16Cut.png": {
 			"frame": {
-				"x": 1225,
+				"x": 1021,
 				"y": 1207,
 				"w": 100,
 				"h": 50
@@ -8982,7 +8982,7 @@
 		},
 		"LizardArm_16Cut2.png": {
 			"frame": {
-				"x": 1327,
+				"x": 1123,
 				"y": 1207,
 				"w": 100,
 				"h": 50
@@ -9002,7 +9002,7 @@
 		},
 		"LizardArm_16Cut3.png": {
 			"frame": {
-				"x": 1429,
+				"x": 1225,
 				"y": 1207,
 				"w": 100,
 				"h": 50
@@ -9022,7 +9022,7 @@
 		},
 		"LizardArm_16Cut4.png": {
 			"frame": {
-				"x": 1531,
+				"x": 1327,
 				"y": 1207,
 				"w": 100,
 				"h": 50
@@ -9042,7 +9042,7 @@
 		},
 		"LizardArm_17Cut.png": {
 			"frame": {
-				"x": 1633,
+				"x": 1429,
 				"y": 1207,
 				"w": 100,
 				"h": 50
@@ -9062,8 +9062,8 @@
 		},
 		"LizardArm_17Cut2.png": {
 			"frame": {
-				"x": 1,
-				"y": 1259,
+				"x": 1531,
+				"y": 1207,
 				"w": 100,
 				"h": 50
 			},
@@ -9082,8 +9082,8 @@
 		},
 		"LizardArm_17Cut3.png": {
 			"frame": {
-				"x": 103,
-				"y": 1259,
+				"x": 1633,
+				"y": 1207,
 				"w": 100,
 				"h": 50
 			},
@@ -9102,7 +9102,7 @@
 		},
 		"LizardArm_17Cut4.png": {
 			"frame": {
-				"x": 205,
+				"x": 1,
 				"y": 1259,
 				"w": 100,
 				"h": 50
@@ -9122,7 +9122,7 @@
 		},
 		"LizardArm_18Cut.png": {
 			"frame": {
-				"x": 307,
+				"x": 103,
 				"y": 1259,
 				"w": 100,
 				"h": 50
@@ -9142,7 +9142,7 @@
 		},
 		"LizardArm_18Cut2.png": {
 			"frame": {
-				"x": 409,
+				"x": 205,
 				"y": 1259,
 				"w": 100,
 				"h": 50
@@ -9162,7 +9162,7 @@
 		},
 		"LizardArm_18Cut3.png": {
 			"frame": {
-				"x": 511,
+				"x": 307,
 				"y": 1259,
 				"w": 100,
 				"h": 50
@@ -9182,7 +9182,7 @@
 		},
 		"LizardArm_18Cut4.png": {
 			"frame": {
-				"x": 613,
+				"x": 409,
 				"y": 1259,
 				"w": 100,
 				"h": 50
@@ -9202,7 +9202,7 @@
 		},
 		"LizardArm_19Cut.png": {
 			"frame": {
-				"x": 715,
+				"x": 511,
 				"y": 1259,
 				"w": 100,
 				"h": 50
@@ -9222,7 +9222,7 @@
 		},
 		"LizardArm_19Cut2.png": {
 			"frame": {
-				"x": 817,
+				"x": 613,
 				"y": 1259,
 				"w": 100,
 				"h": 50
@@ -9242,7 +9242,7 @@
 		},
 		"LizardArm_19Cut3.png": {
 			"frame": {
-				"x": 919,
+				"x": 715,
 				"y": 1259,
 				"w": 100,
 				"h": 50
@@ -9262,7 +9262,7 @@
 		},
 		"LizardArm_19Cut4.png": {
 			"frame": {
-				"x": 1021,
+				"x": 817,
 				"y": 1259,
 				"w": 100,
 				"h": 50
@@ -9282,7 +9282,7 @@
 		},
 		"LizardArm_20Cut.png": {
 			"frame": {
-				"x": 1123,
+				"x": 919,
 				"y": 1259,
 				"w": 100,
 				"h": 50
@@ -9302,7 +9302,7 @@
 		},
 		"LizardArm_20Cut2.png": {
 			"frame": {
-				"x": 1225,
+				"x": 1021,
 				"y": 1259,
 				"w": 100,
 				"h": 50
@@ -9322,7 +9322,7 @@
 		},
 		"LizardArm_20Cut3.png": {
 			"frame": {
-				"x": 1327,
+				"x": 1123,
 				"y": 1259,
 				"w": 100,
 				"h": 50
@@ -9342,7 +9342,7 @@
 		},
 		"LizardArm_20Cut4.png": {
 			"frame": {
-				"x": 1429,
+				"x": 1225,
 				"y": 1259,
 				"w": 100,
 				"h": 50
@@ -9362,7 +9362,7 @@
 		},
 		"LizardArm_21Cut.png": {
 			"frame": {
-				"x": 1531,
+				"x": 1327,
 				"y": 1259,
 				"w": 100,
 				"h": 50
@@ -9382,7 +9382,7 @@
 		},
 		"LizardArm_21Cut2.png": {
 			"frame": {
-				"x": 1633,
+				"x": 1429,
 				"y": 1259,
 				"w": 100,
 				"h": 50
@@ -9402,8 +9402,8 @@
 		},
 		"LizardArm_21Cut3.png": {
 			"frame": {
-				"x": 1,
-				"y": 1311,
+				"x": 1531,
+				"y": 1259,
 				"w": 100,
 				"h": 50
 			},
@@ -9422,8 +9422,8 @@
 		},
 		"LizardArm_21Cut4.png": {
 			"frame": {
-				"x": 103,
-				"y": 1311,
+				"x": 1633,
+				"y": 1259,
 				"w": 100,
 				"h": 50
 			},
@@ -9442,7 +9442,7 @@
 		},
 		"LizardArm_22Cut.png": {
 			"frame": {
-				"x": 205,
+				"x": 1,
 				"y": 1311,
 				"w": 100,
 				"h": 50
@@ -9462,7 +9462,7 @@
 		},
 		"LizardArm_22Cut2.png": {
 			"frame": {
-				"x": 307,
+				"x": 103,
 				"y": 1311,
 				"w": 100,
 				"h": 50
@@ -9482,7 +9482,7 @@
 		},
 		"LizardArm_22Cut3.png": {
 			"frame": {
-				"x": 409,
+				"x": 205,
 				"y": 1311,
 				"w": 100,
 				"h": 50
@@ -9502,7 +9502,7 @@
 		},
 		"LizardArm_22Cut4.png": {
 			"frame": {
-				"x": 511,
+				"x": 307,
 				"y": 1311,
 				"w": 100,
 				"h": 50
@@ -9522,7 +9522,7 @@
 		},
 		"LizardArm_23Cut.png": {
 			"frame": {
-				"x": 613,
+				"x": 409,
 				"y": 1311,
 				"w": 100,
 				"h": 50
@@ -9542,7 +9542,7 @@
 		},
 		"LizardArm_23Cut2.png": {
 			"frame": {
-				"x": 715,
+				"x": 511,
 				"y": 1311,
 				"w": 100,
 				"h": 50
@@ -9562,7 +9562,7 @@
 		},
 		"LizardArm_23Cut3.png": {
 			"frame": {
-				"x": 817,
+				"x": 613,
 				"y": 1311,
 				"w": 100,
 				"h": 50
@@ -9582,7 +9582,7 @@
 		},
 		"LizardArm_23Cut4.png": {
 			"frame": {
-				"x": 919,
+				"x": 715,
 				"y": 1311,
 				"w": 100,
 				"h": 50
@@ -9602,7 +9602,7 @@
 		},
 		"LizardArm_24Cut.png": {
 			"frame": {
-				"x": 1021,
+				"x": 817,
 				"y": 1311,
 				"w": 100,
 				"h": 50
@@ -9622,7 +9622,7 @@
 		},
 		"LizardArm_24Cut2.png": {
 			"frame": {
-				"x": 1123,
+				"x": 919,
 				"y": 1311,
 				"w": 100,
 				"h": 50
@@ -9642,7 +9642,7 @@
 		},
 		"LizardArm_24Cut3.png": {
 			"frame": {
-				"x": 1225,
+				"x": 1021,
 				"y": 1311,
 				"w": 100,
 				"h": 50
@@ -9662,7 +9662,7 @@
 		},
 		"LizardArm_24Cut4.png": {
 			"frame": {
-				"x": 1327,
+				"x": 1123,
 				"y": 1311,
 				"w": 100,
 				"h": 50
@@ -9682,7 +9682,7 @@
 		},
 		"LizardArm_25Cut.png": {
 			"frame": {
-				"x": 1429,
+				"x": 1225,
 				"y": 1311,
 				"w": 100,
 				"h": 50
@@ -9702,7 +9702,7 @@
 		},
 		"LizardArm_25Cut2.png": {
 			"frame": {
-				"x": 1531,
+				"x": 1327,
 				"y": 1311,
 				"w": 100,
 				"h": 50
@@ -9722,7 +9722,7 @@
 		},
 		"LizardArm_25Cut3.png": {
 			"frame": {
-				"x": 1633,
+				"x": 1429,
 				"y": 1311,
 				"w": 100,
 				"h": 50
@@ -9742,8 +9742,8 @@
 		},
 		"LizardArm_25Cut4.png": {
 			"frame": {
-				"x": 1,
-				"y": 1363,
+				"x": 1531,
+				"y": 1311,
 				"w": 100,
 				"h": 50
 			},
@@ -9762,8 +9762,8 @@
 		},
 		"LizardArm_26Cut.png": {
 			"frame": {
-				"x": 103,
-				"y": 1363,
+				"x": 1633,
+				"y": 1311,
 				"w": 100,
 				"h": 50
 			},
@@ -9782,7 +9782,7 @@
 		},
 		"LizardArm_26Cut2.png": {
 			"frame": {
-				"x": 205,
+				"x": 1,
 				"y": 1363,
 				"w": 100,
 				"h": 50
@@ -9802,7 +9802,7 @@
 		},
 		"LizardArm_26Cut3.png": {
 			"frame": {
-				"x": 307,
+				"x": 103,
 				"y": 1363,
 				"w": 100,
 				"h": 50
@@ -9822,7 +9822,7 @@
 		},
 		"LizardArm_26Cut4.png": {
 			"frame": {
-				"x": 409,
+				"x": 205,
 				"y": 1363,
 				"w": 100,
 				"h": 50
@@ -9842,7 +9842,7 @@
 		},
 		"LizardArm_27Cut.png": {
 			"frame": {
-				"x": 511,
+				"x": 307,
 				"y": 1363,
 				"w": 100,
 				"h": 50
@@ -9862,7 +9862,7 @@
 		},
 		"LizardArm_27Cut2.png": {
 			"frame": {
-				"x": 613,
+				"x": 409,
 				"y": 1363,
 				"w": 100,
 				"h": 50
@@ -9882,7 +9882,7 @@
 		},
 		"LizardArm_27Cut3.png": {
 			"frame": {
-				"x": 715,
+				"x": 511,
 				"y": 1363,
 				"w": 100,
 				"h": 50
@@ -9902,7 +9902,7 @@
 		},
 		"LizardArm_27Cut4.png": {
 			"frame": {
-				"x": 817,
+				"x": 613,
 				"y": 1363,
 				"w": 100,
 				"h": 50
@@ -9922,7 +9922,7 @@
 		},
 		"LizardArm_28Cut.png": {
 			"frame": {
-				"x": 919,
+				"x": 715,
 				"y": 1363,
 				"w": 100,
 				"h": 50
@@ -9942,7 +9942,7 @@
 		},
 		"LizardArm_28Cut2.png": {
 			"frame": {
-				"x": 1021,
+				"x": 817,
 				"y": 1363,
 				"w": 100,
 				"h": 50
@@ -9962,7 +9962,7 @@
 		},
 		"LizardArm_28Cut3.png": {
 			"frame": {
-				"x": 1123,
+				"x": 919,
 				"y": 1363,
 				"w": 100,
 				"h": 50
@@ -9982,7 +9982,7 @@
 		},
 		"LizardArm_28Cut4.png": {
 			"frame": {
-				"x": 1225,
+				"x": 1021,
 				"y": 1363,
 				"w": 100,
 				"h": 50
@@ -10002,7 +10002,7 @@
 		},
 		"LizardArm_29Cut.png": {
 			"frame": {
-				"x": 1327,
+				"x": 1123,
 				"y": 1363,
 				"w": 100,
 				"h": 50
@@ -10022,7 +10022,7 @@
 		},
 		"LizardArm_29Cut2.png": {
 			"frame": {
-				"x": 1429,
+				"x": 1225,
 				"y": 1363,
 				"w": 100,
 				"h": 50
@@ -10042,7 +10042,7 @@
 		},
 		"LizardArm_29Cut3.png": {
 			"frame": {
-				"x": 1531,
+				"x": 1327,
 				"y": 1363,
 				"w": 100,
 				"h": 50
@@ -10062,7 +10062,7 @@
 		},
 		"LizardArm_29Cut4.png": {
 			"frame": {
-				"x": 1633,
+				"x": 1429,
 				"y": 1363,
 				"w": 100,
 				"h": 50
@@ -10082,8 +10082,8 @@
 		},
 		"LizardArm_30Cut.png": {
 			"frame": {
-				"x": 1,
-				"y": 1415,
+				"x": 1531,
+				"y": 1363,
 				"w": 100,
 				"h": 50
 			},
@@ -10102,8 +10102,8 @@
 		},
 		"LizardArm_30Cut2.png": {
 			"frame": {
-				"x": 103,
-				"y": 1415,
+				"x": 1633,
+				"y": 1363,
 				"w": 100,
 				"h": 50
 			},
@@ -10122,7 +10122,7 @@
 		},
 		"LizardArm_30Cut3.png": {
 			"frame": {
-				"x": 205,
+				"x": 1,
 				"y": 1415,
 				"w": 100,
 				"h": 50
@@ -10142,7 +10142,7 @@
 		},
 		"LizardArm_30Cut4.png": {
 			"frame": {
-				"x": 307,
+				"x": 103,
 				"y": 1415,
 				"w": 100,
 				"h": 50
@@ -10162,7 +10162,7 @@
 		},
 		"LizardArm_31Cut.png": {
 			"frame": {
-				"x": 409,
+				"x": 205,
 				"y": 1415,
 				"w": 100,
 				"h": 50
@@ -10182,7 +10182,7 @@
 		},
 		"LizardArm_31Cut2.png": {
 			"frame": {
-				"x": 511,
+				"x": 307,
 				"y": 1415,
 				"w": 100,
 				"h": 50
@@ -10202,7 +10202,7 @@
 		},
 		"LizardArm_31Cut3.png": {
 			"frame": {
-				"x": 613,
+				"x": 409,
 				"y": 1415,
 				"w": 100,
 				"h": 50
@@ -10222,7 +10222,7 @@
 		},
 		"LizardArm_31Cut4.png": {
 			"frame": {
-				"x": 715,
+				"x": 511,
 				"y": 1415,
 				"w": 100,
 				"h": 50
@@ -10242,7 +10242,7 @@
 		},
 		"LizardArm_32Cut.png": {
 			"frame": {
-				"x": 817,
+				"x": 613,
 				"y": 1415,
 				"w": 100,
 				"h": 50
@@ -10262,7 +10262,7 @@
 		},
 		"LizardArm_32Cut2.png": {
 			"frame": {
-				"x": 919,
+				"x": 715,
 				"y": 1415,
 				"w": 100,
 				"h": 50
@@ -10282,7 +10282,7 @@
 		},
 		"LizardArm_32Cut3.png": {
 			"frame": {
-				"x": 1021,
+				"x": 817,
 				"y": 1415,
 				"w": 100,
 				"h": 50
@@ -10302,7 +10302,7 @@
 		},
 		"LizardArm_32Cut4.png": {
 			"frame": {
-				"x": 1123,
+				"x": 919,
 				"y": 1415,
 				"w": 100,
 				"h": 50
@@ -10322,7 +10322,7 @@
 		},
 		"LizardArm_33Cut.png": {
 			"frame": {
-				"x": 1225,
+				"x": 1021,
 				"y": 1415,
 				"w": 100,
 				"h": 50
@@ -10342,7 +10342,7 @@
 		},
 		"LizardArm_33Cut2.png": {
 			"frame": {
-				"x": 1327,
+				"x": 1123,
 				"y": 1415,
 				"w": 100,
 				"h": 50
@@ -10362,7 +10362,7 @@
 		},
 		"LizardArm_33Cut3.png": {
 			"frame": {
-				"x": 1429,
+				"x": 1225,
 				"y": 1415,
 				"w": 100,
 				"h": 50
@@ -10382,7 +10382,7 @@
 		},
 		"LizardArm_33Cut4.png": {
 			"frame": {
-				"x": 1531,
+				"x": 1327,
 				"y": 1415,
 				"w": 100,
 				"h": 50
@@ -10402,7 +10402,7 @@
 		},
 		"LizardArm_34Cut.png": {
 			"frame": {
-				"x": 1633,
+				"x": 1429,
 				"y": 1415,
 				"w": 100,
 				"h": 50
@@ -10422,8 +10422,8 @@
 		},
 		"LizardArm_34Cut2.png": {
 			"frame": {
-				"x": 1,
-				"y": 1467,
+				"x": 1531,
+				"y": 1415,
 				"w": 100,
 				"h": 50
 			},
@@ -10442,8 +10442,8 @@
 		},
 		"LizardArm_34Cut3.png": {
 			"frame": {
-				"x": 103,
-				"y": 1467,
+				"x": 1633,
+				"y": 1415,
 				"w": 100,
 				"h": 50
 			},
@@ -10462,7 +10462,7 @@
 		},
 		"LizardArm_34Cut4.png": {
 			"frame": {
-				"x": 205,
+				"x": 1,
 				"y": 1467,
 				"w": 100,
 				"h": 50
@@ -10482,7 +10482,7 @@
 		},
 		"LizardArm_35Cut.png": {
 			"frame": {
-				"x": 307,
+				"x": 103,
 				"y": 1467,
 				"w": 100,
 				"h": 50
@@ -10502,7 +10502,7 @@
 		},
 		"LizardArm_35Cut2.png": {
 			"frame": {
-				"x": 409,
+				"x": 205,
 				"y": 1467,
 				"w": 100,
 				"h": 50
@@ -10522,7 +10522,7 @@
 		},
 		"LizardArm_35Cut3.png": {
 			"frame": {
-				"x": 511,
+				"x": 307,
 				"y": 1467,
 				"w": 100,
 				"h": 50
@@ -10542,7 +10542,7 @@
 		},
 		"LizardArm_35Cut4.png": {
 			"frame": {
-				"x": 613,
+				"x": 409,
 				"y": 1467,
 				"w": 100,
 				"h": 50
@@ -10562,7 +10562,7 @@
 		},
 		"LizardArm_36Cut.png": {
 			"frame": {
-				"x": 715,
+				"x": 511,
 				"y": 1467,
 				"w": 100,
 				"h": 50
@@ -10582,7 +10582,7 @@
 		},
 		"LizardArm_36Cut2.png": {
 			"frame": {
-				"x": 817,
+				"x": 613,
 				"y": 1467,
 				"w": 100,
 				"h": 50
@@ -10602,7 +10602,7 @@
 		},
 		"LizardArm_36Cut3.png": {
 			"frame": {
-				"x": 919,
+				"x": 715,
 				"y": 1467,
 				"w": 100,
 				"h": 50
@@ -10622,7 +10622,7 @@
 		},
 		"LizardArm_36Cut4.png": {
 			"frame": {
-				"x": 1021,
+				"x": 817,
 				"y": 1467,
 				"w": 100,
 				"h": 50
@@ -10642,7 +10642,7 @@
 		},
 		"LizardArm_37Cut.png": {
 			"frame": {
-				"x": 1123,
+				"x": 919,
 				"y": 1467,
 				"w": 100,
 				"h": 50
@@ -10662,7 +10662,7 @@
 		},
 		"LizardArm_37Cut2.png": {
 			"frame": {
-				"x": 1225,
+				"x": 1021,
 				"y": 1467,
 				"w": 100,
 				"h": 50
@@ -10682,7 +10682,7 @@
 		},
 		"LizardArm_37Cut3.png": {
 			"frame": {
-				"x": 1327,
+				"x": 1123,
 				"y": 1467,
 				"w": 100,
 				"h": 50
@@ -10702,7 +10702,7 @@
 		},
 		"LizardArm_37Cut4.png": {
 			"frame": {
-				"x": 1429,
+				"x": 1225,
 				"y": 1467,
 				"w": 100,
 				"h": 50
@@ -10722,7 +10722,7 @@
 		},
 		"LizardArm_38Cut.png": {
 			"frame": {
-				"x": 1531,
+				"x": 1327,
 				"y": 1467,
 				"w": 100,
 				"h": 50
@@ -10742,7 +10742,7 @@
 		},
 		"LizardArm_38Cut2.png": {
 			"frame": {
-				"x": 1633,
+				"x": 1429,
 				"y": 1467,
 				"w": 100,
 				"h": 50
@@ -10762,8 +10762,8 @@
 		},
 		"LizardArm_38Cut3.png": {
 			"frame": {
-				"x": 1,
-				"y": 1519,
+				"x": 1531,
+				"y": 1467,
 				"w": 100,
 				"h": 50
 			},
@@ -10782,8 +10782,8 @@
 		},
 		"LizardArm_38Cut4.png": {
 			"frame": {
-				"x": 103,
-				"y": 1519,
+				"x": 1633,
+				"y": 1467,
 				"w": 100,
 				"h": 50
 			},
@@ -10802,7 +10802,7 @@
 		},
 		"LizardArm_39Cut.png": {
 			"frame": {
-				"x": 205,
+				"x": 1,
 				"y": 1519,
 				"w": 100,
 				"h": 50
@@ -10822,7 +10822,7 @@
 		},
 		"LizardArm_39Cut2.png": {
 			"frame": {
-				"x": 307,
+				"x": 103,
 				"y": 1519,
 				"w": 100,
 				"h": 50
@@ -10842,7 +10842,7 @@
 		},
 		"LizardArm_39Cut3.png": {
 			"frame": {
-				"x": 409,
+				"x": 205,
 				"y": 1519,
 				"w": 100,
 				"h": 50
@@ -10862,7 +10862,7 @@
 		},
 		"LizardArm_39Cut4.png": {
 			"frame": {
-				"x": 511,
+				"x": 307,
 				"y": 1519,
 				"w": 100,
 				"h": 50
@@ -10882,7 +10882,7 @@
 		},
 		"LizardArm_40Cut.png": {
 			"frame": {
-				"x": 613,
+				"x": 409,
 				"y": 1519,
 				"w": 100,
 				"h": 50
@@ -10902,7 +10902,7 @@
 		},
 		"LizardArm_40Cut2.png": {
 			"frame": {
-				"x": 715,
+				"x": 511,
 				"y": 1519,
 				"w": 100,
 				"h": 50
@@ -10922,7 +10922,7 @@
 		},
 		"LizardArm_40Cut3.png": {
 			"frame": {
-				"x": 817,
+				"x": 613,
 				"y": 1519,
 				"w": 100,
 				"h": 50
@@ -10942,7 +10942,7 @@
 		},
 		"LizardArm_40Cut4.png": {
 			"frame": {
-				"x": 919,
+				"x": 715,
 				"y": 1519,
 				"w": 100,
 				"h": 50
@@ -10962,7 +10962,7 @@
 		},
 		"LizardArm_41Cut.png": {
 			"frame": {
-				"x": 1021,
+				"x": 817,
 				"y": 1519,
 				"w": 100,
 				"h": 50
@@ -10982,7 +10982,7 @@
 		},
 		"LizardArm_41Cut2.png": {
 			"frame": {
-				"x": 1123,
+				"x": 919,
 				"y": 1519,
 				"w": 100,
 				"h": 50
@@ -11002,7 +11002,7 @@
 		},
 		"LizardArm_41Cut3.png": {
 			"frame": {
-				"x": 1225,
+				"x": 1021,
 				"y": 1519,
 				"w": 100,
 				"h": 50
@@ -11022,7 +11022,7 @@
 		},
 		"LizardArm_41Cut4.png": {
 			"frame": {
-				"x": 1327,
+				"x": 1123,
 				"y": 1519,
 				"w": 100,
 				"h": 50
@@ -11042,7 +11042,7 @@
 		},
 		"LizardArm_42Cut.png": {
 			"frame": {
-				"x": 1429,
+				"x": 1225,
 				"y": 1519,
 				"w": 100,
 				"h": 50
@@ -11062,7 +11062,7 @@
 		},
 		"LizardArm_42Cut2.png": {
 			"frame": {
-				"x": 1531,
+				"x": 1327,
 				"y": 1519,
 				"w": 100,
 				"h": 50
@@ -11082,7 +11082,7 @@
 		},
 		"LizardArm_42Cut3.png": {
 			"frame": {
-				"x": 1633,
+				"x": 1429,
 				"y": 1519,
 				"w": 100,
 				"h": 50
@@ -11102,8 +11102,8 @@
 		},
 		"LizardArm_42Cut4.png": {
 			"frame": {
-				"x": 1,
-				"y": 1571,
+				"x": 1531,
+				"y": 1519,
 				"w": 100,
 				"h": 50
 			},
@@ -11122,8 +11122,8 @@
 		},
 		"LizardArm_43Cut.png": {
 			"frame": {
-				"x": 103,
-				"y": 1571,
+				"x": 1633,
+				"y": 1519,
 				"w": 100,
 				"h": 50
 			},
@@ -11142,7 +11142,7 @@
 		},
 		"LizardArm_43Cut2.png": {
 			"frame": {
-				"x": 205,
+				"x": 1,
 				"y": 1571,
 				"w": 100,
 				"h": 50
@@ -11162,7 +11162,7 @@
 		},
 		"LizardArm_43Cut3.png": {
 			"frame": {
-				"x": 307,
+				"x": 103,
 				"y": 1571,
 				"w": 100,
 				"h": 50
@@ -11182,7 +11182,7 @@
 		},
 		"LizardArm_43Cut4.png": {
 			"frame": {
-				"x": 409,
+				"x": 205,
 				"y": 1571,
 				"w": 100,
 				"h": 50
@@ -11202,7 +11202,7 @@
 		},
 		"LizardArm_44Cut.png": {
 			"frame": {
-				"x": 511,
+				"x": 307,
 				"y": 1571,
 				"w": 100,
 				"h": 50
@@ -11222,7 +11222,7 @@
 		},
 		"LizardArm_44Cut2.png": {
 			"frame": {
-				"x": 613,
+				"x": 409,
 				"y": 1571,
 				"w": 100,
 				"h": 50
@@ -11242,7 +11242,7 @@
 		},
 		"LizardArm_44Cut3.png": {
 			"frame": {
-				"x": 715,
+				"x": 511,
 				"y": 1571,
 				"w": 100,
 				"h": 50
@@ -11262,7 +11262,7 @@
 		},
 		"LizardArm_44Cut4.png": {
 			"frame": {
-				"x": 817,
+				"x": 613,
 				"y": 1571,
 				"w": 100,
 				"h": 50
@@ -11282,7 +11282,7 @@
 		},
 		"LizardArm_45Cut.png": {
 			"frame": {
-				"x": 919,
+				"x": 715,
 				"y": 1571,
 				"w": 100,
 				"h": 50
@@ -11302,7 +11302,7 @@
 		},
 		"LizardArm_45Cut2.png": {
 			"frame": {
-				"x": 1021,
+				"x": 817,
 				"y": 1571,
 				"w": 100,
 				"h": 50
@@ -11322,7 +11322,7 @@
 		},
 		"LizardArm_45Cut3.png": {
 			"frame": {
-				"x": 1123,
+				"x": 919,
 				"y": 1571,
 				"w": 100,
 				"h": 50
@@ -11342,7 +11342,7 @@
 		},
 		"LizardArm_45Cut4.png": {
 			"frame": {
-				"x": 1225,
+				"x": 1021,
 				"y": 1571,
 				"w": 100,
 				"h": 50
@@ -11362,7 +11362,7 @@
 		},
 		"LizardArm_46Cut.png": {
 			"frame": {
-				"x": 1327,
+				"x": 1123,
 				"y": 1571,
 				"w": 100,
 				"h": 50
@@ -11382,7 +11382,7 @@
 		},
 		"LizardArm_46Cut2.png": {
 			"frame": {
-				"x": 1429,
+				"x": 1225,
 				"y": 1571,
 				"w": 100,
 				"h": 50
@@ -11402,7 +11402,7 @@
 		},
 		"LizardArm_46Cut3.png": {
 			"frame": {
-				"x": 1531,
+				"x": 1327,
 				"y": 1571,
 				"w": 100,
 				"h": 50
@@ -11422,7 +11422,7 @@
 		},
 		"LizardArm_46Cut4.png": {
 			"frame": {
-				"x": 1633,
+				"x": 1429,
 				"y": 1571,
 				"w": 100,
 				"h": 50
@@ -11442,8 +11442,8 @@
 		},
 		"LizardArm_47Cut.png": {
 			"frame": {
-				"x": 1,
-				"y": 1623,
+				"x": 1531,
+				"y": 1571,
 				"w": 100,
 				"h": 50
 			},
@@ -11462,8 +11462,8 @@
 		},
 		"LizardArm_47Cut2.png": {
 			"frame": {
-				"x": 103,
-				"y": 1623,
+				"x": 1633,
+				"y": 1571,
 				"w": 100,
 				"h": 50
 			},
@@ -11482,7 +11482,7 @@
 		},
 		"LizardArm_47Cut3.png": {
 			"frame": {
-				"x": 205,
+				"x": 1,
 				"y": 1623,
 				"w": 100,
 				"h": 50
@@ -11502,7 +11502,7 @@
 		},
 		"LizardArm_47Cut4.png": {
 			"frame": {
-				"x": 307,
+				"x": 103,
 				"y": 1623,
 				"w": 100,
 				"h": 50
@@ -11522,7 +11522,7 @@
 		},
 		"LizardArm_48Cut.png": {
 			"frame": {
-				"x": 409,
+				"x": 205,
 				"y": 1623,
 				"w": 100,
 				"h": 50
@@ -11542,7 +11542,7 @@
 		},
 		"LizardArm_48Cut2.png": {
 			"frame": {
-				"x": 511,
+				"x": 307,
 				"y": 1623,
 				"w": 100,
 				"h": 50
@@ -11562,7 +11562,7 @@
 		},
 		"LizardArm_48Cut3.png": {
 			"frame": {
-				"x": 613,
+				"x": 409,
 				"y": 1623,
 				"w": 100,
 				"h": 50
@@ -11582,7 +11582,7 @@
 		},
 		"LizardArm_48Cut4.png": {
 			"frame": {
-				"x": 715,
+				"x": 511,
 				"y": 1623,
 				"w": 100,
 				"h": 50
@@ -11602,7 +11602,7 @@
 		},
 		"LizardArm_49Cut.png": {
 			"frame": {
-				"x": 817,
+				"x": 613,
 				"y": 1623,
 				"w": 100,
 				"h": 50
@@ -11622,7 +11622,7 @@
 		},
 		"LizardArm_49Cut2.png": {
 			"frame": {
-				"x": 919,
+				"x": 715,
 				"y": 1623,
 				"w": 100,
 				"h": 50
@@ -11642,7 +11642,7 @@
 		},
 		"LizardArm_49Cut3.png": {
 			"frame": {
-				"x": 1021,
+				"x": 817,
 				"y": 1623,
 				"w": 100,
 				"h": 50
@@ -11662,7 +11662,7 @@
 		},
 		"LizardArm_49Cut4.png": {
 			"frame": {
-				"x": 1123,
+				"x": 919,
 				"y": 1623,
 				"w": 100,
 				"h": 50
@@ -11682,7 +11682,7 @@
 		},
 		"LizardArm_50Cut.png": {
 			"frame": {
-				"x": 1225,
+				"x": 1021,
 				"y": 1623,
 				"w": 100,
 				"h": 50
@@ -11702,7 +11702,7 @@
 		},
 		"LizardArm_50Cut2.png": {
 			"frame": {
-				"x": 1327,
+				"x": 1123,
 				"y": 1623,
 				"w": 100,
 				"h": 50
@@ -11722,7 +11722,7 @@
 		},
 		"LizardArm_50Cut3.png": {
 			"frame": {
-				"x": 1429,
+				"x": 1225,
 				"y": 1623,
 				"w": 100,
 				"h": 50
@@ -11742,7 +11742,7 @@
 		},
 		"LizardArm_50Cut4.png": {
 			"frame": {
-				"x": 1531,
+				"x": 1327,
 				"y": 1623,
 				"w": 100,
 				"h": 50
@@ -11762,7 +11762,7 @@
 		},
 		"LizardArm_51Cut.png": {
 			"frame": {
-				"x": 1633,
+				"x": 1429,
 				"y": 1623,
 				"w": 100,
 				"h": 50
@@ -11782,8 +11782,8 @@
 		},
 		"LizardArm_51Cut2.png": {
 			"frame": {
-				"x": 1,
-				"y": 1675,
+				"x": 1531,
+				"y": 1623,
 				"w": 100,
 				"h": 50
 			},
@@ -11802,8 +11802,8 @@
 		},
 		"LizardArm_51Cut3.png": {
 			"frame": {
-				"x": 103,
-				"y": 1675,
+				"x": 1633,
+				"y": 1623,
 				"w": 100,
 				"h": 50
 			},
@@ -11822,7 +11822,7 @@
 		},
 		"LizardArm_51Cut4.png": {
 			"frame": {
-				"x": 205,
+				"x": 1,
 				"y": 1675,
 				"w": 100,
 				"h": 50
@@ -11842,7 +11842,7 @@
 		},
 		"LizardArm_52Cut.png": {
 			"frame": {
-				"x": 307,
+				"x": 103,
 				"y": 1675,
 				"w": 100,
 				"h": 50
@@ -11862,7 +11862,7 @@
 		},
 		"LizardArm_52Cut2.png": {
 			"frame": {
-				"x": 409,
+				"x": 205,
 				"y": 1675,
 				"w": 100,
 				"h": 50
@@ -11882,7 +11882,7 @@
 		},
 		"LizardArm_52Cut3.png": {
 			"frame": {
-				"x": 511,
+				"x": 307,
 				"y": 1675,
 				"w": 100,
 				"h": 50
@@ -11902,7 +11902,7 @@
 		},
 		"LizardArm_52Cut4.png": {
 			"frame": {
-				"x": 613,
+				"x": 409,
 				"y": 1675,
 				"w": 100,
 				"h": 50
@@ -11922,7 +11922,7 @@
 		},
 		"LizardArm_53Cut.png": {
 			"frame": {
-				"x": 715,
+				"x": 511,
 				"y": 1675,
 				"w": 100,
 				"h": 50
@@ -11942,7 +11942,7 @@
 		},
 		"LizardArm_53Cut2.png": {
 			"frame": {
-				"x": 817,
+				"x": 613,
 				"y": 1675,
 				"w": 100,
 				"h": 50
@@ -11962,7 +11962,7 @@
 		},
 		"LizardArm_53Cut3.png": {
 			"frame": {
-				"x": 919,
+				"x": 715,
 				"y": 1675,
 				"w": 100,
 				"h": 50
@@ -11982,7 +11982,7 @@
 		},
 		"LizardArm_53Cut4.png": {
 			"frame": {
-				"x": 1021,
+				"x": 817,
 				"y": 1675,
 				"w": 100,
 				"h": 50
@@ -12002,7 +12002,7 @@
 		},
 		"LizardArm_54Cut.png": {
 			"frame": {
-				"x": 1123,
+				"x": 919,
 				"y": 1675,
 				"w": 100,
 				"h": 50
@@ -12022,7 +12022,7 @@
 		},
 		"LizardArm_54Cut2.png": {
 			"frame": {
-				"x": 1225,
+				"x": 1021,
 				"y": 1675,
 				"w": 100,
 				"h": 50
@@ -12042,7 +12042,7 @@
 		},
 		"LizardArm_54Cut3.png": {
 			"frame": {
-				"x": 1327,
+				"x": 1123,
 				"y": 1675,
 				"w": 100,
 				"h": 50
@@ -12062,7 +12062,7 @@
 		},
 		"LizardArm_54Cut4.png": {
 			"frame": {
-				"x": 1429,
+				"x": 1225,
 				"y": 1675,
 				"w": 100,
 				"h": 50
@@ -12082,7 +12082,7 @@
 		},
 		"LizardEyes0.0Nose.png": {
 			"frame": {
-				"x": 1733,
+				"x": 1803,
 				"y": 63,
 				"w": 24,
 				"h": 40
@@ -12102,8 +12102,8 @@
 		},
 		"LizardEyes0.1Nose.png": {
 			"frame": {
-				"x": 1759,
-				"y": 63,
+				"x": 1803,
+				"y": 105,
 				"w": 24,
 				"h": 40
 			},
@@ -12122,8 +12122,8 @@
 		},
 		"LizardEyes0.2Nose.png": {
 			"frame": {
-				"x": 1733,
-				"y": 105,
+				"x": 1735,
+				"y": 167,
 				"w": 30,
 				"h": 60
 			},
@@ -12142,8 +12142,8 @@
 		},
 		"LizardEyes0.3Nose.png": {
 			"frame": {
-				"x": 1765,
-				"y": 105,
+				"x": 1767,
+				"y": 167,
 				"w": 30,
 				"h": 60
 			},
@@ -12162,1507 +12162,7 @@
 		},
 		"LizardEyes1.0Nose.png": {
 			"frame": {
-				"x": 1735,
-				"y": 167,
-				"w": 24,
-				"h": 40
-			},
-			"rotated": false,
-			"trimmed": false,
-			"spriteSourceSize": {
-				"x": 0,
-				"y": 0,
-				"w": 24,
-				"h": 40
-			},
-			"sourceSize": {
-				"w": 24,
-				"h": 40
-			}
-		},
-		"LizardEyes1.1Nose.png": {
-			"frame": {
-				"x": 1761,
-				"y": 167,
-				"w": 24,
-				"h": 40
-			},
-			"rotated": false,
-			"trimmed": false,
-			"spriteSourceSize": {
-				"x": 0,
-				"y": 0,
-				"w": 24,
-				"h": 40
-			},
-			"sourceSize": {
-				"w": 24,
-				"h": 40
-			}
-		},
-		"LizardEyes1.2Nose.png": {
-			"frame": {
-				"x": 1735,
-				"y": 209,
-				"w": 30,
-				"h": 60
-			},
-			"rotated": false,
-			"trimmed": false,
-			"spriteSourceSize": {
-				"x": 0,
-				"y": 0,
-				"w": 30,
-				"h": 60
-			},
-			"sourceSize": {
-				"w": 30,
-				"h": 60
-			}
-		},
-		"LizardEyes1.3Nose.png": {
-			"frame": {
-				"x": 1767,
-				"y": 209,
-				"w": 30,
-				"h": 60
-			},
-			"rotated": false,
-			"trimmed": false,
-			"spriteSourceSize": {
-				"x": 0,
-				"y": 0,
-				"w": 30,
-				"h": 60
-			},
-			"sourceSize": {
-				"w": 30,
-				"h": 60
-			}
-		},
-		"LizardEyes2.0Nose.png": {
-			"frame": {
-				"x": 1735,
-				"y": 271,
-				"w": 24,
-				"h": 40
-			},
-			"rotated": false,
-			"trimmed": false,
-			"spriteSourceSize": {
-				"x": 0,
-				"y": 0,
-				"w": 24,
-				"h": 40
-			},
-			"sourceSize": {
-				"w": 24,
-				"h": 40
-			}
-		},
-		"LizardEyes2.1Nose.png": {
-			"frame": {
-				"x": 1761,
-				"y": 271,
-				"w": 24,
-				"h": 40
-			},
-			"rotated": false,
-			"trimmed": false,
-			"spriteSourceSize": {
-				"x": 0,
-				"y": 0,
-				"w": 24,
-				"h": 40
-			},
-			"sourceSize": {
-				"w": 24,
-				"h": 40
-			}
-		},
-		"LizardEyes2.2Nose.png": {
-			"frame": {
-				"x": 1735,
-				"y": 313,
-				"w": 30,
-				"h": 60
-			},
-			"rotated": false,
-			"trimmed": false,
-			"spriteSourceSize": {
-				"x": 0,
-				"y": 0,
-				"w": 30,
-				"h": 60
-			},
-			"sourceSize": {
-				"w": 30,
-				"h": 60
-			}
-		},
-		"LizardEyes2.3Nose.png": {
-			"frame": {
-				"x": 1767,
-				"y": 313,
-				"w": 30,
-				"h": 60
-			},
-			"rotated": false,
-			"trimmed": false,
-			"spriteSourceSize": {
-				"x": 0,
-				"y": 0,
-				"w": 30,
-				"h": 60
-			},
-			"sourceSize": {
-				"w": 30,
-				"h": 60
-			}
-		},
-		"LizardEyes3.0Nose.png": {
-			"frame": {
-				"x": 1735,
-				"y": 375,
-				"w": 24,
-				"h": 40
-			},
-			"rotated": false,
-			"trimmed": false,
-			"spriteSourceSize": {
-				"x": 0,
-				"y": 0,
-				"w": 24,
-				"h": 40
-			},
-			"sourceSize": {
-				"w": 24,
-				"h": 40
-			}
-		},
-		"LizardEyes3.1Nose.png": {
-			"frame": {
-				"x": 1761,
-				"y": 375,
-				"w": 24,
-				"h": 40
-			},
-			"rotated": false,
-			"trimmed": false,
-			"spriteSourceSize": {
-				"x": 0,
-				"y": 0,
-				"w": 24,
-				"h": 40
-			},
-			"sourceSize": {
-				"w": 24,
-				"h": 40
-			}
-		},
-		"LizardEyes3.2Nose.png": {
-			"frame": {
-				"x": 1735,
-				"y": 417,
-				"w": 30,
-				"h": 60
-			},
-			"rotated": false,
-			"trimmed": false,
-			"spriteSourceSize": {
-				"x": 0,
-				"y": 0,
-				"w": 30,
-				"h": 60
-			},
-			"sourceSize": {
-				"w": 30,
-				"h": 60
-			}
-		},
-		"LizardEyes3.3Nose.png": {
-			"frame": {
-				"x": 1767,
-				"y": 417,
-				"w": 30,
-				"h": 60
-			},
-			"rotated": false,
-			"trimmed": false,
-			"spriteSourceSize": {
-				"x": 0,
-				"y": 0,
-				"w": 30,
-				"h": 60
-			},
-			"sourceSize": {
-				"w": 30,
-				"h": 60
-			}
-		},
-		"LizardHead0.0Cut.png": {
-			"frame": {
-				"x": 1735,
-				"y": 479,
-				"w": 24,
-				"h": 40
-			},
-			"rotated": false,
-			"trimmed": false,
-			"spriteSourceSize": {
-				"x": 0,
-				"y": 0,
-				"w": 24,
-				"h": 40
-			},
-			"sourceSize": {
-				"w": 24,
-				"h": 40
-			}
-		},
-		"LizardHead0.0Cut2.png": {
-			"frame": {
-				"x": 1761,
-				"y": 479,
-				"w": 24,
-				"h": 40
-			},
-			"rotated": false,
-			"trimmed": false,
-			"spriteSourceSize": {
-				"x": 0,
-				"y": 0,
-				"w": 24,
-				"h": 40
-			},
-			"sourceSize": {
-				"w": 24,
-				"h": 40
-			}
-		},
-		"LizardHead0.1Cut.png": {
-			"frame": {
-				"x": 1735,
-				"y": 521,
-				"w": 24,
-				"h": 40
-			},
-			"rotated": false,
-			"trimmed": false,
-			"spriteSourceSize": {
-				"x": 0,
-				"y": 0,
-				"w": 24,
-				"h": 40
-			},
-			"sourceSize": {
-				"w": 24,
-				"h": 40
-			}
-		},
-		"LizardHead0.1Cut2.png": {
-			"frame": {
-				"x": 1761,
-				"y": 521,
-				"w": 24,
-				"h": 40
-			},
-			"rotated": false,
-			"trimmed": false,
-			"spriteSourceSize": {
-				"x": 0,
-				"y": 0,
-				"w": 24,
-				"h": 40
-			},
-			"sourceSize": {
-				"w": 24,
-				"h": 40
-			}
-		},
-		"LizardHead0.2Cut.png": {
-			"frame": {
-				"x": 1735,
-				"y": 563,
-				"w": 30,
-				"h": 60
-			},
-			"rotated": false,
-			"trimmed": false,
-			"spriteSourceSize": {
-				"x": 0,
-				"y": 0,
-				"w": 30,
-				"h": 60
-			},
-			"sourceSize": {
-				"w": 30,
-				"h": 60
-			}
-		},
-		"LizardHead0.2Cut2.png": {
-			"frame": {
-				"x": 1767,
-				"y": 563,
-				"w": 30,
-				"h": 60
-			},
-			"rotated": false,
-			"trimmed": false,
-			"spriteSourceSize": {
-				"x": 0,
-				"y": 0,
-				"w": 30,
-				"h": 60
-			},
-			"sourceSize": {
-				"w": 30,
-				"h": 60
-			}
-		},
-		"LizardHead1.0Cut.png": {
-			"frame": {
-				"x": 1735,
-				"y": 625,
-				"w": 24,
-				"h": 40
-			},
-			"rotated": false,
-			"trimmed": false,
-			"spriteSourceSize": {
-				"x": 0,
-				"y": 0,
-				"w": 24,
-				"h": 40
-			},
-			"sourceSize": {
-				"w": 24,
-				"h": 40
-			}
-		},
-		"LizardHead1.0Cut2.png": {
-			"frame": {
-				"x": 1761,
-				"y": 625,
-				"w": 24,
-				"h": 40
-			},
-			"rotated": false,
-			"trimmed": false,
-			"spriteSourceSize": {
-				"x": 0,
-				"y": 0,
-				"w": 24,
-				"h": 40
-			},
-			"sourceSize": {
-				"w": 24,
-				"h": 40
-			}
-		},
-		"LizardHead1.1Cut.png": {
-			"frame": {
-				"x": 1735,
-				"y": 667,
-				"w": 24,
-				"h": 40
-			},
-			"rotated": false,
-			"trimmed": false,
-			"spriteSourceSize": {
-				"x": 0,
-				"y": 0,
-				"w": 24,
-				"h": 40
-			},
-			"sourceSize": {
-				"w": 24,
-				"h": 40
-			}
-		},
-		"LizardHead1.1Cut2.png": {
-			"frame": {
-				"x": 1761,
-				"y": 667,
-				"w": 24,
-				"h": 40
-			},
-			"rotated": false,
-			"trimmed": false,
-			"spriteSourceSize": {
-				"x": 0,
-				"y": 0,
-				"w": 24,
-				"h": 40
-			},
-			"sourceSize": {
-				"w": 24,
-				"h": 40
-			}
-		},
-		"LizardHead1.2Cut.png": {
-			"frame": {
-				"x": 1735,
-				"y": 709,
-				"w": 30,
-				"h": 60
-			},
-			"rotated": false,
-			"trimmed": false,
-			"spriteSourceSize": {
-				"x": 0,
-				"y": 0,
-				"w": 30,
-				"h": 60
-			},
-			"sourceSize": {
-				"w": 30,
-				"h": 60
-			}
-		},
-		"LizardHead1.2Cut2.png": {
-			"frame": {
-				"x": 1767,
-				"y": 709,
-				"w": 30,
-				"h": 60
-			},
-			"rotated": false,
-			"trimmed": false,
-			"spriteSourceSize": {
-				"x": 0,
-				"y": 0,
-				"w": 30,
-				"h": 60
-			},
-			"sourceSize": {
-				"w": 30,
-				"h": 60
-			}
-		},
-		"LizardHead2.0Cut.png": {
-			"frame": {
-				"x": 1735,
-				"y": 771,
-				"w": 24,
-				"h": 40
-			},
-			"rotated": false,
-			"trimmed": false,
-			"spriteSourceSize": {
-				"x": 0,
-				"y": 0,
-				"w": 24,
-				"h": 40
-			},
-			"sourceSize": {
-				"w": 24,
-				"h": 40
-			}
-		},
-		"LizardHead2.0Cut2.png": {
-			"frame": {
-				"x": 1761,
-				"y": 771,
-				"w": 24,
-				"h": 40
-			},
-			"rotated": false,
-			"trimmed": false,
-			"spriteSourceSize": {
-				"x": 0,
-				"y": 0,
-				"w": 24,
-				"h": 40
-			},
-			"sourceSize": {
-				"w": 24,
-				"h": 40
-			}
-		},
-		"LizardHead2.1Cut.png": {
-			"frame": {
-				"x": 1735,
-				"y": 813,
-				"w": 24,
-				"h": 40
-			},
-			"rotated": false,
-			"trimmed": false,
-			"spriteSourceSize": {
-				"x": 0,
-				"y": 0,
-				"w": 24,
-				"h": 40
-			},
-			"sourceSize": {
-				"w": 24,
-				"h": 40
-			}
-		},
-		"LizardHead2.1Cut2.png": {
-			"frame": {
-				"x": 1761,
-				"y": 813,
-				"w": 24,
-				"h": 40
-			},
-			"rotated": false,
-			"trimmed": false,
-			"spriteSourceSize": {
-				"x": 0,
-				"y": 0,
-				"w": 24,
-				"h": 40
-			},
-			"sourceSize": {
-				"w": 24,
-				"h": 40
-			}
-		},
-		"LizardHead2.2Cut.png": {
-			"frame": {
-				"x": 1735,
-				"y": 855,
-				"w": 30,
-				"h": 60
-			},
-			"rotated": false,
-			"trimmed": false,
-			"spriteSourceSize": {
-				"x": 0,
-				"y": 0,
-				"w": 30,
-				"h": 60
-			},
-			"sourceSize": {
-				"w": 30,
-				"h": 60
-			}
-		},
-		"LizardHead2.2Cut2.png": {
-			"frame": {
-				"x": 1767,
-				"y": 855,
-				"w": 30,
-				"h": 60
-			},
-			"rotated": false,
-			"trimmed": false,
-			"spriteSourceSize": {
-				"x": 0,
-				"y": 0,
-				"w": 30,
-				"h": 60
-			},
-			"sourceSize": {
-				"w": 30,
-				"h": 60
-			}
-		},
-		"LizardHead3.0Cut.png": {
-			"frame": {
-				"x": 1735,
-				"y": 917,
-				"w": 24,
-				"h": 40
-			},
-			"rotated": false,
-			"trimmed": false,
-			"spriteSourceSize": {
-				"x": 0,
-				"y": 0,
-				"w": 24,
-				"h": 40
-			},
-			"sourceSize": {
-				"w": 24,
-				"h": 40
-			}
-		},
-		"LizardHead3.0Cut2.png": {
-			"frame": {
-				"x": 1761,
-				"y": 917,
-				"w": 24,
-				"h": 40
-			},
-			"rotated": false,
-			"trimmed": false,
-			"spriteSourceSize": {
-				"x": 0,
-				"y": 0,
-				"w": 24,
-				"h": 40
-			},
-			"sourceSize": {
-				"w": 24,
-				"h": 40
-			}
-		},
-		"LizardHead3.1Cut.png": {
-			"frame": {
-				"x": 1735,
-				"y": 959,
-				"w": 24,
-				"h": 40
-			},
-			"rotated": false,
-			"trimmed": false,
-			"spriteSourceSize": {
-				"x": 0,
-				"y": 0,
-				"w": 24,
-				"h": 40
-			},
-			"sourceSize": {
-				"w": 24,
-				"h": 40
-			}
-		},
-		"LizardHead3.1Cut2.png": {
-			"frame": {
-				"x": 1761,
-				"y": 959,
-				"w": 24,
-				"h": 40
-			},
-			"rotated": false,
-			"trimmed": false,
-			"spriteSourceSize": {
-				"x": 0,
-				"y": 0,
-				"w": 24,
-				"h": 40
-			},
-			"sourceSize": {
-				"w": 24,
-				"h": 40
-			}
-		},
-		"LizardHead3.2Cut.png": {
-			"frame": {
-				"x": 1735,
-				"y": 1001,
-				"w": 30,
-				"h": 60
-			},
-			"rotated": false,
-			"trimmed": false,
-			"spriteSourceSize": {
-				"x": 0,
-				"y": 0,
-				"w": 30,
-				"h": 60
-			},
-			"sourceSize": {
-				"w": 30,
-				"h": 60
-			}
-		},
-		"LizardHead3.2Cut2.png": {
-			"frame": {
-				"x": 1767,
-				"y": 1001,
-				"w": 30,
-				"h": 60
-			},
-			"rotated": false,
-			"trimmed": false,
-			"spriteSourceSize": {
-				"x": 0,
-				"y": 0,
-				"w": 30,
-				"h": 60
-			},
-			"sourceSize": {
-				"w": 30,
-				"h": 60
-			}
-		},
-		"LizardLowerTeeth0.0Broken1.png": {
-			"frame": {
-				"x": 1735,
-				"y": 1063,
-				"w": 24,
-				"h": 40
-			},
-			"rotated": false,
-			"trimmed": false,
-			"spriteSourceSize": {
-				"x": 0,
-				"y": 0,
-				"w": 24,
-				"h": 40
-			},
-			"sourceSize": {
-				"w": 24,
-				"h": 40
-			}
-		},
-		"LizardLowerTeeth0.0Broken2.png": {
-			"frame": {
-				"x": 1761,
-				"y": 1063,
-				"w": 24,
-				"h": 40
-			},
-			"rotated": false,
-			"trimmed": false,
-			"spriteSourceSize": {
-				"x": 0,
-				"y": 0,
-				"w": 24,
-				"h": 40
-			},
-			"sourceSize": {
-				"w": 24,
-				"h": 40
-			}
-		},
-		"LizardLowerTeeth0.0Broken3.png": {
-			"frame": {
-				"x": 1735,
-				"y": 1105,
-				"w": 24,
-				"h": 40
-			},
-			"rotated": false,
-			"trimmed": false,
-			"spriteSourceSize": {
-				"x": 0,
-				"y": 0,
-				"w": 24,
-				"h": 40
-			},
-			"sourceSize": {
-				"w": 24,
-				"h": 40
-			}
-		},
-		"LizardLowerTeeth0.0Broken4.png": {
-			"frame": {
-				"x": 1761,
-				"y": 1105,
-				"w": 24,
-				"h": 40
-			},
-			"rotated": false,
-			"trimmed": false,
-			"spriteSourceSize": {
-				"x": 0,
-				"y": 0,
-				"w": 24,
-				"h": 40
-			},
-			"sourceSize": {
-				"w": 24,
-				"h": 40
-			}
-		},
-		"LizardLowerTeeth0.1Broken1.png": {
-			"frame": {
-				"x": 1735,
-				"y": 1147,
-				"w": 24,
-				"h": 40
-			},
-			"rotated": false,
-			"trimmed": false,
-			"spriteSourceSize": {
-				"x": 0,
-				"y": 0,
-				"w": 24,
-				"h": 40
-			},
-			"sourceSize": {
-				"w": 24,
-				"h": 40
-			}
-		},
-		"LizardLowerTeeth0.1Broken2.png": {
-			"frame": {
-				"x": 1761,
-				"y": 1147,
-				"w": 24,
-				"h": 40
-			},
-			"rotated": false,
-			"trimmed": false,
-			"spriteSourceSize": {
-				"x": 0,
-				"y": 0,
-				"w": 24,
-				"h": 40
-			},
-			"sourceSize": {
-				"w": 24,
-				"h": 40
-			}
-		},
-		"LizardLowerTeeth0.1Broken3.png": {
-			"frame": {
-				"x": 1735,
-				"y": 1189,
-				"w": 24,
-				"h": 40
-			},
-			"rotated": false,
-			"trimmed": false,
-			"spriteSourceSize": {
-				"x": 0,
-				"y": 0,
-				"w": 24,
-				"h": 40
-			},
-			"sourceSize": {
-				"w": 24,
-				"h": 40
-			}
-		},
-		"LizardLowerTeeth0.1Broken4.png": {
-			"frame": {
-				"x": 1761,
-				"y": 1189,
-				"w": 24,
-				"h": 40
-			},
-			"rotated": false,
-			"trimmed": false,
-			"spriteSourceSize": {
-				"x": 0,
-				"y": 0,
-				"w": 24,
-				"h": 40
-			},
-			"sourceSize": {
-				"w": 24,
-				"h": 40
-			}
-		},
-		"LizardLowerTeeth0.2Broken1.png": {
-			"frame": {
-				"x": 1735,
-				"y": 1231,
-				"w": 30,
-				"h": 60
-			},
-			"rotated": false,
-			"trimmed": false,
-			"spriteSourceSize": {
-				"x": 0,
-				"y": 0,
-				"w": 30,
-				"h": 60
-			},
-			"sourceSize": {
-				"w": 30,
-				"h": 60
-			}
-		},
-		"LizardLowerTeeth0.2Broken2.png": {
-			"frame": {
-				"x": 1767,
-				"y": 1231,
-				"w": 30,
-				"h": 60
-			},
-			"rotated": false,
-			"trimmed": false,
-			"spriteSourceSize": {
-				"x": 0,
-				"y": 0,
-				"w": 30,
-				"h": 60
-			},
-			"sourceSize": {
-				"w": 30,
-				"h": 60
-			}
-		},
-		"LizardLowerTeeth0.2Broken3.png": {
-			"frame": {
-				"x": 1735,
-				"y": 1293,
-				"w": 30,
-				"h": 60
-			},
-			"rotated": false,
-			"trimmed": false,
-			"spriteSourceSize": {
-				"x": 0,
-				"y": 0,
-				"w": 30,
-				"h": 60
-			},
-			"sourceSize": {
-				"w": 30,
-				"h": 60
-			}
-		},
-		"LizardLowerTeeth0.2Broken4.png": {
-			"frame": {
-				"x": 1767,
-				"y": 1293,
-				"w": 30,
-				"h": 60
-			},
-			"rotated": false,
-			"trimmed": false,
-			"spriteSourceSize": {
-				"x": 0,
-				"y": 0,
-				"w": 30,
-				"h": 60
-			},
-			"sourceSize": {
-				"w": 30,
-				"h": 60
-			}
-		},
-		"LizardLowerTeeth1.0Broken1.png": {
-			"frame": {
-				"x": 1735,
-				"y": 1355,
-				"w": 24,
-				"h": 40
-			},
-			"rotated": false,
-			"trimmed": false,
-			"spriteSourceSize": {
-				"x": 0,
-				"y": 0,
-				"w": 24,
-				"h": 40
-			},
-			"sourceSize": {
-				"w": 24,
-				"h": 40
-			}
-		},
-		"LizardLowerTeeth1.0Broken2.png": {
-			"frame": {
-				"x": 1761,
-				"y": 1355,
-				"w": 24,
-				"h": 40
-			},
-			"rotated": false,
-			"trimmed": false,
-			"spriteSourceSize": {
-				"x": 0,
-				"y": 0,
-				"w": 24,
-				"h": 40
-			},
-			"sourceSize": {
-				"w": 24,
-				"h": 40
-			}
-		},
-		"LizardLowerTeeth1.0Broken3.png": {
-			"frame": {
-				"x": 1735,
-				"y": 1397,
-				"w": 24,
-				"h": 40
-			},
-			"rotated": false,
-			"trimmed": false,
-			"spriteSourceSize": {
-				"x": 0,
-				"y": 0,
-				"w": 24,
-				"h": 40
-			},
-			"sourceSize": {
-				"w": 24,
-				"h": 40
-			}
-		},
-		"LizardLowerTeeth1.0Broken4.png": {
-			"frame": {
-				"x": 1761,
-				"y": 1397,
-				"w": 24,
-				"h": 40
-			},
-			"rotated": false,
-			"trimmed": false,
-			"spriteSourceSize": {
-				"x": 0,
-				"y": 0,
-				"w": 24,
-				"h": 40
-			},
-			"sourceSize": {
-				"w": 24,
-				"h": 40
-			}
-		},
-		"LizardLowerTeeth1.1Broken1.png": {
-			"frame": {
-				"x": 1735,
-				"y": 1439,
-				"w": 24,
-				"h": 40
-			},
-			"rotated": false,
-			"trimmed": false,
-			"spriteSourceSize": {
-				"x": 0,
-				"y": 0,
-				"w": 24,
-				"h": 40
-			},
-			"sourceSize": {
-				"w": 24,
-				"h": 40
-			}
-		},
-		"LizardLowerTeeth1.1Broken2.png": {
-			"frame": {
-				"x": 1761,
-				"y": 1439,
-				"w": 24,
-				"h": 40
-			},
-			"rotated": false,
-			"trimmed": false,
-			"spriteSourceSize": {
-				"x": 0,
-				"y": 0,
-				"w": 24,
-				"h": 40
-			},
-			"sourceSize": {
-				"w": 24,
-				"h": 40
-			}
-		},
-		"LizardLowerTeeth1.1Broken3.png": {
-			"frame": {
-				"x": 1735,
-				"y": 1481,
-				"w": 24,
-				"h": 40
-			},
-			"rotated": false,
-			"trimmed": false,
-			"spriteSourceSize": {
-				"x": 0,
-				"y": 0,
-				"w": 24,
-				"h": 40
-			},
-			"sourceSize": {
-				"w": 24,
-				"h": 40
-			}
-		},
-		"LizardLowerTeeth1.1Broken4.png": {
-			"frame": {
-				"x": 1761,
-				"y": 1481,
-				"w": 24,
-				"h": 40
-			},
-			"rotated": false,
-			"trimmed": false,
-			"spriteSourceSize": {
-				"x": 0,
-				"y": 0,
-				"w": 24,
-				"h": 40
-			},
-			"sourceSize": {
-				"w": 24,
-				"h": 40
-			}
-		},
-		"LizardLowerTeeth1.2Broken1.png": {
-			"frame": {
-				"x": 1735,
-				"y": 1523,
-				"w": 30,
-				"h": 60
-			},
-			"rotated": false,
-			"trimmed": false,
-			"spriteSourceSize": {
-				"x": 0,
-				"y": 0,
-				"w": 30,
-				"h": 60
-			},
-			"sourceSize": {
-				"w": 30,
-				"h": 60
-			}
-		},
-		"LizardLowerTeeth1.2Broken2.png": {
-			"frame": {
-				"x": 1767,
-				"y": 1523,
-				"w": 30,
-				"h": 60
-			},
-			"rotated": false,
-			"trimmed": false,
-			"spriteSourceSize": {
-				"x": 0,
-				"y": 0,
-				"w": 30,
-				"h": 60
-			},
-			"sourceSize": {
-				"w": 30,
-				"h": 60
-			}
-		},
-		"LizardLowerTeeth1.2Broken3.png": {
-			"frame": {
-				"x": 1735,
-				"y": 1585,
-				"w": 30,
-				"h": 60
-			},
-			"rotated": false,
-			"trimmed": false,
-			"spriteSourceSize": {
-				"x": 0,
-				"y": 0,
-				"w": 30,
-				"h": 60
-			},
-			"sourceSize": {
-				"w": 30,
-				"h": 60
-			}
-		},
-		"LizardLowerTeeth1.2Broken4.png": {
-			"frame": {
-				"x": 1767,
-				"y": 1585,
-				"w": 30,
-				"h": 60
-			},
-			"rotated": false,
-			"trimmed": false,
-			"spriteSourceSize": {
-				"x": 0,
-				"y": 0,
-				"w": 30,
-				"h": 60
-			},
-			"sourceSize": {
-				"w": 30,
-				"h": 60
-			}
-		},
-		"LizardLowerTeeth2.0Broken1.png": {
-			"frame": {
-				"x": 1735,
-				"y": 1647,
-				"w": 24,
-				"h": 40
-			},
-			"rotated": false,
-			"trimmed": false,
-			"spriteSourceSize": {
-				"x": 0,
-				"y": 0,
-				"w": 24,
-				"h": 40
-			},
-			"sourceSize": {
-				"w": 24,
-				"h": 40
-			}
-		},
-		"LizardLowerTeeth2.0Broken2.png": {
-			"frame": {
-				"x": 1761,
-				"y": 1647,
-				"w": 24,
-				"h": 40
-			},
-			"rotated": false,
-			"trimmed": false,
-			"spriteSourceSize": {
-				"x": 0,
-				"y": 0,
-				"w": 24,
-				"h": 40
-			},
-			"sourceSize": {
-				"w": 24,
-				"h": 40
-			}
-		},
-		"LizardLowerTeeth2.0Broken3.png": {
-			"frame": {
-				"x": 1531,
-				"y": 1689,
-				"w": 24,
-				"h": 40
-			},
-			"rotated": false,
-			"trimmed": false,
-			"spriteSourceSize": {
-				"x": 0,
-				"y": 0,
-				"w": 24,
-				"h": 40
-			},
-			"sourceSize": {
-				"w": 24,
-				"h": 40
-			}
-		},
-		"LizardLowerTeeth2.0Broken4.png": {
-			"frame": {
-				"x": 1557,
-				"y": 1689,
-				"w": 24,
-				"h": 40
-			},
-			"rotated": false,
-			"trimmed": false,
-			"spriteSourceSize": {
-				"x": 0,
-				"y": 0,
-				"w": 24,
-				"h": 40
-			},
-			"sourceSize": {
-				"w": 24,
-				"h": 40
-			}
-		},
-		"LizardLowerTeeth2.1Broken1.png": {
-			"frame": {
-				"x": 1583,
-				"y": 1689,
-				"w": 24,
-				"h": 40
-			},
-			"rotated": false,
-			"trimmed": false,
-			"spriteSourceSize": {
-				"x": 0,
-				"y": 0,
-				"w": 24,
-				"h": 40
-			},
-			"sourceSize": {
-				"w": 24,
-				"h": 40
-			}
-		},
-		"LizardLowerTeeth2.1Broken2.png": {
-			"frame": {
-				"x": 1609,
-				"y": 1689,
-				"w": 24,
-				"h": 40
-			},
-			"rotated": false,
-			"trimmed": false,
-			"spriteSourceSize": {
-				"x": 0,
-				"y": 0,
-				"w": 24,
-				"h": 40
-			},
-			"sourceSize": {
-				"w": 24,
-				"h": 40
-			}
-		},
-		"LizardLowerTeeth2.1Broken3.png": {
-			"frame": {
-				"x": 1635,
-				"y": 1689,
-				"w": 24,
-				"h": 40
-			},
-			"rotated": false,
-			"trimmed": false,
-			"spriteSourceSize": {
-				"x": 0,
-				"y": 0,
-				"w": 24,
-				"h": 40
-			},
-			"sourceSize": {
-				"w": 24,
-				"h": 40
-			}
-		},
-		"LizardLowerTeeth2.1Broken4.png": {
-			"frame": {
-				"x": 1661,
-				"y": 1689,
-				"w": 24,
-				"h": 40
-			},
-			"rotated": false,
-			"trimmed": false,
-			"spriteSourceSize": {
-				"x": 0,
-				"y": 0,
-				"w": 24,
-				"h": 40
-			},
-			"sourceSize": {
-				"w": 24,
-				"h": 40
-			}
-		},
-		"LizardLowerTeeth2.2Broken1.png": {
-			"frame": {
-				"x": 1687,
-				"y": 1689,
-				"w": 30,
-				"h": 60
-			},
-			"rotated": false,
-			"trimmed": false,
-			"spriteSourceSize": {
-				"x": 0,
-				"y": 0,
-				"w": 30,
-				"h": 60
-			},
-			"sourceSize": {
-				"w": 30,
-				"h": 60
-			}
-		},
-		"LizardLowerTeeth2.2Broken2.png": {
-			"frame": {
-				"x": 1719,
-				"y": 1689,
-				"w": 30,
-				"h": 60
-			},
-			"rotated": false,
-			"trimmed": false,
-			"spriteSourceSize": {
-				"x": 0,
-				"y": 0,
-				"w": 30,
-				"h": 60
-			},
-			"sourceSize": {
-				"w": 30,
-				"h": 60
-			}
-		},
-		"LizardLowerTeeth2.2Broken3.png": {
-			"frame": {
-				"x": 1751,
-				"y": 1689,
-				"w": 30,
-				"h": 60
-			},
-			"rotated": false,
-			"trimmed": false,
-			"spriteSourceSize": {
-				"x": 0,
-				"y": 0,
-				"w": 30,
-				"h": 60
-			},
-			"sourceSize": {
-				"w": 30,
-				"h": 60
-			}
-		},
-		"LizardLowerTeeth2.2Broken4.png": {
-			"frame": {
-				"x": 1789,
-				"y": 1,
-				"w": 30,
-				"h": 60
-			},
-			"rotated": false,
-			"trimmed": false,
-			"spriteSourceSize": {
-				"x": 0,
-				"y": 0,
-				"w": 30,
-				"h": 60
-			},
-			"sourceSize": {
-				"w": 30,
-				"h": 60
-			}
-		},
-		"LizardLowerTeeth3.0Broken1.png": {
-			"frame": {
-				"x": 1785,
-				"y": 63,
-				"w": 24,
-				"h": 40
-			},
-			"rotated": false,
-			"trimmed": false,
-			"spriteSourceSize": {
-				"x": 0,
-				"y": 0,
-				"w": 24,
-				"h": 40
-			},
-			"sourceSize": {
-				"w": 24,
-				"h": 40
-			}
-		},
-		"LizardLowerTeeth3.0Broken2.png": {
-			"frame": {
-				"x": 1811,
-				"y": 63,
-				"w": 24,
-				"h": 40
-			},
-			"rotated": false,
-			"trimmed": false,
-			"spriteSourceSize": {
-				"x": 0,
-				"y": 0,
-				"w": 24,
-				"h": 40
-			},
-			"sourceSize": {
-				"w": 24,
-				"h": 40
-			}
-		},
-		"LizardLowerTeeth3.0Broken3.png": {
-			"frame": {
-				"x": 1797,
-				"y": 105,
-				"w": 24,
-				"h": 40
-			},
-			"rotated": false,
-			"trimmed": false,
-			"spriteSourceSize": {
-				"x": 0,
-				"y": 0,
-				"w": 24,
-				"h": 40
-			},
-			"sourceSize": {
-				"w": 24,
-				"h": 40
-			}
-		},
-		"LizardLowerTeeth3.0Broken4.png": {
-			"frame": {
-				"x": 1797,
+				"x": 1803,
 				"y": 147,
 				"w": 24,
 				"h": 40
@@ -13680,7 +12180,7 @@
 				"h": 40
 			}
 		},
-		"LizardLowerTeeth3.1Broken1.png": {
+		"LizardEyes1.1Nose.png": {
 			"frame": {
 				"x": 1799,
 				"y": 189,
@@ -13700,7 +12200,47 @@
 				"h": 40
 			}
 		},
-		"LizardLowerTeeth3.1Broken2.png": {
+		"LizardEyes1.2Nose.png": {
+			"frame": {
+				"x": 1735,
+				"y": 229,
+				"w": 30,
+				"h": 60
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 30,
+				"h": 60
+			},
+			"sourceSize": {
+				"w": 30,
+				"h": 60
+			}
+		},
+		"LizardEyes1.3Nose.png": {
+			"frame": {
+				"x": 1767,
+				"y": 229,
+				"w": 30,
+				"h": 60
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 30,
+				"h": 60
+			},
+			"sourceSize": {
+				"w": 30,
+				"h": 60
+			}
+		},
+		"LizardEyes2.0Nose.png": {
 			"frame": {
 				"x": 1799,
 				"y": 231,
@@ -13720,7 +12260,7 @@
 				"h": 40
 			}
 		},
-		"LizardLowerTeeth3.1Broken3.png": {
+		"LizardEyes2.1Nose.png": {
 			"frame": {
 				"x": 1799,
 				"y": 273,
@@ -13740,7 +12280,47 @@
 				"h": 40
 			}
 		},
-		"LizardLowerTeeth3.1Broken4.png": {
+		"LizardEyes2.2Nose.png": {
+			"frame": {
+				"x": 1735,
+				"y": 291,
+				"w": 30,
+				"h": 60
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 30,
+				"h": 60
+			},
+			"sourceSize": {
+				"w": 30,
+				"h": 60
+			}
+		},
+		"LizardEyes2.3Nose.png": {
+			"frame": {
+				"x": 1767,
+				"y": 291,
+				"w": 30,
+				"h": 60
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 30,
+				"h": 60
+			},
+			"sourceSize": {
+				"w": 30,
+				"h": 60
+			}
+		},
+		"LizardEyes3.0Nose.png": {
 			"frame": {
 				"x": 1799,
 				"y": 315,
@@ -13760,10 +12340,2550 @@
 				"h": 40
 			}
 		},
-		"LizardLowerTeeth3.2Broken1.png": {
+		"LizardEyes3.1Nose.png": {
+			"frame": {
+				"x": 1735,
+				"y": 357,
+				"w": 24,
+				"h": 40
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 24,
+				"h": 40
+			},
+			"sourceSize": {
+				"w": 24,
+				"h": 40
+			}
+		},
+		"LizardEyes3.2Nose.png": {
+			"frame": {
+				"x": 1761,
+				"y": 353,
+				"w": 30,
+				"h": 60
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 30,
+				"h": 60
+			},
+			"sourceSize": {
+				"w": 30,
+				"h": 60
+			}
+		},
+		"LizardEyes3.3Nose.png": {
+			"frame": {
+				"x": 1793,
+				"y": 357,
+				"w": 30,
+				"h": 60
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 30,
+				"h": 60
+			},
+			"sourceSize": {
+				"w": 30,
+				"h": 60
+			}
+		},
+		"LizardHead0.0Cut.png": {
+			"frame": {
+				"x": 1735,
+				"y": 419,
+				"w": 24,
+				"h": 40
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 24,
+				"h": 40
+			},
+			"sourceSize": {
+				"w": 24,
+				"h": 40
+			}
+		},
+		"LizardHead0.0Cut2.png": {
+			"frame": {
+				"x": 1761,
+				"y": 419,
+				"w": 24,
+				"h": 40
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 24,
+				"h": 40
+			},
+			"sourceSize": {
+				"w": 24,
+				"h": 40
+			}
+		},
+		"LizardHead0.1Cut.png": {
+			"frame": {
+				"x": 1787,
+				"y": 419,
+				"w": 24,
+				"h": 40
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 24,
+				"h": 40
+			},
+			"sourceSize": {
+				"w": 24,
+				"h": 40
+			}
+		},
+		"LizardHead0.1Cut2.png": {
+			"frame": {
+				"x": 1735,
+				"y": 461,
+				"w": 24,
+				"h": 40
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 24,
+				"h": 40
+			},
+			"sourceSize": {
+				"w": 24,
+				"h": 40
+			}
+		},
+		"LizardHead0.2Cut.png": {
+			"frame": {
+				"x": 1761,
+				"y": 461,
+				"w": 30,
+				"h": 60
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 30,
+				"h": 60
+			},
+			"sourceSize": {
+				"w": 30,
+				"h": 60
+			}
+		},
+		"LizardHead0.2Cut2.png": {
+			"frame": {
+				"x": 1793,
+				"y": 461,
+				"w": 30,
+				"h": 60
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 30,
+				"h": 60
+			},
+			"sourceSize": {
+				"w": 30,
+				"h": 60
+			}
+		},
+		"LizardHead0.3Cut.png": {
+			"frame": {
+				"x": 1735,
+				"y": 523,
+				"w": 24,
+				"h": 40
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 24,
+				"h": 40
+			},
+			"sourceSize": {
+				"w": 24,
+				"h": 40
+			}
+		},
+		"LizardHead0.3Cut2.png": {
+			"frame": {
+				"x": 1761,
+				"y": 523,
+				"w": 24,
+				"h": 40
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 24,
+				"h": 40
+			},
+			"sourceSize": {
+				"w": 24,
+				"h": 40
+			}
+		},
+		"LizardHead0.4Cut.png": {
+			"frame": {
+				"x": 1787,
+				"y": 523,
+				"w": 28,
+				"h": 40
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 28,
+				"h": 40
+			},
+			"sourceSize": {
+				"w": 28,
+				"h": 40
+			}
+		},
+		"LizardHead0.4Cut2.png": {
+			"frame": {
+				"x": 1735,
+				"y": 565,
+				"w": 28,
+				"h": 40
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 28,
+				"h": 40
+			},
+			"sourceSize": {
+				"w": 28,
+				"h": 40
+			}
+		},
+		"LizardHead0.5Cut.png": {
+			"frame": {
+				"x": 1765,
+				"y": 565,
+				"w": 34,
+				"h": 50
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 34,
+				"h": 50
+			},
+			"sourceSize": {
+				"w": 34,
+				"h": 50
+			}
+		},
+		"LizardHead0.5Cut2.png": {
+			"frame": {
+				"x": 1735,
+				"y": 617,
+				"w": 34,
+				"h": 50
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 34,
+				"h": 50
+			},
+			"sourceSize": {
+				"w": 34,
+				"h": 50
+			}
+		},
+		"LizardHead0.6Cut.png": {
+			"frame": {
+				"x": 1771,
+				"y": 617,
+				"w": 34,
+				"h": 50
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 34,
+				"h": 50
+			},
+			"sourceSize": {
+				"w": 34,
+				"h": 50
+			}
+		},
+		"LizardHead0.6Cut2.png": {
+			"frame": {
+				"x": 1735,
+				"y": 669,
+				"w": 34,
+				"h": 50
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 34,
+				"h": 50
+			},
+			"sourceSize": {
+				"w": 34,
+				"h": 50
+			}
+		},
+		"LizardHead0.7Cut.png": {
+			"frame": {
+				"x": 1771,
+				"y": 669,
+				"w": 34,
+				"h": 50
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 34,
+				"h": 50
+			},
+			"sourceSize": {
+				"w": 34,
+				"h": 50
+			}
+		},
+		"LizardHead0.7Cut2.png": {
+			"frame": {
+				"x": 1735,
+				"y": 721,
+				"w": 34,
+				"h": 50
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 34,
+				"h": 50
+			},
+			"sourceSize": {
+				"w": 34,
+				"h": 50
+			}
+		},
+		"LizardHead0.8Cut.png": {
+			"frame": {
+				"x": 1771,
+				"y": 721,
+				"w": 30,
+				"h": 60
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 30,
+				"h": 60
+			},
+			"sourceSize": {
+				"w": 30,
+				"h": 60
+			}
+		},
+		"LizardHead0.8Cut2.png": {
+			"frame": {
+				"x": 1735,
+				"y": 783,
+				"w": 30,
+				"h": 60
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 30,
+				"h": 60
+			},
+			"sourceSize": {
+				"w": 30,
+				"h": 60
+			}
+		},
+		"LizardHead0.9Cut.png": {
+			"frame": {
+				"x": 1767,
+				"y": 783,
+				"w": 30,
+				"h": 60
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 30,
+				"h": 60
+			},
+			"sourceSize": {
+				"w": 30,
+				"h": 60
+			}
+		},
+		"LizardHead0.9Cut2.png": {
+			"frame": {
+				"x": 1735,
+				"y": 845,
+				"w": 30,
+				"h": 60
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 30,
+				"h": 60
+			},
+			"sourceSize": {
+				"w": 30,
+				"h": 60
+			}
+		},
+		"LizardHead1.0Cut.png": {
+			"frame": {
+				"x": 1801,
+				"y": 565,
+				"w": 24,
+				"h": 40
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 24,
+				"h": 40
+			},
+			"sourceSize": {
+				"w": 24,
+				"h": 40
+			}
+		},
+		"LizardHead1.0Cut2.png": {
+			"frame": {
+				"x": 1803,
+				"y": 721,
+				"w": 24,
+				"h": 40
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 24,
+				"h": 40
+			},
+			"sourceSize": {
+				"w": 24,
+				"h": 40
+			}
+		},
+		"LizardHead1.1Cut.png": {
+			"frame": {
+				"x": 1803,
+				"y": 763,
+				"w": 24,
+				"h": 40
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 24,
+				"h": 40
+			},
+			"sourceSize": {
+				"w": 24,
+				"h": 40
+			}
+		},
+		"LizardHead1.1Cut2.png": {
 			"frame": {
 				"x": 1799,
-				"y": 357,
+				"y": 805,
+				"w": 24,
+				"h": 40
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 24,
+				"h": 40
+			},
+			"sourceSize": {
+				"w": 24,
+				"h": 40
+			}
+		},
+		"LizardHead1.2Cut.png": {
+			"frame": {
+				"x": 1767,
+				"y": 845,
+				"w": 30,
+				"h": 60
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 30,
+				"h": 60
+			},
+			"sourceSize": {
+				"w": 30,
+				"h": 60
+			}
+		},
+		"LizardHead1.2Cut2.png": {
+			"frame": {
+				"x": 1735,
+				"y": 907,
+				"w": 30,
+				"h": 60
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 30,
+				"h": 60
+			},
+			"sourceSize": {
+				"w": 30,
+				"h": 60
+			}
+		},
+		"LizardHead1.3Cut.png": {
+			"frame": {
+				"x": 1799,
+				"y": 847,
+				"w": 24,
+				"h": 40
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 24,
+				"h": 40
+			},
+			"sourceSize": {
+				"w": 24,
+				"h": 40
+			}
+		},
+		"LizardHead1.3Cut2.png": {
+			"frame": {
+				"x": 1799,
+				"y": 889,
+				"w": 24,
+				"h": 40
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 24,
+				"h": 40
+			},
+			"sourceSize": {
+				"w": 24,
+				"h": 40
+			}
+		},
+		"LizardHead1.4Cut.png": {
+			"frame": {
+				"x": 1767,
+				"y": 931,
+				"w": 24,
+				"h": 40
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 24,
+				"h": 40
+			},
+			"sourceSize": {
+				"w": 24,
+				"h": 40
+			}
+		},
+		"LizardHead1.4Cut2.png": {
+			"frame": {
+				"x": 1793,
+				"y": 931,
+				"w": 24,
+				"h": 40
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 24,
+				"h": 40
+			},
+			"sourceSize": {
+				"w": 24,
+				"h": 40
+			}
+		},
+		"LizardHead1.5Cut.png": {
+			"frame": {
+				"x": 1735,
+				"y": 973,
+				"w": 32,
+				"h": 52
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 32,
+				"h": 52
+			},
+			"sourceSize": {
+				"w": 32,
+				"h": 52
+			}
+		},
+		"LizardHead1.5Cut2.png": {
+			"frame": {
+				"x": 1769,
+				"y": 973,
+				"w": 32,
+				"h": 52
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 32,
+				"h": 52
+			},
+			"sourceSize": {
+				"w": 32,
+				"h": 52
+			}
+		},
+		"LizardHead1.6Cut.png": {
+			"frame": {
+				"x": 1735,
+				"y": 1027,
+				"w": 32,
+				"h": 52
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 32,
+				"h": 52
+			},
+			"sourceSize": {
+				"w": 32,
+				"h": 52
+			}
+		},
+		"LizardHead1.6Cut2.png": {
+			"frame": {
+				"x": 1769,
+				"y": 1027,
+				"w": 32,
+				"h": 52
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 32,
+				"h": 52
+			},
+			"sourceSize": {
+				"w": 32,
+				"h": 52
+			}
+		},
+		"LizardHead1.7Cut.png": {
+			"frame": {
+				"x": 1735,
+				"y": 1081,
+				"w": 32,
+				"h": 52
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 32,
+				"h": 52
+			},
+			"sourceSize": {
+				"w": 32,
+				"h": 52
+			}
+		},
+		"LizardHead1.7Cut2.png": {
+			"frame": {
+				"x": 1769,
+				"y": 1081,
+				"w": 32,
+				"h": 52
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 32,
+				"h": 52
+			},
+			"sourceSize": {
+				"w": 32,
+				"h": 52
+			}
+		},
+		"LizardHead1.8Cut.png": {
+			"frame": {
+				"x": 1735,
+				"y": 1135,
+				"w": 30,
+				"h": 60
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 30,
+				"h": 60
+			},
+			"sourceSize": {
+				"w": 30,
+				"h": 60
+			}
+		},
+		"LizardHead1.8Cut2.png": {
+			"frame": {
+				"x": 1767,
+				"y": 1135,
+				"w": 30,
+				"h": 60
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 30,
+				"h": 60
+			},
+			"sourceSize": {
+				"w": 30,
+				"h": 60
+			}
+		},
+		"LizardHead1.9Cut.png": {
+			"frame": {
+				"x": 1735,
+				"y": 1197,
+				"w": 30,
+				"h": 60
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 30,
+				"h": 60
+			},
+			"sourceSize": {
+				"w": 30,
+				"h": 60
+			}
+		},
+		"LizardHead1.9Cut2.png": {
+			"frame": {
+				"x": 1767,
+				"y": 1197,
+				"w": 30,
+				"h": 60
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 30,
+				"h": 60
+			},
+			"sourceSize": {
+				"w": 30,
+				"h": 60
+			}
+		},
+		"LizardHead2.0Cut.png": {
+			"frame": {
+				"x": 1803,
+				"y": 973,
+				"w": 24,
+				"h": 40
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 24,
+				"h": 40
+			},
+			"sourceSize": {
+				"w": 24,
+				"h": 40
+			}
+		},
+		"LizardHead2.0Cut2.png": {
+			"frame": {
+				"x": 1803,
+				"y": 1015,
+				"w": 24,
+				"h": 40
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 24,
+				"h": 40
+			},
+			"sourceSize": {
+				"w": 24,
+				"h": 40
+			}
+		},
+		"LizardHead2.1Cut.png": {
+			"frame": {
+				"x": 1803,
+				"y": 1057,
+				"w": 24,
+				"h": 40
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 24,
+				"h": 40
+			},
+			"sourceSize": {
+				"w": 24,
+				"h": 40
+			}
+		},
+		"LizardHead2.1Cut2.png": {
+			"frame": {
+				"x": 1803,
+				"y": 1099,
+				"w": 24,
+				"h": 40
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 24,
+				"h": 40
+			},
+			"sourceSize": {
+				"w": 24,
+				"h": 40
+			}
+		},
+		"LizardHead2.2Cut.png": {
+			"frame": {
+				"x": 1735,
+				"y": 1259,
+				"w": 30,
+				"h": 60
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 30,
+				"h": 60
+			},
+			"sourceSize": {
+				"w": 30,
+				"h": 60
+			}
+		},
+		"LizardHead2.2Cut2.png": {
+			"frame": {
+				"x": 1767,
+				"y": 1259,
+				"w": 30,
+				"h": 60
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 30,
+				"h": 60
+			},
+			"sourceSize": {
+				"w": 30,
+				"h": 60
+			}
+		},
+		"LizardHead2.3Cut.png": {
+			"frame": {
+				"x": 1799,
+				"y": 1141,
+				"w": 24,
+				"h": 40
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 24,
+				"h": 40
+			},
+			"sourceSize": {
+				"w": 24,
+				"h": 40
+			}
+		},
+		"LizardHead2.3Cut2.png": {
+			"frame": {
+				"x": 1799,
+				"y": 1183,
+				"w": 24,
+				"h": 40
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 24,
+				"h": 40
+			},
+			"sourceSize": {
+				"w": 24,
+				"h": 40
+			}
+		},
+		"LizardHead2.4Cut.png": {
+			"frame": {
+				"x": 1799,
+				"y": 1225,
+				"w": 24,
+				"h": 40
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 24,
+				"h": 40
+			},
+			"sourceSize": {
+				"w": 24,
+				"h": 40
+			}
+		},
+		"LizardHead2.4Cut2.png": {
+			"frame": {
+				"x": 1799,
+				"y": 1267,
+				"w": 24,
+				"h": 40
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 24,
+				"h": 40
+			},
+			"sourceSize": {
+				"w": 24,
+				"h": 40
+			}
+		},
+		"LizardHead2.5Cut.png": {
+			"frame": {
+				"x": 1799,
+				"y": 1309,
+				"w": 24,
+				"h": 52
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 24,
+				"h": 52
+			},
+			"sourceSize": {
+				"w": 24,
+				"h": 52
+			}
+		},
+		"LizardHead2.5Cut2.png": {
+			"frame": {
+				"x": 1735,
+				"y": 1363,
+				"w": 24,
+				"h": 52
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 24,
+				"h": 52
+			},
+			"sourceSize": {
+				"w": 24,
+				"h": 52
+			}
+		},
+		"LizardHead2.6Cut.png": {
+			"frame": {
+				"x": 1761,
+				"y": 1363,
+				"w": 24,
+				"h": 52
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 24,
+				"h": 52
+			},
+			"sourceSize": {
+				"w": 24,
+				"h": 52
+			}
+		},
+		"LizardHead2.6Cut2.png": {
+			"frame": {
+				"x": 1787,
+				"y": 1363,
+				"w": 24,
+				"h": 52
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 24,
+				"h": 52
+			},
+			"sourceSize": {
+				"w": 24,
+				"h": 52
+			}
+		},
+		"LizardHead2.7Cut.png": {
+			"frame": {
+				"x": 1735,
+				"y": 1417,
+				"w": 24,
+				"h": 52
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 24,
+				"h": 52
+			},
+			"sourceSize": {
+				"w": 24,
+				"h": 52
+			}
+		},
+		"LizardHead2.7Cut2.png": {
+			"frame": {
+				"x": 1761,
+				"y": 1417,
+				"w": 24,
+				"h": 52
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 24,
+				"h": 52
+			},
+			"sourceSize": {
+				"w": 24,
+				"h": 52
+			}
+		},
+		"LizardHead2.8Cut.png": {
+			"frame": {
+				"x": 1787,
+				"y": 1417,
+				"w": 30,
+				"h": 60
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 30,
+				"h": 60
+			},
+			"sourceSize": {
+				"w": 30,
+				"h": 60
+			}
+		},
+		"LizardHead2.8Cut2.png": {
+			"frame": {
+				"x": 1735,
+				"y": 1479,
+				"w": 30,
+				"h": 60
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 30,
+				"h": 60
+			},
+			"sourceSize": {
+				"w": 30,
+				"h": 60
+			}
+		},
+		"LizardHead2.9Cut.png": {
+			"frame": {
+				"x": 1767,
+				"y": 1479,
+				"w": 30,
+				"h": 60
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 30,
+				"h": 60
+			},
+			"sourceSize": {
+				"w": 30,
+				"h": 60
+			}
+		},
+		"LizardHead2.9Cut2.png": {
+			"frame": {
+				"x": 1735,
+				"y": 1541,
+				"w": 30,
+				"h": 60
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 30,
+				"h": 60
+			},
+			"sourceSize": {
+				"w": 30,
+				"h": 60
+			}
+		},
+		"LizardHead3.0Cut.png": {
+			"frame": {
+				"x": 1799,
+				"y": 1479,
+				"w": 24,
+				"h": 40
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 24,
+				"h": 40
+			},
+			"sourceSize": {
+				"w": 24,
+				"h": 40
+			}
+		},
+		"LizardHead3.0Cut2.png": {
+			"frame": {
+				"x": 1799,
+				"y": 1521,
+				"w": 24,
+				"h": 40
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 24,
+				"h": 40
+			},
+			"sourceSize": {
+				"w": 24,
+				"h": 40
+			}
+		},
+		"LizardHead3.1Cut.png": {
+			"frame": {
+				"x": 1767,
+				"y": 1563,
+				"w": 24,
+				"h": 40
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 24,
+				"h": 40
+			},
+			"sourceSize": {
+				"w": 24,
+				"h": 40
+			}
+		},
+		"LizardHead3.1Cut2.png": {
+			"frame": {
+				"x": 1793,
+				"y": 1563,
+				"w": 24,
+				"h": 40
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 24,
+				"h": 40
+			},
+			"sourceSize": {
+				"w": 24,
+				"h": 40
+			}
+		},
+		"LizardHead3.2Cut.png": {
+			"frame": {
+				"x": 1735,
+				"y": 1605,
+				"w": 30,
+				"h": 60
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 30,
+				"h": 60
+			},
+			"sourceSize": {
+				"w": 30,
+				"h": 60
+			}
+		},
+		"LizardHead3.2Cut2.png": {
+			"frame": {
+				"x": 1767,
+				"y": 1605,
+				"w": 30,
+				"h": 60
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 30,
+				"h": 60
+			},
+			"sourceSize": {
+				"w": 30,
+				"h": 60
+			}
+		},
+		"LizardHead3.3Cut.png": {
+			"frame": {
+				"x": 1799,
+				"y": 1605,
+				"w": 24,
+				"h": 40
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 24,
+				"h": 40
+			},
+			"sourceSize": {
+				"w": 24,
+				"h": 40
+			}
+		},
+		"LizardHead3.3Cut2.png": {
+			"frame": {
+				"x": 1799,
+				"y": 1647,
+				"w": 24,
+				"h": 40
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 24,
+				"h": 40
+			},
+			"sourceSize": {
+				"w": 24,
+				"h": 40
+			}
+		},
+		"LizardHead3.4Cut.png": {
+			"frame": {
+				"x": 1327,
+				"y": 1689,
+				"w": 24,
+				"h": 40
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 24,
+				"h": 40
+			},
+			"sourceSize": {
+				"w": 24,
+				"h": 40
+			}
+		},
+		"LizardHead3.4Cut2.png": {
+			"frame": {
+				"x": 1353,
+				"y": 1689,
+				"w": 24,
+				"h": 40
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 24,
+				"h": 40
+			},
+			"sourceSize": {
+				"w": 24,
+				"h": 40
+			}
+		},
+		"LizardHead3.5Cut.png": {
+			"frame": {
+				"x": 1379,
+				"y": 1689,
+				"w": 24,
+				"h": 52
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 24,
+				"h": 52
+			},
+			"sourceSize": {
+				"w": 24,
+				"h": 52
+			}
+		},
+		"LizardHead3.5Cut2.png": {
+			"frame": {
+				"x": 1405,
+				"y": 1689,
+				"w": 24,
+				"h": 52
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 24,
+				"h": 52
+			},
+			"sourceSize": {
+				"w": 24,
+				"h": 52
+			}
+		},
+		"LizardHead3.6Cut.png": {
+			"frame": {
+				"x": 1431,
+				"y": 1689,
+				"w": 24,
+				"h": 52
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 24,
+				"h": 52
+			},
+			"sourceSize": {
+				"w": 24,
+				"h": 52
+			}
+		},
+		"LizardHead3.6Cut2.png": {
+			"frame": {
+				"x": 1457,
+				"y": 1689,
+				"w": 24,
+				"h": 52
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 24,
+				"h": 52
+			},
+			"sourceSize": {
+				"w": 24,
+				"h": 52
+			}
+		},
+		"LizardHead3.7Cut.png": {
+			"frame": {
+				"x": 1483,
+				"y": 1689,
+				"w": 24,
+				"h": 52
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 24,
+				"h": 52
+			},
+			"sourceSize": {
+				"w": 24,
+				"h": 52
+			}
+		},
+		"LizardHead3.7Cut2.png": {
+			"frame": {
+				"x": 1509,
+				"y": 1689,
+				"w": 24,
+				"h": 52
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 24,
+				"h": 52
+			},
+			"sourceSize": {
+				"w": 24,
+				"h": 52
+			}
+		},
+		"LizardHead3.8Cut.png": {
+			"frame": {
+				"x": 1735,
+				"y": 1667,
+				"w": 30,
+				"h": 60
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 30,
+				"h": 60
+			},
+			"sourceSize": {
+				"w": 30,
+				"h": 60
+			}
+		},
+		"LizardHead3.8Cut2.png": {
+			"frame": {
+				"x": 1767,
+				"y": 1667,
+				"w": 30,
+				"h": 60
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 30,
+				"h": 60
+			},
+			"sourceSize": {
+				"w": 30,
+				"h": 60
+			}
+		},
+		"LizardHead3.9Cut.png": {
+			"frame": {
+				"x": 1,
+				"y": 1729,
+				"w": 30,
+				"h": 60
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 30,
+				"h": 60
+			},
+			"sourceSize": {
+				"w": 30,
+				"h": 60
+			}
+		},
+		"LizardHead3.9Cut2.png": {
+			"frame": {
+				"x": 33,
+				"y": 1729,
+				"w": 30,
+				"h": 60
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 30,
+				"h": 60
+			},
+			"sourceSize": {
+				"w": 30,
+				"h": 60
+			}
+		},
+		"LizardLowerTeeth0.0Broken1.png": {
+			"frame": {
+				"x": 1535,
+				"y": 1689,
+				"w": 24,
+				"h": 40
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 24,
+				"h": 40
+			},
+			"sourceSize": {
+				"w": 24,
+				"h": 40
+			}
+		},
+		"LizardLowerTeeth0.0Broken2.png": {
+			"frame": {
+				"x": 1561,
+				"y": 1689,
+				"w": 24,
+				"h": 40
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 24,
+				"h": 40
+			},
+			"sourceSize": {
+				"w": 24,
+				"h": 40
+			}
+		},
+		"LizardLowerTeeth0.0Broken3.png": {
+			"frame": {
+				"x": 1587,
+				"y": 1689,
+				"w": 24,
+				"h": 40
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 24,
+				"h": 40
+			},
+			"sourceSize": {
+				"w": 24,
+				"h": 40
+			}
+		},
+		"LizardLowerTeeth0.0Broken4.png": {
+			"frame": {
+				"x": 1613,
+				"y": 1689,
+				"w": 24,
+				"h": 40
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 24,
+				"h": 40
+			},
+			"sourceSize": {
+				"w": 24,
+				"h": 40
+			}
+		},
+		"LizardLowerTeeth0.1Broken1.png": {
+			"frame": {
+				"x": 1639,
+				"y": 1689,
+				"w": 24,
+				"h": 40
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 24,
+				"h": 40
+			},
+			"sourceSize": {
+				"w": 24,
+				"h": 40
+			}
+		},
+		"LizardLowerTeeth0.1Broken2.png": {
+			"frame": {
+				"x": 1665,
+				"y": 1689,
+				"w": 24,
+				"h": 40
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 24,
+				"h": 40
+			},
+			"sourceSize": {
+				"w": 24,
+				"h": 40
+			}
+		},
+		"LizardLowerTeeth0.1Broken3.png": {
+			"frame": {
+				"x": 1691,
+				"y": 1689,
+				"w": 24,
+				"h": 40
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 24,
+				"h": 40
+			},
+			"sourceSize": {
+				"w": 24,
+				"h": 40
+			}
+		},
+		"LizardLowerTeeth0.1Broken4.png": {
+			"frame": {
+				"x": 1799,
+				"y": 1689,
+				"w": 24,
+				"h": 40
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 24,
+				"h": 40
+			},
+			"sourceSize": {
+				"w": 24,
+				"h": 40
+			}
+		},
+		"LizardLowerTeeth0.2Broken1.png": {
+			"frame": {
+				"x": 65,
+				"y": 1729,
+				"w": 30,
+				"h": 60
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 30,
+				"h": 60
+			},
+			"sourceSize": {
+				"w": 30,
+				"h": 60
+			}
+		},
+		"LizardLowerTeeth0.2Broken2.png": {
+			"frame": {
+				"x": 97,
+				"y": 1729,
+				"w": 30,
+				"h": 60
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 30,
+				"h": 60
+			},
+			"sourceSize": {
+				"w": 30,
+				"h": 60
+			}
+		},
+		"LizardLowerTeeth0.2Broken3.png": {
+			"frame": {
+				"x": 129,
+				"y": 1729,
+				"w": 30,
+				"h": 60
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 30,
+				"h": 60
+			},
+			"sourceSize": {
+				"w": 30,
+				"h": 60
+			}
+		},
+		"LizardLowerTeeth0.2Broken4.png": {
+			"frame": {
+				"x": 161,
+				"y": 1729,
+				"w": 30,
+				"h": 60
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 30,
+				"h": 60
+			},
+			"sourceSize": {
+				"w": 30,
+				"h": 60
+			}
+		},
+		"LizardLowerTeeth1.0Broken1.png": {
+			"frame": {
+				"x": 193,
+				"y": 1731,
+				"w": 24,
+				"h": 40
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 24,
+				"h": 40
+			},
+			"sourceSize": {
+				"w": 24,
+				"h": 40
+			}
+		},
+		"LizardLowerTeeth1.0Broken2.png": {
+			"frame": {
+				"x": 219,
+				"y": 1731,
+				"w": 24,
+				"h": 40
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 24,
+				"h": 40
+			},
+			"sourceSize": {
+				"w": 24,
+				"h": 40
+			}
+		},
+		"LizardLowerTeeth1.0Broken3.png": {
+			"frame": {
+				"x": 245,
+				"y": 1731,
+				"w": 24,
+				"h": 40
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 24,
+				"h": 40
+			},
+			"sourceSize": {
+				"w": 24,
+				"h": 40
+			}
+		},
+		"LizardLowerTeeth1.0Broken4.png": {
+			"frame": {
+				"x": 271,
+				"y": 1731,
+				"w": 24,
+				"h": 40
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 24,
+				"h": 40
+			},
+			"sourceSize": {
+				"w": 24,
+				"h": 40
+			}
+		},
+		"LizardLowerTeeth1.1Broken1.png": {
+			"frame": {
+				"x": 297,
+				"y": 1731,
+				"w": 24,
+				"h": 40
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 24,
+				"h": 40
+			},
+			"sourceSize": {
+				"w": 24,
+				"h": 40
+			}
+		},
+		"LizardLowerTeeth1.1Broken2.png": {
+			"frame": {
+				"x": 323,
+				"y": 1731,
+				"w": 24,
+				"h": 40
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 24,
+				"h": 40
+			},
+			"sourceSize": {
+				"w": 24,
+				"h": 40
+			}
+		},
+		"LizardLowerTeeth1.1Broken3.png": {
+			"frame": {
+				"x": 349,
+				"y": 1731,
+				"w": 24,
+				"h": 40
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 24,
+				"h": 40
+			},
+			"sourceSize": {
+				"w": 24,
+				"h": 40
+			}
+		},
+		"LizardLowerTeeth1.1Broken4.png": {
+			"frame": {
+				"x": 375,
+				"y": 1731,
+				"w": 24,
+				"h": 40
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 24,
+				"h": 40
+			},
+			"sourceSize": {
+				"w": 24,
+				"h": 40
+			}
+		},
+		"LizardLowerTeeth1.2Broken1.png": {
+			"frame": {
+				"x": 401,
+				"y": 1729,
+				"w": 30,
+				"h": 60
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 30,
+				"h": 60
+			},
+			"sourceSize": {
+				"w": 30,
+				"h": 60
+			}
+		},
+		"LizardLowerTeeth1.2Broken2.png": {
+			"frame": {
+				"x": 433,
+				"y": 1729,
+				"w": 30,
+				"h": 60
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 30,
+				"h": 60
+			},
+			"sourceSize": {
+				"w": 30,
+				"h": 60
+			}
+		},
+		"LizardLowerTeeth1.2Broken3.png": {
+			"frame": {
+				"x": 465,
+				"y": 1729,
+				"w": 30,
+				"h": 60
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 30,
+				"h": 60
+			},
+			"sourceSize": {
+				"w": 30,
+				"h": 60
+			}
+		},
+		"LizardLowerTeeth1.2Broken4.png": {
+			"frame": {
+				"x": 497,
+				"y": 1729,
+				"w": 30,
+				"h": 60
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 30,
+				"h": 60
+			},
+			"sourceSize": {
+				"w": 30,
+				"h": 60
+			}
+		},
+		"LizardLowerTeeth2.0Broken1.png": {
+			"frame": {
+				"x": 529,
+				"y": 1731,
+				"w": 24,
+				"h": 40
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 24,
+				"h": 40
+			},
+			"sourceSize": {
+				"w": 24,
+				"h": 40
+			}
+		},
+		"LizardLowerTeeth2.0Broken2.png": {
+			"frame": {
+				"x": 555,
+				"y": 1731,
+				"w": 24,
+				"h": 40
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 24,
+				"h": 40
+			},
+			"sourceSize": {
+				"w": 24,
+				"h": 40
+			}
+		},
+		"LizardLowerTeeth2.0Broken3.png": {
+			"frame": {
+				"x": 581,
+				"y": 1731,
+				"w": 24,
+				"h": 40
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 24,
+				"h": 40
+			},
+			"sourceSize": {
+				"w": 24,
+				"h": 40
+			}
+		},
+		"LizardLowerTeeth2.0Broken4.png": {
+			"frame": {
+				"x": 607,
+				"y": 1731,
+				"w": 24,
+				"h": 40
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 24,
+				"h": 40
+			},
+			"sourceSize": {
+				"w": 24,
+				"h": 40
+			}
+		},
+		"LizardLowerTeeth2.1Broken1.png": {
+			"frame": {
+				"x": 633,
+				"y": 1731,
+				"w": 24,
+				"h": 40
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 24,
+				"h": 40
+			},
+			"sourceSize": {
+				"w": 24,
+				"h": 40
+			}
+		},
+		"LizardLowerTeeth2.1Broken2.png": {
+			"frame": {
+				"x": 659,
+				"y": 1731,
+				"w": 24,
+				"h": 40
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 24,
+				"h": 40
+			},
+			"sourceSize": {
+				"w": 24,
+				"h": 40
+			}
+		},
+		"LizardLowerTeeth2.1Broken3.png": {
+			"frame": {
+				"x": 685,
+				"y": 1731,
+				"w": 24,
+				"h": 40
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 24,
+				"h": 40
+			},
+			"sourceSize": {
+				"w": 24,
+				"h": 40
+			}
+		},
+		"LizardLowerTeeth2.1Broken4.png": {
+			"frame": {
+				"x": 711,
+				"y": 1731,
+				"w": 24,
+				"h": 40
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 24,
+				"h": 40
+			},
+			"sourceSize": {
+				"w": 24,
+				"h": 40
+			}
+		},
+		"LizardLowerTeeth2.2Broken1.png": {
+			"frame": {
+				"x": 737,
+				"y": 1729,
+				"w": 30,
+				"h": 60
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 30,
+				"h": 60
+			},
+			"sourceSize": {
+				"w": 30,
+				"h": 60
+			}
+		},
+		"LizardLowerTeeth2.2Broken2.png": {
+			"frame": {
+				"x": 769,
+				"y": 1729,
+				"w": 30,
+				"h": 60
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 30,
+				"h": 60
+			},
+			"sourceSize": {
+				"w": 30,
+				"h": 60
+			}
+		},
+		"LizardLowerTeeth2.2Broken3.png": {
+			"frame": {
+				"x": 801,
+				"y": 1729,
+				"w": 30,
+				"h": 60
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 30,
+				"h": 60
+			},
+			"sourceSize": {
+				"w": 30,
+				"h": 60
+			}
+		},
+		"LizardLowerTeeth2.2Broken4.png": {
+			"frame": {
+				"x": 833,
+				"y": 1729,
+				"w": 30,
+				"h": 60
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 30,
+				"h": 60
+			},
+			"sourceSize": {
+				"w": 30,
+				"h": 60
+			}
+		},
+		"LizardLowerTeeth3.0Broken1.png": {
+			"frame": {
+				"x": 865,
+				"y": 1731,
+				"w": 24,
+				"h": 40
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 24,
+				"h": 40
+			},
+			"sourceSize": {
+				"w": 24,
+				"h": 40
+			}
+		},
+		"LizardLowerTeeth3.0Broken2.png": {
+			"frame": {
+				"x": 891,
+				"y": 1731,
+				"w": 24,
+				"h": 40
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 24,
+				"h": 40
+			},
+			"sourceSize": {
+				"w": 24,
+				"h": 40
+			}
+		},
+		"LizardLowerTeeth3.0Broken3.png": {
+			"frame": {
+				"x": 917,
+				"y": 1731,
+				"w": 24,
+				"h": 40
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 24,
+				"h": 40
+			},
+			"sourceSize": {
+				"w": 24,
+				"h": 40
+			}
+		},
+		"LizardLowerTeeth3.0Broken4.png": {
+			"frame": {
+				"x": 943,
+				"y": 1731,
+				"w": 24,
+				"h": 40
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 24,
+				"h": 40
+			},
+			"sourceSize": {
+				"w": 24,
+				"h": 40
+			}
+		},
+		"LizardLowerTeeth3.1Broken1.png": {
+			"frame": {
+				"x": 969,
+				"y": 1731,
+				"w": 24,
+				"h": 40
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 24,
+				"h": 40
+			},
+			"sourceSize": {
+				"w": 24,
+				"h": 40
+			}
+		},
+		"LizardLowerTeeth3.1Broken2.png": {
+			"frame": {
+				"x": 995,
+				"y": 1731,
+				"w": 24,
+				"h": 40
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 24,
+				"h": 40
+			},
+			"sourceSize": {
+				"w": 24,
+				"h": 40
+			}
+		},
+		"LizardLowerTeeth3.1Broken3.png": {
+			"frame": {
+				"x": 1021,
+				"y": 1731,
+				"w": 24,
+				"h": 40
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 24,
+				"h": 40
+			},
+			"sourceSize": {
+				"w": 24,
+				"h": 40
+			}
+		},
+		"LizardLowerTeeth3.1Broken4.png": {
+			"frame": {
+				"x": 1047,
+				"y": 1731,
+				"w": 24,
+				"h": 40
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 24,
+				"h": 40
+			},
+			"sourceSize": {
+				"w": 24,
+				"h": 40
+			}
+		},
+		"LizardLowerTeeth3.2Broken1.png": {
+			"frame": {
+				"x": 1073,
+				"y": 1729,
 				"w": 30,
 				"h": 60
 			},
@@ -13782,8 +14902,8 @@
 		},
 		"LizardLowerTeeth3.2Broken2.png": {
 			"frame": {
-				"x": 1799,
-				"y": 419,
+				"x": 1105,
+				"y": 1729,
 				"w": 30,
 				"h": 60
 			},
@@ -13802,8 +14922,8 @@
 		},
 		"LizardLowerTeeth3.2Broken3.png": {
 			"frame": {
-				"x": 1787,
-				"y": 481,
+				"x": 1137,
+				"y": 1729,
 				"w": 30,
 				"h": 60
 			},
@@ -13822,8 +14942,8 @@
 		},
 		"LizardLowerTeeth3.2Broken4.png": {
 			"frame": {
-				"x": 1799,
-				"y": 543,
+				"x": 1169,
+				"y": 1729,
 				"w": 30,
 				"h": 60
 			},
@@ -13842,8 +14962,8 @@
 		},
 		"LizardUpperTeeth0.0Broken1.png": {
 			"frame": {
-				"x": 1799,
-				"y": 605,
+				"x": 1201,
+				"y": 1731,
 				"w": 24,
 				"h": 40
 			},
@@ -13862,8 +14982,8 @@
 		},
 		"LizardUpperTeeth0.0Broken3.png": {
 			"frame": {
-				"x": 1787,
-				"y": 647,
+				"x": 1227,
+				"y": 1731,
 				"w": 24,
 				"h": 40
 			},
@@ -13882,8 +15002,8 @@
 		},
 		"LizardUpperTeeth0.0Broken4.png": {
 			"frame": {
-				"x": 1799,
-				"y": 689,
+				"x": 1253,
+				"y": 1731,
 				"w": 24,
 				"h": 40
 			},
@@ -13902,8 +15022,8 @@
 		},
 		"LizardUpperTeeth0.1Broken1.png": {
 			"frame": {
-				"x": 1799,
-				"y": 731,
+				"x": 1279,
+				"y": 1731,
 				"w": 24,
 				"h": 40
 			},
@@ -13922,8 +15042,8 @@
 		},
 		"LizardUpperTeeth0.1Broken2.png": {
 			"frame": {
-				"x": 1787,
-				"y": 773,
+				"x": 1305,
+				"y": 1731,
 				"w": 24,
 				"h": 40
 			},
@@ -13942,8 +15062,8 @@
 		},
 		"LizardUpperTeeth0.1Broken3.png": {
 			"frame": {
-				"x": 1799,
-				"y": 815,
+				"x": 1331,
+				"y": 1731,
 				"w": 24,
 				"h": 40
 			},
@@ -13962,8 +15082,8 @@
 		},
 		"LizardUpperTeeth0.1Broken4.png": {
 			"frame": {
-				"x": 1799,
-				"y": 857,
+				"x": 1535,
+				"y": 1731,
 				"w": 24,
 				"h": 40
 			},
@@ -13982,8 +15102,8 @@
 		},
 		"LizardUpperTeeth0.2Broken1.png": {
 			"frame": {
-				"x": 1799,
-				"y": 899,
+				"x": 1717,
+				"y": 1729,
 				"w": 30,
 				"h": 60
 			},
@@ -14002,8 +15122,8 @@
 		},
 		"LizardUpperTeeth0.2Broken2.png": {
 			"frame": {
-				"x": 1799,
-				"y": 961,
+				"x": 1749,
+				"y": 1729,
 				"w": 30,
 				"h": 60
 			},
@@ -14022,8 +15142,8 @@
 		},
 		"LizardUpperTeeth0.2Broken3.png": {
 			"frame": {
-				"x": 1799,
-				"y": 1023,
+				"x": 1561,
+				"y": 1731,
 				"w": 30,
 				"h": 60
 			},
@@ -14042,8 +15162,8 @@
 		},
 		"LizardUpperTeeth0.2Broken4.png": {
 			"frame": {
-				"x": 1787,
-				"y": 1085,
+				"x": 1593,
+				"y": 1731,
 				"w": 30,
 				"h": 60
 			},
@@ -14062,8 +15182,8 @@
 		},
 		"LizardUpperTeeth0,0Broken2.png": {
 			"frame": {
-				"x": 1787,
-				"y": 1147,
+				"x": 1625,
+				"y": 1731,
 				"w": 24,
 				"h": 40
 			},
@@ -14082,8 +15202,8 @@
 		},
 		"LizardUpperTeeth1.0Broken1.png": {
 			"frame": {
-				"x": 1787,
-				"y": 1189,
+				"x": 1651,
+				"y": 1731,
 				"w": 24,
 				"h": 40
 			},
@@ -14102,8 +15222,8 @@
 		},
 		"LizardUpperTeeth1.0Broken2.png": {
 			"frame": {
-				"x": 1799,
-				"y": 1231,
+				"x": 1677,
+				"y": 1731,
 				"w": 24,
 				"h": 40
 			},
@@ -14122,8 +15242,8 @@
 		},
 		"LizardUpperTeeth1.0Broken3.png": {
 			"frame": {
-				"x": 1799,
-				"y": 1273,
+				"x": 1781,
+				"y": 1731,
 				"w": 24,
 				"h": 40
 			},
@@ -14142,8 +15262,8 @@
 		},
 		"LizardUpperTeeth1.0Broken4.png": {
 			"frame": {
-				"x": 1799,
-				"y": 1315,
+				"x": 193,
+				"y": 1773,
 				"w": 24,
 				"h": 40
 			},
@@ -14162,8 +15282,8 @@
 		},
 		"LizardUpperTeeth1.1Broken1.png": {
 			"frame": {
-				"x": 1787,
-				"y": 1357,
+				"x": 219,
+				"y": 1773,
 				"w": 24,
 				"h": 40
 			},
@@ -14182,8 +15302,8 @@
 		},
 		"LizardUpperTeeth1.1Broken2.png": {
 			"frame": {
-				"x": 1787,
-				"y": 1399,
+				"x": 245,
+				"y": 1773,
 				"w": 24,
 				"h": 40
 			},
@@ -14202,8 +15322,8 @@
 		},
 		"LizardUpperTeeth1.1Broken3.png": {
 			"frame": {
-				"x": 1787,
-				"y": 1441,
+				"x": 271,
+				"y": 1773,
 				"w": 24,
 				"h": 40
 			},
@@ -14222,8 +15342,8 @@
 		},
 		"LizardUpperTeeth1.1Broken4.png": {
 			"frame": {
-				"x": 1799,
-				"y": 1483,
+				"x": 297,
+				"y": 1773,
 				"w": 24,
 				"h": 40
 			},
@@ -14241,1366 +15361,6 @@
 			}
 		},
 		"LizardUpperTeeth1.2Broken1.png": {
-			"frame": {
-				"x": 1799,
-				"y": 1525,
-				"w": 30,
-				"h": 60
-			},
-			"rotated": false,
-			"trimmed": false,
-			"spriteSourceSize": {
-				"x": 0,
-				"y": 0,
-				"w": 30,
-				"h": 60
-			},
-			"sourceSize": {
-				"w": 30,
-				"h": 60
-			}
-		},
-		"LizardUpperTeeth1.2Broken2.png": {
-			"frame": {
-				"x": 1799,
-				"y": 1587,
-				"w": 30,
-				"h": 60
-			},
-			"rotated": false,
-			"trimmed": false,
-			"spriteSourceSize": {
-				"x": 0,
-				"y": 0,
-				"w": 30,
-				"h": 60
-			},
-			"sourceSize": {
-				"w": 30,
-				"h": 60
-			}
-		},
-		"LizardUpperTeeth1.2Broken3.png": {
-			"frame": {
-				"x": 1787,
-				"y": 1649,
-				"w": 30,
-				"h": 60
-			},
-			"rotated": false,
-			"trimmed": false,
-			"spriteSourceSize": {
-				"x": 0,
-				"y": 0,
-				"w": 30,
-				"h": 60
-			},
-			"sourceSize": {
-				"w": 30,
-				"h": 60
-			}
-		},
-		"LizardUpperTeeth1.2Broken4.png": {
-			"frame": {
-				"x": 1783,
-				"y": 1711,
-				"w": 30,
-				"h": 60
-			},
-			"rotated": false,
-			"trimmed": false,
-			"spriteSourceSize": {
-				"x": 0,
-				"y": 0,
-				"w": 30,
-				"h": 60
-			},
-			"sourceSize": {
-				"w": 30,
-				"h": 60
-			}
-		},
-		"LizardUpperTeeth2.0Broken1.png": {
-			"frame": {
-				"x": 1,
-				"y": 1773,
-				"w": 24,
-				"h": 40
-			},
-			"rotated": false,
-			"trimmed": false,
-			"spriteSourceSize": {
-				"x": 0,
-				"y": 0,
-				"w": 24,
-				"h": 40
-			},
-			"sourceSize": {
-				"w": 24,
-				"h": 40
-			}
-		},
-		"LizardUpperTeeth2.0Broken2.png": {
-			"frame": {
-				"x": 27,
-				"y": 1773,
-				"w": 24,
-				"h": 40
-			},
-			"rotated": false,
-			"trimmed": false,
-			"spriteSourceSize": {
-				"x": 0,
-				"y": 0,
-				"w": 24,
-				"h": 40
-			},
-			"sourceSize": {
-				"w": 24,
-				"h": 40
-			}
-		},
-		"LizardUpperTeeth2.0Broken3.png": {
-			"frame": {
-				"x": 53,
-				"y": 1773,
-				"w": 24,
-				"h": 40
-			},
-			"rotated": false,
-			"trimmed": false,
-			"spriteSourceSize": {
-				"x": 0,
-				"y": 0,
-				"w": 24,
-				"h": 40
-			},
-			"sourceSize": {
-				"w": 24,
-				"h": 40
-			}
-		},
-		"LizardUpperTeeth2.0Broken4.png": {
-			"frame": {
-				"x": 79,
-				"y": 1773,
-				"w": 24,
-				"h": 40
-			},
-			"rotated": false,
-			"trimmed": false,
-			"spriteSourceSize": {
-				"x": 0,
-				"y": 0,
-				"w": 24,
-				"h": 40
-			},
-			"sourceSize": {
-				"w": 24,
-				"h": 40
-			}
-		},
-		"LizardUpperTeeth2.1Broken1.png": {
-			"frame": {
-				"x": 105,
-				"y": 1773,
-				"w": 24,
-				"h": 40
-			},
-			"rotated": false,
-			"trimmed": false,
-			"spriteSourceSize": {
-				"x": 0,
-				"y": 0,
-				"w": 24,
-				"h": 40
-			},
-			"sourceSize": {
-				"w": 24,
-				"h": 40
-			}
-		},
-		"LizardUpperTeeth2.1Broken2.png": {
-			"frame": {
-				"x": 131,
-				"y": 1773,
-				"w": 24,
-				"h": 40
-			},
-			"rotated": false,
-			"trimmed": false,
-			"spriteSourceSize": {
-				"x": 0,
-				"y": 0,
-				"w": 24,
-				"h": 40
-			},
-			"sourceSize": {
-				"w": 24,
-				"h": 40
-			}
-		},
-		"LizardUpperTeeth2.1Broken3.png": {
-			"frame": {
-				"x": 157,
-				"y": 1773,
-				"w": 24,
-				"h": 40
-			},
-			"rotated": false,
-			"trimmed": false,
-			"spriteSourceSize": {
-				"x": 0,
-				"y": 0,
-				"w": 24,
-				"h": 40
-			},
-			"sourceSize": {
-				"w": 24,
-				"h": 40
-			}
-		},
-		"LizardUpperTeeth2.1Broken4.png": {
-			"frame": {
-				"x": 183,
-				"y": 1773,
-				"w": 24,
-				"h": 40
-			},
-			"rotated": false,
-			"trimmed": false,
-			"spriteSourceSize": {
-				"x": 0,
-				"y": 0,
-				"w": 24,
-				"h": 40
-			},
-			"sourceSize": {
-				"w": 24,
-				"h": 40
-			}
-		},
-		"LizardUpperTeeth2.2Broken1.png": {
-			"frame": {
-				"x": 209,
-				"y": 1773,
-				"w": 30,
-				"h": 60
-			},
-			"rotated": false,
-			"trimmed": false,
-			"spriteSourceSize": {
-				"x": 0,
-				"y": 0,
-				"w": 30,
-				"h": 60
-			},
-			"sourceSize": {
-				"w": 30,
-				"h": 60
-			}
-		},
-		"LizardUpperTeeth2.2Broken2.png": {
-			"frame": {
-				"x": 241,
-				"y": 1773,
-				"w": 30,
-				"h": 60
-			},
-			"rotated": false,
-			"trimmed": false,
-			"spriteSourceSize": {
-				"x": 0,
-				"y": 0,
-				"w": 30,
-				"h": 60
-			},
-			"sourceSize": {
-				"w": 30,
-				"h": 60
-			}
-		},
-		"LizardUpperTeeth2.2Broken3.png": {
-			"frame": {
-				"x": 273,
-				"y": 1773,
-				"w": 30,
-				"h": 60
-			},
-			"rotated": false,
-			"trimmed": false,
-			"spriteSourceSize": {
-				"x": 0,
-				"y": 0,
-				"w": 30,
-				"h": 60
-			},
-			"sourceSize": {
-				"w": 30,
-				"h": 60
-			}
-		},
-		"LizardUpperTeeth2.2Broken4.png": {
-			"frame": {
-				"x": 305,
-				"y": 1773,
-				"w": 30,
-				"h": 60
-			},
-			"rotated": false,
-			"trimmed": false,
-			"spriteSourceSize": {
-				"x": 0,
-				"y": 0,
-				"w": 30,
-				"h": 60
-			},
-			"sourceSize": {
-				"w": 30,
-				"h": 60
-			}
-		},
-		"LizardUpperTeeth3.0Broken1.png": {
-			"frame": {
-				"x": 337,
-				"y": 1773,
-				"w": 24,
-				"h": 40
-			},
-			"rotated": false,
-			"trimmed": false,
-			"spriteSourceSize": {
-				"x": 0,
-				"y": 0,
-				"w": 24,
-				"h": 40
-			},
-			"sourceSize": {
-				"w": 24,
-				"h": 40
-			}
-		},
-		"LizardUpperTeeth3.0Broken2.png": {
-			"frame": {
-				"x": 363,
-				"y": 1773,
-				"w": 24,
-				"h": 40
-			},
-			"rotated": false,
-			"trimmed": false,
-			"spriteSourceSize": {
-				"x": 0,
-				"y": 0,
-				"w": 24,
-				"h": 40
-			},
-			"sourceSize": {
-				"w": 24,
-				"h": 40
-			}
-		},
-		"LizardUpperTeeth3.0Broken3.png": {
-			"frame": {
-				"x": 389,
-				"y": 1773,
-				"w": 24,
-				"h": 40
-			},
-			"rotated": false,
-			"trimmed": false,
-			"spriteSourceSize": {
-				"x": 0,
-				"y": 0,
-				"w": 24,
-				"h": 40
-			},
-			"sourceSize": {
-				"w": 24,
-				"h": 40
-			}
-		},
-		"LizardUpperTeeth3.0Broken4.png": {
-			"frame": {
-				"x": 415,
-				"y": 1773,
-				"w": 24,
-				"h": 40
-			},
-			"rotated": false,
-			"trimmed": false,
-			"spriteSourceSize": {
-				"x": 0,
-				"y": 0,
-				"w": 24,
-				"h": 40
-			},
-			"sourceSize": {
-				"w": 24,
-				"h": 40
-			}
-		},
-		"LizardUpperTeeth3.1Broken1.png": {
-			"frame": {
-				"x": 441,
-				"y": 1773,
-				"w": 24,
-				"h": 40
-			},
-			"rotated": false,
-			"trimmed": false,
-			"spriteSourceSize": {
-				"x": 0,
-				"y": 0,
-				"w": 24,
-				"h": 40
-			},
-			"sourceSize": {
-				"w": 24,
-				"h": 40
-			}
-		},
-		"LizardUpperTeeth3.1Broken2.png": {
-			"frame": {
-				"x": 467,
-				"y": 1773,
-				"w": 24,
-				"h": 40
-			},
-			"rotated": false,
-			"trimmed": false,
-			"spriteSourceSize": {
-				"x": 0,
-				"y": 0,
-				"w": 24,
-				"h": 40
-			},
-			"sourceSize": {
-				"w": 24,
-				"h": 40
-			}
-		},
-		"LizardUpperTeeth3.1Broken3.png": {
-			"frame": {
-				"x": 493,
-				"y": 1773,
-				"w": 24,
-				"h": 40
-			},
-			"rotated": false,
-			"trimmed": false,
-			"spriteSourceSize": {
-				"x": 0,
-				"y": 0,
-				"w": 24,
-				"h": 40
-			},
-			"sourceSize": {
-				"w": 24,
-				"h": 40
-			}
-		},
-		"LizardUpperTeeth3.1Broken4.png": {
-			"frame": {
-				"x": 519,
-				"y": 1773,
-				"w": 24,
-				"h": 40
-			},
-			"rotated": false,
-			"trimmed": false,
-			"spriteSourceSize": {
-				"x": 0,
-				"y": 0,
-				"w": 24,
-				"h": 40
-			},
-			"sourceSize": {
-				"w": 24,
-				"h": 40
-			}
-		},
-		"LizardUpperTeeth3.2Broken1.png": {
-			"frame": {
-				"x": 545,
-				"y": 1773,
-				"w": 30,
-				"h": 60
-			},
-			"rotated": false,
-			"trimmed": false,
-			"spriteSourceSize": {
-				"x": 0,
-				"y": 0,
-				"w": 30,
-				"h": 60
-			},
-			"sourceSize": {
-				"w": 30,
-				"h": 60
-			}
-		},
-		"LizardUpperTeeth3.2Broken2.png": {
-			"frame": {
-				"x": 577,
-				"y": 1773,
-				"w": 30,
-				"h": 60
-			},
-			"rotated": false,
-			"trimmed": false,
-			"spriteSourceSize": {
-				"x": 0,
-				"y": 0,
-				"w": 30,
-				"h": 60
-			},
-			"sourceSize": {
-				"w": 30,
-				"h": 60
-			}
-		},
-		"LizardUpperTeeth3.2Broken3.png": {
-			"frame": {
-				"x": 609,
-				"y": 1773,
-				"w": 30,
-				"h": 60
-			},
-			"rotated": false,
-			"trimmed": false,
-			"spriteSourceSize": {
-				"x": 0,
-				"y": 0,
-				"w": 30,
-				"h": 60
-			},
-			"sourceSize": {
-				"w": 30,
-				"h": 60
-			}
-		},
-		"LizardUpperTeeth3.2Broken4.png": {
-			"frame": {
-				"x": 641,
-				"y": 1773,
-				"w": 30,
-				"h": 60
-			},
-			"rotated": false,
-			"trimmed": false,
-			"spriteSourceSize": {
-				"x": 0,
-				"y": 0,
-				"w": 30,
-				"h": 60
-			},
-			"sourceSize": {
-				"w": 30,
-				"h": 60
-			}
-		},
-		"RightLizardEyes0.0Cut.png": {
-			"frame": {
-				"x": 673,
-				"y": 1773,
-				"w": 24,
-				"h": 40
-			},
-			"rotated": false,
-			"trimmed": false,
-			"spriteSourceSize": {
-				"x": 0,
-				"y": 0,
-				"w": 24,
-				"h": 40
-			},
-			"sourceSize": {
-				"w": 24,
-				"h": 40
-			}
-		},
-		"RightLizardEyes0.0Normal.png": {
-			"frame": {
-				"x": 699,
-				"y": 1773,
-				"w": 24,
-				"h": 40
-			},
-			"rotated": false,
-			"trimmed": false,
-			"spriteSourceSize": {
-				"x": 0,
-				"y": 0,
-				"w": 24,
-				"h": 40
-			},
-			"sourceSize": {
-				"w": 24,
-				"h": 40
-			}
-		},
-		"RightLizardEyes0.0Scar.png": {
-			"frame": {
-				"x": 725,
-				"y": 1773,
-				"w": 24,
-				"h": 40
-			},
-			"rotated": false,
-			"trimmed": false,
-			"spriteSourceSize": {
-				"x": 0,
-				"y": 0,
-				"w": 24,
-				"h": 40
-			},
-			"sourceSize": {
-				"w": 24,
-				"h": 40
-			}
-		},
-		"RightLizardEyes0.0Scar2.png": {
-			"frame": {
-				"x": 751,
-				"y": 1773,
-				"w": 24,
-				"h": 40
-			},
-			"rotated": false,
-			"trimmed": false,
-			"spriteSourceSize": {
-				"x": 0,
-				"y": 0,
-				"w": 24,
-				"h": 40
-			},
-			"sourceSize": {
-				"w": 24,
-				"h": 40
-			}
-		},
-		"RightLizardEyes0.1Cut.png": {
-			"frame": {
-				"x": 777,
-				"y": 1773,
-				"w": 24,
-				"h": 40
-			},
-			"rotated": false,
-			"trimmed": false,
-			"spriteSourceSize": {
-				"x": 0,
-				"y": 0,
-				"w": 24,
-				"h": 40
-			},
-			"sourceSize": {
-				"w": 24,
-				"h": 40
-			}
-		},
-		"RightLizardEyes0.1Normal.png": {
-			"frame": {
-				"x": 803,
-				"y": 1773,
-				"w": 24,
-				"h": 40
-			},
-			"rotated": false,
-			"trimmed": false,
-			"spriteSourceSize": {
-				"x": 0,
-				"y": 0,
-				"w": 24,
-				"h": 40
-			},
-			"sourceSize": {
-				"w": 24,
-				"h": 40
-			}
-		},
-		"RightLizardEyes0.1Scar.png": {
-			"frame": {
-				"x": 829,
-				"y": 1773,
-				"w": 24,
-				"h": 40
-			},
-			"rotated": false,
-			"trimmed": false,
-			"spriteSourceSize": {
-				"x": 0,
-				"y": 0,
-				"w": 24,
-				"h": 40
-			},
-			"sourceSize": {
-				"w": 24,
-				"h": 40
-			}
-		},
-		"RightLizardEyes0.1Scar2.png": {
-			"frame": {
-				"x": 855,
-				"y": 1773,
-				"w": 24,
-				"h": 40
-			},
-			"rotated": false,
-			"trimmed": false,
-			"spriteSourceSize": {
-				"x": 0,
-				"y": 0,
-				"w": 24,
-				"h": 40
-			},
-			"sourceSize": {
-				"w": 24,
-				"h": 40
-			}
-		},
-		"RightLizardEyes0.2Cut.png": {
-			"frame": {
-				"x": 881,
-				"y": 1773,
-				"w": 30,
-				"h": 60
-			},
-			"rotated": false,
-			"trimmed": false,
-			"spriteSourceSize": {
-				"x": 0,
-				"y": 0,
-				"w": 30,
-				"h": 60
-			},
-			"sourceSize": {
-				"w": 30,
-				"h": 60
-			}
-		},
-		"RightLizardEyes0.2Normal.png": {
-			"frame": {
-				"x": 913,
-				"y": 1773,
-				"w": 30,
-				"h": 60
-			},
-			"rotated": false,
-			"trimmed": false,
-			"spriteSourceSize": {
-				"x": 0,
-				"y": 0,
-				"w": 30,
-				"h": 60
-			},
-			"sourceSize": {
-				"w": 30,
-				"h": 60
-			}
-		},
-		"RightLizardEyes0.2Scar.png": {
-			"frame": {
-				"x": 945,
-				"y": 1773,
-				"w": 30,
-				"h": 60
-			},
-			"rotated": false,
-			"trimmed": false,
-			"spriteSourceSize": {
-				"x": 0,
-				"y": 0,
-				"w": 30,
-				"h": 60
-			},
-			"sourceSize": {
-				"w": 30,
-				"h": 60
-			}
-		},
-		"RightLizardEyes0.2Scar2.png": {
-			"frame": {
-				"x": 977,
-				"y": 1773,
-				"w": 34,
-				"h": 60
-			},
-			"rotated": false,
-			"trimmed": false,
-			"spriteSourceSize": {
-				"x": 0,
-				"y": 0,
-				"w": 34,
-				"h": 60
-			},
-			"sourceSize": {
-				"w": 34,
-				"h": 60
-			}
-		},
-		"RightLizardEyes0.3Cut.png": {
-			"frame": {
-				"x": 1013,
-				"y": 1773,
-				"w": 30,
-				"h": 60
-			},
-			"rotated": false,
-			"trimmed": false,
-			"spriteSourceSize": {
-				"x": 0,
-				"y": 0,
-				"w": 30,
-				"h": 60
-			},
-			"sourceSize": {
-				"w": 30,
-				"h": 60
-			}
-		},
-		"RightLizardEyes0.3Normal.png": {
-			"frame": {
-				"x": 1045,
-				"y": 1773,
-				"w": 30,
-				"h": 60
-			},
-			"rotated": false,
-			"trimmed": false,
-			"spriteSourceSize": {
-				"x": 0,
-				"y": 0,
-				"w": 30,
-				"h": 60
-			},
-			"sourceSize": {
-				"w": 30,
-				"h": 60
-			}
-		},
-		"RightLizardEyes0.3Scar.png": {
-			"frame": {
-				"x": 1077,
-				"y": 1773,
-				"w": 30,
-				"h": 60
-			},
-			"rotated": false,
-			"trimmed": false,
-			"spriteSourceSize": {
-				"x": 0,
-				"y": 0,
-				"w": 30,
-				"h": 60
-			},
-			"sourceSize": {
-				"w": 30,
-				"h": 60
-			}
-		},
-		"RightLizardEyes0.3Scar2.png": {
-			"frame": {
-				"x": 1109,
-				"y": 1773,
-				"w": 34,
-				"h": 60
-			},
-			"rotated": false,
-			"trimmed": false,
-			"spriteSourceSize": {
-				"x": 0,
-				"y": 0,
-				"w": 34,
-				"h": 60
-			},
-			"sourceSize": {
-				"w": 34,
-				"h": 60
-			}
-		},
-		"RightLizardEyes1.0Cut.png": {
-			"frame": {
-				"x": 1145,
-				"y": 1773,
-				"w": 24,
-				"h": 40
-			},
-			"rotated": false,
-			"trimmed": false,
-			"spriteSourceSize": {
-				"x": 0,
-				"y": 0,
-				"w": 24,
-				"h": 40
-			},
-			"sourceSize": {
-				"w": 24,
-				"h": 40
-			}
-		},
-		"RightLizardEyes1.0Normal.png": {
-			"frame": {
-				"x": 1171,
-				"y": 1773,
-				"w": 24,
-				"h": 40
-			},
-			"rotated": false,
-			"trimmed": false,
-			"spriteSourceSize": {
-				"x": 0,
-				"y": 0,
-				"w": 24,
-				"h": 40
-			},
-			"sourceSize": {
-				"w": 24,
-				"h": 40
-			}
-		},
-		"RightLizardEyes1.0Scar.png": {
-			"frame": {
-				"x": 1197,
-				"y": 1773,
-				"w": 24,
-				"h": 40
-			},
-			"rotated": false,
-			"trimmed": false,
-			"spriteSourceSize": {
-				"x": 0,
-				"y": 0,
-				"w": 24,
-				"h": 40
-			},
-			"sourceSize": {
-				"w": 24,
-				"h": 40
-			}
-		},
-		"RightLizardEyes1.0Scar2.png": {
-			"frame": {
-				"x": 1223,
-				"y": 1773,
-				"w": 24,
-				"h": 40
-			},
-			"rotated": false,
-			"trimmed": false,
-			"spriteSourceSize": {
-				"x": 0,
-				"y": 0,
-				"w": 24,
-				"h": 40
-			},
-			"sourceSize": {
-				"w": 24,
-				"h": 40
-			}
-		},
-		"RightLizardEyes1.1Cut.png": {
-			"frame": {
-				"x": 1249,
-				"y": 1773,
-				"w": 24,
-				"h": 40
-			},
-			"rotated": false,
-			"trimmed": false,
-			"spriteSourceSize": {
-				"x": 0,
-				"y": 0,
-				"w": 24,
-				"h": 40
-			},
-			"sourceSize": {
-				"w": 24,
-				"h": 40
-			}
-		},
-		"RightLizardEyes1.1Normal.png": {
-			"frame": {
-				"x": 1275,
-				"y": 1773,
-				"w": 24,
-				"h": 40
-			},
-			"rotated": false,
-			"trimmed": false,
-			"spriteSourceSize": {
-				"x": 0,
-				"y": 0,
-				"w": 24,
-				"h": 40
-			},
-			"sourceSize": {
-				"w": 24,
-				"h": 40
-			}
-		},
-		"RightLizardEyes1.1Scar.png": {
-			"frame": {
-				"x": 1301,
-				"y": 1773,
-				"w": 24,
-				"h": 40
-			},
-			"rotated": false,
-			"trimmed": false,
-			"spriteSourceSize": {
-				"x": 0,
-				"y": 0,
-				"w": 24,
-				"h": 40
-			},
-			"sourceSize": {
-				"w": 24,
-				"h": 40
-			}
-		},
-		"RightLizardEyes1.1Scar2.png": {
-			"frame": {
-				"x": 1327,
-				"y": 1773,
-				"w": 24,
-				"h": 40
-			},
-			"rotated": false,
-			"trimmed": false,
-			"spriteSourceSize": {
-				"x": 0,
-				"y": 0,
-				"w": 24,
-				"h": 40
-			},
-			"sourceSize": {
-				"w": 24,
-				"h": 40
-			}
-		},
-		"RightLizardEyes1.2Cut.png": {
-			"frame": {
-				"x": 1353,
-				"y": 1773,
-				"w": 30,
-				"h": 60
-			},
-			"rotated": false,
-			"trimmed": false,
-			"spriteSourceSize": {
-				"x": 0,
-				"y": 0,
-				"w": 30,
-				"h": 60
-			},
-			"sourceSize": {
-				"w": 30,
-				"h": 60
-			}
-		},
-		"RightLizardEyes1.2Normal.png": {
-			"frame": {
-				"x": 1385,
-				"y": 1773,
-				"w": 30,
-				"h": 60
-			},
-			"rotated": false,
-			"trimmed": false,
-			"spriteSourceSize": {
-				"x": 0,
-				"y": 0,
-				"w": 30,
-				"h": 60
-			},
-			"sourceSize": {
-				"w": 30,
-				"h": 60
-			}
-		},
-		"RightLizardEyes1.2Scar.png": {
-			"frame": {
-				"x": 1417,
-				"y": 1773,
-				"w": 30,
-				"h": 60
-			},
-			"rotated": false,
-			"trimmed": false,
-			"spriteSourceSize": {
-				"x": 0,
-				"y": 0,
-				"w": 30,
-				"h": 60
-			},
-			"sourceSize": {
-				"w": 30,
-				"h": 60
-			}
-		},
-		"RightLizardEyes1.2Scar2.png": {
-			"frame": {
-				"x": 1449,
-				"y": 1773,
-				"w": 34,
-				"h": 60
-			},
-			"rotated": false,
-			"trimmed": false,
-			"spriteSourceSize": {
-				"x": 0,
-				"y": 0,
-				"w": 34,
-				"h": 60
-			},
-			"sourceSize": {
-				"w": 34,
-				"h": 60
-			}
-		},
-		"RightLizardEyes1.3Cut.png": {
-			"frame": {
-				"x": 1485,
-				"y": 1773,
-				"w": 30,
-				"h": 60
-			},
-			"rotated": false,
-			"trimmed": false,
-			"spriteSourceSize": {
-				"x": 0,
-				"y": 0,
-				"w": 30,
-				"h": 60
-			},
-			"sourceSize": {
-				"w": 30,
-				"h": 60
-			}
-		},
-		"RightLizardEyes1.3Normal.png": {
-			"frame": {
-				"x": 1517,
-				"y": 1773,
-				"w": 30,
-				"h": 60
-			},
-			"rotated": false,
-			"trimmed": false,
-			"spriteSourceSize": {
-				"x": 0,
-				"y": 0,
-				"w": 30,
-				"h": 60
-			},
-			"sourceSize": {
-				"w": 30,
-				"h": 60
-			}
-		},
-		"RightLizardEyes1.3Scar.png": {
-			"frame": {
-				"x": 1549,
-				"y": 1773,
-				"w": 30,
-				"h": 60
-			},
-			"rotated": false,
-			"trimmed": false,
-			"spriteSourceSize": {
-				"x": 0,
-				"y": 0,
-				"w": 30,
-				"h": 60
-			},
-			"sourceSize": {
-				"w": 30,
-				"h": 60
-			}
-		},
-		"RightLizardEyes1.3Scar2.png": {
-			"frame": {
-				"x": 1581,
-				"y": 1773,
-				"w": 34,
-				"h": 60
-			},
-			"rotated": false,
-			"trimmed": false,
-			"spriteSourceSize": {
-				"x": 0,
-				"y": 0,
-				"w": 34,
-				"h": 60
-			},
-			"sourceSize": {
-				"w": 34,
-				"h": 60
-			}
-		},
-		"RightLizardEyes2.0Cut.png": {
-			"frame": {
-				"x": 1617,
-				"y": 1773,
-				"w": 24,
-				"h": 40
-			},
-			"rotated": false,
-			"trimmed": false,
-			"spriteSourceSize": {
-				"x": 0,
-				"y": 0,
-				"w": 24,
-				"h": 40
-			},
-			"sourceSize": {
-				"w": 24,
-				"h": 40
-			}
-		},
-		"RightLizardEyes2.0Normal.png": {
-			"frame": {
-				"x": 1643,
-				"y": 1773,
-				"w": 24,
-				"h": 40
-			},
-			"rotated": false,
-			"trimmed": false,
-			"spriteSourceSize": {
-				"x": 0,
-				"y": 0,
-				"w": 24,
-				"h": 40
-			},
-			"sourceSize": {
-				"w": 24,
-				"h": 40
-			}
-		},
-		"RightLizardEyes2.0Scar.png": {
-			"frame": {
-				"x": 1669,
-				"y": 1773,
-				"w": 24,
-				"h": 40
-			},
-			"rotated": false,
-			"trimmed": false,
-			"spriteSourceSize": {
-				"x": 0,
-				"y": 0,
-				"w": 24,
-				"h": 40
-			},
-			"sourceSize": {
-				"w": 24,
-				"h": 40
-			}
-		},
-		"RightLizardEyes2.0Scar2.png": {
-			"frame": {
-				"x": 1695,
-				"y": 1773,
-				"w": 24,
-				"h": 40
-			},
-			"rotated": false,
-			"trimmed": false,
-			"spriteSourceSize": {
-				"x": 0,
-				"y": 0,
-				"w": 24,
-				"h": 40
-			},
-			"sourceSize": {
-				"w": 24,
-				"h": 40
-			}
-		},
-		"RightLizardEyes2.1Cut.png": {
-			"frame": {
-				"x": 1721,
-				"y": 1773,
-				"w": 24,
-				"h": 40
-			},
-			"rotated": false,
-			"trimmed": false,
-			"spriteSourceSize": {
-				"x": 0,
-				"y": 0,
-				"w": 24,
-				"h": 40
-			},
-			"sourceSize": {
-				"w": 24,
-				"h": 40
-			}
-		},
-		"RightLizardEyes2.1Normal.png": {
-			"frame": {
-				"x": 1747,
-				"y": 1773,
-				"w": 24,
-				"h": 40
-			},
-			"rotated": false,
-			"trimmed": false,
-			"spriteSourceSize": {
-				"x": 0,
-				"y": 0,
-				"w": 24,
-				"h": 40
-			},
-			"sourceSize": {
-				"w": 24,
-				"h": 40
-			}
-		},
-		"RightLizardEyes2.1Scar.png": {
-			"frame": {
-				"x": 1773,
-				"y": 1773,
-				"w": 24,
-				"h": 40
-			},
-			"rotated": false,
-			"trimmed": false,
-			"spriteSourceSize": {
-				"x": 0,
-				"y": 0,
-				"w": 24,
-				"h": 40
-			},
-			"sourceSize": {
-				"w": 24,
-				"h": 40
-			}
-		},
-		"RightLizardEyes2.1Scar2.png": {
-			"frame": {
-				"x": 1799,
-				"y": 1773,
-				"w": 24,
-				"h": 40
-			},
-			"rotated": false,
-			"trimmed": false,
-			"spriteSourceSize": {
-				"x": 0,
-				"y": 0,
-				"w": 24,
-				"h": 40
-			},
-			"sourceSize": {
-				"w": 24,
-				"h": 40
-			}
-		},
-		"RightLizardEyes2.2Cut.png": {
 			"frame": {
 				"x": 1821,
 				"y": 1,
@@ -15620,9 +15380,9 @@
 				"h": 60
 			}
 		},
-		"RightLizardEyes2.2Normal.png": {
+		"LizardUpperTeeth1.2Broken2.png": {
 			"frame": {
-				"x": 1837,
+				"x": 1829,
 				"y": 63,
 				"w": 30,
 				"h": 60
@@ -15640,9 +15400,9 @@
 				"h": 60
 			}
 		},
-		"RightLizardEyes2.2Scar.png": {
+		"LizardUpperTeeth1.2Broken3.png": {
 			"frame": {
-				"x": 1823,
+				"x": 1829,
 				"y": 125,
 				"w": 30,
 				"h": 60
@@ -15660,30 +15420,10 @@
 				"h": 60
 			}
 		},
-		"RightLizardEyes2.2Scar2.png": {
+		"LizardUpperTeeth1.2Broken4.png": {
 			"frame": {
-				"x": 1825,
+				"x": 1829,
 				"y": 187,
-				"w": 34,
-				"h": 60
-			},
-			"rotated": false,
-			"trimmed": false,
-			"spriteSourceSize": {
-				"x": 0,
-				"y": 0,
-				"w": 34,
-				"h": 60
-			},
-			"sourceSize": {
-				"w": 34,
-				"h": 60
-			}
-		},
-		"RightLizardEyes2.3Cut.png": {
-			"frame": {
-				"x": 1825,
-				"y": 249,
 				"w": 30,
 				"h": 60
 			},
@@ -15700,67 +15440,7 @@
 				"h": 60
 			}
 		},
-		"RightLizardEyes2.3Normal.png": {
-			"frame": {
-				"x": 1831,
-				"y": 311,
-				"w": 30,
-				"h": 60
-			},
-			"rotated": false,
-			"trimmed": false,
-			"spriteSourceSize": {
-				"x": 0,
-				"y": 0,
-				"w": 30,
-				"h": 60
-			},
-			"sourceSize": {
-				"w": 30,
-				"h": 60
-			}
-		},
-		"RightLizardEyes2.3Scar.png": {
-			"frame": {
-				"x": 1831,
-				"y": 373,
-				"w": 30,
-				"h": 60
-			},
-			"rotated": false,
-			"trimmed": false,
-			"spriteSourceSize": {
-				"x": 0,
-				"y": 0,
-				"w": 30,
-				"h": 60
-			},
-			"sourceSize": {
-				"w": 30,
-				"h": 60
-			}
-		},
-		"RightLizardEyes2.3Scar2.png": {
-			"frame": {
-				"x": 1831,
-				"y": 435,
-				"w": 34,
-				"h": 60
-			},
-			"rotated": false,
-			"trimmed": false,
-			"spriteSourceSize": {
-				"x": 0,
-				"y": 0,
-				"w": 34,
-				"h": 60
-			},
-			"sourceSize": {
-				"w": 34,
-				"h": 60
-			}
-		},
-		"RightLizardEyes3.0Cut.png": {
+		"LizardUpperTeeth2.0Broken1.png": {
 			"frame": {
 				"x": 1,
 				"y": 125,
@@ -15780,7 +15460,7 @@
 				"h": 40
 			}
 		},
-		"RightLizardEyes3.0Normal.png": {
+		"LizardUpperTeeth2.0Broken2.png": {
 			"frame": {
 				"x": 27,
 				"y": 125,
@@ -15800,10 +15480,1450 @@
 				"h": 40
 			}
 		},
+		"LizardUpperTeeth2.0Broken3.png": {
+			"frame": {
+				"x": 1825,
+				"y": 249,
+				"w": 24,
+				"h": 40
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 24,
+				"h": 40
+			},
+			"sourceSize": {
+				"w": 24,
+				"h": 40
+			}
+		},
+		"LizardUpperTeeth2.0Broken4.png": {
+			"frame": {
+				"x": 1825,
+				"y": 291,
+				"w": 24,
+				"h": 40
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 24,
+				"h": 40
+			},
+			"sourceSize": {
+				"w": 24,
+				"h": 40
+			}
+		},
+		"LizardUpperTeeth2.1Broken1.png": {
+			"frame": {
+				"x": 1825,
+				"y": 333,
+				"w": 24,
+				"h": 40
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 24,
+				"h": 40
+			},
+			"sourceSize": {
+				"w": 24,
+				"h": 40
+			}
+		},
+		"LizardUpperTeeth2.1Broken2.png": {
+			"frame": {
+				"x": 1825,
+				"y": 375,
+				"w": 24,
+				"h": 40
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 24,
+				"h": 40
+			},
+			"sourceSize": {
+				"w": 24,
+				"h": 40
+			}
+		},
+		"LizardUpperTeeth2.1Broken3.png": {
+			"frame": {
+				"x": 1825,
+				"y": 417,
+				"w": 24,
+				"h": 40
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 24,
+				"h": 40
+			},
+			"sourceSize": {
+				"w": 24,
+				"h": 40
+			}
+		},
+		"LizardUpperTeeth2.1Broken4.png": {
+			"frame": {
+				"x": 1825,
+				"y": 459,
+				"w": 24,
+				"h": 40
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 24,
+				"h": 40
+			},
+			"sourceSize": {
+				"w": 24,
+				"h": 40
+			}
+		},
+		"LizardUpperTeeth2.2Broken1.png": {
+			"frame": {
+				"x": 1825,
+				"y": 501,
+				"w": 30,
+				"h": 60
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 30,
+				"h": 60
+			},
+			"sourceSize": {
+				"w": 30,
+				"h": 60
+			}
+		},
+		"LizardUpperTeeth2.2Broken2.png": {
+			"frame": {
+				"x": 1827,
+				"y": 563,
+				"w": 30,
+				"h": 60
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 30,
+				"h": 60
+			},
+			"sourceSize": {
+				"w": 30,
+				"h": 60
+			}
+		},
+		"LizardUpperTeeth2.2Broken3.png": {
+			"frame": {
+				"x": 1807,
+				"y": 625,
+				"w": 30,
+				"h": 60
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 30,
+				"h": 60
+			},
+			"sourceSize": {
+				"w": 30,
+				"h": 60
+			}
+		},
+		"LizardUpperTeeth2.2Broken4.png": {
+			"frame": {
+				"x": 1829,
+				"y": 687,
+				"w": 30,
+				"h": 60
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 30,
+				"h": 60
+			},
+			"sourceSize": {
+				"w": 30,
+				"h": 60
+			}
+		},
+		"LizardUpperTeeth3.0Broken1.png": {
+			"frame": {
+				"x": 1829,
+				"y": 749,
+				"w": 24,
+				"h": 40
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 24,
+				"h": 40
+			},
+			"sourceSize": {
+				"w": 24,
+				"h": 40
+			}
+		},
+		"LizardUpperTeeth3.0Broken2.png": {
+			"frame": {
+				"x": 1829,
+				"y": 791,
+				"w": 24,
+				"h": 40
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 24,
+				"h": 40
+			},
+			"sourceSize": {
+				"w": 24,
+				"h": 40
+			}
+		},
+		"LizardUpperTeeth3.0Broken3.png": {
+			"frame": {
+				"x": 1825,
+				"y": 833,
+				"w": 24,
+				"h": 40
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 24,
+				"h": 40
+			},
+			"sourceSize": {
+				"w": 24,
+				"h": 40
+			}
+		},
+		"LizardUpperTeeth3.0Broken4.png": {
+			"frame": {
+				"x": 1825,
+				"y": 875,
+				"w": 24,
+				"h": 40
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 24,
+				"h": 40
+			},
+			"sourceSize": {
+				"w": 24,
+				"h": 40
+			}
+		},
+		"LizardUpperTeeth3.1Broken1.png": {
+			"frame": {
+				"x": 1825,
+				"y": 917,
+				"w": 24,
+				"h": 40
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 24,
+				"h": 40
+			},
+			"sourceSize": {
+				"w": 24,
+				"h": 40
+			}
+		},
+		"LizardUpperTeeth3.1Broken2.png": {
+			"frame": {
+				"x": 1829,
+				"y": 959,
+				"w": 24,
+				"h": 40
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 24,
+				"h": 40
+			},
+			"sourceSize": {
+				"w": 24,
+				"h": 40
+			}
+		},
+		"LizardUpperTeeth3.1Broken3.png": {
+			"frame": {
+				"x": 1829,
+				"y": 1001,
+				"w": 24,
+				"h": 40
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 24,
+				"h": 40
+			},
+			"sourceSize": {
+				"w": 24,
+				"h": 40
+			}
+		},
+		"LizardUpperTeeth3.1Broken4.png": {
+			"frame": {
+				"x": 1829,
+				"y": 1043,
+				"w": 24,
+				"h": 40
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 24,
+				"h": 40
+			},
+			"sourceSize": {
+				"w": 24,
+				"h": 40
+			}
+		},
+		"LizardUpperTeeth3.2Broken1.png": {
+			"frame": {
+				"x": 1829,
+				"y": 1085,
+				"w": 30,
+				"h": 60
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 30,
+				"h": 60
+			},
+			"sourceSize": {
+				"w": 30,
+				"h": 60
+			}
+		},
+		"LizardUpperTeeth3.2Broken2.png": {
+			"frame": {
+				"x": 1825,
+				"y": 1147,
+				"w": 30,
+				"h": 60
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 30,
+				"h": 60
+			},
+			"sourceSize": {
+				"w": 30,
+				"h": 60
+			}
+		},
+		"LizardUpperTeeth3.2Broken3.png": {
+			"frame": {
+				"x": 1825,
+				"y": 1209,
+				"w": 30,
+				"h": 60
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 30,
+				"h": 60
+			},
+			"sourceSize": {
+				"w": 30,
+				"h": 60
+			}
+		},
+		"LizardUpperTeeth3.2Broken4.png": {
+			"frame": {
+				"x": 1825,
+				"y": 1271,
+				"w": 30,
+				"h": 60
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 30,
+				"h": 60
+			},
+			"sourceSize": {
+				"w": 30,
+				"h": 60
+			}
+		},
+		"RightLizardEyes0.0Cut.png": {
+			"frame": {
+				"x": 1825,
+				"y": 1333,
+				"w": 24,
+				"h": 40
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 24,
+				"h": 40
+			},
+			"sourceSize": {
+				"w": 24,
+				"h": 40
+			}
+		},
+		"RightLizardEyes0.0Normal.png": {
+			"frame": {
+				"x": 1813,
+				"y": 1375,
+				"w": 24,
+				"h": 40
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 24,
+				"h": 40
+			},
+			"sourceSize": {
+				"w": 24,
+				"h": 40
+			}
+		},
+		"RightLizardEyes0.0Scar.png": {
+			"frame": {
+				"x": 1819,
+				"y": 1417,
+				"w": 24,
+				"h": 40
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 24,
+				"h": 40
+			},
+			"sourceSize": {
+				"w": 24,
+				"h": 40
+			}
+		},
+		"RightLizardEyes0.0Scar2.png": {
+			"frame": {
+				"x": 1825,
+				"y": 1459,
+				"w": 24,
+				"h": 40
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 24,
+				"h": 40
+			},
+			"sourceSize": {
+				"w": 24,
+				"h": 40
+			}
+		},
+		"RightLizardEyes0.1Cut.png": {
+			"frame": {
+				"x": 1825,
+				"y": 1501,
+				"w": 24,
+				"h": 40
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 24,
+				"h": 40
+			},
+			"sourceSize": {
+				"w": 24,
+				"h": 40
+			}
+		},
+		"RightLizardEyes0.1Normal.png": {
+			"frame": {
+				"x": 1825,
+				"y": 1543,
+				"w": 24,
+				"h": 40
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 24,
+				"h": 40
+			},
+			"sourceSize": {
+				"w": 24,
+				"h": 40
+			}
+		},
+		"RightLizardEyes0.1Scar.png": {
+			"frame": {
+				"x": 1825,
+				"y": 1585,
+				"w": 24,
+				"h": 40
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 24,
+				"h": 40
+			},
+			"sourceSize": {
+				"w": 24,
+				"h": 40
+			}
+		},
+		"RightLizardEyes0.1Scar2.png": {
+			"frame": {
+				"x": 1825,
+				"y": 1627,
+				"w": 24,
+				"h": 40
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 24,
+				"h": 40
+			},
+			"sourceSize": {
+				"w": 24,
+				"h": 40
+			}
+		},
+		"RightLizardEyes0.2Cut.png": {
+			"frame": {
+				"x": 1825,
+				"y": 1669,
+				"w": 30,
+				"h": 60
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 30,
+				"h": 60
+			},
+			"sourceSize": {
+				"w": 30,
+				"h": 60
+			}
+		},
+		"RightLizardEyes0.2Normal.png": {
+			"frame": {
+				"x": 1807,
+				"y": 1731,
+				"w": 30,
+				"h": 60
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 30,
+				"h": 60
+			},
+			"sourceSize": {
+				"w": 30,
+				"h": 60
+			}
+		},
+		"RightLizardEyes0.2Scar.png": {
+			"frame": {
+				"x": 1,
+				"y": 1793,
+				"w": 30,
+				"h": 60
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 30,
+				"h": 60
+			},
+			"sourceSize": {
+				"w": 30,
+				"h": 60
+			}
+		},
+		"RightLizardEyes0.2Scar2.png": {
+			"frame": {
+				"x": 33,
+				"y": 1793,
+				"w": 34,
+				"h": 60
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 34,
+				"h": 60
+			},
+			"sourceSize": {
+				"w": 34,
+				"h": 60
+			}
+		},
+		"RightLizardEyes0.3Cut.png": {
+			"frame": {
+				"x": 69,
+				"y": 1793,
+				"w": 30,
+				"h": 60
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 30,
+				"h": 60
+			},
+			"sourceSize": {
+				"w": 30,
+				"h": 60
+			}
+		},
+		"RightLizardEyes0.3Normal.png": {
+			"frame": {
+				"x": 101,
+				"y": 1793,
+				"w": 30,
+				"h": 60
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 30,
+				"h": 60
+			},
+			"sourceSize": {
+				"w": 30,
+				"h": 60
+			}
+		},
+		"RightLizardEyes0.3Scar.png": {
+			"frame": {
+				"x": 133,
+				"y": 1793,
+				"w": 30,
+				"h": 60
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 30,
+				"h": 60
+			},
+			"sourceSize": {
+				"w": 30,
+				"h": 60
+			}
+		},
+		"RightLizardEyes0.3Scar2.png": {
+			"frame": {
+				"x": 323,
+				"y": 1793,
+				"w": 34,
+				"h": 60
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 34,
+				"h": 60
+			},
+			"sourceSize": {
+				"w": 34,
+				"h": 60
+			}
+		},
+		"RightLizardEyes1.0Cut.png": {
+			"frame": {
+				"x": 165,
+				"y": 1793,
+				"w": 24,
+				"h": 40
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 24,
+				"h": 40
+			},
+			"sourceSize": {
+				"w": 24,
+				"h": 40
+			}
+		},
+		"RightLizardEyes1.0Normal.png": {
+			"frame": {
+				"x": 359,
+				"y": 1793,
+				"w": 24,
+				"h": 40
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 24,
+				"h": 40
+			},
+			"sourceSize": {
+				"w": 24,
+				"h": 40
+			}
+		},
+		"RightLizardEyes1.0Scar.png": {
+			"frame": {
+				"x": 385,
+				"y": 1793,
+				"w": 24,
+				"h": 40
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 24,
+				"h": 40
+			},
+			"sourceSize": {
+				"w": 24,
+				"h": 40
+			}
+		},
+		"RightLizardEyes1.0Scar2.png": {
+			"frame": {
+				"x": 411,
+				"y": 1793,
+				"w": 24,
+				"h": 40
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 24,
+				"h": 40
+			},
+			"sourceSize": {
+				"w": 24,
+				"h": 40
+			}
+		},
+		"RightLizardEyes1.1Cut.png": {
+			"frame": {
+				"x": 437,
+				"y": 1793,
+				"w": 24,
+				"h": 40
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 24,
+				"h": 40
+			},
+			"sourceSize": {
+				"w": 24,
+				"h": 40
+			}
+		},
+		"RightLizardEyes1.1Normal.png": {
+			"frame": {
+				"x": 463,
+				"y": 1793,
+				"w": 24,
+				"h": 40
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 24,
+				"h": 40
+			},
+			"sourceSize": {
+				"w": 24,
+				"h": 40
+			}
+		},
+		"RightLizardEyes1.1Scar.png": {
+			"frame": {
+				"x": 489,
+				"y": 1793,
+				"w": 24,
+				"h": 40
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 24,
+				"h": 40
+			},
+			"sourceSize": {
+				"w": 24,
+				"h": 40
+			}
+		},
+		"RightLizardEyes1.1Scar2.png": {
+			"frame": {
+				"x": 515,
+				"y": 1793,
+				"w": 24,
+				"h": 40
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 24,
+				"h": 40
+			},
+			"sourceSize": {
+				"w": 24,
+				"h": 40
+			}
+		},
+		"RightLizardEyes1.2Cut.png": {
+			"frame": {
+				"x": 541,
+				"y": 1793,
+				"w": 30,
+				"h": 60
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 30,
+				"h": 60
+			},
+			"sourceSize": {
+				"w": 30,
+				"h": 60
+			}
+		},
+		"RightLizardEyes1.2Normal.png": {
+			"frame": {
+				"x": 573,
+				"y": 1793,
+				"w": 30,
+				"h": 60
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 30,
+				"h": 60
+			},
+			"sourceSize": {
+				"w": 30,
+				"h": 60
+			}
+		},
+		"RightLizardEyes1.2Scar.png": {
+			"frame": {
+				"x": 605,
+				"y": 1793,
+				"w": 30,
+				"h": 60
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 30,
+				"h": 60
+			},
+			"sourceSize": {
+				"w": 30,
+				"h": 60
+			}
+		},
+		"RightLizardEyes1.2Scar2.png": {
+			"frame": {
+				"x": 637,
+				"y": 1793,
+				"w": 34,
+				"h": 60
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 34,
+				"h": 60
+			},
+			"sourceSize": {
+				"w": 34,
+				"h": 60
+			}
+		},
+		"RightLizardEyes1.3Cut.png": {
+			"frame": {
+				"x": 673,
+				"y": 1793,
+				"w": 30,
+				"h": 60
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 30,
+				"h": 60
+			},
+			"sourceSize": {
+				"w": 30,
+				"h": 60
+			}
+		},
+		"RightLizardEyes1.3Normal.png": {
+			"frame": {
+				"x": 705,
+				"y": 1793,
+				"w": 30,
+				"h": 60
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 30,
+				"h": 60
+			},
+			"sourceSize": {
+				"w": 30,
+				"h": 60
+			}
+		},
+		"RightLizardEyes1.3Scar.png": {
+			"frame": {
+				"x": 737,
+				"y": 1793,
+				"w": 30,
+				"h": 60
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 30,
+				"h": 60
+			},
+			"sourceSize": {
+				"w": 30,
+				"h": 60
+			}
+		},
+		"RightLizardEyes1.3Scar2.png": {
+			"frame": {
+				"x": 769,
+				"y": 1793,
+				"w": 34,
+				"h": 60
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 34,
+				"h": 60
+			},
+			"sourceSize": {
+				"w": 34,
+				"h": 60
+			}
+		},
+		"RightLizardEyes2.0Cut.png": {
+			"frame": {
+				"x": 805,
+				"y": 1793,
+				"w": 24,
+				"h": 40
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 24,
+				"h": 40
+			},
+			"sourceSize": {
+				"w": 24,
+				"h": 40
+			}
+		},
+		"RightLizardEyes2.0Normal.png": {
+			"frame": {
+				"x": 831,
+				"y": 1793,
+				"w": 24,
+				"h": 40
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 24,
+				"h": 40
+			},
+			"sourceSize": {
+				"w": 24,
+				"h": 40
+			}
+		},
+		"RightLizardEyes2.0Scar.png": {
+			"frame": {
+				"x": 857,
+				"y": 1793,
+				"w": 24,
+				"h": 40
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 24,
+				"h": 40
+			},
+			"sourceSize": {
+				"w": 24,
+				"h": 40
+			}
+		},
+		"RightLizardEyes2.0Scar2.png": {
+			"frame": {
+				"x": 883,
+				"y": 1793,
+				"w": 24,
+				"h": 40
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 24,
+				"h": 40
+			},
+			"sourceSize": {
+				"w": 24,
+				"h": 40
+			}
+		},
+		"RightLizardEyes2.1Cut.png": {
+			"frame": {
+				"x": 909,
+				"y": 1793,
+				"w": 24,
+				"h": 40
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 24,
+				"h": 40
+			},
+			"sourceSize": {
+				"w": 24,
+				"h": 40
+			}
+		},
+		"RightLizardEyes2.1Normal.png": {
+			"frame": {
+				"x": 935,
+				"y": 1793,
+				"w": 24,
+				"h": 40
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 24,
+				"h": 40
+			},
+			"sourceSize": {
+				"w": 24,
+				"h": 40
+			}
+		},
+		"RightLizardEyes2.1Scar.png": {
+			"frame": {
+				"x": 961,
+				"y": 1793,
+				"w": 24,
+				"h": 40
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 24,
+				"h": 40
+			},
+			"sourceSize": {
+				"w": 24,
+				"h": 40
+			}
+		},
+		"RightLizardEyes2.1Scar2.png": {
+			"frame": {
+				"x": 987,
+				"y": 1793,
+				"w": 24,
+				"h": 40
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 24,
+				"h": 40
+			},
+			"sourceSize": {
+				"w": 24,
+				"h": 40
+			}
+		},
+		"RightLizardEyes2.2Cut.png": {
+			"frame": {
+				"x": 1013,
+				"y": 1793,
+				"w": 30,
+				"h": 60
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 30,
+				"h": 60
+			},
+			"sourceSize": {
+				"w": 30,
+				"h": 60
+			}
+		},
+		"RightLizardEyes2.2Normal.png": {
+			"frame": {
+				"x": 1045,
+				"y": 1793,
+				"w": 30,
+				"h": 60
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 30,
+				"h": 60
+			},
+			"sourceSize": {
+				"w": 30,
+				"h": 60
+			}
+		},
+		"RightLizardEyes2.2Scar.png": {
+			"frame": {
+				"x": 1077,
+				"y": 1793,
+				"w": 30,
+				"h": 60
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 30,
+				"h": 60
+			},
+			"sourceSize": {
+				"w": 30,
+				"h": 60
+			}
+		},
+		"RightLizardEyes2.2Scar2.png": {
+			"frame": {
+				"x": 1109,
+				"y": 1793,
+				"w": 34,
+				"h": 60
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 34,
+				"h": 60
+			},
+			"sourceSize": {
+				"w": 34,
+				"h": 60
+			}
+		},
+		"RightLizardEyes2.3Cut.png": {
+			"frame": {
+				"x": 1145,
+				"y": 1793,
+				"w": 30,
+				"h": 60
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 30,
+				"h": 60
+			},
+			"sourceSize": {
+				"w": 30,
+				"h": 60
+			}
+		},
+		"RightLizardEyes2.3Normal.png": {
+			"frame": {
+				"x": 1177,
+				"y": 1793,
+				"w": 30,
+				"h": 60
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 30,
+				"h": 60
+			},
+			"sourceSize": {
+				"w": 30,
+				"h": 60
+			}
+		},
+		"RightLizardEyes2.3Scar.png": {
+			"frame": {
+				"x": 1209,
+				"y": 1793,
+				"w": 30,
+				"h": 60
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 30,
+				"h": 60
+			},
+			"sourceSize": {
+				"w": 30,
+				"h": 60
+			}
+		},
+		"RightLizardEyes2.3Scar2.png": {
+			"frame": {
+				"x": 1241,
+				"y": 1793,
+				"w": 34,
+				"h": 60
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 34,
+				"h": 60
+			},
+			"sourceSize": {
+				"w": 34,
+				"h": 60
+			}
+		},
+		"RightLizardEyes3.0Cut.png": {
+			"frame": {
+				"x": 1277,
+				"y": 1793,
+				"w": 24,
+				"h": 40
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 24,
+				"h": 40
+			},
+			"sourceSize": {
+				"w": 24,
+				"h": 40
+			}
+		},
+		"RightLizardEyes3.0Normal.png": {
+			"frame": {
+				"x": 1303,
+				"y": 1793,
+				"w": 24,
+				"h": 40
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 24,
+				"h": 40
+			},
+			"sourceSize": {
+				"w": 24,
+				"h": 40
+			}
+		},
 		"RightLizardEyes3.0Scar.png": {
 			"frame": {
-				"x": 53,
-				"y": 125,
+				"x": 1329,
+				"y": 1793,
 				"w": 24,
 				"h": 40
 			},
@@ -15822,8 +16942,8 @@
 		},
 		"RightLizardEyes3.0Scar2.png": {
 			"frame": {
-				"x": 1819,
-				"y": 497,
+				"x": 1355,
+				"y": 1793,
 				"w": 24,
 				"h": 40
 			},
@@ -15842,8 +16962,8 @@
 		},
 		"RightLizardEyes3.1Cut.png": {
 			"frame": {
-				"x": 1831,
-				"y": 539,
+				"x": 1381,
+				"y": 1793,
 				"w": 24,
 				"h": 40
 			},
@@ -15862,8 +16982,8 @@
 		},
 		"RightLizardEyes3.1Normal.png": {
 			"frame": {
-				"x": 1831,
-				"y": 581,
+				"x": 1407,
+				"y": 1793,
 				"w": 24,
 				"h": 40
 			},
@@ -15882,8 +17002,8 @@
 		},
 		"RightLizardEyes3.1Scar.png": {
 			"frame": {
-				"x": 1825,
-				"y": 623,
+				"x": 1433,
+				"y": 1793,
 				"w": 24,
 				"h": 40
 			},
@@ -15902,8 +17022,8 @@
 		},
 		"RightLizardEyes3.1Scar2.png": {
 			"frame": {
-				"x": 1825,
-				"y": 665,
+				"x": 1459,
+				"y": 1793,
 				"w": 24,
 				"h": 40
 			},
@@ -15922,8 +17042,8 @@
 		},
 		"RightLizardEyes3.2Cut.png": {
 			"frame": {
-				"x": 1825,
-				"y": 707,
+				"x": 1485,
+				"y": 1793,
 				"w": 30,
 				"h": 60
 			},
@@ -15942,8 +17062,8 @@
 		},
 		"RightLizardEyes3.2Normal.png": {
 			"frame": {
-				"x": 1825,
-				"y": 769,
+				"x": 1517,
+				"y": 1793,
 				"w": 30,
 				"h": 60
 			},
@@ -15962,8 +17082,8 @@
 		},
 		"RightLizardEyes3.2Scar.png": {
 			"frame": {
-				"x": 1825,
-				"y": 831,
+				"x": 1549,
+				"y": 1793,
 				"w": 30,
 				"h": 60
 			},
@@ -15982,8 +17102,8 @@
 		},
 		"RightLizardEyes3.2Scar2.png": {
 			"frame": {
-				"x": 1831,
-				"y": 893,
+				"x": 1581,
+				"y": 1793,
 				"w": 34,
 				"h": 60
 			},
@@ -16002,8 +17122,8 @@
 		},
 		"RightLizardEyes3.3Cut.png": {
 			"frame": {
-				"x": 1831,
-				"y": 955,
+				"x": 1617,
+				"y": 1793,
 				"w": 30,
 				"h": 60
 			},
@@ -16022,8 +17142,8 @@
 		},
 		"RightLizardEyes3.3Normal.png": {
 			"frame": {
-				"x": 1831,
-				"y": 1017,
+				"x": 1649,
+				"y": 1793,
 				"w": 30,
 				"h": 60
 			},
@@ -16042,8 +17162,8 @@
 		},
 		"RightLizardEyes3.3Scar.png": {
 			"frame": {
-				"x": 1831,
-				"y": 1079,
+				"x": 1681,
+				"y": 1793,
 				"w": 30,
 				"h": 60
 			},
@@ -16062,8 +17182,8 @@
 		},
 		"RightLizardEyes3.3Scar2.png": {
 			"frame": {
-				"x": 1819,
-				"y": 1141,
+				"x": 1713,
+				"y": 1793,
 				"w": 34,
 				"h": 60
 			},
@@ -16087,8 +17207,8 @@
 		"image": "spritesheet.png",
 		"format": "RGBA8888",
 		"size": {
-			"w": 1868,
-			"h": 1834
+			"w": 1860,
+			"h": 1854
 		},
 		"scale": "1"
 	}

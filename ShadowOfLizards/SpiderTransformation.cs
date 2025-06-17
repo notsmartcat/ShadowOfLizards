@@ -20,19 +20,22 @@ public static class SpiderTransformation
     static void SpitSetInvisible(On.LizardSpit.orig_DrawSprites orig, LizardSpit self, RoomCamera.SpriteLeaser sLeaser, RoomCamera rCam, float timeStacker, Vector2 camPos)
     {
         orig.Invoke(self, sLeaser, rCam, timeStacker, camPos);
-        if (ShadowOfOptions.spider_transformation.Value && ShadowOfLizards.lizardstorage.TryGetValue(self.lizard, out ShadowOfLizards.LizardData value) && ShadowOfOptions.spider_spit.Value && value.liz["SpiderTransformation"] == "True")
+
+        if (!ShadowOfOptions.spider_transformation.Value || !ShadowOfOptions.spider_spit.Value || !ShadowOfLizards.lizardstorage.TryGetValue(self.lizard.abstractCreature, out ShadowOfLizards.LizardData data) || data.transformation != "SpiderTransformation")
         {
-            for (int i = 0; i < sLeaser.sprites.Length; i++)
-            {
-                sLeaser.sprites[i].isVisible = false;
-            }
+            return;
+        }
+
+        for (int i = 0; i < sLeaser.sprites.Length; i++)
+        {
+            sLeaser.sprites[i].isVisible = false;
         }
     }
 
     static void SpitChangeCheck(On.LizardSpit.orig_Update orig, LizardSpit self, bool eu)
     {
-        if (!ShadowOfLizards.lizardstorage.TryGetValue(self.lizard, out ShadowOfLizards.LizardData value) || !ShadowOfOptions.spider_transformation.Value || !ShadowOfOptions.spider_spit.Value ||
-            value.liz["SpiderTransformation"] != "True" || self.lizard.AI.redSpitAI == null)
+        if (!ShadowOfOptions.spider_transformation.Value || !ShadowOfOptions.spider_spit.Value || self.lizard.AI.redSpitAI == null || !ShadowOfLizards.lizardstorage.TryGetValue(self.lizard.abstractCreature, out ShadowOfLizards.LizardData data) 
+            || data.transformation != "SpiderTransformation" || !data.liz.TryGetValue("SpiderNumber", out _))
         {
             orig.Invoke(self, eu);
             return;
@@ -40,14 +43,14 @@ public static class SpiderTransformation
 
         Vector2 pos = self.pos;
 
-        if (float.Parse(value.liz["SpiderNumber"]) > 0 && UnityEngine.Random.Range(0, 100) == 0)
+        if (float.Parse(data.liz["SpiderNumber"]) > 0 && Random.Range(0, 100) == 0)
         {
             AbstractCreature spid = new(self.room.world, StaticWorld.GetCreatureTemplate(CreatureTemplate.Type.Spider), null, self.room.GetWorldCoordinate(pos), self.room.world.game.GetNewID());
             self.room.abstractRoom.AddEntity(spid);
             spid.RealizeInRoom();
             spid.realizedCreature.mainBodyChunk.vel = self.vel * 2f;
             ((Spider)spid.realizedCreature).bloodLust = 1f;
-            value.liz["SpiderNumber"] = (float.Parse(value.liz["SpiderNumber"]) - 1f).ToString();
+            data.liz["SpiderNumber"] = (float.Parse(data.liz["SpiderNumber"]) - 1f).ToString();
 
         }
 
@@ -62,19 +65,26 @@ public static class SpiderTransformation
 
     public static void BabyPuff(Lizard self)
     {
-        if (self.inShortcut || self.slatedForDeletetion || self.room == null || self.room.world == null || self.room.game.cameras[0].room != self.room || ((!ShadowOfLizards.lizardstorage.TryGetValue(self, out ShadowOfLizards.LizardData value)
-            || !(value.liz["SpiderMother"] == "True")) && !(value.liz["SpiderTransformation"] == "True")))
+        if (self.inShortcut || self.slatedForDeletetion || self.room == null || self.room.world == null || self.room.game.cameras[0].room != self.room || !ShadowOfLizards.lizardstorage.TryGetValue(self.abstractCreature, out ShadowOfLizards.LizardData data)
+            || (data.transformation != "Spider" && data.transformation != "SpiderTransformation"))
         {
             return;
         }
 
-        if (value.liz["Beheaded"] == "False" && value.liz["SpiderTransformation"] != "True")
+        if (!data.liz.TryGetValue("SpiderNumber", out _))
         {
-            value.liz["Beheaded"] = "True";
+            Debug.Log(ShadowOfLizards.all + "SpiderNumber Value was not present on " + self + " If able please report to the mod author of Shadow Of Lizards");
+
+            data.liz.Add("SpiderNumber", "0");
+        }
+
+        if (data.Beheaded == false && data.transformation != "SpiderTransformation")
+        {
+            data.Beheaded = true;
             ShadowOfLizards.Decapitation(self);
         }
 
-        value.liz["SpiderMother"] = "False";
+        data.transformation = "Null";
         InsectCoordinator val = null;
 
         for (int i = 0; i < self.room.updateList.Count; i++)
@@ -88,7 +98,7 @@ public static class SpiderTransformation
 
         for (int j = 0; j < 70; j++)
         {
-            SporeCloud val2 = new(self.firstChunk.pos, Custom.RNV() * UnityEngine.Random.value * 10f, new Color(0.1f, 0.25f, 0.1f, 0.8f), 1f, null, j % 20, val)
+            SporeCloud val2 = new(self.firstChunk.pos, Custom.RNV() * Random.value * 10f, new Color(0.1f, 0.25f, 0.1f, 0.8f), 1f, null, j % 20, val)
             {
                 nonToxic = true
             };
@@ -103,12 +113,12 @@ public static class SpiderTransformation
         self.room.AddObject(val3);
         for (int k = 0; k < 7; k++)
         {
-            self.room.AddObject(new PuffBallSkin(self.firstChunk.pos, Custom.RNV() * UnityEngine.Random.value * 16f, new Color(0.1f, 0.3f, 0.1f), new Color(0.1f, 0.1f, 0.3f)));
+            self.room.AddObject(new PuffBallSkin(self.firstChunk.pos, Custom.RNV() * Random.value * 16f, new Color(0.1f, 0.3f, 0.1f), new Color(0.1f, 0.1f, 0.3f)));
         }
 
         self.room.PlaySound(SoundID.Puffball_Eplode, self.firstChunk.pos);
 
-        for (int l = 0; l < float.Parse(value.liz["SpiderNumber"]); l++)
+        for (int l = 0; l < float.Parse(data.liz["SpiderNumber"]); l++)
         {
             Vector2 pos = self.mainBodyChunk.pos;
             AbstractCreature val4 = new(self.room.world, StaticWorld.GetCreatureTemplate(CreatureTemplate.Type.Spider), null, self.room.GetWorldCoordinate(pos), self.room.world.game.GetNewID());
@@ -117,19 +127,19 @@ public static class SpiderTransformation
             ((Spider)val4.realizedCreature).bloodLust = 1f;
         }
 
-        value.liz["SpiderNumber"] = "0";
+        data.liz["SpiderNumber"] = "0";
     }
 
     static bool SpiderConsiderPrey(On.Spider.orig_ConsiderPrey orig, Spider self, Creature crit)
     {
-        return (!ShadowOfOptions.spider_transformation.Value || crit == null || crit is not Lizard || !ShadowOfLizards.lizardstorage.TryGetValue((Lizard)crit, out ShadowOfLizards.LizardData value) || value.liz["SpiderMother"] != "True")
+        return (!ShadowOfOptions.spider_transformation.Value || crit == null || crit is not Lizard || !ShadowOfLizards.lizardstorage.TryGetValue(crit.abstractCreature, out ShadowOfLizards.LizardData data) || (data.transformation != "Spider" && data.transformation != "SpiderTransformation"))
             && orig.Invoke(self, crit);
     }
 
 
     static void SpiderLegMove(On.Spider.orig_Move_Vector2 orig, Spider self, Vector2 dest)
     {
-        if (ShadowOfOptions.spider_transformation.Value && ShadowOfLizards.SpidLeg.TryGetValue(self, out ShadowOfLizards.SpiderAsLeg value) && value.liz != null && !value.liz.dead && self.room == value.liz.room)
+        if (ShadowOfOptions.spider_transformation.Value && ShadowOfLizards.SpidLeg.TryGetValue(self, out ShadowOfLizards.SpiderAsLeg data) && data.liz != null && !data.liz.dead && self.room == data.liz.room)
         {
             self.moving = false;
         }
@@ -141,7 +151,7 @@ public static class SpiderTransformation
 
     static void SpiderLegStopCentipede(On.Spider.orig_FormCentipede orig, Spider self, Spider otherSpider)
     {
-        if (!ShadowOfOptions.spider_transformation.Value || !ShadowOfLizards.SpidLeg.TryGetValue(self, out ShadowOfLizards.SpiderAsLeg value) || value.liz == null || value.liz.dead)
+        if (!ShadowOfOptions.spider_transformation.Value || !ShadowOfLizards.SpidLeg.TryGetValue(self, out ShadowOfLizards.SpiderAsLeg data) || data.liz == null || data.liz.dead)
         {
             orig.Invoke(self, otherSpider);
         }
@@ -151,9 +161,15 @@ public static class SpiderTransformation
     {
         orig.Invoke(self, sLeaser, rCam, timeStacker, camPos);
 
-        if (!ShadowOfOptions.spider_transformation.Value || !ShadowOfLizards.lizardstorage.TryGetValue(self.lizard, out ShadowOfLizards.LizardData data) || !(data.liz["SpiderTransformation"] == "True") || self.lizard.dead || self.lizard.Stunned)
+        if (!ShadowOfOptions.spider_transformation.Value || !ShadowOfLizards.lizardstorage.TryGetValue(self.lizard.abstractCreature, out ShadowOfLizards.LizardData data) || data.transformation != "SpiderTransformation" || self.lizard.dead || self.lizard.Stunned)
         {
             return;
+        }
+
+        if (!data.liz.TryGetValue("SpiderNumber", out _))
+        {
+            Debug.Log(ShadowOfLizards.all + "SpiderNumber Value was not present on " + self + " If able please report to the mod author of Shadow Of Lizards");
+            data.liz.Add("SpiderNumber", "0");
         }
 
         data.sLeaser = sLeaser;
@@ -211,7 +227,7 @@ public static class SpiderTransformation
             int armNo = i - self.SpriteLimbsStart;
 
             Vector2 bodyPos = self.lizard.bodyChunks[(armNo != 2 || armNo != 3) ? 1 : 2].pos;
-            string ArmState = data.liz["ArmState" + armNo];
+            string ArmState = data.ArmState[armNo];
 
             if (ArmState != "Spider")
             {
@@ -246,7 +262,7 @@ public static class SpiderTransformation
                 {
                     if (!(int.Parse(data.liz["SpiderNumber"]) > 0))
                     {
-                        Debug.Log("Spider Lizard Leg " + armNo + " not more then 0 SpiderNumber");
+                        //Debug.Log("Spider Lizard Leg " + armNo + " not more then 0 SpiderNumber");
                         break;
                     }
 

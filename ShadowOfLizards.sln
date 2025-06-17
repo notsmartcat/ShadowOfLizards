@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.7.34003.232
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ShadowOfLizards", "..\ShadowOfLizards.csproj", "{9CBD2070-C691-4EDF-A64D-CAA3F2A7939F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ShadowOfLizards", "ShadowOfLizards.csproj", "{701FD6D8-06CC-47B6-9223-D211B1E2A314}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -11,15 +11,15 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{9CBD2070-C691-4EDF-A64D-CAA3F2A7939F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{9CBD2070-C691-4EDF-A64D-CAA3F2A7939F}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{9CBD2070-C691-4EDF-A64D-CAA3F2A7939F}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{9CBD2070-C691-4EDF-A64D-CAA3F2A7939F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{701FD6D8-06CC-47B6-9223-D211B1E2A314}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{701FD6D8-06CC-47B6-9223-D211B1E2A314}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{701FD6D8-06CC-47B6-9223-D211B1E2A314}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{701FD6D8-06CC-47B6-9223-D211B1E2A314}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {160C5D77-5B33-4A03-8411-3F0BDCAC86D6}
+		SolutionGuid = {9C6F6FA3-86B0-447A-9ECD-3CF4763C73E1}
 	EndGlobalSection
 EndGlobal

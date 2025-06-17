@@ -95,23 +95,15 @@ sealed class LizCutHead : PlayerCarryableItem, IDrawable
         bool flag = Abstr.HeadSprite5 != null;
         LizEyeRightColour = flag ? new Color(Abstr.EyeRightColourR, Abstr.EyeRightColourG, Abstr.EyeRightColourB) : Color.black;
         LizEyeLeftColour = flag ? new Color(Abstr.EyeLeftColourR, Abstr.EyeLeftColourG, Abstr.EyeLeftColourB) : Color.black;
-        int length = Abstr.HeadSprite0.Length;
-        char c = Abstr.HeadSprite0[length - 3];
-        char c2 = Abstr.HeadSprite0[length - 1];
 
-        if (!Abstr.HeadSprite0.StartsWith("LizardJaw"))
-        {
-            Destroy();
-        }
-
-        HeadSprites = (flag ? new List<string>
+        HeadSprites = flag ? new List<string>
             {
                 Abstr.HeadSprite0,
                 Abstr.HeadSprite1,
                 Abstr.HeadSprite2,
                 Abstr.HeadSprite3,
                 Abstr.HeadSprite4,
-                "LizardHead" + c + "." + c2 + "Cut2",
+                Abstr.HeadSprite3 + "Cut2",
                 Abstr.HeadSprite5,
                 Abstr.HeadSprite6
             } : new List<string>
@@ -121,8 +113,8 @@ sealed class LizCutHead : PlayerCarryableItem, IDrawable
                 Abstr.HeadSprite2,
                 Abstr.HeadSprite3,
                 Abstr.HeadSprite4,
-                "LizardHead" + c + "." + c2 + "Cut2"
-            });
+                Abstr.HeadSprite3 + "Cut2"
+            };
 
         sLeaser.sprites = new FSprite[HeadSprites.Count];
 
@@ -206,6 +198,46 @@ sealed class LizCutHead : PlayerCarryableItem, IDrawable
                 Debug.Log(all + Abstr.LizType + "'s Cut Head Default Lizard Colours");
         }
 
+        int headLength3 = Abstr.HeadSprite3.Length;
+        char head3 = Abstr.HeadSprite3[headLength3 - 3];
+
+        if (head3 == 3)
+        {
+            sLeaser.sprites[3].anchorY = 0.75f;
+        }
+
+        if (sLeaser.sprites.Length > 5)
+        {
+            int headLength6 = Abstr.HeadSprite3.Length;
+            char head6 = Abstr.HeadSprite3[headLength6 - 3];
+
+            if (head6 == 3)
+            {
+                sLeaser.sprites[6].anchorY = 0.75f;
+                sLeaser.sprites[7].anchorY = 0.75f;
+            } 
+        }
+
+        for (int num11 = 0; num11 < 5; num11++)
+        {
+            int headLength2 = sLeaser.sprites[num11].element.name.Length;
+            char headX3 = sLeaser.sprites[num11].element.name[headLength2 - 3];
+
+            if (headX3 == 9)
+            {
+                sLeaser.sprites[num11].anchorY = 0.61f;
+            }
+            else if (headX3 == 8)
+            {
+                sLeaser.sprites[num11].anchorY = 0.65f;
+            }
+        }
+
+        if (Abstr.LizBreed == "BlackLizard")
+        {
+            sLeaser.sprites[4].isVisible = false;
+        }
+
         AddToContainer(sLeaser, rCam, null);
     }
 
@@ -241,7 +273,7 @@ sealed class LizCutHead : PlayerCarryableItem, IDrawable
 
             sLeaser.sprites[i].rotation = Custom.VecToDeg(vector2);
 
-            if (Abstr.LizBreed == "WhiteLizard" && (i == 6 || i == 7 || Abstr.HeadSprite5 == null && i == 4))
+            if (false && Abstr.LizBreed == "WhiteLizard" && (i == 6 || i == 7 || Abstr.HeadSprite5 == null && i == 4))
             {
                 sLeaser.sprites[i].x = pos.x - camPos.x - (7f * rotation.x);
                 sLeaser.sprites[i].y = pos.y - camPos.y - (7f * rotation.y);
