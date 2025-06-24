@@ -125,8 +125,6 @@ internal class LizardCustomRelationsSet
 
         if (data.transformation == "Spider")
         {
-            //Debug.Log("Spider Relations set for " + self);
-
             On.BigSpiderAI.IUseARelationshipTracker_UpdateDynamicRelationship += (orig, self, dRelation) =>
             {
                 return TemplateCheck(RelationNullCheck(dRelation), type) ? new Relationship(StayOutOfWay, 0.9f) : orig.Invoke(self, dRelation);
@@ -149,8 +147,6 @@ internal class LizardCustomRelationsSet
         }
         else if (data.transformation == "SpiderTransformation")
         {
-            //Debug.Log("SpiderTransformation Relations set for " + self);
-
             On.BigSpiderAI.IUseARelationshipTracker_UpdateDynamicRelationship += (orig, self, dRelation) =>
             {
                 return TemplateCheck(RelationNullCheck(dRelation), type) ? new Relationship(Ignores, 0.0f) : orig.Invoke(self, dRelation);
@@ -173,8 +169,6 @@ internal class LizardCustomRelationsSet
         }
         else if (data.transformation == "Electric")
         {
-            //Debug.Log("Electric set for " + self);
-
             On.LizardAI.IUseARelationshipTracker_UpdateDynamicRelationship += (orig, self, dRelation) =>
             {
                 return CentipedeTemplateCheck(RelationNullCheck(dRelation)) ? new Relationship(Relationship.Type.Eats, 0.9f) : orig.Invoke(self, dRelation);

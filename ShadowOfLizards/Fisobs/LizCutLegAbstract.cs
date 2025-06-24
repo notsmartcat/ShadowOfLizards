@@ -12,13 +12,13 @@ internal sealed class LizCutLegAbstract : AbstractPhysicalObject
 
     public string LizType;
 
-    public float LizBaseColourR;
-    public float LizBaseColourG;
-    public float LizBaseColourB;
+    public float LizBodyColourR;
+    public float LizBodyColourG;
+    public float LizBodyColourB;
 
-    public float LizColourR;
-    public float LizColourG;
-    public float LizColourB;
+    public float LizEffectColourR;
+    public float LizEffectColourG;
+    public float LizEffectColourB;
 
     public float LizBloodColourR;
     public float LizBloodColourG;
@@ -28,6 +28,8 @@ internal sealed class LizCutLegAbstract : AbstractPhysicalObject
     public string LizColourSpriteName;
 
     public string LizBreed;
+
+    public bool blackSalamander;
 
     public LizCutLegAbstract(World world, WorldCoordinate pos, EntityID ID) : base(world, LizCutLegFisobs.AbstrLizardCutLeg, null, pos, ID)
     {
@@ -41,6 +43,6 @@ internal sealed class LizCutLegAbstract : AbstractPhysicalObject
 
     public override string ToString()
     {
-        return this.SaveToString($"{hue};{saturation};{scaleX};{scaleY};{LizType};{LizBaseColourR};{LizBaseColourG};{LizBaseColourB};{LizColourR};{LizColourG};{LizColourB};{LizBloodColourR};{LizBloodColourG};{LizBloodColourB};{LizSpriteName};{LizColourSpriteName};{LizBreed}");
+        return this.SaveToString($"{hue};{saturation};{scaleX};{scaleY};{LizType};{LizBodyColourR};{LizBodyColourG};{LizBodyColourB};{LizEffectColourR};{LizEffectColourG};{LizEffectColourB};{LizBloodColourR};{LizBloodColourG};{LizBloodColourB};{LizSpriteName};{LizColourSpriteName};{LizBreed};{blackSalamander}");
     }
 }

@@ -10,7 +10,7 @@ sealed class LizCutEye : PlayerCarryableItem, IDrawable
     public float lastDarkness = -1f;
     public float darkness;
 
-    Color blackColor;
+    public RoomPalette palette;
 
     public Color LizColour;
     public Color EyeColour;
@@ -145,15 +145,6 @@ sealed class LizCutEye : PlayerCarryableItem, IDrawable
         darkness = rCam.room.Darkness(pos);
         darkness *= 1f - 0.5f * rCam.room.LightSourceExposure(pos);
 
-        if (LizColour == Color.black)
-        {
-            LizColour = blackColor;
-        }
-        if (EyeColour == Color.black)
-        {
-            LizColour = blackColor;
-        }
-
         sLeaser.sprites[0].x = vector.x - camPos.x;
         sLeaser.sprites[0].y = vector.y - camPos.y;
         sLeaser.sprites[1].x = vector.x - vector2.x * 4f - camPos.x;
@@ -163,7 +154,7 @@ sealed class LizCutEye : PlayerCarryableItem, IDrawable
         sLeaser.sprites[0].rotation = Custom.VecToDeg(vector2);
         sLeaser.sprites[1].rotation = Custom.VecToDeg(vector2);
         sLeaser.sprites[4].rotation = Custom.VecToDeg(vector2);
-        sLeaser.sprites[0].color = blackColor;
+        sLeaser.sprites[0].color = palette.blackColor;
         sLeaser.sprites[1].color = LizColour;
         sLeaser.sprites[4].color = EyeColour;
 
@@ -207,7 +198,7 @@ sealed class LizCutEye : PlayerCarryableItem, IDrawable
 
     public void ApplyPalette(SpriteLeaser sLeaser, RoomCamera rCam, RoomPalette palette)
     {
-        blackColor = palette.blackColor;
+        this.palette = palette;
     }
 
     public void AddToContainer(SpriteLeaser sLeaser, RoomCamera rCam, FContainer newContainer)

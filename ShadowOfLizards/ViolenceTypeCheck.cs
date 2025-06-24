@@ -13,11 +13,12 @@ public class ViolenceTypeCheck
 
     static void ViolenceDamageTypeCheck(On.Creature.orig_Violence orig, Creature self, BodyChunk source, Vector2? directionAndMomentum, BodyChunk hitChunk, Pos hitAppendage, DamageType type, float damage, float stunBonus)
     {
-        if (source != null && source.owner != null && source.owner.abstractPhysicalObject is AbstractCreature liz && ShadowOfLizards.lizardstorage.TryGetValue(liz, out ShadowOfLizards.LizardData data) && data.transformation == "Electric" && self is not Centipede)
+        if (type == DamageType.Bite && source != null && source.owner != null && source.owner.abstractPhysicalObject is AbstractCreature liz && ShadowOfLizards.lizardstorage.TryGetValue(liz, out ShadowOfLizards.LizardData data) && (data.transformation == "Electric" || data.transformation == "ElectricTransformation"))
         {
-            type = DamageType.Electric;
+            self.Violence(source, directionAndMomentum, hitChunk, hitAppendage, DamageType.Electric, damage / 2, stunBonus / 2);
+
             if (ShadowOfOptions.debug_logs.Value)
-                Debug.Log(source.owner.ToString() + "'s damage converted to Electric on " + self.ToString() + " in creature Damage");
+                Debug.Log(ShadowOfLizards.all + source.owner.ToString() + "'s Bite dealt additional Electric damage to " + self.ToString());
         }
 
         orig.Invoke(self, source, directionAndMomentum, hitChunk, hitAppendage, type, damage, stunBonus);

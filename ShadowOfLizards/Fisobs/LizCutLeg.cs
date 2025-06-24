@@ -1,4 +1,5 @@
 using RWCustom;
+using System.Collections.Generic;
 using UnityEngine;
 using static Creature;
 using static RoomCamera;
@@ -10,16 +11,54 @@ internal sealed class LizCutLeg : PlayerCarryableItem, IDrawable, IPlayerEdible
     public float lastDarkness = -1f;
     public float darkness;
 
-    Color blackColor;
-    Color earthColor;
-
-    public Color LizBaseColour;
-    public Color LizColour;
+    public Color LizBodyColour;
+    public Color LizEffectColour;
     public Color BloodColour;
 
     public Vector2 rotation;
     public Vector2 lastRotation;
     public Vector2? setRotation;
+
+
+    public override float ThrowPowerFactor => 1f;
+
+
+    private int whiteFlicker = 0;
+    private int flicker;
+    private float flickerColor = 0;
+
+    public const int SourceCodeLizardsFlickerThreshold = 10;
+    public const int SourceCodeLizardsWhiteFlickerThreshold = 15;
+
+    public RoomPalette palette;
+
+    public const int TotalSprites = 3;
+    public const int SpriteJawStart = 2;
+
+    public List<string> HeadSprites;
+
+    public float jawRotation;
+    public float lastJawRotation;
+
+    public const float MaxJawRotation = 100f;
+    public const float JawOpenSensitivity = 20f;
+    public const float JawVelocityOverOpenSensitivity = 2.5f;
+
+    public List<int> headSpriteNum = new List<int> { 9, 16, 16, 10, 10, 10, 14, 15 };
+
+    public List<string> HeadSpritess;
+
+    public Color whiteCamoColor = new Color(0f, 0f, 0f);
+    public Color whitePickUpColor;
+    private float whiteCamoColorAmount = -1f;
+
+    public float baseBlink;
+    public float baseLastBlink;
+
+    public bool everySecondDraw;
+
+
+    private Color ivarBodyColor = new Color(0f, 0f, 0f);
 
     public AbstractConsumable AbstrConsumable
     {
@@ -70,7 +109,7 @@ internal sealed class LizCutLeg : PlayerCarryableItem, IDrawable, IPlayerEdible
     public override void TerrainImpact(int chunk, IntVector2 direction, float speed, bool firstContact)
     {
         base.TerrainImpact(chunk, direction, speed, firstContact);
-        if (firstContact && speed > 7f)
+        if (firstContact && speed > 10f)
         {
             room.PlaySound(SoundID.Lizard_Light_Terrain_Impact, firstChunk.pos, 0.35f, 2f);
 
@@ -83,21 +122,165 @@ internal sealed class LizCutLeg : PlayerCarryableItem, IDrawable, IPlayerEdible
     {
         room.AddObject(new BloodParticle(bodyChunks[0].pos, new Vector2(Random.Range(-3f, 3f), Random.Range(5f, 10f)), BloodColour, Abstr.LizBreed, null, 2.3f));
     }
+    public Color effectColor
+    {
+        get
+        {
+            if (Abstr.LizBreed == "BlackLizard")
+            {
+                return palette.blackColor;
+            }
+            return LizEffectColour;
+        }
+    }
+
+    public Color BodyColor(float f)
+    {
+        if (Abstr.LizBreed == "SpitLizard" || Abstr.LizBreed == "ZoopLizard")
+        {
+            return ivarBodyColor;
+        }
+        if (Abstr.LizBreed == "WhiteLizard")
+        {
+            return DynamicBodyColor(f);
+        }
+        if (Abstr.LizBreed == "Salamander")
+        {
+            return SalamanderColor;
+        }
+
+        return palette.blackColor;
+    }
+
+    public Color DynamicBodyColor(float f)
+    {
+        if (Abstr.LizBreed == "WhiteLizard")
+        {
+            return Color.Lerp(new Color(1f, 1f, 1f), whiteCamoColor, whiteCamoColorAmount);
+        }
+        if (Abstr.LizBreed == "Salamander")
+        {
+            return SalamanderColor;
+        }
+        return palette.blackColor;
+    }
+
+    public Color SalamanderColor
+    {
+        get
+        {
+            if (Abstr.blackSalamander)
+            {
+                return Color.Lerp(palette.blackColor, effectColor, 0.1f);
+            }
+            return Color.Lerp(new Color(0.9f, 0.9f, 0.95f), effectColor, 0.06f);
+        }
+    }
+
+    private Color HeadColor1
+    {
+        get
+        {
+            if (Abstr.LizType == "WhiteLizard")
+            {
+                return Color.Lerp(new Color(1f, 1f, 1f), whiteCamoColor, whiteCamoColorAmount);
+            }
+            if (Abstr.LizType == "BlackLizard")
+            {
+                return palette.blackColor;
+            }
+            if (Abstr.LizType == "Salamander")
+            {
+                return SalamanderColor;
+            }
+
+            return palette.blackColor;
+        }
+    }
+
+    private Color HeadColor2
+    {
+        get
+        {
+            if (Abstr.LizType == "WhiteLizard")
+            {
+                return Color.Lerp(palette.blackColor, whiteCamoColor, whiteCamoColorAmount);
+            }
+            if (Abstr.LizType == "BlackLizard")
+            {
+                return palette.blackColor;
+            }
+            if (Abstr.LizType == "Salamander")
+            {
+                return SalamanderColor;
+            }
+
+            return effectColor;
+        }
+    }
+
+    public Color HeadColor(float timeStacker)
+    {
+        if (whiteFlicker > 0 && (whiteFlicker > SourceCodeLizardsWhiteFlickerThreshold || everySecondDraw))
+        {
+            return new Color(1f, 1f, 1f);
+        }
+        float num = 1f - Mathf.Pow(0.5f + 0.5f * Mathf.Sin(Mathf.Lerp(baseLastBlink, baseBlink, timeStacker) * 2f * 3.1415927f), 1.5f);
+        if (flicker > SourceCodeLizardsFlickerThreshold)
+        {
+            num = flickerColor;
+        }
+        return Color.Lerp(HeadColor1, HeadColor2, num);
+    }
+
+    public void Flicker(int fl)
+    {
+        if (fl > flicker)
+            flicker = fl;
+    }
+
+    public void WhiteFlicker(int fl)
+    {
+        if (fl > whiteFlicker)
+            whiteFlicker = fl;
+    }
 
     public void InitiateSprites(SpriteLeaser sLeaser, RoomCamera rCam)
     {
+        LizBodyColour = new Color(Abstr.LizBodyColourR, Abstr.LizBodyColourG, Abstr.LizBodyColourB);
+        LizEffectColour = new Color(Abstr.LizEffectColourR, Abstr.LizEffectColourG, Abstr.LizEffectColourB);
+        BloodColour = (Abstr.LizBloodColourR != -1f) ? new Color(Abstr.LizBloodColourR, Abstr.LizBloodColourG, Abstr.LizBloodColourB) : LizEffectColour;
+
         sLeaser.sprites = new FSprite[3];
         sLeaser.sprites[0] = new FSprite(Abstr.LizSpriteName, true);
         sLeaser.sprites[1] = new FSprite(Abstr.LizColourSpriteName, true);
         sLeaser.sprites[2] = new FSprite(Abstr.LizColourSpriteName + "Blood", true);
-        LizBaseColour = new Color(Abstr.LizBaseColourR, Abstr.LizBaseColourG, Abstr.LizBaseColourB);
-        LizColour = new Color(Abstr.LizColourR, Abstr.LizColourG, Abstr.LizColourB);
-        BloodColour = ((Abstr.LizBloodColourR != -1f) ? new Color(Abstr.LizBloodColourR, Abstr.LizBloodColourG, Abstr.LizBloodColourB) : new Color(Abstr.LizColourR, Abstr.LizColourG, Abstr.LizColourB));
+
+        sLeaser.sprites[0].color = new Color(0.1f, 0.1f, 0.1f, 1f);
+        sLeaser.sprites[1].color = effectColor;
+        sLeaser.sprites[2].color = BloodColour;
+
         AddToContainer(sLeaser, rCam, null);
     }
 
     public void DrawSprites(SpriteLeaser sLeaser, RoomCamera rCam, float timeStacker, Vector2 camPos)
     {
+        if (Abstr.LizBreed == "WhiteLizard" || Abstr.LizBreed == "ZoopLizard")
+        {
+            sLeaser.sprites[0].color = BodyColor(0f);
+            whitePickUpColor = rCam.PixelColorAtCoordinate(bodyChunks[0].pos);
+
+            if (whiteCamoColorAmount == -1f)
+            {
+                whiteCamoColor = whitePickUpColor;
+                whiteCamoColorAmount = 1f;
+            }
+        }
+        else if (Abstr.LizBreed == "BasiliskLizard")
+        {
+            sLeaser.sprites[0].color = HeadColor(timeStacker);
+        }
+
         Vector2 vector = Vector2.Lerp(firstChunk.lastPos, firstChunk.pos, timeStacker);
         Vector2 vector2 = Vector3.Slerp(lastRotation, rotation, timeStacker);
 
@@ -118,11 +301,6 @@ internal sealed class LizCutLeg : PlayerCarryableItem, IDrawable, IPlayerEdible
         darkness = rCam.room.Darkness(pos);
         darkness *= 1f - 0.5f * rCam.room.LightSourceExposure(pos);
 
-        if (LizBaseColour == Color.black)
-        {
-            LizBaseColour = blackColor;
-        }
-
         for (int i = 0; i < sLeaser.sprites.Length; i++)
         {
             sLeaser.sprites[i].x = pos.x - camPos.x;
@@ -131,20 +309,53 @@ internal sealed class LizCutLeg : PlayerCarryableItem, IDrawable, IPlayerEdible
             sLeaser.sprites[i].scaleY = num2 * Abstr.scaleY;
             sLeaser.sprites[i].scaleX = num2 * Abstr.scaleX;
         }
-        sLeaser.sprites[0].color = Abstr.LizBreed == "WhiteLizard" ? LizColour : LizBaseColour;
-        sLeaser.sprites[1].color = LizColour;
-        sLeaser.sprites[2].color = BloodColour;
+
+        if (Abstr.LizBreed == "WhiteLizard" || Abstr.LizBreed == "CyanLizard" || Abstr.LizBreed == "IndigoLizard")
+        {
+            sLeaser.sprites[1].alpha = Mathf.Sin(whiteCamoColorAmount * 3.1415927f) * 0.3f;
+            sLeaser.sprites[1].color = palette.blackColor;
+            sLeaser.sprites[2].color = palette.blackColor;
+        }
+        else if (Abstr.LizBreed == "Salamander")
+        {
+            sLeaser.sprites[1].alpha = 0.3f;
+            sLeaser.sprites[1].color = Abstr.blackSalamander ? effectColor : palette.blackColor;
+            sLeaser.sprites[2].color = Abstr.blackSalamander ? effectColor : palette.blackColor;
+        }
+        else
+        {
+            sLeaser.sprites[1].alpha = Mathf.Lerp(1f, 0.3f, Mathf.Abs(Mathf.Lerp(lastRotation.x, rotation.x, timeStacker)));
+            sLeaser.sprites[1].color = new Color(0.1f, 0.1f, 0.1f, 1f);
+            sLeaser.sprites[2].color = new Color(0.1f, 0.1f, 0.1f, 1f);
+        }
+        if (Abstr.LizBreed == "WhiteLizard")
+        {
+            sLeaser.sprites[0].color = new Color(1f, 1f, 1f);
+        }
+        else if (Abstr.LizBreed == "SpitLizard" || Abstr.LizBreed == "ZoopLizard")
+        {
+            sLeaser.sprites[0].color = ivarBodyColor;
+        }
+        else if (Abstr.LizBreed == "Salamander")
+        {
+            sLeaser.sprites[0].color = SalamanderColor;
+        }
+        else
+        {
+            sLeaser.sprites[0].color = palette.blackColor;
+        }
+
+        if (Abstr.LizBloodColourR != -1f)
+            sLeaser.sprites[2].color = BloodColour;
+
+        if (flicker > SourceCodeLizardsFlickerThreshold)
+        {
+            flickerColor = UnityEngine.Random.value;
+        }
 
         if (blink > 0 && Random.value < 0.5f)
         {
             sLeaser.sprites[1].color = blinkColor;
-        }
-        else if (num > 0.3f)
-        {
-            for (int j = 0; j < 2; j++)
-            {
-                sLeaser.sprites[j].color = Color.Lerp(sLeaser.sprites[j].color, earthColor, Mathf.Pow(Mathf.InverseLerp(0.3f, 1f, num), 1.6f));
-            }
         }
 
         if (slatedForDeletetion || room != rCam.room)
@@ -155,8 +366,35 @@ internal sealed class LizCutLeg : PlayerCarryableItem, IDrawable, IPlayerEdible
 
     public void ApplyPalette(SpriteLeaser sLeaser, RoomCamera rCam, RoomPalette palette)
     {
-        blackColor = palette.blackColor;
-        earthColor = Color.Lerp(palette.fogColor, palette.blackColor, 0.5f);
+        this.palette = palette;
+
+        if (Abstr.LizBreed == "BlizzardLizard")
+        {
+            palette.blackColor = new Color(0.8f, 0.81f, 0.84f);
+            this.palette = palette;
+        }
+        else if (Abstr.LizBreed == "IndigoLizard")
+        {
+            Vector3 vector = Custom.RGB2HSL(effectColor);
+            palette.blackColor = Color.Lerp(new HSLColor(vector.x, vector.y, 0.4f).rgb, palette.blackColor, 0.95f);
+            this.palette = palette;
+        }
+        if (Abstr.LizBreed == "WhiteLizard")
+        {
+            sLeaser.sprites[0].color = new Color(1f, 1f, 1f);
+        }
+        else if (Abstr.LizBreed == "SpitLizard" || Abstr.LizBreed == "ZoopLizard")
+        {
+            sLeaser.sprites[0].color = ivarBodyColor;
+        }
+        else if (Abstr.LizBreed == "Salamander")
+        {
+            sLeaser.sprites[0].color = SalamanderColor;
+        }
+        else
+        {
+            sLeaser.sprites[0].color = palette.blackColor;
+        }
     }
 
     public void AddToContainer(SpriteLeaser sLeaser, RoomCamera rCam, FContainer newContainer)
@@ -180,6 +418,21 @@ internal sealed class LizCutLeg : PlayerCarryableItem, IDrawable, IPlayerEdible
             BodyChunk firstChunk = base.firstChunk;
             firstChunk.vel += Custom.DirVec(firstChunk.pos, Futile.mousePosition) * 3f;
         }
+
+        if (flicker > 0)
+        {
+            flicker--;
+            baseBlink = UnityEngine.Random.value;
+            baseLastBlink = UnityEngine.Random.value;
+        }
+        else
+        {
+            baseLastBlink = baseBlink;
+
+            baseBlink = Mathf.Lerp(baseBlink - Mathf.Floor(baseBlink), 0.25f, 0.02f);
+        }
+        if (whiteFlicker > 0)
+            whiteFlicker--;
 
         if (grabbedBy.Count > 0)
         {
@@ -206,6 +459,9 @@ internal sealed class LizCutLeg : PlayerCarryableItem, IDrawable, IPlayerEdible
         room.PlaySound((bites == 0) ? SoundID.Slugcat_Eat_Meat_A : SoundID.Slugcat_Eat_Meat_B, firstChunk.pos);
         firstChunk.MoveFromOutsideMyUpdate(eu, grasp.grabber.mainBodyChunk.pos);
 
+        whiteCamoColorAmount -= 0.3f;
+        Flicker(20);
+
         if (ShadowOfLizards.bloodModCheck && ShadowOfOptions.blood_emitter.Value)
             LizCutLegBloodEmitter();
 
@@ -223,5 +479,6 @@ internal sealed class LizCutLeg : PlayerCarryableItem, IDrawable, IPlayerEdible
 
     public void ThrowByPlayer()
     {
+        Flicker(20);
     }
 }

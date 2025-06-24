@@ -12,13 +12,13 @@ sealed class LizCutHeadAbstract : AbstractPhysicalObject
 
     public string LizType;
 
-    public float LizBaseColourR;
-    public float LizBaseColourG;
-    public float LizBaseColourB;
+    public float LizBodyColourR;
+    public float LizBodyColourG;
+    public float LizBodyColourB;
 
-    public float LizColourR;
-    public float LizColourG;
-    public float LizColourB;
+    public float LizEffectColourR;
+    public float LizEffectColourG;
+    public float LizEffectColourB;
 
     public float LizBloodColourR;
     public float LizBloodColourG;
@@ -43,6 +43,7 @@ sealed class LizCutHeadAbstract : AbstractPhysicalObject
     public bool blackSalamander;
 
     public float rad;
+    public float mass;
 
     public string LizBreed;
 
@@ -58,6 +59,6 @@ sealed class LizCutHeadAbstract : AbstractPhysicalObject
 
     public override string ToString()
     {
-        return this.SaveToString($"{hue};{saturation};{scaleX};{scaleY};{LizType};{LizBaseColourR};{LizBaseColourG};{LizBaseColourB};{LizColourR};{LizColourG};{LizColourB};{EyeRightColourR};{EyeRightColourG};{EyeRightColourB};{EyeLeftColourR};{EyeLeftColourG};{EyeLeftColourB};{HeadSprite0};{HeadSprite1};{HeadSprite2};{HeadSprite3};{HeadSprite4};{HeadSprite5};{HeadSprite6};{blackSalamander};{rad};{LizBloodColourR};{LizBloodColourG};{LizBloodColourB};{LizBreed}");
+        return this.SaveToString($"{hue};{saturation};{scaleX};{scaleY};{LizType};{LizBodyColourR};{LizBodyColourG};{LizBodyColourB};{LizEffectColourR};{LizEffectColourG};{LizEffectColourB};{EyeRightColourR};{EyeRightColourG};{EyeRightColourB};{EyeLeftColourR};{EyeLeftColourG};{EyeLeftColourB};{HeadSprite0};{HeadSprite1};{HeadSprite2};{HeadSprite3};{HeadSprite4};{HeadSprite5};{HeadSprite6};{blackSalamander};{rad};{mass};{LizBloodColourR};{LizBloodColourG};{LizBloodColourB};{LizBreed}");
     }
 }

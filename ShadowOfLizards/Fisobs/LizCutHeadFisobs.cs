@@ -20,9 +20,9 @@ sealed class LizCutHeadFisobs : Fisob
     {
         string[] array = saveData.CustomData.Split(';');
 
-        if (array.Length < 29)
+        if (array.Length < 30)
         {
-            array = new string[29];
+            array = new string[30];
         }
 
         return new LizCutHeadAbstract(world, saveData.Pos, saveData.ID)
@@ -35,13 +35,13 @@ sealed class LizCutHeadFisobs : Fisob
 
             LizType = string.IsNullOrEmpty(array[4]) ? "GreenLizard" : array[4],
 
-            LizBaseColourR = float.TryParse(array[5], out float lbr) ? lbr : 0f,
-            LizBaseColourB = float.TryParse(array[6], out float lbb) ? lbb : 0f,
-            LizBaseColourG = float.TryParse(array[7], out float blg) ? blg : 1f,
+            LizBodyColourR = float.TryParse(array[5], out float lbr) ? lbr : 0f,
+            LizBodyColourB = float.TryParse(array[6], out float lbb) ? lbb : 0f,
+            LizBodyColourG = float.TryParse(array[7], out float blg) ? blg : 1f,
 
-            LizColourR = float.TryParse(array[8], out float lr) ? lr : 0f,
-            LizColourG = float.TryParse(array[9], out float lg) ? lg : 1f,
-            LizColourB = float.TryParse(array[10], out float lb) ? lb : 0f,
+            LizEffectColourR = float.TryParse(array[8], out float lr) ? lr : 0f,
+            LizEffectColourG = float.TryParse(array[9], out float lg) ? lg : 1f,
+            LizEffectColourB = float.TryParse(array[10], out float lb) ? lb : 0f,
 
             EyeRightColourR = float.TryParse(array[11], out float err) ? err : 0f,
             EyeRightColourB = float.TryParse(array[12], out float erb) ? erb : 0f,
@@ -62,12 +62,13 @@ sealed class LizCutHeadFisobs : Fisob
             blackSalamander = bool.TryParse(array[24], out bool bs) && bs,
 
             rad = float.TryParse(array[25], out float rad) ? rad : 1f,
+            mass = float.TryParse(array[26], out float mass) ? mass : 1f,
 
-            LizBloodColourR = float.TryParse(array[26], out float br) ? br : -1f,
-            LizBloodColourG = float.TryParse(array[27], out float bg) ? bg : -1f,
-            LizBloodColourB = float.TryParse(array[28], out float bb) ? bb : -1f,
+            LizBloodColourR = float.TryParse(array[27], out float br) ? br : -1f,
+            LizBloodColourG = float.TryParse(array[28], out float bg) ? bg : -1f,
+            LizBloodColourB = float.TryParse(array[29], out float bb) ? bb : -1f,
 
-            LizBreed = string.IsNullOrEmpty(array[29]) ? "GreenLizard" : array[29]
+            LizBreed = string.IsNullOrEmpty(array[30]) ? "GreenLizard" : array[30]
         };
     }
 

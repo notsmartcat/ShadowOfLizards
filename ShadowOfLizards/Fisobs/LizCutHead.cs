@@ -1,6 +1,7 @@
 using RWCustom;
 using System.Collections.Generic;
 using UnityEngine;
+using System;
 
 namespace ShadowOfLizards;
 
@@ -9,26 +10,58 @@ sealed class LizCutHead : PlayerCarryableItem, IDrawable
     public float lastDarkness = -1f;
     public float darkness;
 
-    Color blackColor;
-    Color earthColor;
-
     public List<Color> ColourArray;
 
     public Color LizBaseColour;
-    public Color LizColour;
+    public Color LizEffectColour;
 
     public Color LizBloodColour;
 
     public Color LizEyeRightColour;
     public Color LizEyeLeftColour;
 
-    public Vector2 rotation;
-    public Vector2 lastRotation;
     public Vector2? setRotation;
+
+
+
+    public override float ThrowPowerFactor => 1f;
+
+    private int whiteFlicker = 0;
+    private int flicker;
+    private float flickerColor = 0;
+
+    public const int SourceCodeLizardsFlickerThreshold = 10;
+    public const int SourceCodeLizardsWhiteFlickerThreshold = 15;
+
+    public RoomPalette palette;
+
+    public const int TotalSprites = 3;
+    public const int SpriteJawStart = 2;
 
     public List<string> HeadSprites;
 
-    readonly string all = "ShadowOf: ";
+    public Vector2 rotation;
+    public Vector2 lastRotation;
+
+    public float jawRotation;
+    public float lastJawRotation;
+
+    public const float MaxJawRotation = 100f;
+    public const float JawOpenSensitivity = 20f;
+    public const float JawVelocityOverOpenSensitivity = 2.5f;
+
+    public List<int> headSpriteNum = new List<int> { 9, 16, 16, 10, 10, 10, 15, 14 };
+
+    public List<string> HeadSpritess;
+
+    public Color whiteCamoColor = new Color(0f, 0f, 0f);
+    public Color whitePickUpColor;
+    private float whiteCamoColorAmount = -1f;
+
+    public float baseBlink;
+    public float baseLastBlink;
+
+    public bool everySecondDraw;
 
     public LizCutHeadAbstract Abstr { get; }
 
@@ -36,18 +69,72 @@ sealed class LizCutHead : PlayerCarryableItem, IDrawable
     {
         Abstr = abstr;
 
-        bodyChunks = new BodyChunk[1];
-        bodyChunks[0] = new BodyChunk(this, 0, Vector2.zero, Abstr.rad, 0.4f);
+        var pos = abstractPhysicalObject.Room.realizedRoom.MiddleOfTile(abstractPhysicalObject.pos.Tile);
+
+        bodyChunks = new[] 
+            {
+                new BodyChunk(this, 0, pos, Abstr.rad, Abstr.mass),
+            };
+
         bodyChunkConnections = new BodyChunkConnection[0];
-        airFriction = 0.999f;
+
+        airFriction = 0.97f;
         gravity = 0.9f;
-        bounce = 0.3f;
+        bounce = 0.1f;
         surfaceFriction = 0.45f;
         collisionLayer = 1;
         waterFriction = 0.92f;
         buoyancy = 0.75f;
-        GoThroughFloors = false;
+
+        rotation = Vector2.zero;
         lastRotation = rotation;
+
+        lastJawRotation = 0f;
+        jawRotation = 0f;
+
+        baseBlink = UnityEngine.Random.value;
+        baseLastBlink = baseBlink;
+    }
+
+    private static float Rand => UnityEngine.Random.value;
+
+    public override void PickedUp(Creature upPicker)
+    {
+        room.PlaySound(SoundID.Lizard_Light_Terrain_Impact, firstChunk);
+        Flicker(20);
+    }
+
+    public override void HitByWeapon(Weapon weapon)
+    {
+        base.HitByWeapon(weapon);
+
+        WhiteFlicker(20);
+        Flicker(30);
+
+        if (grabbedBy.Count > 0)
+        {
+            Creature grabber = grabbedBy[0].grabber;
+            Vector2 push = firstChunk.vel * firstChunk.mass / grabber.firstChunk.mass;
+            grabber.firstChunk.vel += push;
+        }
+
+        firstChunk.vel = Vector2.zero;
+
+        HitEffect(weapon.firstChunk.vel);
+
+        void HitEffect(Vector2 impactVelocity)
+        {
+            var num = UnityEngine.Random.Range(3, 8);
+            for (int k = 0; k < num; k++)
+            {
+                //-- MR7: Figure out how to make sparks have the lizard graphics thing where they change color, without NEEDING lizard graphics.
+                Vector2 pos = firstChunk.pos + Custom.DegToVec(Rand * 360f) * 5f * Rand;
+                Vector2 vel = -impactVelocity * -0.1f + Custom.DegToVec(Rand * 360f) * Mathf.Lerp(0.2f, 0.4f, Rand) * impactVelocity.magnitude;
+                room.AddObject(new Spark(pos, vel, new Color(1f, 1f, 1f), null, 10, 170));
+            }
+
+            room.AddObject(new StationaryEffect(firstChunk.pos, new Color(1f, 1f, 1f), null, StationaryEffect.EffectType.FlashingOrb));
+        }
     }
 
     public override void PlaceInRoom(Room placeRoom)
@@ -61,36 +148,212 @@ sealed class LizCutHead : PlayerCarryableItem, IDrawable
         {
             PlaceInRoomBloodEmitter(firstChunk);
         }
-    }
 
-    private void PlaceInRoomBloodEmitter(BodyChunk firstChunk)
-    {
-        room.AddObject(new ShadowOfBloodEmitter(null, firstChunk, Random.Range(11f, 16f), Random.Range(3f, 6f)));
-        room.AddObject(new ShadowOfBloodEmitter(null, firstChunk, Random.Range(6f, 9f), Random.Range(7f, 12f)));
+        void PlaceInRoomBloodEmitter(BodyChunk firstChunk)
+        {
+            room.AddObject(new ShadowOfBloodEmitter(null, firstChunk, UnityEngine.Random.Range(11f, 16f), UnityEngine.Random.Range(3f, 6f)));
+            room.AddObject(new ShadowOfBloodEmitter(null, firstChunk, UnityEngine.Random.Range(6f, 9f), UnityEngine.Random.Range(7f, 12f)));
+        }
     }
 
     public override void TerrainImpact(int chunk, IntVector2 direction, float speed, bool firstContact)
     {
         base.TerrainImpact(chunk, direction, speed, firstContact);
-        if (firstContact && speed > 2f)
+
+        if (firstContact && speed > 10)
         {
             room.PlaySound(SoundID.Lizard_Light_Terrain_Impact, firstChunk.pos, 0.35f, 2f);
 
             if (ShadowOfLizards.bloodModCheck && ShadowOfOptions.blood_emitter.Value && ShadowOfOptions.blood_emitter_impact.Value)
                 TerrainImpactBloodEmitter();
         }
+
+        void TerrainImpactBloodEmitter()
+        {
+            room.AddObject(new BloodParticle(bodyChunks[0].pos, new Vector2(UnityEngine.Random.Range(-3f, 3f), UnityEngine.Random.Range(5f, 10f)), new Color(Abstr.LizBloodColourR, Abstr.LizBloodColourG, Abstr.LizBloodColourB), Abstr.LizBreed, null, 2.3f));
+        }
     }
 
-    private void TerrainImpactBloodEmitter()
+    public override void Update(bool eu)
     {
-        room.AddObject(new BloodParticle(bodyChunks[0].pos, new Vector2(Random.Range(-3f, 3f), Random.Range(5f, 10f)), new Color(Abstr.LizBloodColourR, Abstr.LizBloodColourG, Abstr.LizBloodColourB), Abstr.LizBreed, null, 2.3f));
+        base.Update(eu);
+
+        var chunk = firstChunk;
+
+        if (flicker > 0)
+        {
+            flicker--;
+            baseBlink = UnityEngine.Random.value;
+            baseLastBlink = UnityEngine.Random.value;
+        }
+        else
+        {
+            baseLastBlink = baseBlink;
+
+            baseBlink = Mathf.Lerp(baseBlink - Mathf.Floor(baseBlink), 0.25f, 0.02f);
+
+        }
+        if (whiteFlicker > 0)
+            whiteFlicker--;
+
+        if (grabbedBy.Count > 0)
+        {
+            var grabber = grabbedBy[0].grabber;
+
+            if (grabber is Player && (grabber as Player).Sneak > 0.01f)
+            {
+                var scug = grabber as Player;
+
+                Vector2 scugAimDir = new Vector2(scug.ThrowDirection, 0);
+
+                if (scug.Sneak < 0.5f)
+                {
+                    Vector2 faceDir = new Vector2(scug.ThrowDirection, 0);
+
+                    bodyChunks[0].pos = Vector2.Lerp(bodyChunks[0].pos, bodyChunks[0].pos + faceDir * 15, 0.3f);
+                }
+                bodyChunks[0].vel = Vector2.Lerp(bodyChunks[0].vel, Vector2.zero, 0.3f);
+                rotation = Vector2.Lerp(rotation, Custom.DirVec(grabber.mainBodyChunk.pos + scugAimDir * 2, chunk.pos), 0.3f);
+            }
+            else
+            {
+                rotation = Custom.PerpendicularVector(Custom.DirVec(chunk.pos, grabber.mainBodyChunk.pos));
+                rotation.y = Mathf.Abs(rotation.y);
+            }
+        }
+        else
+        {
+            rotation += 0.9f * Custom.DirVec(chunk.lastPos, chunk.pos) * Custom.Dist(chunk.lastPos, chunk.pos);
+        }
+
+        if (!Custom.DistLess(chunk.lastPos, chunk.pos, 3f) && room.GetTile(chunk.pos).Solid && !room.GetTile(chunk.lastPos).Solid)
+        {
+            var firstSolid = SharedPhysics.RayTraceTilesForTerrainReturnFirstSolid(room, room.GetTilePosition(chunk.lastPos), room.GetTilePosition(chunk.pos));
+            if (firstSolid != null)
+            {
+                FloatRect floatRect = Custom.RectCollision(chunk.pos, chunk.lastPos, room.TileRect(firstSolid.Value).Grow(2f));
+                chunk.pos = floatRect.GetCorner(FloatRect.CornerLabel.D);
+
+                if (floatRect.GetCorner(FloatRect.CornerLabel.B).x < 0f)
+                {
+                    chunk.vel.x = Mathf.Abs(chunk.vel.x) * 0.15f;
+                }
+                else if (floatRect.GetCorner(FloatRect.CornerLabel.B).x > 0f)
+                {
+                    chunk.vel.x = -Mathf.Abs(chunk.vel.x) * 0.15f;
+                }
+                else if (floatRect.GetCorner(FloatRect.CornerLabel.B).y < 0f)
+                {
+                    chunk.vel.y = Mathf.Abs(chunk.vel.y) * 0.15f;
+                }
+                else if (floatRect.GetCorner(FloatRect.CornerLabel.B).y > 0f)
+                {
+                    chunk.vel.y = -Mathf.Abs(chunk.vel.y) * 0.15f;
+                }
+            }
+        }
+
+        lastRotation = rotation;
     }
+
+    #region Colours
+    public Color effectColor
+    {
+        get
+        {
+            if (Abstr.LizBreed == "BlackLizard")
+            {
+                return palette.blackColor;
+            }
+            return LizEffectColour;
+        }
+    }
+
+    public Color SalamanderColor
+    {
+        get
+        {
+            if (Abstr.blackSalamander)
+            {
+                return Color.Lerp(palette.blackColor, effectColor, 0.1f);
+            }
+            return Color.Lerp(new Color(0.9f, 0.9f, 0.95f), effectColor, 0.06f);
+        }
+    }
+
+    private Color HeadColor1
+    {
+        get
+        { 
+            if (Abstr.LizType == "WhiteLizard")
+            {
+                return Color.Lerp(new Color(1f, 1f, 1f), whiteCamoColor, whiteCamoColorAmount);
+            }
+            if (Abstr.LizType == "BlackLizard")
+            {
+                return palette.blackColor;
+            }
+            if (Abstr.LizType == "Salamander")
+            {
+                return SalamanderColor;
+            }
+            
+            return palette.blackColor;
+        }
+    }
+
+    private Color HeadColor2
+    {
+        get
+        {
+            if (Abstr.LizType == "WhiteLizard")
+            {
+                return Color.Lerp(palette.blackColor, whiteCamoColor, whiteCamoColorAmount);
+            }
+            if (Abstr.LizType == "BlackLizard")
+            {
+                return palette.blackColor;
+            }
+            if (Abstr.LizType == "Salamander")
+            {
+                return SalamanderColor;
+            }
+
+            return effectColor;
+        }
+    }
+
+    public Color HeadColor(float timeStacker)
+    {
+        if (whiteFlicker > 0 && (whiteFlicker > SourceCodeLizardsWhiteFlickerThreshold || everySecondDraw))
+        {
+            return new Color(1f, 1f, 1f);
+        }
+        float num = 1f - Mathf.Pow(0.5f + 0.5f * Mathf.Sin(Mathf.Lerp(baseLastBlink, baseBlink, timeStacker) * 2f * 3.1415927f), 1.5f);
+        if (flicker > SourceCodeLizardsFlickerThreshold)
+        {
+            num = flickerColor;
+        }
+        return Color.Lerp(HeadColor1, HeadColor2, num);
+    }
+
+    public void Flicker(int fl)
+    {
+        if (fl > flicker)
+            flicker = fl;
+    }
+
+    public void WhiteFlicker(int fl)
+    {
+        if (fl > whiteFlicker)
+            whiteFlicker = fl;
+    }
+    #endregion
 
     public void InitiateSprites(RoomCamera.SpriteLeaser sLeaser, RoomCamera rCam)
     {
-        Color black = Color.black;
-        LizBaseColour = new Color(Abstr.LizBaseColourR, Abstr.LizBaseColourG, Abstr.LizBaseColourB);
-        LizColour = new Color(Abstr.LizColourR, Abstr.LizColourG, Abstr.LizColourB);
+        LizBaseColour = new Color(Abstr.LizBodyColourR, Abstr.LizBodyColourG, Abstr.LizBodyColourB);
+        LizEffectColour = new Color(Abstr.LizEffectColourR, Abstr.LizEffectColourG, Abstr.LizEffectColourB);
         LizBloodColour = (Abstr.LizBloodColourR != -1f) ? new Color(Abstr.LizBloodColourR, Abstr.LizBloodColourG, Abstr.LizBloodColourB) : Color.black;
         bool flag = Abstr.HeadSprite5 != null;
         LizEyeRightColour = flag ? new Color(Abstr.EyeRightColourR, Abstr.EyeRightColourG, Abstr.EyeRightColourB) : Color.black;
@@ -123,114 +386,10 @@ sealed class LizCutHead : PlayerCarryableItem, IDrawable
             sLeaser.sprites[i] = new FSprite(HeadSprites[i], true);
         }
 
-        if (Abstr.LizType == "CyanLizard")
+        if (flag)
         {
-            ColourArray = new List<Color>
-            {
-                LizBaseColour,
-                LizColour,
-                LizColour,
-                LizBaseColour,
-                LizColour,
-                (Abstr.LizBloodColourR != -1f) ? LizBloodColour : LizColour,
-                LizEyeRightColour,
-                LizEyeLeftColour
-            };
-            if (ShadowOfOptions.debug_logs.Value)
-                Debug.Log(all + Abstr.LizType + "'s Cut Head Cyan Lizard Colours");
-        }
-        else if (Abstr.LizType == "SpitLizard" || Abstr.LizType == "ZoopLizard")
-        {
-            ColourArray = new List<Color>
-            {
-                LizColour,
-                black,
-                black,
-                LizColour,
-                black,
-                (Abstr.LizBloodColourR != -1f) ? LizBloodColour : LizBaseColour,
-                LizEyeRightColour,
-                LizEyeLeftColour
-            };
-            if (ShadowOfOptions.debug_logs.Value)
-                Debug.Log(all + Abstr.LizType + "'s Cut Head Spit Lizard Colours");
-        }
-        else if (Abstr.LizType == "Salamander" || Abstr.LizType == "CyanLizard")
-        {
-            ColourArray = Abstr.blackSalamander ? new List<Color>
-            {
-                LizBaseColour,
-                LizColour,
-                LizColour,
-                LizBaseColour,
-                LizColour,
-                (Abstr.LizBloodColourR != -1f) ? LizBloodColour : LizColour,
-                LizEyeRightColour,
-                LizEyeLeftColour
-            } : new List<Color>
-            {
-                LizBaseColour,
-                black,
-                black,
-                LizBaseColour,
-                black,
-                (Abstr.LizBloodColourR != -1f) ? LizBloodColour : LizColour,
-                LizEyeRightColour,
-                LizEyeLeftColour
-            };
-            if (ShadowOfOptions.debug_logs.Value)
-                Debug.Log(all + Abstr.LizType + "'s Cut Head Salamander Lizard Colours");
-        }
-        else
-        {
-            ColourArray = new List<Color>
-            {
-                LizColour,
-                LizBaseColour,
-                LizBaseColour,
-                LizColour,
-                LizBaseColour,
-                (Abstr.LizBloodColourR != -1f) ? LizBloodColour : LizColour,
-                LizEyeRightColour,
-                LizEyeLeftColour
-            };
-            if (ShadowOfOptions.debug_logs.Value)
-                Debug.Log(all + Abstr.LizType + "'s Cut Head Default Lizard Colours");
-        }
-
-        int headLength3 = Abstr.HeadSprite3.Length;
-        char head3 = Abstr.HeadSprite3[headLength3 - 3];
-
-        if (head3 == 3)
-        {
-            sLeaser.sprites[3].anchorY = 0.75f;
-        }
-
-        if (sLeaser.sprites.Length > 5)
-        {
-            int headLength6 = Abstr.HeadSprite3.Length;
-            char head6 = Abstr.HeadSprite3[headLength6 - 3];
-
-            if (head6 == 3)
-            {
-                sLeaser.sprites[6].anchorY = 0.75f;
-                sLeaser.sprites[7].anchorY = 0.75f;
-            } 
-        }
-
-        for (int num11 = 0; num11 < 5; num11++)
-        {
-            int headLength2 = sLeaser.sprites[num11].element.name.Length;
-            char headX3 = sLeaser.sprites[num11].element.name[headLength2 - 3];
-
-            if (headX3 == 9)
-            {
-                sLeaser.sprites[num11].anchorY = 0.61f;
-            }
-            else if (headX3 == 8)
-            {
-                sLeaser.sprites[num11].anchorY = 0.65f;
-            }
+            sLeaser.sprites[6].color = LizEyeRightColour;
+            sLeaser.sprites[7].color = LizEyeLeftColour;
         }
 
         if (Abstr.LizBreed == "BlackLizard")
@@ -243,71 +402,173 @@ sealed class LizCutHead : PlayerCarryableItem, IDrawable
 
     public void DrawSprites(RoomCamera.SpriteLeaser sLeaser, RoomCamera rCam, float timeStacker, Vector2 camPos)
     {
-        Vector2 vector = Vector2.Lerp(firstChunk.lastPos, firstChunk.pos, timeStacker);
-        Vector2 vector2 = Vector3.Slerp(lastRotation, rotation, timeStacker);
+        Vector2 pos = Vector2.Lerp(firstChunk.lastPos, firstChunk.pos, timeStacker);
+        Vector2 rot = Vector3.Slerp(lastRotation, rotation, timeStacker);
 
         lastDarkness = darkness;
-        darkness = rCam.room.Darkness(vector) * (1f - rCam.room.LightSourceExposure(vector));
+        darkness = rCam.room.Darkness(pos) * (1f - rCam.room.LightSourceExposure(pos));
 
         if (darkness != lastDarkness)
         {
             ApplyPalette(sLeaser, rCam, rCam.currentPalette);
         }
 
-        Vector2 pos = Vector2.Lerp(firstChunk.lastPos, firstChunk.pos, timeStacker);
-        float num = Mathf.InverseLerp(305f, 380f, timeStacker);
-        pos.y -= 20f * Mathf.Pow(num, 3f);
-        float num2 = Mathf.Pow(1f - num, 0.25f);
+        if (Abstr.LizType == "WhiteLizard" || Abstr.LizType == "ZoopLizard")
+        {
+            whitePickUpColor = rCam.PixelColorAtCoordinate(bodyChunks[0].pos);
+
+            if (whiteCamoColorAmount == -1f)
+            {
+                whiteCamoColor = whitePickUpColor;
+                whiteCamoColorAmount = 1f;
+            }
+        }
+
+        string headAngleNum = "0";
+        if (Math.Abs(rotation.x) > 45f)
+            headAngleNum = "1";
+        else if (Math.Abs(rotation.x) > 90f)
+            headAngleNum = "2";
+
+        float headRotation = Custom.VecToDeg(rot);
+
+        float totalVel = Math.Abs(bodyChunks[0].vel.x) + Math.Abs(bodyChunks[0].vel.y);
+
+        float jawOpenRatio = Math.Abs(
+            Mathf.Clamp(
+                Vector2.Dot(rot, bodyChunks[0].vel)
+                - 0.6f,
+                -1 - totalVel * JawVelocityOverOpenSensitivity,
+                0)
+            );
+
+        lastJawRotation = jawRotation;
+
+        float desiredJawRotation = -Mathf.Clamp(jawOpenRatio * JawOpenSensitivity, 0, MaxJawRotation);
+        jawRotation = Mathf.Lerp(lastJawRotation, headRotation + desiredJawRotation, 0.25f);
+
+        if (jawRotation > headRotation + 10)
+            jawRotation = headRotation + 10;
+
+        headRotation %= 360f;
+        jawRotation %= 360f;
+
+        if (flicker > SourceCodeLizardsFlickerThreshold)
+        {
+            flickerColor = UnityEngine.Random.value;
+        }
+
         lastDarkness = darkness;
         darkness = rCam.room.Darkness(pos);
         darkness *= 1f - 0.5f * rCam.room.LightSourceExposure(pos);
 
-        for (int i = 0; i < sLeaser.sprites.Length; i++)
+        for (int i = 0; i < HeadSprites.Count; i++)
         {
-            if (ColourArray[i] == Color.black)
-            {
-                ColourArray[i] = blackColor;
-            }
+            string name = HeadSprites[i].Remove(headSpriteNum[i], 1);
+            sLeaser.sprites[i].element = Futile.atlasManager.GetElementWithName(name.Insert(headSpriteNum[i], headAngleNum));
             sLeaser.sprites[i].x = pos.x - camPos.x;
             sLeaser.sprites[i].y = pos.y - camPos.y;
-
-            sLeaser.sprites[i].rotation = Custom.VecToDeg(vector2);
-
-            if (false && Abstr.LizBreed == "WhiteLizard" && (i == 6 || i == 7 || Abstr.HeadSprite5 == null && i == 4))
-            {
-                sLeaser.sprites[i].x = pos.x - camPos.x - (7f * rotation.x);
-                sLeaser.sprites[i].y = pos.y - camPos.y - (7f * rotation.y);
-            }
-
-            sLeaser.sprites[i].scaleY = num2 * Abstr.scaleY;
-            sLeaser.sprites[i].scaleX = num2 * Abstr.scaleX;
-            sLeaser.sprites[i].color = ColourArray[i];
+            sLeaser.sprites[i].rotation = i < SpriteJawStart ? jawRotation : headRotation;
         }
 
-        if (blink > 0 && Random.value < 0.5f)
+        if (Abstr.LizType == "CyanLizard")
         {
-            sLeaser.sprites[0].color = blinkColor;
-            sLeaser.sprites[3].color = blinkColor;
-            sLeaser.sprites[5].color = blinkColor;
+            sLeaser.sprites[4].color = effectColor;
+            sLeaser.sprites[1].color = HeadColor(timeStacker);
+            sLeaser.sprites[2].color = HeadColor(timeStacker);
         }
-        else if (num > 0.3f)
+        else if (Abstr.LizType == "IndigoLizard")
         {
-            for (int j = 0; j < sLeaser.sprites.Length; j++)
+            Vector3 vector7 = Custom.RGB2HSL(LizEffectColour);
+            sLeaser.sprites[4].color = new HSLColor(vector7.x, vector7.y, 0.7f).rgb;
+            sLeaser.sprites[1].color = HeadColor(timeStacker);
+            sLeaser.sprites[2].color = palette.blackColor;
+
+            sLeaser.sprites[0].color = palette.blackColor;
+            sLeaser.sprites[3].color = palette.blackColor;
+        }
+        else if (Abstr.LizType == "BasiliskLizard")
+        {
+            Color color4 = Color.Lerp(HeadColor(timeStacker), effectColor, 0.7f);
+            if (whiteFlicker > 0 && (whiteFlicker > SourceCodeLizardsWhiteFlickerThreshold || everySecondDraw))
             {
-                sLeaser.sprites[j].color = Color.Lerp(sLeaser.sprites[j].color, earthColor, Mathf.Pow(Mathf.InverseLerp(0.3f, 1f, num), 1.6f));
+                color4 = new Color(1f, 1f, 1f);
             }
+            sLeaser.sprites[0].color = color4;
+            sLeaser.sprites[3].color = color4;
+        }
+        else
+        {
+            sLeaser.sprites[0].color = HeadColor(timeStacker);
+            sLeaser.sprites[3].color = HeadColor(timeStacker);
+        }
+
+        if (Abstr.LizType != "IndigoLizard" || (Abstr.LizType == "IndigoLizard" && Abstr.LizBloodColourR == -1f))
+        {
+            sLeaser.sprites[5].color = (Abstr.LizBloodColourR != -1f) ? LizBloodColour : effectColor;
+        }
+        else
+        {
+            sLeaser.sprites[5].color = palette.blackColor;
         }
 
         if (slatedForDeletetion || room != rCam.room)
         {
             sLeaser.CleanSpritesAndRemove();
         }
+
+        if (blink > 0 && UnityEngine.Random.value < 0.5f)
+        {
+            sLeaser.sprites[0].color = blinkColor;
+            sLeaser.sprites[3].color = blinkColor;
+            if(Abstr.LizBloodColourR == -1f)
+                sLeaser.sprites[5].color = blinkColor;
+        }
+
+        if (UnityEngine.Random.value > 0.025f)
+        {
+            everySecondDraw = !everySecondDraw;
+        }
     }
 
     public void ApplyPalette(RoomCamera.SpriteLeaser sLeaser, RoomCamera rCam, RoomPalette palette)
     {
-        blackColor = palette.blackColor;
-        earthColor = Color.Lerp(palette.fogColor, palette.blackColor, 0.5f);
+        this.palette = palette;
+
+        if (Abstr.LizType == "BlizzardLizard")
+        {
+            palette.blackColor = new Color(0.8f, 0.81f, 0.84f);
+            this.palette = palette;
+        }
+        else if (Abstr.LizType == "IndigoLizard")
+        {
+            Color IndigoColour = new Color(Abstr.LizEffectColourR, Abstr.LizEffectColourG, Abstr.LizEffectColourB);
+
+            Vector3 vector = Custom.RGB2HSL(IndigoColour);
+            palette.blackColor = Color.Lerp(new HSLColor(vector.x, vector.y, 0.4f).rgb, palette.blackColor, 0.95f);
+            this.palette = palette;
+        }
+
+        sLeaser.sprites[1].color = palette.blackColor;
+        sLeaser.sprites[2].color = palette.blackColor;
+        sLeaser.sprites[4].color = palette.blackColor;
+
+        if (Abstr.LizType == "Salamander" && Abstr.blackSalamander)
+        {
+            sLeaser.sprites[4].color = effectColor;
+        }
+        else if (Abstr.LizType == "CyanLizard" || Abstr.LizType == "IndigoLizard")
+        {
+            sLeaser.sprites[0].color = palette.blackColor;
+            sLeaser.sprites[3].color = palette.blackColor;
+        }
+        else if (Abstr.LizType == "BlizzardLizard")
+        {
+            Color color = new Color(0.99f, 1f, 0.98f);
+            sLeaser.sprites[4].color = color;
+            sLeaser.sprites[1].color = color;
+            sLeaser.sprites[2].color = color;
+        }
     }
 
     public void AddToContainer(RoomCamera.SpriteLeaser sLeaser, RoomCamera rCam, FContainer newContainer)
@@ -321,39 +582,8 @@ sealed class LizCutHead : PlayerCarryableItem, IDrawable
         }
     }
 
-    public override void Update(bool eu)
-    {
-        base.Update(eu);
-        lastRotation = rotation;
-
-        if (room.game.devToolsActive && Input.GetKey("b"))
-        {
-            firstChunk.vel += Custom.DirVec(firstChunk.pos, Futile.mousePosition) * 3f;
-        }
-
-        if (grabbedBy.Count > 0)
-        {
-            rotation = Custom.PerpendicularVector(Custom.DirVec(firstChunk.pos, grabbedBy[0].grabber.mainBodyChunk.pos));
-            rotation.y = Mathf.Abs(rotation.y);
-        }
-        if (setRotation.HasValue)
-        {
-            rotation = setRotation.Value;
-            setRotation = null;
-        }
-        if (firstChunk.ContactPoint.y < 0)
-        {
-            Vector2 val = rotation - Custom.PerpendicularVector(rotation) * 0.1f * firstChunk.vel.x;
-            rotation = val.normalized;
-            firstChunk.vel.x *= 0.8f;
-        }
-    }
-
-    public override void HitByWeapon(Weapon weapon)
-    {
-    }
-
     public void ThrowByPlayer()
     {
+        Flicker(20);
     }
 }

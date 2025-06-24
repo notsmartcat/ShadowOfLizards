@@ -20,9 +20,9 @@ sealed class LizCutLegFisobs : Fisob
     {
         string[] array = saveData.CustomData.Split(';');
 
-        if (array.Length < 16)
+        if (array.Length < 17)
         {
-            array = new string[16];
+            array = new string[17];
         }
 
         return new LizCutLegAbstract(world, saveData.Pos, saveData.ID)
@@ -35,13 +35,13 @@ sealed class LizCutLegFisobs : Fisob
 
             LizType = (string.IsNullOrEmpty(array[4]) ? "GreenLizard" : array[4]),
 
-            LizBaseColourR = float.TryParse(array[5], out float lbr) ? lbr : 0f,
-            LizBaseColourB = float.TryParse(array[6], out float lbb) ? lbb : 0f,
-            LizBaseColourG = float.TryParse(array[7], out float lbg) ? lbg : 1f,
+            LizBodyColourR = float.TryParse(array[5], out float lbr) ? lbr : 0f,
+            LizBodyColourB = float.TryParse(array[6], out float lbb) ? lbb : 0f,
+            LizBodyColourG = float.TryParse(array[7], out float lbg) ? lbg : 1f,
 
-            LizColourR = float.TryParse(array[8], out float lr) ? lr : 0f,
-            LizColourG = float.TryParse(array[9], out float lg) ? lg : 1f,
-            LizColourB = float.TryParse(array[10], out float lb) ? lb : 0f,
+            LizEffectColourR = float.TryParse(array[8], out float lr) ? lr : 0f,
+            LizEffectColourG = float.TryParse(array[9], out float lg) ? lg : 1f,
+            LizEffectColourB = float.TryParse(array[10], out float lb) ? lb : 0f,
 
             LizBloodColourR = float.TryParse(array[11], out float br) ? br : -1f,
             LizBloodColourG = float.TryParse(array[12], out float bg) ? bg : -1f,
@@ -50,7 +50,9 @@ sealed class LizCutLegFisobs : Fisob
             LizSpriteName = string.IsNullOrEmpty(array[14]) ? "LizardArm_14" : array[14],
             LizColourSpriteName = string.IsNullOrEmpty(array[15]) ? "LizardArmColor_14" : array[15],
 
-            LizBreed = string.IsNullOrEmpty(array[16]) ? "GreenLizard" : array[16]
+            LizBreed = string.IsNullOrEmpty(array[16]) ? "GreenLizard" : array[16],
+
+            blackSalamander = bool.TryParse(array[17], out bool bs) && bs
         };
     }
 
