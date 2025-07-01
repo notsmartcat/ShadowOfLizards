@@ -25,11 +25,11 @@ internal class TransformationSpider
         }
     }
 
-    public static void SpiderSpitUpdate(LizardSpit self, ShadowOfLizards.LizardData data)
+    public static void SpiderSpitUpdate(LizardSpit self, LizardData data)
     {
         Vector2 pos = self.pos;
 
-        if (float.Parse(data.liz["SpiderNumber"]) > 0 && UnityEngine.Random.Range(0, 100) == 0)
+        if (float.Parse(data.liz["SpiderNumber"]) > 0 && data.transformation == "Spider" ? UnityEngine.Random.Range(0, 100) < 10 : UnityEngine.Random.Range(0, 100) == 0)
         {
             AbstractCreature spid = new(self.room.world, StaticWorld.GetCreatureTemplate(CreatureTemplate.Type.Spider), null, self.room.GetWorldCoordinate(pos), self.room.world.game.GetNewID());
             self.room.abstractRoom.AddEntity(spid);

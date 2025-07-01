@@ -139,6 +139,24 @@ public class ShadowOfOptions : OptionInterface
         new object[1] { "Chance to gain Worm Grass Immunity" }));
 
 
+    public static Configurable<bool> hypothermia_immune = instance.config.Bind("hypothermia_immune", true, new ConfigurableInfo("If On Lizards can gain or lose Immunity to Hypothermia. (Default = true)", null, "", new object[1] { "Hypothermia Immunity" }));
+
+    public static Configurable<int> hypothermia_immune_chance = instance.config.Bind("hypothermia_immune_chance", 75, new ConfigurableInfo("Chance for Lizard to gain Immunity to Hypothermia by getting their hypothermia too high while either dead or alive. (Default = 75%)", null, "",
+        new object[1] { "Chance to gain Hypothermia Immunity" }));
+
+
+    public static Configurable<bool> tentacle_immune = instance.config.Bind("tentacle_immune", true, new ConfigurableInfo("If On Lizards can gain or lose Immunity to Rot Tentacles. (Default = true)", null, "", new object[1] { "Rot Tentacle Immunity" }));
+
+    public static Configurable<int> tentacle_immune_chance = instance.config.Bind("tentacle_immune_chance", 75, new ConfigurableInfo("Chance for Lizard to gain Immunity to Rot Tentacles by getting getting killed by a rot creature or by being eaten by Rot while either dead or alive. (Default = 75%)", null, "",
+        new object[1] { "Chance to gain Rot Tentacle Immunity" }));
+
+
+    public static Configurable<bool> lava_immune = instance.config.Bind("lava_immune", true, new ConfigurableInfo("If On Lizards can gain or lose Immunity to Lava/Acid. This only works when the Melted ransformation is turned Off. (Default = true)", null, "", new object[1] { "Lava/Acid Immunity" }));
+
+    public static Configurable<int> lava_immune_chance = instance.config.Bind("lava_immune_chance", 75, new ConfigurableInfo("Chance for Lizard to gain Immunity to Lava/Acid by swimming in Lava/Acid while either dead or alive. (Default = 75%)", null, "",
+        new object[1] { "Chance to gain Lava/Acid Immunity" }));
+
+
 
     public static Configurable<bool> blind = instance.config.Bind("blind", true, new ConfigurableInfo("If On Lizards can become permanently Blind, have their eyes scarred or Cut out. This changes Lizard eye sprites and might not work with modded lizards. (Default = true)", null, "", new object[1] { "Blinding" }));
 

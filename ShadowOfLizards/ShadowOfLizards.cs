@@ -49,7 +49,7 @@ internal class ShadowOfLizards : BaseUnityPlugin
         //Transformation Related Values
 
         //This Ranges from the first stage oka "Melted" to the last stage aka "MeltedTransformation"
-        public string transformation = "Null";
+        public string transformation = "Start";
 
         /// <summary>
         //Transformation timers
@@ -152,6 +152,8 @@ internal class ShadowOfLizards : BaseUnityPlugin
 
     public static List<AbstractCreature> goreLizardList;
 
+    public static List<string> validTongues = new() { "WhiteLizard", "Salamander", "BlueLizard", "CyanLizard", "RedLizard"};
+
     internal static new ManualLogSource Logger;
     #endregion
 
@@ -201,6 +203,12 @@ internal class ShadowOfLizards : BaseUnityPlugin
             {
                 init = true;
                 Futile.atlasManager.LoadAtlas("atlases/ShadowOfAtlas");
+
+                if (ModManager.DLCShared)
+                    validTongues.Add("ZoopLizard");
+
+                if (ModManager.Watcher)
+                    validTongues.Add("IndigoLizard");
             }
             MachineConnector.SetRegisteredOI("notsmartcat.shadowoflizards", ShadowOfOptions.instance);
         }
@@ -279,8 +287,7 @@ internal class ShadowOfLizards : BaseUnityPlugin
                                 if (ShadowOfOptions.debug_logs.Value)
                                     Debug.Log(all + liz.ToString() + "'s Mouth Hit by Debug");
 
-                                data.liz["Tongue"] = "False";
-                                data.liz["NewTongue"] = "get";
+                                data.liz["Tongue"] = "Null";
                                 liz.lizardParams.tongue = false;
                                 liz.tongue.Retract();
                             }
@@ -379,21 +386,21 @@ internal class ShadowOfLizards : BaseUnityPlugin
                     {
                         if (sender != null && sender is Lizard liz && lizardstorage.TryGetValue(liz.abstractCreature, out LizardData data2))
                         {
-                            data.liz.Add("MeltedR", data2.liz["MeltedR"]);
-                            data.liz.Add("MeltedG", data2.liz["MeltedG"]);
-                            data.liz.Add("MeltedB", data2.liz["MeltedB"]);
+                            data.liz["MeltedR"] = data2.liz["MeltedR"];
+                            data.liz["MeltedG"] = data2.liz["MeltedG"];
+                            data.liz["MeltedB"] = data2.liz["MeltedB"];
                         }
                         else if (receiver.room.waterObject != null && receiver.room.waterObject.WaterIsLethal)
                         {
-                            data.liz.Add("MeltedR", data.rCam.currentPalette.waterColor1.r.ToString());
-                            data.liz.Add("MeltedG", data.rCam.currentPalette.waterColor1.g.ToString());
-                            data.liz.Add("MeltedB", data.rCam.currentPalette.waterColor1.b.ToString());
+                            data.liz["MeltedR"] = data.rCam.currentPalette.waterColor1.r.ToString();
+                            data.liz["MeltedG"] = data.rCam.currentPalette.waterColor1.g.ToString();
+                            data.liz["MeltedB"] = data.rCam.currentPalette.waterColor1.b.ToString();
                         }
                         else
                         {
-                            data.liz.Add("MeltedR", "0.4078431");
-                            data.liz.Add("MeltedG", "0.5843138");
-                            data.liz.Add("MeltedB", "0.1843137");
+                            data.liz["MeltedR"] = "0.4078431";
+                            data.liz["MeltedG"] = "0.5843138";
+                            data.liz["MeltedB"] = "0.1843137";
                         }
                     }
                     else
@@ -452,32 +459,27 @@ internal class ShadowOfLizards : BaseUnityPlugin
                     if (ShadowOfOptions.debug_logs.Value)
                         Debug.Log(all + receiver.ToString() + " grew a new Tongue due to Falling out of map");
 
-                    if (!data.liz.TryGetValue("Tongue", out _))
-                    {
-                        data.liz.Add("Tongue", "True");
-                        data.liz.Add("NewTongue", "get");
-                    }
-                    else
-                    {
-                        data.liz["Tongue"] = "True";
-                        data.liz["NewTongue"] = "get";
-                    }
+                    data.liz["Tongue"] = "get";
                 }
-                else
+                else if (ShadowOfOptions.debug_logs.Value)
+                {
+                    Debug.Log(all + receiver.ToString() + " did not grow a new Tongue due to Falling out of map because it already has one");
+                }
+            }
+            else if (ShadowOfOptions.jump_stuff.Value && num == 1)
+            {
+                if (receiver.jumpModule == null)
                 {
                     if (ShadowOfOptions.debug_logs.Value)
-                        Debug.Log(all + receiver.ToString() + " did not grow a new Tongue due to Falling out of map because it already has one");
+                        Debug.Log(all + receiver.ToString() + " has gained the Jump ability due to Falling out of map");
+
+                    data.liz["CanJump"] = "True";
+                }
+                else if (ShadowOfOptions.debug_logs.Value)
+                {
+                    Debug.Log(all + receiver.ToString() + " did not gain the Jump ability due to Falling out of map because it already can Jump");
                 }
             }
-            else if (ShadowOfOptions.jump_stuff.Value && data.liz.TryGetValue("CanJump", out _) && num == 1 && receiver.jumpModule == null)
-            {
-                if (ShadowOfOptions.debug_logs.Value)
-                    Debug.Log(all + receiver.ToString() + " has gained the Jump ability due to Falling out of map");
-
-                data.liz["CanJump"] = "True";
-            }
-            else if (ShadowOfOptions.jump_stuff.Value && num == 1 && receiver.jumpModule != null && ShadowOfOptions.debug_logs.Value)
-                Debug.Log(all + receiver.ToString() + " did not gain the Jump ability due to Falling out of map because it already can Jump");
         }
     }
     #endregion

@@ -25,7 +25,7 @@ internal class MiscHooks
     {
         orig.Invoke(self);
 
-        if (self.gasLeakSpear == null || !lizardstorage.TryGetValue(self.lizard.abstractCreature, out LizardData data) || !data.liz.TryGetValue("CanJump", out _) || !(UnityEngine.Random.Range(0, 100) < ShadowOfOptions.jump_stuff_chance.Value))
+        if (self.gasLeakSpear == null || !lizardstorage.TryGetValue(self.lizard.abstractCreature, out LizardData data) || UnityEngine.Random.Range(0, 100) >= ShadowOfOptions.jump_stuff_chance.Value)
         {
             return;
         }
@@ -38,7 +38,7 @@ internal class MiscHooks
                 Debug.Log(all + self.ToString() + " lost the ability to Jump due to Gas Leak");
 
             if (ShadowOfOptions.dynamic_cheat_death_chance.Value)
-                data.cheatDeathChance -= 10;
+                data.cheatDeathChance -= 5;
         }
         catch (Exception e) { ShadowOfLizards.Logger.LogError(e); }
     }
@@ -203,6 +203,5 @@ internal class MiscHooks
         }
         catch (Exception e) { ShadowOfLizards.Logger.LogError(e); }
     }
-
 }
 

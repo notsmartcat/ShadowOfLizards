@@ -228,7 +228,7 @@ internal class LizardGraphicsHooks
 
                 }
 
-                if (data.liz.TryGetValue("Tongue", out _) && data.liz["NewTongue"] == "Tube" && self.lizard.tongue != null && self.lizard.tongue.Out)
+                if (data.liz.TryGetValue("Tongue", out string tongue) && tongue == "Tube" && self.lizard.tongue != null && self.lizard.tongue.Out)
                 {
                     FSprite obj = sLeaser.sprites[self.SpriteTongueStart];
 

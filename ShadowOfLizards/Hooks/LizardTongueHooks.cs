@@ -1,8 +1,7 @@
 ﻿using UnityEngine;
-using RWCustom;
 using static ShadowOfLizards.ShadowOfLizards;
-using static RoomCamera;
 using System;
+using MoreSlugcats;
 
 namespace ShadowOfLizards;
 
@@ -16,7 +15,7 @@ internal class LizardTongueHooks
 
     static void NewLizardTongue(On.LizardTongue.orig_ctor orig, LizardTongue self, Lizard lizard)
     {
-        if (!ShadowOfOptions.tongue_stuff.Value || !lizardstorage.TryGetValue(lizard.abstractCreature, out LizardData data) || !data.liz.TryGetValue("Tongue", out _) || !data.liz.TryGetValue("NewTongue", out string Tongue))
+        if (!ShadowOfOptions.tongue_stuff.Value || !lizardstorage.TryGetValue(lizard.abstractCreature, out LizardData data) || !data.liz.TryGetValue("Tongue", out string Tongue))
         {
             orig.Invoke(self, lizard);
             return;

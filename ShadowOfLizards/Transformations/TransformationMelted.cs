@@ -5,6 +5,7 @@ using UnityEngine;
 using static ShadowOfLizards.ShadowOfLizards;
 using static Explosion;
 using System;
+using System.Collections.Generic;
 
 namespace ShadowOfLizards;
 
@@ -16,6 +17,7 @@ internal class TransformationMelted
         On.LizardAI.AggressiveBehavior += NoBite;
     }
 
+    #region Spit
     public static void MeltedSpitDraw(LizardSpit self, RoomCamera.SpriteLeaser sLeaser, LizardData data)
     {
         Color color = new(float.Parse(data.liz["MeltedR"]), float.Parse(data.liz["MeltedG"]), float.Parse(data.liz["MeltedB"]));
@@ -41,6 +43,93 @@ internal class TransformationMelted
                 PostViolenceCheck(liz, "Melted", self.lizard);
             }
         }
+    }
+    #endregion
+
+    public static void NewMeltedLizard(Lizard self, World world, LizardData data)
+    {
+        AbstractCreature abstrCrit = self.abstractCreature;
+
+        abstrCrit.ignoreCycle = true;
+
+        #region Swimming
+        if (true && !self.Template.canSwim)
+        {
+            data.liz["CanSwim"] = "True";
+
+            if (ShadowOfOptions.debug_logs.Value)
+                Debug.Log(all + self + "'s elted Transformation has overridden CanSwim to True");
+
+            self.Template.canSwim = true;
+
+            if (self.abstractCreature.creatureTemplate.waterRelationship != CreatureTemplate.WaterRelationship.Amphibious && self.abstractCreature.creatureTemplate.waterRelationship != CreatureTemplate.WaterRelationship.WaterOnly)
+            {
+                self.abstractCreature.creatureTemplate.waterRelationship = CreatureTemplate.WaterRelationship.Amphibious;
+            }
+
+            if (self.abstractCreature.creatureTemplate.waterPathingResistance > 1f)
+                self.abstractCreature.creatureTemplate.waterPathingResistance = ((self.abstractCreature.creatureTemplate.waterPathingResistance - 1f) / 2) + 1f > 1f ? ((self.abstractCreature.creatureTemplate.waterPathingResistance - 1f) / 2) + 1f : 1f;
+
+            PathCost dropToWater = self.abstractCreature.creatureTemplate.pathingPreferencesConnections[(int)MovementConnection.MovementType.DropToWater];
+            if (dropToWater.legality == PathCost.Legality.Unallowed || dropToWater.legality == PathCost.Legality.Unwanted)
+            {
+                List<TileConnectionResistance> list2 = new()
+                            {
+                            new TileConnectionResistance(MovementConnection.MovementType.DropToWater, 20f, PathCost.Legality.Allowed)
+                            };
+
+                for (int n = 0; n < list2.Count; n++)
+                {
+                    self.abstractCreature.creatureTemplate.pathingPreferencesConnections[(int)list2[n].movementType] = list2[n].cost;
+                }
+            }
+        }
+        #endregion
+
+        #region Hypothermia
+        if (ModManager.HypothermiaModule)
+        {
+            bool immune = self.abstractCreature.HypothermiaImmune;
+
+            self.abstractCreature.HypothermiaImmune = true;
+            self.Template.BlizzardAdapted = true;
+            self.Template.BlizzardWanderer = true;
+
+            if (ShadowOfOptions.hypothermia_immune.Value && !immune && (!data.liz.TryGetValue("HypothermiaImmune", out string HypothermiaImmune) || HypothermiaImmune != "True"))
+            {
+                data.liz["HypothermiaImmune"] = "True";
+
+                if (ShadowOfOptions.debug_logs.Value)
+                    Debug.Log(all + self.ToString() + "'s Melted Transformation has overridden HypothermiaImmune to True");
+            }
+        }
+        #endregion
+
+        #region Lava
+        if (ShadowOfOptions.lava_immune.Value && !abstrCrit.lavaImmune && (!data.liz.TryGetValue("LavaImmune", out string LavaImmune) || LavaImmune != "True"))
+        {
+            abstrCrit.lavaImmune = true;
+            data.liz["LavaImmune"] = "True";
+
+            if (ShadowOfOptions.debug_logs.Value)
+                Debug.Log(all + self.ToString() + "'s Melted Transformation has overridden LavaImmune to True");
+        }
+        #endregion
+
+        #region Colour
+        if (!data.liz.TryGetValue("MeltedR", out string _))
+        {
+            Color waterColour = (world != null && world.activeRooms[0] != null && world.activeRooms[0].waterObject != null && world.activeRooms[0].waterObject.WaterIsLethal && world.activeRooms[0].game.cameras[0].currentPalette.waterColor1 != null) ? world.activeRooms[0].game.cameras[0].currentPalette.waterColor1 : new Color(0.4078431f, 0.5843138f, 0.1843137f);
+            data.liz["MeltedR"] = waterColour.r.ToString();
+            data.liz["MeltedG"] = waterColour.g.ToString();
+            data.liz["MeltedB"] = waterColour.b.ToString();
+        }
+
+        if (abstrCrit.creatureTemplate.type != CreatureTemplate.Type.WhiteLizard)
+        {
+            self.effectColor = new Color(float.Parse(data.liz["MeltedR"]), float.Parse(data.liz["MeltedG"]), float.Parse(data.liz["MeltedB"]));
+        }
+        #endregion
     }
 
     public static void PreMeltedLizardBite(Lizard self, BodyChunk chunk)
@@ -211,8 +300,8 @@ internal class TransformationMelted
             if (ShadowOfOptions.debug_logs.Value)
                 Debug.Log(all + self.ToString() + " in Lethal Water");
 
-            data.liz["PreMeltedTime"] = isStorySession ? cycleNumber.ToString() : "-1";
-            if (UnityEngine.Random.Range(0, 100) < ShadowOfOptions.melted_transformation_chance.Value)
+            data.liz["PreMeltedCycle"] = cycleNumber.ToString();
+            if (UnityEngine.Random.Range(0, 100) >= ShadowOfOptions.melted_transformation_chance.Value)
             {
                 return;
             }
@@ -221,22 +310,13 @@ internal class TransformationMelted
                 Debug.Log(all + self.ToString() + " was made Melted due to swimming in Lethal Water");
 
             data.transformation = "Melted";
-            data.transformationTimer = isStorySession ? cycleNumber : -1;
+            data.transformationTimer = cycleNumber;
 
-            data.liz.Remove("PreMeltedTime");
+            data.liz.Remove("PreMeltedCycle");
 
-            if (!data.liz.TryGetValue("MeltedR", out _))
-            {
-                data.liz.Add("MeltedR", data.rCam != null ? data.rCam.currentPalette.waterColor1.r.ToString() : "0.4078431");
-                data.liz.Add("MeltedG", data.rCam != null ? data.rCam.currentPalette.waterColor1.g.ToString() : "0.5843138");
-                data.liz.Add("MeltedB", data.rCam != null ? data.rCam.currentPalette.waterColor1.b.ToString() : "0.1843137");
-            }
-            else
-            {
-                data.liz["MeltedR"] = data.rCam != null ? data.rCam.currentPalette.waterColor1.r.ToString() : "0.4078431";
-                data.liz["MeltedG"] = data.rCam != null ? data.rCam.currentPalette.waterColor1.g.ToString() : "0.5843138";
-                data.liz["MeltedB"] = data.rCam != null ? data.rCam.currentPalette.waterColor1.b.ToString() : "0.1843137";
-            }
+            data.liz["MeltedR"] = data.rCam != null ? data.rCam.currentPalette.waterColor1.r.ToString() : "0.4078431";
+            data.liz["MeltedG"] = data.rCam != null ? data.rCam.currentPalette.waterColor1.g.ToString() : "0.5843138";
+            data.liz["MeltedB"] = data.rCam != null ? data.rCam.currentPalette.waterColor1.b.ToString() : "0.1843137";
         }
         catch (Exception e) { ShadowOfLizards.Logger.LogError(e); }
     }
@@ -268,23 +348,16 @@ internal class TransformationMelted
     #region Behavior
     static LizardAI.Behavior NoBehavior(On.LizardAI.orig_DetermineBehavior orig, LizardAI self)
     {
-        if (ShadowOfOptions.melted_transformation.Value && lizardstorage.TryGetValue(self.lizard.abstractCreature, out LizardData data))
+        if (ShadowOfOptions.melted_transformation.Value && lizardstorage.TryGetValue(self.lizard.abstractCreature, out LizardData data) && data.transformation == "Melted")
         {
-            if (data.transformation == "Melted")
-            {
-                return LizardAI.Behavior.Frustrated;
-            }
-            if (data.transformation == "MeltedTransformation")
-            {
-                return LizardAI.Behavior.Hunt;
-            }
+            return LizardAI.Behavior.Injured;
         }
         return orig.Invoke(self);
     }
 
     static void NoBite(On.LizardAI.orig_AggressiveBehavior orig, LizardAI self, Tracker.CreatureRepresentation target, float tongueChance)
     {
-        if (ShadowOfOptions.melted_transformation.Value && lizardstorage.TryGetValue(self.lizard.abstractCreature, out ShadowOfLizards.LizardData data) && data.transformation == "Melted")
+        if (ShadowOfOptions.melted_transformation.Value && lizardstorage.TryGetValue(self.lizard.abstractCreature, out LizardData data) && data.transformation == "Melted")
         {
             return;
         }

@@ -379,6 +379,15 @@ sealed class LizCutHead : PlayerCarryableItem, IDrawable
                 Abstr.HeadSprite3 + "Cut2"
             };
 
+        if (HeadSprites.Count > 5)
+        {
+            bool right = HeadSprites[6].Contains("Right");
+
+            headSpriteNum[6] = right ? 15 : 14;
+            headSpriteNum[7] = right ? 14 : 15;
+        }
+
+
         sLeaser.sprites = new FSprite[HeadSprites.Count];
 
         for (int i = 0; i < HeadSprites.Count; i++)

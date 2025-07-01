@@ -19,11 +19,7 @@ internal class LizardCustomRelationsSet
     static Creature RelationNullCheck(DynamicRelationship rel)
     {
         Creature crit = null;
-        if (rel == null)
-        {
-            crit = null;
-        }
-        else
+        if (rel != null)
         {
             CreatureRepresentation trackerRep = rel.trackerRep;
             if (trackerRep != null)
@@ -116,6 +112,15 @@ internal class LizardCustomRelationsSet
         return false;
     }
 
+    public static bool MeltedTemplateCheck(Creature crit, DynamicRelationship rel)
+    {
+        if (crit != null && crit.Template.type != CreatureTemplate.Type.Slugcat && rel.currentRelationship.type != Ignores && rel.currentRelationship.type != Relationship.Type.DoesntTrack)
+        {
+            return true;
+        }
+        return false;
+    }
+
     public static void Apply(CreatureTemplate.Type type, Lizard self)
     {
         if (self == null || !ShadowOfLizards.lizardstorage.TryGetValue(self.abstractCreature, out ShadowOfLizards.LizardData data))
@@ -172,6 +177,13 @@ internal class LizardCustomRelationsSet
             On.LizardAI.IUseARelationshipTracker_UpdateDynamicRelationship += (orig, self, dRelation) =>
             {
                 return CentipedeTemplateCheck(RelationNullCheck(dRelation)) ? new Relationship(Relationship.Type.Eats, 0.9f) : orig.Invoke(self, dRelation);
+            };
+        }
+        else if (data.transformation == "MeltedTransformation")
+        {
+            On.LizardAI.IUseARelationshipTracker_UpdateDynamicRelationship += (orig, self, dRelation) =>
+            {
+                return MeltedTemplateCheck(RelationNullCheck(dRelation), dRelation) ? new Relationship(Relationship.Type.Eats, 0.9f) : orig.Invoke(self, dRelation);
             };
         }
     }
