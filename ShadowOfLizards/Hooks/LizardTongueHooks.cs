@@ -15,7 +15,7 @@ internal class LizardTongueHooks
 
     static void NewLizardTongue(On.LizardTongue.orig_ctor orig, LizardTongue self, Lizard lizard)
     {
-        if (!ShadowOfOptions.tongue_stuff.Value || !lizardstorage.TryGetValue(lizard.abstractCreature, out LizardData data) || !data.liz.TryGetValue("Tongue", out string Tongue))
+        if (!ShadowOfOptions.tongue_ability.Value || !lizardstorage.TryGetValue(lizard.abstractCreature, out LizardData data) || !data.liz.TryGetValue("Tongue", out string Tongue))
         {
             orig.Invoke(self, lizard);
             return;
@@ -158,7 +158,7 @@ internal class LizardTongueHooks
 
     static void LizardTongueUpdate(On.LizardTongue.orig_Update orig, LizardTongue self)
     {
-        if (!ShadowOfOptions.tongue_stuff.Value || self.lizard.lizardParams.tongue || self.state != LizardTongue.State.Hidden || self.Out)
+        if (!ShadowOfOptions.tongue_ability.Value || self.lizard.lizardParams.tongue || self.state != LizardTongue.State.Hidden || self.Out)
         {
             orig.Invoke(self);
             return;

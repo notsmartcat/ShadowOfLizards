@@ -18,19 +18,10 @@ internal class TransformationElectric
         On.LizardSpit.ctor += NewElectricSpit;
 
         On.LizardGraphics.Update += ELectricLizardGraphicsUpdate;
-
-        On.LizardBubble.DrawSprites += ELectricBubbleDraw;
     }
 
-    static void ELectricBubbleDraw(On.LizardBubble.orig_DrawSprites orig, LizardBubble self, RoomCamera.SpriteLeaser sLeaser, RoomCamera rCam, float timeStacker, Vector2 camPos)
+    public static void ElectricBubbleDraw( LizardBubble self, RoomCamera.SpriteLeaser sLeaser, float timeStacker, GraphicsData data2, bool camo)
     {
-        orig(self, sLeaser, rCam, timeStacker, camPos);
-
-        if (!ShadowOfOptions.electric_transformation.Value || self.lizardGraphics == null || !lizardstorage.TryGetValue(self.lizardGraphics.lizard.abstractCreature, out LizardData data) || data.transformation != "ElectricTransformation" || !graphicstorage.TryGetValue(self.lizardGraphics, out GraphicsData data2))
-        {
-            return;
-        }
-
         try
         {
             if (data2.ElectricColorTimer > 0)
@@ -48,7 +39,7 @@ internal class TransformationElectric
                 }
                 num = Mathf.Lerp(num, Mathf.Pow(Mathf.Max(0f, Mathf.Lerp(self.lizardGraphics.lastVoiceVisualization, self.lizardGraphics.voiceVisualization, timeStacker)), 0.75f), Mathf.Lerp(self.lizardGraphics.lastVoiceVisualizationIntensity, self.lizardGraphics.voiceVisualizationIntensity, timeStacker));
 
-                sLeaser.sprites[0].color = Color.Lerp(Color.Lerp(self.lizardGraphics.HeadColor1, color, num), self.lizardGraphics.palette.blackColor, 1f - Mathf.Clamp(Mathf.Lerp(self.lastLife, self.life, timeStacker) * 2f, 0f, 1f));
+                sLeaser.sprites[0].color = Color.Lerp(Color.Lerp(Color.Lerp(self.lizardGraphics.HeadColor1, self.lizardGraphics.whiteCamoColor, self.lizardGraphics.whiteCamoColorAmount), color, num), self.lizardGraphics.palette.blackColor, 1f - Mathf.Clamp(Mathf.Lerp(self.lastLife, self.life, timeStacker) * 2f, 0f, 1f));
             }
         }
         catch (Exception e) { ShadowOfLizards.Logger.LogError(e); }
@@ -294,7 +285,6 @@ internal class TransformationElectric
 
         try
         {
-
             if (!ShadowOfOptions.electric_transformation.Value || !lizardstorage.TryGetValue(self.lizard.abstractCreature, out LizardData data) || !data.liz.TryGetValue("ElectricColorTimer", out _)
                 || !graphicstorage.TryGetValue(self, out GraphicsData data2) || (data.transformation != "ElectricTransformation" && data.transformation != "Electric"))
             {
@@ -342,6 +332,11 @@ internal class TransformationElectric
             Color headColor = self.effectColor;
 
             bool head = true;
+            if (self.lizard.Template.type == CreatureTemplate.Type.BlackLizard || self.lizard.Template.type == CreatureTemplate.Type.Salamander || ModManager.Watcher && self.lizard.Template.type == WatcherEnums.CreatureTemplateType.BasiliskLizard
+                || ModManager.Watcher && self.lizard.Template.type == WatcherEnums.CreatureTemplateType.IndigoLizard)
+            {
+                head = false;
+            }
 
             if (data2.ElectricColorTimer > 0)
             {
@@ -349,12 +344,7 @@ internal class TransformationElectric
 
                 color = Color.Lerp(self.effectColor, new Color(0.7f, 0.7f, 1f), (float)data2.ElectricColorTimer / 50f);
 
-                if (self.lizard.Template.type == CreatureTemplate.Type.BlackLizard || self.lizard.Template.type == CreatureTemplate.Type.Salamander || ModManager.Watcher && self.lizard.Template.type == WatcherEnums.CreatureTemplateType.BasiliskLizard
-                    || ModManager.Watcher && self.lizard.Template.type == WatcherEnums.CreatureTemplateType.IndigoLizard)
-                {
-                    head = false;
-                }
-                else
+                if (head)
                 {
                     float num = 1f - Mathf.Pow(0.5f + 0.5f * Mathf.Sin(Mathf.Lerp(self.lastBlink, self.blink, timeStacker) * 2f * 3.1415927f), 1.5f + self.lizard.AI.excitement * 1.5f);
                     if (self.headColorSetter != 0f)
@@ -367,8 +357,6 @@ internal class TransformationElectric
                     }
                     num = Mathf.Lerp(num, Mathf.Pow(Mathf.Max(0f, Mathf.Lerp(self.lastVoiceVisualization, self.voiceVisualization, timeStacker)), 0.75f), Mathf.Lerp(self.lastVoiceVisualizationIntensity, self.voiceVisualizationIntensity, timeStacker));
                     headColor = Color.Lerp(self.HeadColor1, color, num);
-
-
                 }
                 data2.ElectricColorTimer--;
 
@@ -382,31 +370,21 @@ internal class TransformationElectric
                     sLeaser.sprites[self.SpriteTongueStart + 1].color = color;
                 }
 
-                if (head && self.lizard.Template.type != CreatureTemplate.Type.CyanLizard)
+                if (self.lizard.Template.type == WatcherEnums.CreatureTemplateType.BasiliskLizard)
+                {
+                    Color color4 = Color.Lerp(Color.Lerp(self.HeadColor(timeStacker), self.lizard.effectColor, 0.7f), new Color(0.7f, 0.7f, 1f), (float)data2.ElectricColorTimer / 50f);
+                    if (self.whiteFlicker > 0 && (self.whiteFlicker > 15 || self.everySecondDraw))
+                    {
+                        color4 = Color.Lerp(new Color(1f, 1f, 1f), new Color(0.7f, 0.7f, 1f), (float)data2.ElectricColorTimer / 50f);
+                    }
+                    sLeaser.sprites[self.SpriteHeadStart].color = color4;
+                    sLeaser.sprites[self.SpriteHeadStart + 3].color = color4;
+                }
+                else if (head && self.lizard.Template.type != CreatureTemplate.Type.CyanLizard)
                 {
                     sLeaser.sprites[self.SpriteHeadStart].color = headColor;
                     sLeaser.sprites[self.SpriteHeadStart + 3].color = headColor;
                 }
-                else if (self.lizard.Template.type == CreatureTemplate.Type.CyanLizard)
-                {
-                    sLeaser.sprites[self.SpriteHeadStart + 1].color = headColor;
-                    sLeaser.sprites[self.SpriteHeadStart + 2].color = headColor;
-                    sLeaser.sprites[self.SpriteHeadStart + 4].color = color;
-
-                    if (ShadowOfOptions.blind.Value && data.liz.TryGetValue("EyeRight", out _) && sLeaser.sprites.Length > data2.EyesSprites && data2.EyesSprites != 0)
-                    {
-                        if (data.liz["EyeRight"] == "Normal" || data.liz["EyeRight"] == "Scar" || data.liz["EyeRight"] == "Scar2")
-                        {
-                            sLeaser.sprites[data2.EyesSprites].color = color;
-                        }
-                        if (data.liz["EyeLeft"] == "Normal" || data.liz["EyeLeft"] == "Scar" || data.liz["EyeLeft"] == "Scar2")
-                        {
-                            sLeaser.sprites[data2.EyesSprites + 1].color = color;
-                        }
-                    }
-                }
-
-
 
                 for (int c = 0; c < self.cosmetics.Count; c++)
                 {

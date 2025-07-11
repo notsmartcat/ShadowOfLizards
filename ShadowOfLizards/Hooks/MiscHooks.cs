@@ -19,13 +19,15 @@ internal class MiscHooks
 
         On.FlareBomb.Update += FlareBombUpdate;
         On.Explosion.Update += ExplosionUpdate;
+
+        On.LizardBubble.DrawSprites += BubbleDraw;
     }
 
     static void GasLeak(On.LizardJumpModule.orig_Update orig, LizardJumpModule self)
     {
         orig.Invoke(self);
 
-        if (self.gasLeakSpear == null || !lizardstorage.TryGetValue(self.lizard.abstractCreature, out LizardData data) || UnityEngine.Random.Range(0, 100) >= ShadowOfOptions.jump_stuff_chance.Value)
+        if (self.gasLeakSpear == null || !lizardstorage.TryGetValue(self.lizard.abstractCreature, out LizardData data) || UnityEngine.Random.Range(0, 100) >= ShadowOfOptions.jump_ability_chance.Value)
         {
             return;
         }
@@ -57,7 +59,7 @@ internal class MiscHooks
         return orig.Invoke(slugcatIndex, eatenobject);
     }
 
-    static bool SpearHit(On.Spear.orig_HitSomething orig, Spear self, SharedPhysics.CollisionResult result, bool eu)
+    static bool SpearHit(On.Spear.orig_HitSomething orig, global::Spear self, SharedPhysics.CollisionResult result, bool eu)
     {
         if (result.chunk != null && result.chunk.owner != null && result.chunk.owner is Lizard liz && ((lizardGoreStorage.TryGetValue(liz.abstractCreature, out LizardGoreData goreData) && !goreData.availableBodychunks.Contains(result.chunk.index))
             || (lizardstorage.TryGetValue(liz.abstractCreature, out LizardData data) && !data.availableBodychunks.Contains(result.chunk.index))))
@@ -199,6 +201,47 @@ internal class MiscHooks
                         }
                     }
                 }
+            }
+        }
+        catch (Exception e) { ShadowOfLizards.Logger.LogError(e); }
+    }
+
+    static void BubbleDraw(On.LizardBubble.orig_DrawSprites orig, LizardBubble self, RoomCamera.SpriteLeaser sLeaser, RoomCamera rCam, float timeStacker, Vector2 camPos)
+    {
+        orig(self, sLeaser, rCam, timeStacker, camPos);
+
+        if (self.lizardGraphics == null || !lizardstorage.TryGetValue(self.lizardGraphics.lizard.abstractCreature, out LizardData data))
+        {
+            return;
+        }
+
+        try
+        {
+            if (ShadowOfOptions.camo_ability.Value && data.liz.TryGetValue("CanCamo", out string CanCamo) && CanCamo == "True" && self.lizardGraphics.whiteCamoColorAmount > 0.25f)
+            {
+                if (ShadowOfOptions.electric_transformation.Value && data.transformation == "ElectricTransformation" && graphicstorage.TryGetValue(self.lizardGraphics, out GraphicsData data2))
+                {
+                    TransformationElectric.ElectricBubbleDraw(self, sLeaser, timeStacker, data2, true);
+                    return;
+                }
+                Color color = Color.Lerp(self.lizardGraphics.effectColor, self.lizardGraphics.whiteCamoColor, self.lizardGraphics.whiteCamoColorAmount);
+
+                float num = 1f - Mathf.Pow(0.5f + 0.5f * Mathf.Sin(Mathf.Lerp(self.lizardGraphics.lastBlink, self.lizardGraphics.blink, timeStacker) * 2f * 3.1415927f), 1.5f + self.lizardGraphics.lizard.AI.excitement * 1.5f);
+                if (self.lizardGraphics.headColorSetter != 0f)
+                {
+                    num = Mathf.Lerp(num, (self.lizardGraphics.headColorSetter > 0f) ? 1f : 0f, Mathf.Abs(self.lizardGraphics.headColorSetter));
+                }
+                if (self.lizardGraphics.flicker > 10)
+                {
+                    num = self.lizardGraphics.flickerColor;
+                }
+                num = Mathf.Lerp(num, Mathf.Pow(Mathf.Max(0f, Mathf.Lerp(self.lizardGraphics.lastVoiceVisualization, self.lizardGraphics.voiceVisualization, timeStacker)), 0.75f), Mathf.Lerp(self.lizardGraphics.lastVoiceVisualizationIntensity, self.lizardGraphics.voiceVisualizationIntensity, timeStacker));
+
+                sLeaser.sprites[0].color = Color.Lerp(Color.Lerp(Color.Lerp(self.lizardGraphics.HeadColor1, self.lizardGraphics.whiteCamoColor, self.lizardGraphics.whiteCamoColorAmount), color, num), self.lizardGraphics.palette.blackColor, 1f - Mathf.Clamp(Mathf.Lerp(self.lastLife, self.life, timeStacker) * 2f, 0f, 1f));
+            }
+            else if (ShadowOfOptions.electric_transformation.Value && data.transformation == "ElectricTransformation" && graphicstorage.TryGetValue(self.lizardGraphics, out GraphicsData data2))
+            {
+                TransformationElectric.ElectricBubbleDraw(self, sLeaser, timeStacker, data2, false);
             }
         }
         catch (Exception e) { ShadowOfLizards.Logger.LogError(e); }

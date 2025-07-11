@@ -8,7 +8,7 @@ sealed class ShadowOfBloodEmitter : BloodEmitter
 {
     Vector2 emitAngle;
 
-    public ShadowOfBloodEmitter(Spear spear, BodyChunk chunk, float velocity, float bleedTime) : base(spear, chunk, velocity, bleedTime)
+    public ShadowOfBloodEmitter(global::Spear spear, BodyChunk chunk, float velocity, float bleedTime) : base(spear, chunk, velocity, bleedTime)
     {
         try
         {

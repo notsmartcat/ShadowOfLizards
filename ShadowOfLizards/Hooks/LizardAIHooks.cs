@@ -16,13 +16,29 @@ internal class LizardAIHooks
     {
         orig.Invoke(self, creature, world);
 
-        if (!lizardstorage.TryGetValue(self.lizard.abstractCreature, out LizardData data) || !data.liz.TryGetValue("CanSpit", out string _))
+        if (!lizardstorage.TryGetValue(self.lizard.abstractCreature, out LizardData data))
         {
             return;
         }
 
         try
         {
+            if ((ShadowOfOptions.swim_ability.Value || ShadowOfOptions.water_breather.Value) && self.lurkTracker != null && (creature.creatureTemplate.type == CreatureTemplate.Type.Salamander || (ModManager.DLCShared && creature.creatureTemplate.type == DLCSharedEnums.CreatureTemplateType.EelLizard)))
+            {
+                if (data.liz.TryGetValue("CanSwim", out string CanSwim) && CanSwim != "True" || data.liz.TryGetValue("WaterBreather", out string WaterBreather) && WaterBreather != "True")
+                {
+                    self.modules.Remove(self.lurkTracker);
+                    self.lurkTracker = null;
+
+                    if (ShadowOfOptions.debug_logs.Value)
+                        Debug.Log(all + self.ToString() + " removed Lurk ability from aquatic Lizard because it cannot last underwater");
+                }
+            }
+
+            if (!data.liz.TryGetValue("CanSpit", out string _))
+            {
+                return;
+            }
             if (data.liz["CanSpit"] == "True" && self.redSpitAI == null)
             {
                 self.redSpitAI = new LizardAI.LizardSpitTracker(self);
@@ -38,7 +54,7 @@ internal class LizardAIHooks
 
                 if (ShadowOfOptions.debug_logs.Value)
                     Debug.Log(all + self.ToString() + " removed Spit ability");
-            }
+            }         
         }
         catch (Exception e) { ShadowOfLizards.Logger.LogError(e); }
     }

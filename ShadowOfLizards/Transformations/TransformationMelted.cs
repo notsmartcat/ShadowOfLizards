@@ -53,7 +53,7 @@ internal class TransformationMelted
         abstrCrit.ignoreCycle = true;
 
         #region Swimming
-        if (true && !self.Template.canSwim)
+        if (ShadowOfOptions.swim_ability.Value && !self.Template.canSwim)
         {
             data.liz["CanSwim"] = "True";
 

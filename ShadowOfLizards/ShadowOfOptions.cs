@@ -23,7 +23,7 @@ public class ShadowOfOptions : OptionInterface
 
     public static Configurable<bool> valid_lizards = instance.config.Bind("valid_lizards", true, new ConfigurableInfo("If turned On only the Base-Game and Downpour Lizards will be affected by the mod to avoid any possible issues. (Default = true)", null, "", new object[1] { "Valid Lizards Only" }));
 
-
+    #region Transformations
     #region Spider Transformation
     public static Configurable<bool> spider_transformation = instance.config.Bind("spider_transformation", true, new ConfigurableInfo("Enables the Spider Transformation for Lizards. (Default = true)", null, "", 
         new object[1] { "Spider Transformation" }));
@@ -69,6 +69,7 @@ public class ShadowOfOptions : OptionInterface
         "meaning if Spider Transformation is set to 100% ALL Lizards will spawn with it no matter the % of the other Transformations. (Default = 1%)", null, "", new object[1] { "Chance for new Lizards to spawn with Melted Transformation" }));
 
     public static Configurable<bool> melted_spit = instance.config.Bind("melted_spit", true, new ConfigurableInfo("If On Lizards will spit Melted spit (It works the same as Lethal Water and will kill very easily) instead of the regular spit. (Default = true)", null, "", new object[1] { "Melted Spit" }));
+    #endregion
     #endregion
 
     #region Eat Regrowth
@@ -116,23 +117,40 @@ public class ShadowOfOptions : OptionInterface
     public static Configurable<bool> cut_in_half = instance.config.Bind("cut_in_half", true, new ConfigurableInfo("If On Lizards can be Cut in Half this will kill all but the stringest Lizards when hit in the body. (Default = true)", null, "", new object[1] { "Cut in Half" }));
 
     public static Configurable<int> cut_in_half_chance = instance.config.Bind("cut_in_half_chance", 5, new ConfigurableInfo("Chance for Lizard to be Cut in Half. (Default = 5%)", null, "", new object[1] { "Chance to Cut Lizards in Half" }));
+    #endregion
 
+    #region Abilities
+    public static Configurable<bool> tongue_ability = instance.config.Bind("tongue_ability", true, new ConfigurableInfo("If On Lizards can gain or lose their Tongue. (Default = true)", null, "", new object[1] { "Tongue" }));
 
-
-    public static Configurable<bool> tongue_stuff = instance.config.Bind("tongue_stuff", true, new ConfigurableInfo("If On Lizards can gain or lose their Tongue. (Default = true)", null, "", new object[1] { "Tongue" }));
-
-    public static Configurable<int> tongue_stuff_chance = instance.config.Bind("tongue_stuff_chance", 40, new ConfigurableInfo("Chance for Lizard to lose their tongue when hit in the Mouth. (Default = 40%)", null, "", 
+    public static Configurable<int> tongue_ability_chance = instance.config.Bind("tongue_ability_chance", 40, new ConfigurableInfo("Chance for Lizard to lose their tongue when hit in the Mouth. (Default = 40%)", null, "", 
         new object[1] { "Chance to Cut Tongue" }));
 
 
+    public static Configurable<bool> jump_ability = instance.config.Bind("jump_ability", true, new ConfigurableInfo("If On Lizards can gain or lose their Jump ability (The Cyan Lizards Jump). (Default = true)", null, "", new object[1] { "Jump" }));
 
-    public static Configurable<bool> jump_stuff = instance.config.Bind("jump_stuff", true, new ConfigurableInfo("If On Lizards can gain or lose their Jump ability (The Cyan Lizards Jump). (Default = true)", null, "", new object[1] { "Jump" }));
-
-    public static Configurable<int> jump_stuff_chance = instance.config.Bind("jump_stuff_chance", 50, new ConfigurableInfo("Chance for Lizard to lose their Jump ability when they get a Gas Leak. (Default = 50%)", null, "", 
+    public static Configurable<int> jump_ability_chance = instance.config.Bind("jump_ability_chance", 50, new ConfigurableInfo("Chance for Lizard to lose their Jump ability when they get a Gas Leak. (Default = 50%)", null, "", 
         new object[1] { "Chance to Disable Jump" }));
 
 
+    public static Configurable<bool> swim_ability = instance.config.Bind("swim_ability", true, new ConfigurableInfo("If On Lizards can gain or lose their Jump ability (The Cyan Lizards Jump). (Default = true)", null, "", new object[1] { "Jump" }));
 
+    public static Configurable<int> swim_ability_chance = instance.config.Bind("swim_ability_chance", 50, new ConfigurableInfo("Chance for Lizard to lose their Jump ability when they get a Gas Leak. (Default = 50%)", null, "",
+        new object[1] { "Chance to Disable Jump" }));
+
+
+    public static Configurable<bool> climb_ability = instance.config.Bind("climb_ability", true, new ConfigurableInfo("If On Lizards can gain or lose their Jump ability (The Cyan Lizards Jump). (Default = true)", null, "", new object[1] { "Jump" }));
+
+    public static Configurable<int> climb_ability_chance = instance.config.Bind("climb_ability_chance", 50, new ConfigurableInfo("Chance for Lizard to lose their Jump ability when they get a Gas Leak. (Default = 50%)", null, "",
+        new object[1] { "Chance to Disable Jump" }));
+
+
+    public static Configurable<bool> camo_ability = instance.config.Bind("camo_ability", true, new ConfigurableInfo("If On Lizards can gain or lose their Jump ability (The Cyan Lizards Jump). (Default = true)", null, "", new object[1] { "Jump" }));
+
+    public static Configurable<int> camo_ability_chance = instance.config.Bind("camo_ability_chance", 50, new ConfigurableInfo("Chance for Lizard to lose their Jump ability when they get a Gas Leak. (Default = 50%)", null, "",
+        new object[1] { "Chance to Disable Jump" }));
+    #endregion
+
+    #region Immunities
     public static Configurable<bool> grass_immune = instance.config.Bind("grass_immune", true, new ConfigurableInfo("If On Lizards can gain or lose Immunity to Worm Grass. (Default = true)", null, "", new object[1] { "Worm Grass Immunity" }));
 
     public static Configurable<int> grass_immune_chance = instance.config.Bind("grass_immune_chance", 75, new ConfigurableInfo("Chance for Lizard to gain Immunity to Worm Grass by being eaten by Worm Grass while either dead or alive. (Default = 75%)", null, "", 
@@ -157,7 +175,13 @@ public class ShadowOfOptions : OptionInterface
         new object[1] { "Chance to gain Lava/Acid Immunity" }));
 
 
+    public static Configurable<bool> water_breather = instance.config.Bind("water_breather", true, new ConfigurableInfo("If On Lizards can gain or lose Immunity to Drowning. (Default = true)", null, "", new object[1] { "Drowning Immunity" }));
 
+    public static Configurable<int> water_breather_chance = instance.config.Bind("water_breather_chance", 75, new ConfigurableInfo("Chance for Lizard to gain Immunity to Drowning by getting their lungs empty while in water, either dead or alive. (Default = 75%)", null, "",
+        new object[1] { "Chance to gain Drowning Immunity" }));
+    #endregion
+
+    #region Physical
     public static Configurable<bool> blind = instance.config.Bind("blind", true, new ConfigurableInfo("If On Lizards can become permanently Blind, have their eyes scarred or Cut out. This changes Lizard eye sprites and might not work with modded lizards. (Default = true)", null, "", new object[1] { "Blinding" }));
 
     public static Configurable<int> blind_chance = instance.config.Bind("blind_chance", 20, new ConfigurableInfo("Chance for Lizard's eyes to be permanently Blinded when a FlareBomb goes off too close to it. (Default = 20%)", 
@@ -182,6 +206,7 @@ public class ShadowOfOptions : OptionInterface
         null, "", new object[1] { "Chance to hit Teeth" }));
     #endregion
 
+    #region Health Based Chance
     public static Configurable<bool> health_based_chance = instance.config.Bind("health_based_chance", true, new ConfigurableInfo("If On dismembernment-adjacent chances will be afftected by the Lizards current health. When full health the chances will be multiplied by the minimum and the lower the Lizards health the higher the multiplier. (Default = true)",
         null, "", new object[1] { "Health Based Chance" }));
 
@@ -193,8 +218,9 @@ public class ShadowOfOptions : OptionInterface
 
     public static Configurable<int> health_based_chance_max = instance.config.Bind("health_based_chance_max", 150, new ConfigurableInfo("Maximum Chance Multiplier, setting this to 100% will use the Standard Chances when the Lizard has no health. " +
         "Setting this to 200% will mean that dismembernment-adjacent chances will trigger twice as often. (Default = 150%)", null, "", new object[1] { "Maximum Value" }));
+    #endregion
 
-
+    #region Blood
     public static Configurable<bool> blood = instance.config.Bind("blood", true, new ConfigurableInfo("If On and the Blood mod is also turned On Lizards will use the blood colours from the Blood mod for some things. (Default = true)", null, "", 
         new object[1] { "Blood" }));
 
@@ -203,7 +229,7 @@ public class ShadowOfOptions : OptionInterface
 
     public static Configurable<bool> blood_emitter_impact = instance.config.Bind("blood_emitter_impact", false, new ConfigurableInfo("If On special blood particles will be created whenever the cut Head or cut Leg impacts ground. (Default = false)", null, "",
         new object[1] { "Impact Blood Partacles" }));
-
+    #endregion
 
 
     readonly float font_height = 20f;
@@ -399,15 +425,15 @@ public class ShadowOfOptions : OptionInterface
         Tabs[5] = new OpTab(instance, "Misc");
         InitializeMarginAndPos();
         AddBox();
-        AddCheckBox(tongue_stuff, (string)tongue_stuff.info.Tags[0]);
+        AddCheckBox(tongue_ability, (string)tongue_ability.info.Tags[0]);
         DrawCheckBoxes(ref Tabs[5]);
-        AddSlider(tongue_stuff_chance, (string)tongue_stuff_chance.info.Tags[0], "0%", "100%");
+        AddSlider(tongue_ability_chance, (string)tongue_ability_chance.info.Tags[0], "0%", "100%");
         DrawSliders(ref Tabs[5]);
 
         AddNewLine();
-        AddCheckBox(jump_stuff, (string)jump_stuff.info.Tags[0]);
+        AddCheckBox(jump_ability, (string)jump_ability.info.Tags[0]);
         DrawCheckBoxes(ref Tabs[5]);
-        AddSlider(jump_stuff_chance, (string)jump_stuff_chance.info.Tags[0], "0%", "100%");
+        AddSlider(jump_ability_chance, (string)jump_ability_chance.info.Tags[0], "0%", "100%");
         DrawSliders(ref Tabs[5]);
 
         AddNewLine();

@@ -186,8 +186,7 @@ internal class LizardHooks
                 }
             }
 
-            bool firstTime = data.lizardUpdatedCycle != (isStorySession ? cycleNumber : -1);
-
+            bool firstTime = data.lizardUpdatedCycle != (isStorySession ? cycleNumber : 0);
 
             LizardBreedParams breedParameters = self.creatureTemplate.breedParameters as LizardBreedParams;
 
@@ -212,7 +211,7 @@ internal class LizardHooks
             void Abilities()
             {
                 //Tongue: Set inside Lizard
-                if (ShadowOfOptions.tongue_stuff.Value && firstTime && (data.liz.TryGetValue("Tongue", out _) || ModManager.MSC && self.creatureTemplate.type == MoreSlugcatsEnums.CreatureTemplateType.TrainLizard && !data.liz.TryGetValue("Tongue", out _)))
+                if (ShadowOfOptions.tongue_ability.Value && firstTime && (data.liz.TryGetValue("Tongue", out _) || ModManager.MSC && self.creatureTemplate.type == MoreSlugcatsEnums.CreatureTemplateType.TrainLizard && !data.liz.TryGetValue("Tongue", out _)))
                 {
                     bool tongue = data.liz.TryGetValue("Tongue", out string Tongue) && Tongue != "Null";
 
@@ -237,62 +236,77 @@ internal class LizardHooks
                         data.liz.Remove("Tongue");
                     }
                 }
-                else if (!ShadowOfOptions.tongue_stuff.Value && data.liz.TryGetValue("Tongue", out _))
+                else if (!ShadowOfOptions.tongue_ability.Value && data.liz.TryGetValue("Tongue", out _))
                 {
                     data.liz.Remove("Tongue");
                 }
 
                 //Jump: Set inside Lizard
-                if (ShadowOfOptions.jump_stuff.Value && firstTime && data.liz.TryGetValue("CanJump", out string CanJump))
+                if (ShadowOfOptions.jump_ability.Value && firstTime && data.liz.TryGetValue("CanJump", out string CanJump))
                 {
                     if (ShadowOfOptions.debug_logs.Value)
                         AbilityLog(CanJump == "True", "Jump");
                 }
-                else if (!ShadowOfOptions.jump_stuff.Value && data.liz.TryGetValue("CanJump", out _))
+                else if (!ShadowOfOptions.jump_ability.Value && data.liz.TryGetValue("CanJump", out _))
                 {
                     data.liz.Remove("CanJump");
                 }
 
                 //Can Swim: Set inside Lizard
-                if (ShadowOfOptions.jump_stuff.Value && firstTime && data.liz.TryGetValue("CanSwim", out string CanSwim))
+                if (ShadowOfOptions.swim_ability.Value && firstTime && data.liz.TryGetValue("CanSwim", out string CanSwim))
                 {
                     if (ShadowOfOptions.debug_logs.Value)
                         AbilityLog(CanSwim == "True", "Swim");
                 }
-                else if (false && data.liz.TryGetValue("CanSwim", out _))
+                else if (!ShadowOfOptions.swim_ability.Value && data.liz.TryGetValue("CanSwim", out _))
                 {
                     data.liz.Remove("CanSwim");
                 }
 
-                //CanClimbWall: Set inside Lizard
-                if (true && firstTime && data.liz.TryGetValue("CanClimbWall", out string CanClimbWall))
+                //CanClimb: Set inside Lizard
+                if (ShadowOfOptions.climb_ability.Value && firstTime)
                 {
-                    if (ShadowOfOptions.debug_logs.Value)
-                        AbilityLog(CanClimbWall == "True", "Climb Walls");
-                }
-                else if (false && data.liz.TryGetValue("CanClimbWall", out _))
-                {
-                    data.liz.Remove("CanClimbWall");
-                }
+                    if (data.liz.TryGetValue("CanClimbPole", out string CanClimbPole))
+                    {
+                        if (ShadowOfOptions.debug_logs.Value)
+                            AbilityLog(CanClimbPole == "True", "Climb Poles");
+                    }
 
-                //CanClimbCeiling: Set inside Lizard
-                if (true && data.liz.TryGetValue("CanClimbCeiling", out string CanClimbCeiling))
-                {
-                    if (ShadowOfOptions.debug_logs.Value)
-                        AbilityLog(CanClimbCeiling == "True", "Climb Walls");
+                    if (data.liz.TryGetValue("CanClimbWall", out string CanClimbWall))
+                    {
+                        if (ShadowOfOptions.debug_logs.Value)
+                            AbilityLog(CanClimbWall == "True", "Climb Walls");
+                    }
+
+                    if (data.liz.TryGetValue("CanClimbCeiling", out string CanClimbCeiling))
+                    {
+                        if (ShadowOfOptions.debug_logs.Value)
+                            AbilityLog(CanClimbCeiling == "True", "Climb Walls");
+                    }
                 }
-                else if (false && data.liz.TryGetValue("CanClimbCeiling", out _))
+                else if(!ShadowOfOptions.climb_ability.Value)
                 {
-                    data.liz.Remove("CanClimbCeiling");
+                    if (data.liz.TryGetValue("CanClimbWall", out _))
+                    {
+                        data.liz.Remove("CanClimbPole");
+                    }
+                    if (data.liz.TryGetValue("CanClimbWall", out _))
+                    {
+                        data.liz.Remove("CanClimbWall");
+                    }
+                    if (data.liz.TryGetValue("CanClimbCeiling", out _))
+                    {
+                        data.liz.Remove("CanClimbCeiling");
+                    }
                 }
 
                 //CanCamo
-                if (true && data.liz.TryGetValue("CanCamo", out string CanCamo))
+                if (ShadowOfOptions.camo_ability.Value && firstTime && data.liz.TryGetValue("CanCamo", out string CanCamo))
                 {
                     if (ShadowOfOptions.debug_logs.Value)
-                        AbilityLog(CanCamo == "True", "Climb Walls");
+                        AbilityLog(CanCamo == "True", "Camo");
                 }
-                else if (false && data.liz.TryGetValue("CanCamo", out _))
+                else if (!ShadowOfOptions.camo_ability.Value && data.liz.TryGetValue("CanCamo", out _))
                 {
                     data.liz.Remove("CanCamo");
                 }
@@ -383,23 +397,21 @@ internal class LizardHooks
                 }
 
                 //WaterBreather: Set Here
-                if (true && firstTime && data.liz.TryGetValue("WaterBreather", out string WaterBreather))
+                if (ShadowOfOptions.water_breather.Value && firstTime && data.liz.TryGetValue("WaterBreather", out string WaterBreather))
                 {
                     bool waterBreather = WaterBreather == "True";
 
-                    if (self.lavaImmune != waterBreather)
+                    bool waterBreatherBreed = creatureTemplate.type == CreatureTemplate.Type.Salamander || ModManager.DLCShared && creatureTemplate.type == DLCSharedEnums.CreatureTemplateType.EelLizard;
+
+                    if (waterBreather == waterBreatherBreed)
                     {
-                        self.lavaImmune = waterBreather;
-                    }
-                    else
-                    {
-                        data.liz.Remove("WaterBreather");
+                        data.liz.Remove("LavaImmune");
                     }
 
                     if (ShadowOfOptions.debug_logs.Value)
                         Debug.Log(abstractAll + (waterBreather ? " can " : " cannot ") + "Breathe Underwater");
                 }
-                else if (false && data.liz.TryGetValue("WaterBreather", out _))
+                else if (!ShadowOfOptions.water_breather.Value && data.liz.TryGetValue("WaterBreather", out _))
                 {
                     data.liz.Remove("WaterBreather");
                 }
@@ -594,8 +606,7 @@ internal class LizardHooks
                 return;
             }
 
-            if (self.abstractCreature == null || self.abstractCreature.state == null || self.abstractCreature.state.unrecognizedSaveStrings == null || abstractCreature.creatureTemplate.TopAncestor().type != CreatureTemplate.Type.LizardTemplate
-                || !lizardstorage.TryGetValue(self.abstractCreature, out LizardData data))
+            if (abstractCreature.state == null || abstractCreature.state.unrecognizedSaveStrings == null || !lizardstorage.TryGetValue(abstractCreature, out LizardData data))
             {
                 return;
             }
@@ -603,7 +614,7 @@ internal class LizardHooks
             if (ShadowOfOptions.debug_logs.Value)
                 Debug.Log(all + "Started creating " + self);
 
-            self.abstractCreature.creatureTemplate = new CreatureTemplate(self.abstractCreature.creatureTemplate);
+            abstractCreature.creatureTemplate = new CreatureTemplate(abstractCreature.creatureTemplate);
             self.lizardParams = LizBread(self);
 
             data.visualRadius = self.Template.visualRadius;
@@ -622,36 +633,16 @@ internal class LizardHooks
             Transformations();
             #endregion
 
-            List<TileTypeResistance> list = new();
-
-            self.lizardParams.terrainSpeeds = new LizardBreedParams.SpeedMultiplier[Enum.GetNames(typeof(AItile.Accessibility)).Length];
-            for (int i = 0; i < self.lizardParams.terrainSpeeds.Length; i++)
-            {
-                self.lizardParams.terrainSpeeds[i] = new LizardBreedParams.SpeedMultiplier(0.1f, 1f, 1f, 1f);
-            }
-
-            self.lizardParams.terrainSpeeds[4] = new LizardBreedParams.SpeedMultiplier(1f, 1f, 1f, 1f);
-            list.Add(new TileTypeResistance(AItile.Accessibility.Climb, 0.8f, PathCost.Legality.Allowed));
-
-
-            for (int l = 0; l < list.Count; l++)
-            {
-                self.abstractCreature.creatureTemplate.pathingPreferencesTiles[(int)list[l].accessibility] = list[l].cost;
-                if (list[l].cost.legality == PathCost.Legality.Allowed && self.abstractCreature.creatureTemplate.maxAccessibleTerrain < (int)list[l].accessibility && list[l].accessibility != AItile.Accessibility.Sand)
-                {
-                    self.abstractCreature.creatureTemplate.maxAccessibleTerrain = (int)list[l].accessibility;
-                }
-            }
-
             LizardCustomRelationsSet.Apply(self.Template.type, self);
 
             if (ShadowOfOptions.debug_logs.Value)
                 Debug.Log(all + "Finished creating " + self);
             #endregion
+
             void Abilities()
             {
                 //Tongue: Set Here
-                if (ShadowOfOptions.tongue_stuff.Value && data.liz.TryGetValue("Tongue", out string Tongue))
+                if (ShadowOfOptions.tongue_ability.Value && data.liz.TryGetValue("Tongue", out string Tongue))
                 {
                     self.lizardParams.tongue = Tongue != "Null";
 
@@ -672,7 +663,7 @@ internal class LizardHooks
                 }
 
                 //CanJump: Set Here
-                if (ShadowOfOptions.jump_stuff.Value && data.liz.TryGetValue("CanJump", out string CanJump))
+                if (ShadowOfOptions.jump_ability.Value && data.liz.TryGetValue("CanJump", out string CanJump))
                 {
                     bool canJump = CanJump == "True";
 
@@ -687,35 +678,52 @@ internal class LizardHooks
                 }
 
                 //CanSwim: Set Here ToDo: Chance to gain this when dying to: drowning, leeches, kelp, leviathan possibly water den
-                if (true && data.liz.TryGetValue("CanSwim", out string CanSwim))
+                if (ShadowOfOptions.swim_ability.Value && data.liz.TryGetValue("CanSwim", out string CanSwim))
                 {
                     bool canSwim = CanSwim == "True";
 
-                    if (self.Template.canSwim.ToString() != data.liz["CanSwim"])
+                    bool waterRelationship = abstractCreature.creatureTemplate.waterRelationship == CreatureTemplate.WaterRelationship.Amphibious || abstractCreature.creatureTemplate.waterRelationship == CreatureTemplate.WaterRelationship.WaterOnly;
+
+                    if (self.Template.canSwim != canSwim || waterRelationship != canSwim)
                     {
-                        canSwim = data.liz["CanSwim"] == "True";
-
-                        self.Template.canSwim = canSwim;
-
-                        if (canSwim && abstractCreature.creatureTemplate.waterRelationship != CreatureTemplate.WaterRelationship.Amphibious && abstractCreature.creatureTemplate.waterRelationship != CreatureTemplate.WaterRelationship.WaterOnly)
+                        if (canSwim)
                         {
-                            abstractCreature.creatureTemplate.waterRelationship = CreatureTemplate.WaterRelationship.Amphibious;
-                        }
+                            self.Template.canSwim = true;
 
-                        if (abstractCreature.creatureTemplate.waterPathingResistance > 1f)
-                            abstractCreature.creatureTemplate.waterPathingResistance = ((abstractCreature.creatureTemplate.waterPathingResistance - 1f) / 2) + 1f > 1f ? ((abstractCreature.creatureTemplate.waterPathingResistance - 1f) / 2) + 1f : 1f;
+                            if (!waterRelationship)
+                            {
+                                abstractCreature.creatureTemplate.waterRelationship = CreatureTemplate.WaterRelationship.Amphibious;
+                            }
 
-                        PathCost dropToWater = abstractCreature.creatureTemplate.pathingPreferencesConnections[(int)MovementConnection.MovementType.DropToWater];
-                        if (dropToWater.legality == PathCost.Legality.Unallowed || dropToWater.legality == PathCost.Legality.Unwanted)
-                        {
-                            List<TileConnectionResistance> list2 = new()
+                            if (abstractCreature.creatureTemplate.waterPathingResistance > 1f)
+                                abstractCreature.creatureTemplate.waterPathingResistance = ((abstractCreature.creatureTemplate.waterPathingResistance - 1f) / 2) + 1f > 1f ? ((abstractCreature.creatureTemplate.waterPathingResistance - 1f) / 2) + 1f : 1f;
+
+                            PathCost dropToWater = abstractCreature.creatureTemplate.pathingPreferencesConnections[(int)MovementConnection.MovementType.DropToWater];
+                            if (dropToWater.legality == PathCost.Legality.Unallowed || dropToWater.legality == PathCost.Legality.Unwanted)
+                            {
+                                List<TileConnectionResistance> list2 = new()
                             {
                             new TileConnectionResistance(MovementConnection.MovementType.DropToWater, 20f, PathCost.Legality.Allowed)
                             };
-
-                            for (int n = 0; n < list2.Count; n++)
+                                for (int n = 0; n < list2.Count; n++)
+                                {
+                                    abstractCreature.creatureTemplate.pathingPreferencesConnections[(int)list2[n].movementType] = list2[n].cost;
+                                }
+                            }
+                        }
+                        else
+                        {
+                            if (waterRelationship)
                             {
-                                abstractCreature.creatureTemplate.pathingPreferencesConnections[(int)list2[n].movementType] = list2[n].cost;
+                                abstractCreature.creatureTemplate.waterRelationship = CreatureTemplate.WaterRelationship.AirAndSurface;
+                            }
+
+                            abstractCreature.creatureTemplate.waterPathingResistance *= 2;
+
+                            PathCost dropToWater = abstractCreature.creatureTemplate.pathingPreferencesConnections[(int)MovementConnection.MovementType.DropToWater];
+                            if (dropToWater.legality == PathCost.Legality.Allowed)
+                            {
+                                abstractCreature.creatureTemplate.pathingPreferencesConnections[(int)MovementConnection.MovementType.DropToWater].resistance *= 2;
                             }
                         }
                     }
@@ -725,91 +733,137 @@ internal class LizardHooks
                     }
                 }
 
-                //CanClimbWall: Set Here
-                if (true && data.liz.TryGetValue("CanClimbWall", out string CanClimbWall))
+                //CanClimb: Set Here
+                if (ShadowOfOptions.climb_ability.Value)
                 {
-                    bool canClimb = CanClimbWall == "True";
-
-                    if ((self.abstractCreature.creatureTemplate.pathingPreferencesTiles[(int)AItile.Accessibility.Wall].legality == PathCost.Legality.Allowed).ToString() == CanClimbWall)
+                    if (data.liz.TryGetValue("CanClimbPole", out string CanClimbPole))
                     {
-                        data.liz.Remove("CanClimbWall");
-                    }
-                    else if (canClimb)
-                    {
-                        List<TileTypeResistance> list = new();
-                        self.lizardParams.terrainSpeeds[5] = new LizardBreedParams.SpeedMultiplier(self.lizardParams.terrainSpeeds[1].speed * 0.6f, 1f, 1f, 1f);
-                        list.Add(new TileTypeResistance(AItile.Accessibility.Wall, 1f, PathCost.Legality.Allowed));
+                        bool canClimb = CanClimbPole == "True";
 
-                        for (int l = 0; l < list.Count; l++)
+                        if (self.abstractCreature.creatureTemplate.pathingPreferencesTiles[(int)AItile.Accessibility.Climb].legality == PathCost.Legality.Allowed == canClimb)
                         {
-                            self.abstractCreature.creatureTemplate.pathingPreferencesTiles[(int)list[l].accessibility] = list[l].cost;
-                            if (self.abstractCreature.creatureTemplate.maxAccessibleTerrain < (int)list[l].accessibility && list[l].accessibility != AItile.Accessibility.Sand)
+                            data.liz.Remove("CanClimbPole");
+                        }
+                        else if (canClimb)
+                        {
+                            List<TileTypeResistance> list = new();
+                            self.lizardParams.terrainSpeeds[(int)AItile.Accessibility.Climb] = new LizardBreedParams.SpeedMultiplier(self.lizardParams.terrainSpeeds[(int)AItile.Accessibility.Floor].speed * 0.8f, self.lizardParams.terrainSpeeds[(int)AItile.Accessibility.Floor].horizontal, self.lizardParams.terrainSpeeds[(int)AItile.Accessibility.Floor].up, self.lizardParams.terrainSpeeds[(int)AItile.Accessibility.Floor].down);
+                            list.Add(new TileTypeResistance(AItile.Accessibility.Climb, 1f, PathCost.Legality.Allowed));
+
+                            for (int l = 0; l < list.Count; l++)
                             {
-                                self.abstractCreature.creatureTemplate.maxAccessibleTerrain = (int)list[l].accessibility;
+                                self.abstractCreature.creatureTemplate.pathingPreferencesTiles[(int)list[l].accessibility] = list[l].cost;
+                                if (self.abstractCreature.creatureTemplate.maxAccessibleTerrain < (int)list[l].accessibility && list[l].accessibility != AItile.Accessibility.Sand)
+                                {
+                                    self.abstractCreature.creatureTemplate.maxAccessibleTerrain = (int)list[l].accessibility;
+                                }
+                            }
+                        }
+                        else
+                        {
+                            List<TileTypeResistance> list = new();
+                            self.lizardParams.terrainSpeeds[(int)AItile.Accessibility.Climb] = new LizardBreedParams.SpeedMultiplier(0, 1f, 1f, 1f);
+                            list.Add(new TileTypeResistance(AItile.Accessibility.Climb, 0f, PathCost.Legality.Unallowed));
+
+                            for (int l = 0; l < list.Count; l++)
+                            {
+                                self.abstractCreature.creatureTemplate.pathingPreferencesTiles[(int)list[l].accessibility] = list[l].cost;
+                                if (self.abstractCreature.creatureTemplate.maxAccessibleTerrain < (int)list[l].accessibility && list[l].accessibility != AItile.Accessibility.Sand)
+                                {
+                                    self.abstractCreature.creatureTemplate.maxAccessibleTerrain = (int)list[l].accessibility;
+                                }
                             }
                         }
                     }
-                    else
-                    {
-                        List<TileTypeResistance> list = new();
-                        self.lizardParams.terrainSpeeds[5] = new LizardBreedParams.SpeedMultiplier(0, 1f, 1f, 1f);
-                        list.Add(new TileTypeResistance(AItile.Accessibility.Wall, 0f, PathCost.Legality.Unallowed));
 
-                        for (int l = 0; l < list.Count; l++)
+                    if (data.liz.TryGetValue("CanClimbWall", out string CanClimbWall))
+                    {
+                        bool canClimb = CanClimbWall == "True";
+
+                        if (self.abstractCreature.creatureTemplate.pathingPreferencesTiles[(int)AItile.Accessibility.Wall].legality == PathCost.Legality.Allowed == canClimb)
                         {
-                            self.abstractCreature.creatureTemplate.pathingPreferencesTiles[(int)list[l].accessibility] = list[l].cost;
-                            if (self.abstractCreature.creatureTemplate.maxAccessibleTerrain < (int)list[l].accessibility && list[l].accessibility != AItile.Accessibility.Sand)
+                            data.liz.Remove("CanClimbWall");
+                        }
+                        else if (canClimb)
+                        {
+                            List<TileTypeResistance> list = new();
+                            self.lizardParams.terrainSpeeds[(int)AItile.Accessibility.Wall] = new LizardBreedParams.SpeedMultiplier(self.lizardParams.terrainSpeeds[(int)AItile.Accessibility.Floor].speed * 0.6f, self.lizardParams.terrainSpeeds[(int)AItile.Accessibility.Floor].horizontal, self.lizardParams.terrainSpeeds[(int)AItile.Accessibility.Floor].up, self.lizardParams.terrainSpeeds[(int)AItile.Accessibility.Floor].down);
+                            list.Add(new TileTypeResistance(AItile.Accessibility.Wall, 1f, PathCost.Legality.Allowed));
+
+                            for (int l = 0; l < list.Count; l++)
                             {
-                                self.abstractCreature.creatureTemplate.maxAccessibleTerrain = (int)list[l].accessibility;
+                                self.abstractCreature.creatureTemplate.pathingPreferencesTiles[(int)list[l].accessibility] = list[l].cost;
+                                if (self.abstractCreature.creatureTemplate.maxAccessibleTerrain < (int)list[l].accessibility && list[l].accessibility != AItile.Accessibility.Sand)
+                                {
+                                    self.abstractCreature.creatureTemplate.maxAccessibleTerrain = (int)list[l].accessibility;
+                                }
+                            }
+                        }
+                        else
+                        {
+                            List<TileTypeResistance> list = new();
+                            self.lizardParams.terrainSpeeds[(int)AItile.Accessibility.Wall] = new LizardBreedParams.SpeedMultiplier(0, 1f, 1f, 1f);
+                            list.Add(new TileTypeResistance(AItile.Accessibility.Wall, 0f, PathCost.Legality.Unallowed));
+
+                            for (int l = 0; l < list.Count; l++)
+                            {
+                                self.abstractCreature.creatureTemplate.pathingPreferencesTiles[(int)list[l].accessibility] = list[l].cost;
+                                if (self.abstractCreature.creatureTemplate.maxAccessibleTerrain < (int)list[l].accessibility && list[l].accessibility != AItile.Accessibility.Sand)
+                                {
+                                    self.abstractCreature.creatureTemplate.maxAccessibleTerrain = (int)list[l].accessibility;
+                                }
                             }
                         }
                     }
-                }
 
-                //CanClimbCeilings
-                if (false && data.liz.TryGetValue("CanClimbCeiling", out string CanClimbCeiling))
-                {
-                    bool canClimb = CanClimbCeiling == "True";
-
-                    if ((self.abstractCreature.creatureTemplate.pathingPreferencesTiles[(int)AItile.Accessibility.Ceiling].legality == PathCost.Legality.Allowed).ToString() == CanClimbWall)
+                    if (data.liz.TryGetValue("CanClimbCeiling", out string CanClimbCeiling))
                     {
-                        data.liz.Remove("CanClimbCeiling");
-                    }
-                    else if (canClimb)
-                    {
-                        List<TileTypeResistance> list = new();
+                        bool canClimb = CanClimbCeiling == "True";
 
-                        self.lizardParams.terrainSpeeds[6] = new LizardBreedParams.SpeedMultiplier(self.lizardParams.terrainSpeeds[5].speed != 0f ? self.lizardParams.terrainSpeeds[5].speed * 0.9f : self.lizardParams.terrainSpeeds[1].speed * 0.6f, 1f, 1f, 1f);
-                        list.Add(new TileTypeResistance(AItile.Accessibility.Ceiling, 1.2f, PathCost.Legality.Allowed));
-
-                        for (int l = 0; l < list.Count; l++)
+                        if (self.abstractCreature.creatureTemplate.pathingPreferencesTiles[(int)AItile.Accessibility.Ceiling].legality == PathCost.Legality.Allowed == canClimb)
                         {
-                            self.abstractCreature.creatureTemplate.pathingPreferencesTiles[(int)list[l].accessibility] = list[l].cost;
-                            if (self.abstractCreature.creatureTemplate.maxAccessibleTerrain < (int)list[l].accessibility && list[l].accessibility != AItile.Accessibility.Sand)
+                            data.liz.Remove("CanClimbCeiling");
+                        }
+                        else if (canClimb)
+                        {
+                            List<TileTypeResistance> list = new();
+
+                            self.lizardParams.terrainSpeeds[(int)AItile.Accessibility.Ceiling] = new LizardBreedParams.SpeedMultiplier(self.lizardParams.terrainSpeeds[(int)AItile.Accessibility.Wall].speed != 0f ? self.lizardParams.terrainSpeeds[(int)AItile.Accessibility.Wall].speed * 0.9f : self.lizardParams.terrainSpeeds[(int)AItile.Accessibility.Floor].speed * 0.6f, self.lizardParams.terrainSpeeds[(int)AItile.Accessibility.Floor].horizontal, self.lizardParams.terrainSpeeds[(int)AItile.Accessibility.Floor].up, self.lizardParams.terrainSpeeds[(int)AItile.Accessibility.Floor].down);
+                            list.Add(new TileTypeResistance(AItile.Accessibility.Ceiling, 1.2f, PathCost.Legality.Allowed));
+
+                            for (int l = 0; l < list.Count; l++)
                             {
-                                self.abstractCreature.creatureTemplate.maxAccessibleTerrain = (int)list[l].accessibility;
+                                self.abstractCreature.creatureTemplate.pathingPreferencesTiles[(int)list[l].accessibility] = list[l].cost;
+                                if (self.abstractCreature.creatureTemplate.maxAccessibleTerrain < (int)list[l].accessibility && list[l].accessibility != AItile.Accessibility.Sand)
+                                {
+                                    self.abstractCreature.creatureTemplate.maxAccessibleTerrain = (int)list[l].accessibility;
+                                }
                             }
                         }
-                    }
-                    else
-                    {
-                        List<TileTypeResistance> list = new();
-
-                        self.lizardParams.terrainSpeeds[6] = new LizardBreedParams.SpeedMultiplier(0, 1f, 1f, 1f);
-                        list.Add(new TileTypeResistance(AItile.Accessibility.Ceiling, 0f, PathCost.Legality.Unallowed));
-
-                        for (int l = 0; l < list.Count; l++)
+                        else
                         {
-                            self.abstractCreature.creatureTemplate.pathingPreferencesTiles[(int)list[l].accessibility] = list[l].cost;
-                            if (self.abstractCreature.creatureTemplate.maxAccessibleTerrain < (int)list[l].accessibility && list[l].accessibility != AItile.Accessibility.Sand)
+                            List<TileTypeResistance> list = new();
+
+                            self.lizardParams.terrainSpeeds[(int)AItile.Accessibility.Ceiling] = new LizardBreedParams.SpeedMultiplier(0, 1f, 1f, 1f);
+                            list.Add(new TileTypeResistance(AItile.Accessibility.Ceiling, 0f, PathCost.Legality.Unallowed));
+
+                            for (int l = 0; l < list.Count; l++)
                             {
-                                self.abstractCreature.creatureTemplate.maxAccessibleTerrain = (int)list[l].accessibility;
+                                self.abstractCreature.creatureTemplate.pathingPreferencesTiles[(int)list[l].accessibility] = list[l].cost;
+                                if (self.abstractCreature.creatureTemplate.maxAccessibleTerrain < (int)list[l].accessibility && list[l].accessibility != AItile.Accessibility.Sand)
+                                {
+                                    self.abstractCreature.creatureTemplate.maxAccessibleTerrain = (int)list[l].accessibility;
+                                }
                             }
                         }
                     }
                 }
 
                 //CanCamo
+                if (ShadowOfOptions.camo_ability.Value)
+                {
+
+                }
             }
 
             void Immunities()
@@ -1288,13 +1342,18 @@ internal class LizardHooks
             if (false && hitChunk.index != 0 && hitChunk.index != 1 && data.availableBodychunks.Contains(hitChunk.index))
             {
                 CutInHalf(self, hitChunk);
+
+                if (source.owner is Spear spear)
+                {
+                    data.spearList.Add(spear);
+                }
             }
 
             if (hitChunk.index == 0)
             {
                 if (data.Beheaded != true && hitChunk.index == 0)
                 {
-                    if (LizHitHeadShield(directionAndMomentum.Value, self))
+                    if (LizHitHeadShield(directionAndMomentum.Value))
                     {
                         if (ShadowOfOptions.blind.Value && data.liz.TryGetValue("EyeRight", out _) && UnityEngine.Random.Range(0, 100) < ShadowOfOptions.blind_cut_chance.Value)
                         {
@@ -1369,14 +1428,14 @@ internal class LizardHooks
                             }
                         }
                     }
-                    else if (LizHitInMouth(directionAndMomentum.Value, self))
+                    else if (LizHitInMouth(directionAndMomentum.Value))
                     {
-                        if (ShadowOfOptions.tongue_stuff.Value && self.tongue != null && data.lastDamageType != "Melted" && type != Creature.DamageType.Blunt)
+                        if (ShadowOfOptions.tongue_ability.Value && self.tongue != null && data.lastDamageType != "Melted" && type != Creature.DamageType.Blunt)
                         {
                             if (ShadowOfOptions.debug_logs.Value)
                                 Debug.Log(all + self.ToString() + " was hit in it's Mouth");
 
-                            if (UnityEngine.Random.Range(0, 100) < ShadowOfOptions.tongue_stuff_chance.Value)
+                            if (UnityEngine.Random.Range(0, 100) < ShadowOfOptions.tongue_ability_chance.Value)
                             {
                                 self.tongue.Retract();
 
@@ -1387,7 +1446,12 @@ internal class LizardHooks
                                     Debug.Log(all + self.ToString() + " lost it's Tongue due to being hit in Mouth");
 
                                 if (ShadowOfOptions.dynamic_cheat_death_chance.Value)
-                                    data.cheatDeathChance -= 10;
+                                    data.cheatDeathChance -= 5;
+
+                                if (source.owner is Spear spear)
+                                {
+                                    data.spearList.Add(spear);
+                                }
                             }
                         }
                     }
@@ -1401,6 +1465,11 @@ internal class LizardHooks
                             data.Beheaded = true;
                             Decapitation(self);
                             self.Die();
+
+                            if (source.owner is Spear spear)
+                            {
+                                data.spearList.Add(spear);
+                            }
                         }
                     }
                 }
@@ -1491,38 +1560,46 @@ internal class LizardHooks
                 data.ArmState[FirstLeg] = a ? "Cut1" : "Cut2";
                 data.ArmState[SecondLeg] = a ? "Cut1" : "Cut2";
 
-                LimbCut(self, hitChunk, int1, data.ArmState[FirstLeg]);
-
                 if (ShadowOfOptions.debug_logs.Value)
                     Debug.Log(all + self.ToString() + " limb cut " + int1);
+
+                if (source.owner is Spear spear)
+                {
+                    data.spearList.Add(spear);
+                }
+
+                LimbCut(self, hitChunk, int1, data.ArmState[FirstLeg]);
             }
 
             void LegCut(int Leg, int int1)
             {
                 data.ArmState[Leg] = UnityEngine.Random.Range(0, 2) == 0 ? "Cut1" : "Cut2";
 
-                LimbCut(self, hitChunk, int1, data.ArmState[Leg]);
-
                 if (ShadowOfOptions.debug_logs.Value)
                     Debug.Log(all + self.ToString() + " limb cut " + int1);
+
+                if (source.owner is Spear spear)
+                {
+                    data.spearList.Add(spear);
+                }
+
+                LimbCut(self, hitChunk, int1, data.ArmState[Leg]);
             }
 
-            static bool LizHitHeadShield(Vector2 direction, Lizard self)
+            bool LizHitHeadShield(Vector2 direction)
             {
                 float num19 = Vector2.Angle(direction, -self.bodyChunks[0].Rotation);
-                if (LizHitInMouth(direction, self))
+                if (LizHitInMouth(direction))
                 {
                     return false;
                 }
                 if (num19 < self.lizardParams.headShieldAngle + 20f * self.JawOpen)
                 {
-                    Room room = self.room;
-                    room?.PlaySound(SoundID.Lizard_Head_Shield_Deflect, self.mainBodyChunk);
                     return true;
                 }
                 return false;
             }
-            static bool LizHitInMouth(Vector2 direction, Lizard self)
+            bool LizHitInMouth(Vector2 direction)
             {
                 if (direction.y > 0f)
                 {
@@ -1543,7 +1620,7 @@ internal class LizardHooks
                     Debug.Log(all + self.ToString() + "'s " + eye + " was " + oldEye + " now it's " + data.liz[eye]);
 
                 if (ShadowOfOptions.dynamic_cheat_death_chance.Value)
-                    data.cheatDeathChance -= cut ? 10 : 5;
+                    data.cheatDeathChance -= cut && !oldEye.Contains("Scar") ? 10 : 5;
 
                 if (cut)
                     EyeCut(self, eye);
@@ -1645,6 +1722,22 @@ internal class LizardHooks
                 return;
             }
 
+            if (data.spearList.Count > 0)
+            {
+                List<Spear> tempList = new(data.spearList);
+                for (int i = 0; i < tempList.Count; i++)
+                {
+                    if (tempList[i] == null)
+                    {
+                        data.spearList.Remove(tempList[i]);
+                        continue;
+                    }
+
+                    tempList[i].ChangeMode(Weapon.Mode.Free);
+                    data.spearList.Remove(tempList[i]);
+                }
+            }
+
             //Deaf
             if (ShadowOfOptions.deafen.Value && data.liz.TryGetValue("EarRight", out _))
             {
@@ -1689,7 +1782,7 @@ internal class LizardHooks
             int cycleNumber = isStorySession ? self.abstractCreature.world.game.GetStorySession.saveState.cycleNumber : -1;
 
             //HypothermiaImmune
-            if (ModManager.HypothermiaModule && ShadowOfOptions.hypothermia_immune.Value && self.dead && self.Hypothermia <= 1f
+            if (ModManager.HypothermiaModule && ShadowOfOptions.hypothermia_immune.Value && self.dead && self.Hypothermia >= 1f
                 && (!data.liz.TryGetValue("HypothermiaImmune", out string HypothermiaImmune) || int.TryParse(HypothermiaImmune, out _) && HypothermiaImmune != cycleNumber.ToString()))
             {
                 data.liz["HypothermiaImmune"] = cycleNumber.ToString();
@@ -1699,12 +1792,23 @@ internal class LizardHooks
                 }
             }
 
+            //WaterBreather
+            if (ShadowOfOptions.water_breather.Value && self.dead && self.Submersion > 0.1f && self.lungs <= 0f
+                && (!data.liz.TryGetValue("WaterBreather", out string WaterBreather2) || int.TryParse(WaterBreather2, out _) && WaterBreather2 != cycleNumber.ToString()))
+            {
+                data.liz["WaterBreather"] = cycleNumber.ToString();
+                if (UnityEngine.Random.Range(0, 100) < ShadowOfOptions.water_breather_chance.Value)
+                {
+                    data.liz["WaterBreather"] = "True";
+                }
+            }
+
             //LavaImmune
-            if (true && self.dead && self.Submersion > 0.1f && self.room.waterObject != null && self.room.waterObject.WaterIsLethal 
+            if (ShadowOfOptions.lava_immune.Value && self.dead  && !self.abstractCreature.lavaImmune && self.Submersion > 0.1f && self.room.waterObject != null && self.room.waterObject.WaterIsLethal && (!ShadowOfOptions.melted_transformation.Value || data.transformation == "SpiderTransformation" || data.transformation == "ElectricTransformation")
                 && (!data.liz.TryGetValue("LavaImmune", out string LavaImmune) || int.TryParse(LavaImmune, out _) && LavaImmune != cycleNumber.ToString()))
             {
                 data.liz["LavaImmune"] = cycleNumber.ToString();
-                if (UnityEngine.Random.Range(0, 100) < ShadowOfOptions.melted_transformation_chance.Value)
+                if (UnityEngine.Random.Range(0, 100) < ShadowOfOptions.lava_immune_chance.Value)
                 {
                     data.liz["LavaImmune"] = "True";
                 }
@@ -1748,7 +1852,7 @@ internal class LizardHooks
             LizardData data2 = (liz != null && lizardstorage.TryGetValue(liz.abstractCreature, out LizardData dat)) ? dat : null;
 
             #region Tongue
-            if (ShadowOfOptions.tongue_stuff.Value && ShadowOfOptions.tongue_regrowth.Value && UnityEngine.Random.Range(0, 100) < ShadowOfOptions.tongue_regrowth_chance.Value)
+            if (ShadowOfOptions.tongue_ability.Value && ShadowOfOptions.tongue_regrowth.Value && UnityEngine.Random.Range(0, 100) < ShadowOfOptions.tongue_regrowth_chance.Value)
             {
                 if (self.grasps[0].grabbed is TubeWorm)
                 {
@@ -1779,16 +1883,20 @@ internal class LizardHooks
                         if (ShadowOfOptions.debug_logs.Value)
                             Debug.Log(all + self.ToString() + " grew a new Tongue due to eating " + self.grasps[0].grabbed + " who had a Tongue");
 
+                        if (ShadowOfOptions.dynamic_cheat_death_chance.Value)
+                            data.cheatDeathChance += 5;
+
+                        //OtherLizard
                         if (data2 != null)
                         {
                             data2.liz["Tongue"] = "Null";
 
                             if (ShadowOfOptions.debug_logs.Value)
                                 Debug.Log(all + liz.ToString() + " lost it's Tongue due to being eaten by " + self.grasps[0].grabbed + " that took it's Tongue");
-                        }
 
-                        if (ShadowOfOptions.dynamic_cheat_death_chance.Value)
-                            data.cheatDeathChance += 5;
+                            if (ShadowOfOptions.dynamic_cheat_death_chance.Value)
+                                data2.cheatDeathChance -= 5;
+                        }
                     }
                     else if (ShadowOfOptions.debug_logs.Value)
                         Debug.Log(all + self.ToString() + " did not grow a new Tongue due to eating " + self.grasps[0].grabbed + " because it already has one");
@@ -1797,7 +1905,7 @@ internal class LizardHooks
             #endregion
 
             #region Jump
-            if (ShadowOfOptions.jump_stuff.Value && ShadowOfOptions.jump_regrowth.Value && UnityEngine.Random.Range(0, 100) < ShadowOfOptions.jump_regrowth_chance.Value)
+            if (ShadowOfOptions.jump_ability.Value && ShadowOfOptions.jump_regrowth.Value && UnityEngine.Random.Range(0, 100) < ShadowOfOptions.jump_regrowth_chance.Value)
             {
                 if (self.grasps[0].grabbed is Yeek || self.grasps[0].grabbed is Cicada || self.grasps[0].grabbed is JetFish || (self.grasps[0].grabbed is Centipede centi && centi.abstractCreature.creatureTemplate.type == CreatureTemplate.Type.Centiwing))
                 {
@@ -1823,16 +1931,20 @@ internal class LizardHooks
                         if (ShadowOfOptions.debug_logs.Value)
                             Debug.Log(all + self.ToString() + " gained the ability to Jump due to eating " + self.grasps[0].grabbed + " who had the ability to Jump");
 
+                        if (ShadowOfOptions.dynamic_cheat_death_chance.Value)
+                            data.cheatDeathChance += 5;
+
+                        //Other Lizard
                         if (data2 != null)
                         {
                             data2.liz["CanJump"] = "False";
 
                             if (ShadowOfOptions.debug_logs.Value)
                                 Debug.Log(all + liz.ToString() + " lost it's ability to Jump due to being eaten by " + self + " that took it's ability to Jump");
-                        }
 
-                        if (ShadowOfOptions.dynamic_cheat_death_chance.Value)
-                            data.cheatDeathChance += 5;
+                            if (ShadowOfOptions.dynamic_cheat_death_chance.Value)
+                                data2.cheatDeathChance -= 5;
+                        }
                     }
                     else if (ShadowOfOptions.debug_logs.Value)
                         Debug.Log(all + self.ToString() + " did not grow a new ability to Jump due to eating " + self.grasps[0].grabbed + " because it already has one");
@@ -1858,6 +1970,16 @@ internal class LizardHooks
             {
                 TransformationSpider.SpiderEatRegrowth(self, liz, data, data2);
                 return;
+            }
+
+            if (liz != null && data2 != null && ((data.transformation.Contains("Rot") && (!data2.liz.TryGetValue("TentacleImmune", out string TentacleImmune) || TentacleImmune != "True")) ^ (data2.transformation.Contains("Rot") && (!data.liz.TryGetValue("TentacleImmune", out string TentacleImmune2) || TentacleImmune2 != "True"))) && UnityEngine.Random.Range(0, 100) < ShadowOfOptions.tentacle_immune_chance.Value)
+            {
+                LizardData lizardData = data.transformation.Contains("Rot") ? data : data2;
+
+                lizardData.liz["TentacleImmune"] = "True";
+
+                if (ShadowOfOptions.dynamic_cheat_death_chance.Value)
+                    lizardData.cheatDeathChance += 5;
             }
             #endregion
         }
@@ -2000,12 +2122,5 @@ internal class LizardHooks
 
         return orig(self, cc);
     }
-
-    // Token: 0x04001E5C RID: 7772
-    public PathCost[] pathingPreferencesTiles;
-
-    // Token: 0x04001E5D RID: 7773
-    public PathCost[] pathingPreferencesConnections;
-
 }
 

@@ -59,11 +59,16 @@ internal class ShadowOfLizards : BaseUnityPlugin
         /// </summary>
         public int transformationTimer = -1;
 
+        //Used to make sure AbstractCreature only makes changes once a cycle, set to the current cycle number after the AbstractCreature is finished making changes. AbstractCreature will only makes changes once in the Arena.
         public int lizardUpdatedCycle = -1;
 
+        //Values for Lizard Legs, these will be added when the lizard is Created to make sure it has the exact same number of Legs as the Lizard
         public List<string> ArmState = new();
 
+        //Chance for the Lizard to Cheat Death
         public int cheatDeathChance = 0;
+
+        public List<Spear> spearList = new();
     }
     public class LizardGoreData
     {
@@ -101,6 +106,7 @@ internal class ShadowOfLizards : BaseUnityPlugin
         public int ElectricColorTimer = 0;
 
         public bool once = false;
+        public bool camoOnce = false;    
 
         public float lightFlash;
 
@@ -277,8 +283,7 @@ internal class ShadowOfLizards : BaseUnityPlugin
 
                 if (self != null && self.room != null && self.room.game != null && self.room.game.devToolsActive && Input.GetKey("m"))
                 {
-                    List<AbstractCreature> list = new(self.abstractCreature.Room.creatures);
-                    foreach (AbstractCreature creature in list)
+                    foreach (AbstractCreature creature in self.abstractCreature.Room.creatures)
                     {
                         if (creature.realizedCreature != null && creature.realizedCreature is Lizard liz)
                         {
@@ -451,34 +456,94 @@ internal class ShadowOfLizards : BaseUnityPlugin
                 return;
             }
 
-            int num = UnityEngine.Random.Range(0, 2);
-            if (ShadowOfOptions.tongue_stuff.Value && num == 0)
-            {
-                if (receiver.tongue == null)
-                {
-                    if (ShadowOfOptions.debug_logs.Value)
-                        Debug.Log(all + receiver.ToString() + " grew a new Tongue due to Falling out of map");
+            List<string> fallList = new();
 
-                    data.liz["Tongue"] = "get";
-                }
-                else if (ShadowOfOptions.debug_logs.Value)
-                {
-                    Debug.Log(all + receiver.ToString() + " did not grow a new Tongue due to Falling out of map because it already has one");
-                }
+            if (ShadowOfOptions.tongue_ability.Value)
+                fallList.Add("Tongue");
+
+            if (ShadowOfOptions.jump_ability.Value)
+                fallList.Add("Jump");
+
+            if (ShadowOfOptions.climb_ability.Value)
+            {
+                fallList.Add("ClimbWall");
+                fallList.Add("ClimbCeiling");
             }
-            else if (ShadowOfOptions.jump_stuff.Value && num == 1)
-            {
-                if (receiver.jumpModule == null)
-                {
-                    if (ShadowOfOptions.debug_logs.Value)
-                        Debug.Log(all + receiver.ToString() + " has gained the Jump ability due to Falling out of map");
 
-                    data.liz["CanJump"] = "True";
-                }
-                else if (ShadowOfOptions.debug_logs.Value)
-                {
-                    Debug.Log(all + receiver.ToString() + " did not gain the Jump ability due to Falling out of map because it already can Jump");
-                }
+
+            if (fallList.Count == 0)
+            {
+                return;
+            }
+
+            switch (fallList[UnityEngine.Random.Range(0, fallList.Count)])
+            {
+                case "tongue":
+                    if (receiver.tongue == null)
+                    {
+                        if (ShadowOfOptions.debug_logs.Value)
+                            Debug.Log(all + receiver.ToString() + " grew a new Tongue due to Falling out of map");
+
+                        data.liz["Tongue"] = "get";
+                    }
+                    else if (ShadowOfOptions.debug_logs.Value)
+                    {
+                        Debug.Log(all + receiver.ToString() + " did not grow a new Tongue due to Falling out of map because it already has one");
+                    }
+                    break;
+                case "Jump":
+                    if (receiver.jumpModule == null)
+                    {
+                        if (ShadowOfOptions.debug_logs.Value)
+                            Debug.Log(all + receiver.ToString() + " has gained the Jump Ability due to Falling out of map");
+
+                        data.liz["CanJump"] = "True";
+                    }
+                    else if (ShadowOfOptions.debug_logs.Value)
+                    {
+                        Debug.Log(all + receiver.ToString() + " did not gain the Jump Ability due to Falling out of map because it already can Jump");
+                    }
+                    break;
+                case "ClimbWall":
+                    if (receiver.abstractCreature.creatureTemplate.pathingPreferencesTiles[(int)AItile.Accessibility.Wall].legality != PathCost.Legality.Allowed)
+                    {
+                        if (ShadowOfOptions.debug_logs.Value)
+                            Debug.Log(all + receiver.ToString() + " has gained the Climb Walls Ability due to Falling out of map");
+
+                        data.liz["CanClimbWall"] = "True";
+                    }
+                    else if (receiver.abstractCreature.creatureTemplate.pathingPreferencesTiles[(int)AItile.Accessibility.Climb].legality != PathCost.Legality.Allowed)
+                    {
+                        if (ShadowOfOptions.debug_logs.Value)
+                            Debug.Log(all + receiver.ToString() + " has gained the Climb Poles Ability due to Falling out of map");
+
+                        data.liz["CanClimbPole"] = "True";
+                    }
+                    else if (ShadowOfOptions.debug_logs.Value)
+                    {
+                        Debug.Log(all + receiver.ToString() + " did not gain either the Climb Walls or Climb Poles due to Falling out of map because it already has both");
+                    }
+                break;
+                case "ClimbCeiling":
+                    if (receiver.abstractCreature.creatureTemplate.pathingPreferencesTiles[(int)AItile.Accessibility.Ceiling].legality != PathCost.Legality.Allowed)
+                    {
+                        if (ShadowOfOptions.debug_logs.Value)
+                            Debug.Log(all + receiver.ToString() + " has gained the Climb Ceiling Ability due to Falling out of map");
+
+                        data.liz["CanClimbCeiling"] = "True";
+                    }
+                    else if (receiver.abstractCreature.creatureTemplate.pathingPreferencesTiles[(int)AItile.Accessibility.Climb].legality != PathCost.Legality.Allowed)
+                    {
+                        if (ShadowOfOptions.debug_logs.Value)
+                            Debug.Log(all + receiver.ToString() + " has gained the Climb Poles Ability due to Falling out of map");
+
+                        data.liz["CanClimbPole"] = "True";
+                    }
+                    else if (ShadowOfOptions.debug_logs.Value)
+                    {
+                        Debug.Log(all + receiver.ToString() + " did not gain either the Climb Ceiling or Climb Poles due to Falling out of map because it already has both");
+                    }
+                    break;
             }
         }
     }
