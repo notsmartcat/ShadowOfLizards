@@ -134,6 +134,10 @@ internal class ShadowOfLizards : BaseUnityPlugin
     {
         public List<Lizard> lizStorage = new();
     }
+    public class CreatureDenCheck
+    {
+        public bool denCheck = false;
+    }
     #endregion
 
     #region ConditionalWeakTable
@@ -143,6 +147,7 @@ internal class ShadowOfLizards : BaseUnityPlugin
     public static readonly ConditionalWeakTable<Spider, SpiderAsLeg> SpidLeg = new();
     public static readonly ConditionalWeakTable<LizardSpit, ElectricSpit> ShockSpit = new();
     public static readonly ConditionalWeakTable<PhysicalObject, OneTimeUseData> singleuse = new();
+    public static readonly ConditionalWeakTable<AbstractCreature, CreatureDenCheck> denCheck = new();
     #endregion
 
     #region Misc Values
@@ -159,6 +164,8 @@ internal class ShadowOfLizards : BaseUnityPlugin
     public static List<AbstractCreature> goreLizardList;
 
     public static List<string> validTongues = new() { "WhiteLizard", "Salamander", "BlueLizard", "CyanLizard", "RedLizard"};
+
+    public static List<string> defaultWaterBreather = new() { "Salamander", "EelLizard" };
 
     internal static new ManualLogSource Logger;
     #endregion
@@ -362,12 +369,12 @@ internal class ShadowOfLizards : BaseUnityPlugin
                 {
                     CreatureTemplate.Type type = sender.abstractCreature.creatureTemplate.type;
 
-                    if (type == CreatureTemplate.Type.Spider && UnityEngine.Random.Range(0, 100) < ShadowOfOptions.spider_transformation_chance.Value * 0.25
-                        || type == CreatureTemplate.Type.BigSpider && UnityEngine.Random.Range(0, 100) < ShadowOfOptions.spider_transformation_chance.Value * 0.5
-                        || type == CreatureTemplate.Type.SpitterSpider && UnityEngine.Random.Range(0, 100) < ShadowOfOptions.spider_transformation_chance.Value
-                        || ModManager.DLCShared && type == DLCSharedEnums.CreatureTemplateType.MotherSpider && UnityEngine.Random.Range(0, 100) < ShadowOfOptions.spider_transformation_chance.Value * 1.5
-                        || sender is Lizard liz && lizardstorage.TryGetValue(liz.abstractCreature, out LizardData data2) && (data2.transformation == "SpiderTransformation" && UnityEngine.Random.Range(0, 100) < ShadowOfOptions.spider_transformation_chance.Value
-                        || data2.transformation == "Spider" && UnityEngine.Random.Range(0, 100) < ShadowOfOptions.spider_transformation_chance.Value * 0.5))
+                    if (type == CreatureTemplate.Type.Spider && Chance(receiver, ShadowOfOptions.spider_transformation_chance.Value * 0.25f, "Spider Transformation after being killed by " + sender)
+                        || type == CreatureTemplate.Type.BigSpider && Chance(receiver, ShadowOfOptions.spider_transformation_chance.Value * 0.5f, "Spider Transformation after being killed by " + sender)
+                        || type == CreatureTemplate.Type.SpitterSpider && Chance(receiver, ShadowOfOptions.spider_transformation_chance.Value, "Spider Transformation after being killed by " + sender)
+                        || ModManager.DLCShared && type == DLCSharedEnums.CreatureTemplateType.MotherSpider && Chance(receiver, ShadowOfOptions.spider_transformation_chance.Value * 1.5f, "Spider Transformation after being killed by " + sender)
+                        || sender is Lizard liz && lizardstorage.TryGetValue(liz.abstractCreature, out LizardData data2) && (data2.transformation == "SpiderTransformation" && Chance(receiver, ShadowOfOptions.spider_transformation_chance.Value, "Spider Transformation after being killed by " + sender)
+                        || data2.transformation == "Spider" && Chance(receiver, ShadowOfOptions.spider_transformation_chance.Value * 0.5f, "Spider Transformation after being killed by " + sender)))
                     {
                         if (ShadowOfOptions.debug_logs.Value)
                             Debug.Log(all + receiver.ToString() + " was made a Spider Mother due to being killed by " + sender);
@@ -379,7 +386,7 @@ internal class ShadowOfLizards : BaseUnityPlugin
                     }
                 }
 
-                if (ShadowOfOptions.melted_transformation.Value && killType == "Melted" && UnityEngine.Random.Range(0, 100) < ShadowOfOptions.melted_transformation_chance.Value)
+                if (ShadowOfOptions.melted_transformation.Value && killType == "Melted" && Chance(receiver, ShadowOfOptions.melted_transformation_chance.Value, "Melted Transformation after Dying to Acid"))
                 {
                     if (ShadowOfOptions.debug_logs.Value)
                         Debug.Log(all + receiver.ToString() + " was made Melted due to dying to Acid");
@@ -433,7 +440,7 @@ internal class ShadowOfLizards : BaseUnityPlugin
                     return;
                 }
 
-                if (ShadowOfOptions.electric_transformation.Value && killType == "Electric" && UnityEngine.Random.Range(0, 100) < ShadowOfOptions.electric_transformation_chance.Value)
+                if (ShadowOfOptions.electric_transformation.Value && killType == "Electric" && Chance(receiver, ShadowOfOptions.electric_transformation_chance.Value, "Electric Transformation after Dying to Electricity"))
                 {
                     if (data.transformation == "Electric")
                     {
@@ -521,7 +528,7 @@ internal class ShadowOfLizards : BaseUnityPlugin
                     }
                     else if (ShadowOfOptions.debug_logs.Value)
                     {
-                        Debug.Log(all + receiver.ToString() + " did not gain either the Climb Walls or Climb Poles due to Falling out of map because it already has both");
+                        Debug.Log(all + receiver.ToString() + " did not gain either the Climb Walls or Climb Poles Ability due to Falling out of map because it already has both");
                     }
                 break;
                 case "ClimbCeiling":
@@ -541,30 +548,131 @@ internal class ShadowOfLizards : BaseUnityPlugin
                     }
                     else if (ShadowOfOptions.debug_logs.Value)
                     {
-                        Debug.Log(all + receiver.ToString() + " did not gain either the Climb Ceiling or Climb Poles due to Falling out of map because it already has both");
+                        Debug.Log(all + receiver.ToString() + " did not gain either the Climb Ceiling or Climb Poles Ability due to Falling out of map because it already has both");
                     }
                     break;
+                default:
+                    if (ShadowOfOptions.debug_logs.Value)
+                        Debug.Log(all + receiver.ToString() + " did not gain any Ability due to Falling out of map because none if the related Abilities were turned on");
+                break;
             }
         }
     }
     #endregion
 
-    #region Gore and Misc
+    #region Misc
     void EliteLizard(Lizard self)
     {
 
     }
 
-    public static bool HealthBasedChance(Lizard self, float chance)
+    public static bool Chance(Lizard self, float chance, string whatFor)
     {
-        if (UnityEngine.Random.Range(0, 100) < chance * (ShadowOfOptions.health_based_chance.Value ? ((ShadowOfOptions.health_based_chance_dead.Value && self.dead) ? 1 : Mathf.Lerp(ShadowOfOptions.health_based_chance_min.Value / 100, ShadowOfOptions.health_based_chance_max.Value / 100, self.LizardState.health)) : 1))
+        int roll = UnityEngine.Random.Range(0, 100);
+
+        if (roll < chance)
         {
+            if (ShadowOfOptions.chance_logs.Value)
+                Debug.Log(all + self + " Success! " + roll + "/" + chance + " for " + whatFor);
+
             return true;
         }
+        if (ShadowOfOptions.chance_logs.Value)
+            Debug.Log(all + self + " Failure! " + roll + "/" + chance + " for " + whatFor);
 
         return false;
     }
 
+    public static bool HealthBasedChance(Lizard self, float chance)
+    {
+        int roll = UnityEngine.Random.Range(0, 100);
+
+        bool apply = ShadowOfOptions.health_based_chance.Value && (!ShadowOfOptions.health_based_chance_dead.Value || ShadowOfOptions.health_based_chance_dead.Value && !self.dead);
+
+        float rawMultiplier = apply ? Mathf.Lerp(ShadowOfOptions.health_based_chance_max.Value, ShadowOfOptions.health_based_chance_min.Value, self.LizardState.health) : 100;
+
+        float multiplier = rawMultiplier / 100;
+
+        chance *= multiplier;
+
+        if (roll < chance)
+        {
+            if (ShadowOfOptions.chance_logs.Value)
+                Debug.Log(all + self + " Success! " + roll + "/" + chance + " for Health Based Chance. Health Based Chance Multiplier is: " + rawMultiplier + "%");
+
+            return true;
+        }
+        if (ShadowOfOptions.chance_logs.Value)
+            Debug.Log(all + self + " Failure! " + roll + "/" + chance + " for Health Based Chance. Health Based Chance Multiplier is: " + rawMultiplier + "%");
+
+        return false;
+    }
+
+    public static bool CWTCycleCheck(LizardData data, string value, int cycleNumber)
+    {
+        return !data.liz.TryGetValue(value, out string Value) || int.TryParse(Value, out _) && Value != cycleNumber.ToString();
+    }
+
+    public static void UnderwaterDen(LizardData data, Lizard self)
+    {
+        if (data.denCheck == false)
+        {
+            data.denCheck = true;
+        }
+        else
+        {
+            return;
+        }
+
+        List<string> list = new();
+
+        if (ShadowOfOptions.swim_ability.Value)
+            list.Add("CanSwim");
+        if (ShadowOfOptions.water_breather.Value)
+            list.Add("WaterBreather");
+
+        if (list.Count == 0)
+        {
+            return;
+        }
+
+        switch (list[UnityEngine.Random.Range(0, list.Count)])
+        {
+            case "CanSwim":
+                if (!data.liz.TryGetValue("CanSwim", out string CanSwim) && !defaultWaterBreather.Contains(self.Template.type.ToString()) || CanSwim != "True")
+                {
+                    if (ShadowOfOptions.debug_logs.Value)
+                        Debug.Log(all + self.ToString() + " gained the Swim Ability due to being brought to a Underwater Den");
+
+                    data.liz["CanSwim"] = "True";
+                }
+                else if (ShadowOfOptions.debug_logs.Value)
+                {
+                    Debug.Log(all + self.ToString() + " did gained the Swim Ability due to being brought to a Underwater Den because it already can Swim");
+                }
+                break;
+            case "WaterBreather":
+                if (!data.liz.TryGetValue("WaterBreather", out string WaterBreather) && !defaultWaterBreather.Contains(self.Template.type.ToString()) || WaterBreather != "True")
+                {
+                    if (ShadowOfOptions.debug_logs.Value)
+                        Debug.Log(all + self.ToString() + " gained the Drowning Immunity due to being brought to a Underwater Den");
+
+                    data.liz["WaterBreather"] = "True";
+                }
+                else if (ShadowOfOptions.debug_logs.Value)
+                {
+                    Debug.Log(all + self.ToString() + " did not gain the Drowning Immunity due to being brought to a Underwater Den because it already is Immune to Drowning");
+                }
+                break;
+            default:
+                if (ShadowOfOptions.debug_logs.Value)
+                    Debug.Log(all + self.ToString() + " did not gain either the Climb Ceiling or Climb Poles due to Falling out of map because it already has both");
+                break;
+        }
+    }
+
+
+    #region Gore
     public static void CutInHalf(Lizard self, BodyChunk hitChunk)
     {
         if (!lizardstorage.TryGetValue(self.abstractCreature, out LizardData data))
@@ -605,7 +713,7 @@ internal class ShadowOfLizards : BaseUnityPlugin
                 return;
             }
 
-            if (ShadowOfOptions.dynamic_cheat_death_chance.Value)
+            if (ShadowOfOptions.dynamic_cheat_death.Value)
                 data.cheatDeathChance -= 5;
 
             SpriteLeaser sLeaser = data.sLeaser;
@@ -678,27 +786,38 @@ internal class ShadowOfLizards : BaseUnityPlugin
                 Debug.Log(all + "LizCutLeg object could not be properily created due to the: " + lizardArm + " Leg Sprite not having a valid variation, if able please report to the mod author of Shadow Of Lizards");
             }
 
+            bool canCamo = !data.liz.TryGetValue("CanCamo", out string CanCamo) && self.Template.type == CreatureTemplate.Type.WhiteLizard || CanCamo == "True";
 
             LizCutLegAbstract lizardCutLegAbstract = new(self.room.world, pos, self.room.game.GetNewID())
             {
                 hue = 1f,
                 saturation = 0.5f,
+
                 scaleX = sLeaser.sprites[num17].scaleX,
                 scaleY = sLeaser.sprites[num17].scaleY,
+
                 LizType = template,
+
                 LizBodyColourR = r2,
                 LizBodyColourG = g2,
                 LizBodyColourB = b2,
+
                 LizBloodColourR = lizBloodColourR,
                 LizBloodColourG = lizBloodColourG,
                 LizBloodColourB = lizBloodColourB,
+
                 LizEffectColourR = r,
                 LizEffectColourG = g,
                 LizEffectColourB = b,
+
                 LizSpriteName = lizardArmCut,
                 LizColourSpriteName = lizardArmColorCut,
+
                 LizBreed = self.Template.type.value,
+
                 blackSalamander = ((LizardGraphics)self.graphicsModule).blackSalamander,
+
+                canCamo = canCamo
             };
 
             self.room.abstractRoom.AddEntity(lizardCutLegAbstract);
@@ -731,7 +850,7 @@ internal class ShadowOfLizards : BaseUnityPlugin
                 return;
             }
 
-            if (ShadowOfOptions.dynamic_cheat_death_chance.Value)
+            if (ShadowOfOptions.dynamic_cheat_death.Value)
                 data.cheatDeathChance -= 50;
 
             SpriteLeaser sLeaser = data.sLeaser;
@@ -821,6 +940,7 @@ internal class ShadowOfLizards : BaseUnityPlugin
                 eyeLeftColourB = data.sLeaser.sprites[data2.EyesSprites + 1].color.b;
             }
 
+            bool canCamo = !data.liz.TryGetValue("CanCamo", out string CanCamo) && self.Template.type == CreatureTemplate.Type.WhiteLizard || CanCamo == "True";
 
             LizCutHeadAbstract lizCutHeadAbstract = new(self.room.world, pos, self.room.game.GetNewID())
             {
@@ -863,9 +983,11 @@ internal class ShadowOfLizards : BaseUnityPlugin
                 blackSalamander = ((LizardGraphics)self.graphicsModule).blackSalamander,
 
                 rad = self.bodyChunks[0].rad,
-                mass = self.bodyChunks[0].mass,
+                mass = self.bodyChunks[0].mass / 2,
 
-                LizBreed = self.Template.type.value
+                LizBreed = self.Template.type.value,
+
+                canCamo = canCamo
             };
 
             self.room.abstractRoom.AddEntity(lizCutHeadAbstract);
@@ -985,5 +1107,6 @@ internal class ShadowOfLizards : BaseUnityPlugin
             self.room.AddObject(new BloodParticle(self.bodyChunks[0].pos, new Vector2(UnityEngine.Random.Range(-3f, 3f), UnityEngine.Random.Range(5f, 10f)), colour, self.Template.type.value, null, 2.3f));
         }
     }
+    #endregion
     #endregion
 }

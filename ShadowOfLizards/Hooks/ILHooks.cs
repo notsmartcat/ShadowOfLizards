@@ -41,8 +41,6 @@ internal class ILHooks
             typeof(ILHooks).GetMethod(nameof(ShadowOfLizardVisibilityBonus)));
     }
 
-
-
     #region Tongue
     static void ILLizard(ILContext il)
     {
@@ -171,12 +169,12 @@ internal class ILHooks
             return;
         }
 
-        if (UnityEngine.Random.Range(0, 100) < ShadowOfOptions.grass_immune_chance.Value)
+        if (Chance(liz, ShadowOfOptions.grass_immune_chance.Value, "WormGrass Immune"))
         {
             if (ShadowOfOptions.debug_logs.Value)
                 Debug.Log(all + "WormGrass Immune granted to " + liz);
 
-            if (ShadowOfOptions.dynamic_cheat_death_chance.Value)
+            if (ShadowOfOptions.dynamic_cheat_death.Value)
                 data.cheatDeathChance += 5;
 
             data.liz["WormGrassImmune"] = "True";
@@ -256,12 +254,12 @@ internal class ILHooks
             return;
         }
 
-        if (UnityEngine.Random.Range(0, 100) < ShadowOfOptions.tentacle_immune_chance.Value)
+        if (Chance(liz, ShadowOfOptions.tentacle_immune_chance.Value, "Tentacle Immune"))
         {
             if (ShadowOfOptions.debug_logs.Value)
                 Debug.Log(all + "Rot Tentacle Immune granted to " + liz);
 
-            if (ShadowOfOptions.dynamic_cheat_death_chance.Value)
+            if (ShadowOfOptions.dynamic_cheat_death.Value)
                 data.cheatDeathChance += 5;
 
             data.liz["TentacleImmune"] = "True";
@@ -442,7 +440,7 @@ internal class ILHooks
         return orig(self);
     }
 
-    private static void ILLurkTrackerLurkPosScore(ILContext il) //Both Swim/Breathe and Camo Related
+    static void ILLurkTrackerLurkPosScore(ILContext il) //Both Swim/Breathe and Camo Related
     {
         try
         {
@@ -697,6 +695,8 @@ internal class ILHooks
     }
     #endregion
 }
+
+
 
 /*
 class ILHooks

@@ -18,8 +18,7 @@ internal class LizardGraphicsHooks
         On.LizardGraphics.DrawSprites += LizardGraphicsDraw;
         On.LizardGraphics.InitiateSprites += LizardGraphicsInitiateSprites;
         On.LizardGraphics.AddToContainer += LizardGraphicsAddToContainer;
-
-        //On.LizardGraphics.HeadColor += LizardGraphicsHeadColor;
+        On.LizardGraphics.AddCosmetic += LizardGraphicsAddCosmetic;
 
         On.LizardCosmetics.Antennae.ctor += NewAntennae;
 
@@ -35,34 +34,35 @@ internal class LizardGraphicsHooks
             graphicstorage.Add(self, new GraphicsData());
         }
 
-        if (!ShadowOfOptions.melted_transformation.Value || !lizardstorage.TryGetValue(self.lizard.abstractCreature, out LizardData data) || (data.transformation != "Melted" && data.transformation != "MeltedTransformation") || !ModManager.DLCShared || self.lizard.lizardParams.template != DLCSharedEnums.CreatureTemplateType.SpitLizard)
+        if (!lizardstorage.TryGetValue(self.lizard.abstractCreature, out LizardData data))
         {
             return;
         }
 
-        self.lizard.effectColor = new Color(float.Parse(data.liz["MeltedR"]), float.Parse(data.liz["MeltedG"]), float.Parse(data.liz["MeltedB"]));
-    }
-
-    static Color LizardGraphicsHeadColor(On.LizardGraphics.orig_HeadColor orig, LizardGraphics self, float timeStacker)
-    {
-        if (!lizardstorage.TryGetValue(self.lizard.abstractCreature, out LizardData data))
+        if (ShadowOfOptions.water_breather.Value && data.liz.TryGetValue("WaterBreather", out string WaterBreather) && WaterBreather == "True")
         {
-            if (!lizardGoreStorage.TryGetValue(self.lizard.abstractCreature, out LizardGoreData _))
-            {
-                return orig(self, timeStacker);
-            }
-            else
-            {
-                if (!lizardGoreStorage.TryGetValue(self.lizard.abstractCreature, out LizardGoreData goreData))
-                {
-                    return orig(self, timeStacker);
-                }
+            bool addAxilotlGills = true;
 
-                data = goreData.origLizardData;
+            for (int c = 0; c < self.cosmetics.Count; c++)
+            {
+                if (self.cosmetics[c] is AxolotlGills)
+                {
+                    addAxilotlGills = false;
+                    break;
+                }
+            }
+
+            if (addAxilotlGills)
+            {
+                int num7 = self.TotalSprites;
+                self.AddCosmetic(num7, new AxolotlGills(self, num7));
             }
         }
 
-        return orig(self, timeStacker);
+        if (ShadowOfOptions.melted_transformation.Value && (data.transformation == "Melted" || data.transformation == "MeltedTransformation") && ModManager.DLCShared && self.lizard.lizardParams.template == DLCSharedEnums.CreatureTemplateType.SpitLizard)
+        {
+            self.lizard.effectColor = new Color(float.Parse(data.liz["MeltedR"]), float.Parse(data.liz["MeltedG"]), float.Parse(data.liz["MeltedB"]));
+        }
     }
 
     static void LizardGraphicsDraw(On.LizardGraphics.orig_DrawSprites orig, LizardGraphics self, SpriteLeaser sLeaser, RoomCamera rCam, float timeStacker, Vector2 camPos)
@@ -133,8 +133,8 @@ internal class LizardGraphicsHooks
 
                 self.ColorBody(sLeaser, new Color(1f, 1f, 1f));
 
-                sLeaser.sprites[self.SpriteHeadStart].color = WhiteNoCamoHeadColor(timeStacker);
-                sLeaser.sprites[self.SpriteHeadStart + 3].color = WhiteNoCamoHeadColor(timeStacker);
+                sLeaser.sprites[self.SpriteHeadStart].color = WhiteNoCamoHeadColor(self, timeStacker);
+                sLeaser.sprites[self.SpriteHeadStart + 3].color = WhiteNoCamoHeadColor(self, timeStacker);
             }
 
             if (data.Beheaded == true)
@@ -144,7 +144,7 @@ internal class LizardGraphicsHooks
                     sLeaser.sprites[self.SpriteHeadStart + 3].element = Futile.atlasManager.GetElementWithName(sLeaser.sprites[self.SpriteHeadStart + 3].element.name + "Cut");
                     if (self.lizard.Template.type != WatcherEnums.CreatureTemplateType.IndigoLizard || self.lizard.Template.type == WatcherEnums.CreatureTemplateType.IndigoLizard && bloodcolours == null)
                     {
-                        sLeaser.sprites[self.SpriteHeadStart + 3].color = (bloodcolours != null) ? bloodcolours[self.lizard.Template.type.ToString()] : self.effectColor;
+                        sLeaser.sprites[self.SpriteHeadStart + 3].color = bloodcolours != null ? bloodcolours[self.lizard.Template.type.ToString()] : self.effectColor;
                     }
                     if (self.lizard.Template.type == WatcherEnums.CreatureTemplateType.BlizzardLizard)
                     {
@@ -355,20 +355,19 @@ internal class LizardGraphicsHooks
                     string cutNum = data.ArmState[num2] == "Cut1" ? "" : "3";
                     string cutColourNum = data.ArmState[num2] == "Cut1" ? "" : "3";
 
-                    if (!Futile.atlasManager.DoesContainElementWithName(sLeaser.sprites[i].element + "Cut" + cutNum))
+                    if (!Futile.atlasManager.DoesContainElementWithName(element + "Cut" + cutNum))
                     {
                         sLeaser.sprites[i].isVisible = false;
                         sLeaser.sprites[i + num].isVisible = false;
                         continue;
                     }
 
-                    sLeaser.sprites[i].element = Futile.atlasManager.GetElementWithName(sLeaser.sprites[i].element.name + "Cut" + cutNum);
+                    sLeaser.sprites[i].element = Futile.atlasManager.GetElementWithName(element + "Cut" + cutNum);
 
                     sLeaser.sprites[i + num].element = Futile.atlasManager.GetElementWithName(sLeaser.sprites[i + num].element.name + "Cut" + cutColourNum);
-                    if (bloodcolours != null)
-                    {
+
+                    if(bloodcolours != null)
                         sLeaser.sprites[i + num].color = bloodcolours[self.lizard.Template.type.ToString()];
-                    }
                 }
             }
 
@@ -530,33 +529,12 @@ internal class LizardGraphicsHooks
                 }
             }
         }
-
-        Color WhiteNoCamoHeadColor(float timeStacker)
-        {
-            if (self.whiteFlicker > 0 && (self.whiteFlicker > 15 || self.everySecondDraw))
-            {
-                return new Color(1f, 1f, 1f);
-            }
-            float num = 1f - Mathf.Pow(0.5f + 0.5f * Mathf.Sin(Mathf.Lerp(self.lastBlink, self.blink, timeStacker) * 2f * 3.1415927f), 1.5f + self.lizard.AI.excitement * 1.5f);
-            if (self.headColorSetter != 0f)
-            {
-                num = Mathf.Lerp(num, (self.headColorSetter > 0f) ? 1f : 0f, Mathf.Abs(self.headColorSetter));
-            }
-            if (self.flicker > 10)
-            {
-                num = self.flickerColor;
-            }
-            num = Mathf.Lerp(num, Mathf.Pow(Mathf.Max(0f, Mathf.Lerp(self.lastVoiceVisualization, self.voiceVisualization, timeStacker)), 0.75f), Mathf.Lerp(self.lastVoiceVisualizationIntensity, self.voiceVisualizationIntensity, timeStacker));
-            return Color.Lerp(new Color(1f, 1f, 1f), self.palette.blackColor, num);
-        }
     }
 
     public static void CamoLizardGraphicsDraw(LizardGraphics self, SpriteLeaser sLeaser, float timeStacker, LizardData data, GraphicsData data2)
     {
         try
         {
-            //Debug.Log(self.whiteCamoColorAmount);
-
             Color effectColour = self.effectColor;
             Color headColour = self.effectColor;
 
@@ -574,8 +552,8 @@ internal class LizardGraphicsHooks
             {
                 data2.camoOnce = true;
 
-                effectColour = Camo(self.effectColor);
-                bodyColour = Camo(self.BodyColor(timeStacker));
+                effectColour = Camo(self, self.effectColor);
+                bodyColour = Camo(self, self.BodyColor(timeStacker));
 
                 if (head)
                 {
@@ -589,11 +567,11 @@ internal class LizardGraphicsHooks
                         num = self.flickerColor;
                     }
                     num = Mathf.Lerp(num, Mathf.Pow(Mathf.Max(0f, Mathf.Lerp(self.lastVoiceVisualization, self.voiceVisualization, timeStacker)), 0.75f), Mathf.Lerp(self.lastVoiceVisualizationIntensity, self.voiceVisualizationIntensity, timeStacker));
-                    headColour = Color.Lerp(Camo(self.HeadColor1), effectColour, num);
+                    headColour = Color.Lerp(Camo(self, self.HeadColor1), effectColour, num);
                 }
                 else if (self.lizard.Template.type == CreatureTemplate.Type.Salamander)
                 {
-                    headColour = Camo(self.SalamanderColor);
+                    headColour = Camo(self, self.SalamanderColor);
                 }
                 else
                 {
@@ -626,10 +604,10 @@ internal class LizardGraphicsHooks
                 }
                 else if (self.lizard.Template.type == WatcherEnums.CreatureTemplateType.BasiliskLizard)
                 {
-                    Color color4 = Camo(Color.Lerp(self.HeadColor(timeStacker), self.lizard.effectColor, 0.7f));
+                    Color color4 = Camo(self, Color.Lerp(self.HeadColor(timeStacker), self.lizard.effectColor, 0.7f));
                     if (self.whiteFlicker > 0 && (self.whiteFlicker > 15 || self.everySecondDraw))
                     {
-                        color4 = Camo(new Color(1f, 1f, 1f));
+                        color4 = Camo(self, new Color(1f, 1f, 1f));
                     }
                     sLeaser.sprites[self.SpriteHeadStart].color = color4;
                     sLeaser.sprites[self.SpriteHeadStart + 3].color = color4;
@@ -1112,13 +1090,32 @@ internal class LizardGraphicsHooks
                 }
                 return Color.Lerp(effectColour, new Color(1f, 1f, 1f, antennae.alpha), flicker);
             }
-
-            Color Camo(Color col)
-            {
-                return Color.Lerp(col, self.whiteCamoColor, self.whiteCamoColorAmount);
-            }
         }
         catch (Exception e) { ShadowOfLizards.Logger.LogError(e); }
+    }
+
+    public static Color WhiteNoCamoHeadColor(LizardGraphics self, float timeStacker)
+    {
+        if (self.whiteFlicker > 0 && (self.whiteFlicker > 15 || self.everySecondDraw))
+        {
+            return new Color(1f, 1f, 1f);
+        }
+        float num = 1f - Mathf.Pow(0.5f + 0.5f * Mathf.Sin(Mathf.Lerp(self.lastBlink, self.blink, timeStacker) * 2f * 3.1415927f), 1.5f + self.lizard.AI.excitement * 1.5f);
+        if (self.headColorSetter != 0f)
+        {
+            num = Mathf.Lerp(num, (self.headColorSetter > 0f) ? 1f : 0f, Mathf.Abs(self.headColorSetter));
+        }
+        if (self.flicker > 10)
+        {
+            num = self.flickerColor;
+        }
+        num = Mathf.Lerp(num, Mathf.Pow(Mathf.Max(0f, Mathf.Lerp(self.lastVoiceVisualization, self.voiceVisualization, timeStacker)), 0.75f), Mathf.Lerp(self.lastVoiceVisualizationIntensity, self.voiceVisualizationIntensity, timeStacker));
+        return Color.Lerp(new Color(1f, 1f, 1f), self.palette.blackColor, num);
+    }
+
+    public static Color Camo(LizardGraphics self, Color col)
+    {
+        return Color.Lerp(col, self.whiteCamoColor, self.whiteCamoColorAmount);
     }
 
     static void LizardGraphicsUpdate(On.LizardGraphics.orig_Update orig, LizardGraphics self)
@@ -1224,7 +1221,7 @@ internal class LizardGraphicsHooks
 
             if (ShadowOfOptions.teeth.Value && data.liz.TryGetValue("UpperTeeth", out _) && data.liz["UpperTeeth"] != "Incompatible")
             {
-                if (self.lizard.lizardParams.headGraphics[4] != 0 && self.lizard.lizardParams.headGraphics[4] != 1 && self.lizard.lizardParams.headGraphics[4] != 2 && self.lizard.lizardParams.headGraphics[4] != 3 && self.lizard.lizardParams.headGraphics[4] != 8 && self.lizard.lizardParams.headGraphics[4] != 9)
+                if (self.lizard.lizardParams.headGraphics[2] != 0 && self.lizard.lizardParams.headGraphics[2] != 1 && self.lizard.lizardParams.headGraphics[2] != 2 && self.lizard.lizardParams.headGraphics[2] != 3 && self.lizard.lizardParams.headGraphics[2] != 8 && self.lizard.lizardParams.headGraphics[2] != 9)
                 {
                     data.liz["UpperTeeth"] = "Incompatible";
                     data.liz["LowerTeeth"] = "Incompatible";
@@ -1281,6 +1278,20 @@ internal class LizardGraphicsHooks
         sLeaser.sprites[data2.EyesSprites].MoveInFrontOfOtherNode(sLeaser.sprites[self.SpriteHeadStart + 4]);
         sLeaser.sprites[data2.EyesSprites + 1].MoveInFrontOfOtherNode(sLeaser.sprites[self.SpriteHeadStart + 4]);
     }
+
+    static int LizardGraphicsAddCosmetic(On.LizardGraphics.orig_AddCosmetic orig, LizardGraphics self, int spriteIndex, Template cosmetic)
+    {
+        if (ShadowOfOptions.water_breather.Value && cosmetic is AxolotlGills && (!ModManager.Watcher || self.lizard.Template.type != WatcherEnums.CreatureTemplateType.BlizzardLizard) && lizardstorage.TryGetValue(self.lizard.abstractCreature, out LizardData data))
+        {
+            if (data.liz.TryGetValue("WaterBreather", out string WaterBreather) && WaterBreather != "True")
+            {
+                return spriteIndex;
+            }
+        }
+
+        return orig.Invoke(self, spriteIndex, cosmetic);
+    }
+
 
     static void NewAntennae(On.LizardCosmetics.Antennae.orig_ctor orig, Antennae self, LizardGraphics lGraphics, int startSprite)
     {

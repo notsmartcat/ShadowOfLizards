@@ -1035,8 +1035,8 @@ internal class TransformationElectric
                     data.transformationTimer++;
                     return;
                 }
-                else if (ShadowOfOptions.eat_lizard.Value && liz != null && ((data2.transformation == "ElectricTransformation" && UnityEngine.Random.Range(0, 100) < ShadowOfOptions.electric_regrowth_chance.Value) ||
-                        (data2.transformation == "Electric" && UnityEngine.Random.Range(0, 100) < ShadowOfOptions.electric_regrowth_chance.Value * 0.5)))
+                else if (ShadowOfOptions.eat_lizard.Value && liz != null && ((data2.transformation == "ElectricTransformation" && Chance(self, ShadowOfOptions.electric_regrowth_chance.Value, "Electric Regrowth by eating " + liz)) 
+                    || (data2.transformation == "Electric" && Chance(self, ShadowOfOptions.electric_regrowth_chance.Value * 0.5f, "Electric Regrowth by eating " + liz))))
                 {
                     data.transformationTimer++;
                     return;
@@ -1054,8 +1054,8 @@ internal class TransformationElectric
 
                     return;
                 }
-                else if (ShadowOfOptions.eat_lizard.Value && liz != null && ((data2.transformation == "ElectricTransformation" && UnityEngine.Random.Range(0, 100) < ShadowOfOptions.electric_regrowth_chance.Value) ||
-                        (data2.transformation == "Electric" && UnityEngine.Random.Range(0, 100) < ShadowOfOptions.electric_regrowth_chance.Value * 0.5)))
+                else if (ShadowOfOptions.eat_lizard.Value && liz != null && ((data2.transformation == "ElectricTransformation" && Chance(self, ShadowOfOptions.electric_regrowth_chance.Value, "Electric Regrowth by eating " + liz)) ||
+                        (data2.transformation == "Electric" && Chance(self, ShadowOfOptions.electric_regrowth_chance.Value * 0.5f, "Electric Regrowth by eating " + liz))))
                 {
                     if (ShadowOfOptions.debug_logs.Value)
                         Debug.Log(all + self.ToString() + " was made Electric due to eating " + self.grasps[0].grabbed);
@@ -1069,12 +1069,12 @@ internal class TransformationElectric
 
             bool ElectricChance()
             {
-                return self.grasps[0].grabbed is JellyFish && UnityEngine.Random.Range(0, 100) < ShadowOfOptions.electric_regrowth_chance.Value * 0.25
-                    || self.grasps[0].grabbed is Centipede centi && (centi.abstractCreature.creatureTemplate.type == CreatureTemplate.Type.SmallCentipede && UnityEngine.Random.Range(0, 100) < ShadowOfOptions.electric_regrowth_chance.Value * 0.5
-                    || centi.abstractCreature.creatureTemplate.type == CreatureTemplate.Type.Centipede && UnityEngine.Random.Range(0, 100) < ShadowOfOptions.electric_regrowth_chance.Value
-                    || centi.abstractCreature.creatureTemplate.type == CreatureTemplate.Type.Centiwing && UnityEngine.Random.Range(0, 100) < ShadowOfOptions.electric_regrowth_chance.Value * 1.5
-                    || centi.abstractCreature.creatureTemplate.type == CreatureTemplate.Type.RedCentipede && UnityEngine.Random.Range(0, 100) < ShadowOfOptions.electric_regrowth_chance.Value * 2
-                    || (ModManager.DLCShared && centi.abstractCreature.creatureTemplate.type == DLCSharedEnums.CreatureTemplateType.AquaCenti && UnityEngine.Random.Range(0, 100) < ShadowOfOptions.electric_regrowth_chance.Value * 2));
+                return self.grasps[0].grabbed is JellyFish && Chance(self, ShadowOfOptions.electric_regrowth_chance.Value * 0.25f, "Electric Regrowth by eating YellyFish")
+                    || self.grasps[0].grabbed is Centipede centi && (centi.abstractCreature.creatureTemplate.type == CreatureTemplate.Type.SmallCentipede && Chance(self, ShadowOfOptions.electric_regrowth_chance.Value * 0.5f, "Electric Regrowth by eating " + centi)
+                    || centi.abstractCreature.creatureTemplate.type == CreatureTemplate.Type.Centipede && Chance(self, ShadowOfOptions.electric_regrowth_chance.Value, "Electric Regrowth by eating " + centi)
+                    || centi.abstractCreature.creatureTemplate.type == CreatureTemplate.Type.Centiwing && Chance(self, ShadowOfOptions.electric_regrowth_chance.Value * 1.5f, "Electric Regrowth by eating " + centi)
+                    || centi.abstractCreature.creatureTemplate.type == CreatureTemplate.Type.RedCentipede && Chance(self, ShadowOfOptions.electric_regrowth_chance.Value * 2f, "Electric Regrowth by eating " + centi)
+                    || (ModManager.DLCShared && centi.abstractCreature.creatureTemplate.type == DLCSharedEnums.CreatureTemplateType.AquaCenti && Chance(self, ShadowOfOptions.electric_regrowth_chance.Value * 2f, "Electric Regrowth by eating " + centi)));
             }
         }
         catch (Exception e) { ShadowOfLizards.Logger.LogError(e); }

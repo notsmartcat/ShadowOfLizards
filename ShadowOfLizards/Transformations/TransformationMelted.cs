@@ -300,8 +300,8 @@ internal class TransformationMelted
             if (ShadowOfOptions.debug_logs.Value)
                 Debug.Log(all + self.ToString() + " in Lethal Water");
 
-            data.liz["PreMeltedCycle"] = cycleNumber.ToString();
-            if (UnityEngine.Random.Range(0, 100) >= ShadowOfOptions.melted_transformation_chance.Value)
+
+            if (Chance(self, ShadowOfOptions.melted_transformation_chance.Value, "Melted Transformation due to swimming in Lethal Water"))
             {
                 return;
             }

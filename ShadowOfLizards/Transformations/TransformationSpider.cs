@@ -126,9 +126,9 @@ internal class TransformationSpider
     {
         try
         {
-            if (self.grasps[0].grabbed is BigSpider spid && (spid.abstractCreature.creatureTemplate.type == CreatureTemplate.Type.BigSpider && UnityEngine.Random.Range(0, 100) < ShadowOfOptions.spider_regrowth_chance.Value * 0.5
-                || spid.abstractCreature.creatureTemplate.type == CreatureTemplate.Type.SpitterSpider && UnityEngine.Random.Range(0, 100) < ShadowOfOptions.spider_regrowth_chance.Value
-                || (ModManager.DLCShared && spid.abstractCreature.creatureTemplate.type == DLCSharedEnums.CreatureTemplateType.MotherSpider && UnityEngine.Random.Range(0, 100) < ShadowOfOptions.spider_regrowth_chance.Value * 2)))
+            if (self.grasps[0].grabbed is BigSpider spid && (spid.abstractCreature.creatureTemplate.type == CreatureTemplate.Type.BigSpider && Chance(self, ShadowOfOptions.spider_regrowth_chance.Value * 0.5f, "Spider Regrowth by eating " + spid)
+                || spid.abstractCreature.creatureTemplate.type == CreatureTemplate.Type.SpitterSpider && Chance(self, ShadowOfOptions.spider_regrowth_chance.Value, "Spider Regrowth by eating " + spid)
+                || (ModManager.DLCShared && spid.abstractCreature.creatureTemplate.type == DLCSharedEnums.CreatureTemplateType.MotherSpider && Chance(self, ShadowOfOptions.spider_regrowth_chance.Value * 2f, "Spider Regrowth by eating " + spid))))
             {
                 if (ShadowOfOptions.debug_logs.Value)
                     Debug.Log(all + self.ToString() + " was made a Spider Mother due to eating " + self.grasps[0].grabbed);
@@ -138,8 +138,8 @@ internal class TransformationSpider
 
                 return;
             }
-            else if (ShadowOfOptions.eat_lizard.Value && liz != null && ((data2.transformation == "SpiderTransformation" && UnityEngine.Random.Range(0, 100) < ShadowOfOptions.spider_regrowth_chance.Value)
-                    || (data2.transformation == "Spider" && UnityEngine.Random.Range(0, 100) < ShadowOfOptions.spider_regrowth_chance.Value * 0.5)))
+            else if (ShadowOfOptions.eat_lizard.Value && liz != null && ((data2.transformation == "SpiderTransformation" && Chance(self, ShadowOfOptions.spider_regrowth_chance.Value * 0.5f, "Spider Regrowth by eating " + liz))
+                    || (data2.transformation == "Spider" && Chance(self, ShadowOfOptions.spider_regrowth_chance.Value * 0.5f, "Spider Regrowth by eating " + liz))))
             {
                 if (ShadowOfOptions.debug_logs.Value)
                     Debug.Log(all + self.ToString() + " was made a Spider Mother due to eating " + self.grasps[0].grabbed);

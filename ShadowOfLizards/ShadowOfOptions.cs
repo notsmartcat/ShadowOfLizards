@@ -12,14 +12,22 @@ public class ShadowOfOptions : OptionInterface
 
 
 
-    public static Configurable<bool> dynamic_cheat_death_chance = instance.config.Bind("dynamic_cheat_death_chance", true, 
+    public static Configurable<bool> dynamic_cheat_death = instance.config.Bind("dynamic_cheat_death", true, 
         new ConfigurableInfo("If turned On all Lizards will be given a Random Chance to Cheat Death when created which then will be further modified whwnever they, for example: lose limbs or gain stuff from Regrowth. If Off all Lizards will have the same Chance to Cheat Death. (Default = true)", null, "", new object[1] { "Dynamic Cheat Death" }));
 
     public static Configurable<int> cheat_death_chance = instance.config.Bind("cheat_death_chance", 0, 
         new ConfigurableInfo("If Dynamic Cheat Death is Off this is the Chance all Lizards have to Cheat Death. (0% = always dies, 100% = always cheats death) Otherwise this amount is added to the Dynamic Chance when a Lizard is Created. (Default = 0%)", null, "", new object[1] { "Base Chance to Cheat Death" }));
 
+    public static Configurable<bool> dynamic_cheat_death_kill = instance.config.Bind("dynamic_cheat_death_kill", true,
+    new ConfigurableInfo("If turned On Lizards will get the Points of creatures added to their Dynamic Death Chance. (Default = false)", null, "", new object[1] { "Dynamic Cheat Death Kill Points" }));
+
+
     public static Configurable<bool> debug_logs = instance.config.Bind("debug_logs", false, 
         new ConfigurableInfo("If turned On Messages that include a lot of info about Lizards will show up when you turn on Debug Logs, these will also appear in the 'consoleLog.txt' all logs from this mod start with 'ShadowOf:' for easy locating. (Default = false)", null, "", new object[1] { "Debug Logs" }));
+
+    public static Configurable<bool> chance_logs = instance.config.Bind("chance_logs", true,
+    new ConfigurableInfo("If turned On Messages that include exact chance numbers Lizards rolled compared to the target number to succed a check, these will also appear in the 'consoleLog.txt' all logs from this mod start with 'ShadowOf:' for easy locating. (Default = false)", null, "", new object[1] { "Debug Logs" }));
+
 
     public static Configurable<bool> valid_lizards = instance.config.Bind("valid_lizards", true, new ConfigurableInfo("If turned On only the Base-Game and Downpour Lizards will be affected by the mod to avoid any possible issues. (Default = true)", null, "", new object[1] { "Valid Lizards Only" }));
 
@@ -184,6 +192,9 @@ public class ShadowOfOptions : OptionInterface
     #region Physical
     public static Configurable<bool> blind = instance.config.Bind("blind", true, new ConfigurableInfo("If On Lizards can become permanently Blind, have their eyes scarred or Cut out. This changes Lizard eye sprites and might not work with modded lizards. (Default = true)", null, "", new object[1] { "Blinding" }));
 
+    public static Configurable<bool> distance_based_blind = instance.config.Bind("distance_based_blind", true, new ConfigurableInfo("If On the Chance to Blind will be multiplied in a Range from 0 to 2 depending on how far from the Lizard is from the Blinding Source. " +
+        "If Off the chance will not be multiplied by anything however it will only trigger if the Fkash is close enough to the Lizard. (Default = true)", null, "", new object[1] { "Distance Based Blinding Chance" }));
+
     public static Configurable<int> blind_chance = instance.config.Bind("blind_chance", 20, new ConfigurableInfo("Chance for Lizard's eyes to be permanently Blinded when a FlareBomb goes off too close to it. (Default = 20%)", 
         null, "", new object[1] { "Chance to Blind" }));
 
@@ -193,6 +204,10 @@ public class ShadowOfOptions : OptionInterface
 
 
     public static Configurable<bool> deafen = instance.config.Bind("deafen", true, new ConfigurableInfo("If On Lizards can become permanently Deaf when a Explosion goes off too close to it. (Default = true)", null, "", new object[1] { "Defening" }));
+
+    public static Configurable<bool> distance_based_deafen = instance.config.Bind("distance_based_deafen", true, new ConfigurableInfo("If On the Chance to Deafen will be multiplied in a Range from 0 to 2 depending on how far from the Lizard is from the Explosion. " +
+    "If Off the chance will not be multiplied by anything however it will only trigger if the Explosion is close enough to the Lizard. (Default = true)", null, "", new object[1] { "Distance Based Deafening Chance" }));
+
 
     public static Configurable<int> deafen_chance = instance.config.Bind("deafen_chance", 20, new ConfigurableInfo("Chance for Lizard's ears to be permanently Deafeaned. (Default = 20%)",
         null, "", new object[1] { "Chance to Deafen" }));
@@ -267,7 +282,7 @@ public class ShadowOfOptions : OptionInterface
 
         AddNewLine();
         AddBox();
-        AddCheckBox(dynamic_cheat_death_chance, (string)dynamic_cheat_death_chance.info.Tags[0]);
+        AddCheckBox(dynamic_cheat_death, (string)dynamic_cheat_death.info.Tags[0]);
         DrawCheckBoxes(ref Tabs[0]);
         AddSlider(cheat_death_chance, (string)cheat_death_chance.info.Tags[0], "0%", "100%");
         DrawSliders(ref Tabs[0]);
