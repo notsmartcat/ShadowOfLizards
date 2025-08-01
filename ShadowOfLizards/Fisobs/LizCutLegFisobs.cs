@@ -20,9 +20,9 @@ sealed class LizCutLegFisobs : Fisob
     {
         string[] array = saveData.CustomData.Split(';');
 
-        if (array.Length < 17)
+        if (array.Length < 18)
         {
-            array = new string[17];
+            array = new string[18];
         }
 
         return new LizCutLegAbstract(world, saveData.Pos, saveData.ID)
@@ -52,7 +52,9 @@ sealed class LizCutLegFisobs : Fisob
 
             LizBreed = string.IsNullOrEmpty(array[16]) ? "GreenLizard" : array[16],
 
-            blackSalamander = bool.TryParse(array[17], out bool bs) && bs
+            blackSalamander = bool.TryParse(array[17], out bool bs) && bs,
+
+            canCamo = bool.TryParse(array[18], out bool cc) && cc
         };
     }
 

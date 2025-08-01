@@ -19,6 +19,7 @@ internal sealed class LizCutLeg : PlayerCarryableItem, IDrawable, IPlayerEdible
     public Vector2 lastRotation;
     public Vector2? setRotation;
 
+    public int ElectricColorTimer = 0;
 
     public override float ThrowPowerFactor => 1f;
 
@@ -35,20 +36,16 @@ internal sealed class LizCutLeg : PlayerCarryableItem, IDrawable, IPlayerEdible
     public const int TotalSprites = 3;
     public const int SpriteJawStart = 2;
 
-    public List<string> HeadSprites;
-
-    public float jawRotation;
-    public float lastJawRotation;
+    //public float jawRotation;
+    //public float lastJawRotation;
 
     public const float MaxJawRotation = 100f;
     public const float JawOpenSensitivity = 20f;
     public const float JawVelocityOverOpenSensitivity = 2.5f;
 
-    public List<int> headSpriteNum = new List<int> { 9, 16, 16, 10, 10, 10, 14, 15 };
+    public List<int> headSpriteNum = new() { 9, 16, 16, 10, 10, 10, 14, 15 };
 
-    public List<string> HeadSpritess;
-
-    public Color whiteCamoColor = new Color(0f, 0f, 0f);
+    public Color whiteCamoColor = new(0f, 0f, 0f);
     public Color whitePickUpColor;
     private float whiteCamoColorAmount = -1f;
 
@@ -56,9 +53,6 @@ internal sealed class LizCutLeg : PlayerCarryableItem, IDrawable, IPlayerEdible
     public float baseLastBlink;
 
     public bool everySecondDraw;
-
-
-    private Color ivarBodyColor = new Color(0f, 0f, 0f);
 
     public AbstractConsumable AbstrConsumable
     {
@@ -122,6 +116,8 @@ internal sealed class LizCutLeg : PlayerCarryableItem, IDrawable, IPlayerEdible
     {
         room.AddObject(new BloodParticle(bodyChunks[0].pos, new Vector2(Random.Range(-3f, 3f), Random.Range(5f, 10f)), BloodColour, Abstr.LizBreed, null, 2.3f));
     }
+
+    #region Colours
     public Color effectColor
     {
         get
@@ -138,7 +134,7 @@ internal sealed class LizCutLeg : PlayerCarryableItem, IDrawable, IPlayerEdible
     {
         if (Abstr.LizBreed == "SpitLizard" || Abstr.LizBreed == "ZoopLizard")
         {
-            return ivarBodyColor;
+            return LizBodyColour;
         }
         if (Abstr.LizBreed == "WhiteLizard")
         {
@@ -250,6 +246,12 @@ internal sealed class LizCutLeg : PlayerCarryableItem, IDrawable, IPlayerEdible
         return Color.Lerp(col, whiteCamoColor, whiteCamoColorAmount);
     }
 
+    Color ElectricColor(Color col)
+    {
+        return Color.Lerp(col, new Color(0.7f, 0.7f, 1f), (float)ElectricColorTimer / 50f);
+    }
+    #endregion
+
     public void InitiateSprites(SpriteLeaser sLeaser, RoomCamera rCam)
     {
         LizBodyColour = new Color(Abstr.LizBodyColourR, Abstr.LizBodyColourG, Abstr.LizBodyColourB);
@@ -293,6 +295,11 @@ internal sealed class LizCutLeg : PlayerCarryableItem, IDrawable, IPlayerEdible
             ApplyPalette(sLeaser, rCam, rCam.currentPalette);
         }
 
+        if (ElectricColorTimer > 0)
+        {
+            ElectricColorTimer--;
+        }
+
         Vector2 pos = Vector2.Lerp(firstChunk.lastPos, firstChunk.pos, timeStacker);
         float num = Mathf.InverseLerp(305f, 380f, timeStacker);
         pos.y -= 20f * Mathf.Pow(num, 3f);
@@ -311,6 +318,23 @@ internal sealed class LizCutLeg : PlayerCarryableItem, IDrawable, IPlayerEdible
             sLeaser.sprites[i].scaleX = num2 * Abstr.scaleX;
         }
 
+        if (Abstr.LizBreed == "WhiteLizard")
+        {
+            sLeaser.sprites[0].color = new Color(1f, 1f, 1f);
+        }
+        else if (Abstr.LizBreed == "SpitLizard" || Abstr.LizBreed == "ZoopLizard")
+        {
+            sLeaser.sprites[0].color = LizBodyColour;
+        }
+        else if (Abstr.LizBreed == "Salamander")
+        {
+            sLeaser.sprites[0].color = SalamanderColor;
+        }
+        else
+        {
+            sLeaser.sprites[0].color = palette.blackColor;
+        }
+
         if (Abstr.LizBreed == "WhiteLizard" || Abstr.LizBreed == "CyanLizard" || Abstr.LizBreed == "IndigoLizard")
         {
             sLeaser.sprites[1].alpha = Mathf.Sin(whiteCamoColorAmount * 3.1415927f) * 0.3f;
@@ -326,22 +350,7 @@ internal sealed class LizCutLeg : PlayerCarryableItem, IDrawable, IPlayerEdible
             sLeaser.sprites[1].alpha = Mathf.Lerp(1f, 0.3f, Mathf.Abs(Mathf.Lerp(lastRotation.x, rotation.x, timeStacker)));
             sLeaser.sprites[1].color = effectColor;
         }
-        if (Abstr.LizBreed == "WhiteLizard")
-        {
-            sLeaser.sprites[0].color = new Color(1f, 1f, 1f);
-        }
-        else if (Abstr.LizBreed == "SpitLizard" || Abstr.LizBreed == "ZoopLizard")
-        {
-            sLeaser.sprites[0].color = ivarBodyColor;
-        }
-        else if (Abstr.LizBreed == "Salamander")
-        {
-            sLeaser.sprites[0].color = SalamanderColor;
-        }
-        else
-        {
-            sLeaser.sprites[0].color = palette.blackColor;
-        }
+
 
         if (Abstr.canCamo)
         {
@@ -349,12 +358,23 @@ internal sealed class LizCutLeg : PlayerCarryableItem, IDrawable, IPlayerEdible
             sLeaser.sprites[1].color = Camo(sLeaser.sprites[1].color);
         }
 
+        if (ElectricColorTimer > 0)
+        {
+            sLeaser.sprites[1].color = ElectricColor(sLeaser.sprites[1].color);
+        }
+
         if (Abstr.LizBloodColourR != -1f)
+        {
             sLeaser.sprites[2].color = BloodColour;
+        }
+        else
+        {
+            sLeaser.sprites[2].color = ElectricColor(sLeaser.sprites[2].color);
+        }
 
         if (flicker > SourceCodeLizardsFlickerThreshold)
         {
-            flickerColor = UnityEngine.Random.value;
+            flickerColor = Random.value;
         }
 
         if (blink > 0 && Random.value < 0.5f)
@@ -365,6 +385,11 @@ internal sealed class LizCutLeg : PlayerCarryableItem, IDrawable, IPlayerEdible
         if (slatedForDeletetion || room != rCam.room)
         {
             sLeaser.CleanSpritesAndRemove();
+        }
+
+        if (UnityEngine.Random.value > 0.025f)
+        {
+            everySecondDraw = !everySecondDraw;
         }
     }
 
@@ -389,7 +414,7 @@ internal sealed class LizCutLeg : PlayerCarryableItem, IDrawable, IPlayerEdible
         }
         else if (Abstr.LizBreed == "SpitLizard" || Abstr.LizBreed == "ZoopLizard")
         {
-            sLeaser.sprites[0].color = ivarBodyColor;
+            sLeaser.sprites[0].color = LizBodyColour;
         }
         else if (Abstr.LizBreed == "Salamander")
         {

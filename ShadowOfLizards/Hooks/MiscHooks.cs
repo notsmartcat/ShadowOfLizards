@@ -5,6 +5,7 @@ using static ShadowOfLizards.ShadowOfLizards;
 using Menu;
 using MoreSlugcats;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace ShadowOfLizards;
 
@@ -17,6 +18,7 @@ internal class MiscHooks
         On.SlugcatStats.NourishmentOfObjectEaten += LizardLegEaten;
 
         On.Spear.HitSomething += SpearHit;
+        On.DartMaggot.Update += DartMaggotUpdate;
 
         On.FlareBomb.Update += FlareBombUpdate;
         On.Explosion.Update += ExplosionUpdate;
@@ -32,6 +34,10 @@ internal class MiscHooks
 
         On.Spark.DrawSprites += SparkDrawSprites;
         On.StationaryEffect.DrawSprites += StationaryEffectDrawSprites;
+
+        On.Creature.Grab += CreatureGrab;
+
+        On.MoreSlugcats.SingularityBomb.Explode += SingularityBombExplode;
     }
 
     static void GasLeak(On.LizardJumpModule.orig_Update orig, LizardJumpModule self)
@@ -78,16 +84,25 @@ internal class MiscHooks
         return orig.Invoke(slugcatIndex, eatenobject);
     }
 
-    static bool SpearHit(On.Spear.orig_HitSomething orig, global::Spear self, SharedPhysics.CollisionResult result, bool eu)
+    static bool SpearHit(On.Spear.orig_HitSomething orig, Spear self, SharedPhysics.CollisionResult result, bool eu)
     {
-        if (result.chunk != null && result.chunk.owner != null && result.chunk.owner is Lizard liz && ((lizardGoreStorage.TryGetValue(liz.abstractCreature, out LizardGoreData goreData) && !goreData.availableBodychunks.Contains(result.chunk.index))
-            || (lizardstorage.TryGetValue(liz.abstractCreature, out LizardData data) && !data.availableBodychunks.Contains(result.chunk.index))))
+        if (ShadowOfOptions.cut_in_half.Value && result.chunk != null && result.chunk.owner != null && result.chunk.owner is Lizard liz && lizardstorage.TryGetValue(liz.abstractCreature, out LizardData data) && !data.availableBodychunks.Contains(result.chunk.index))
         {
             return false;
         }
         else
         {
             return orig(self, result, eu);
+        }
+    }
+
+    static void DartMaggotUpdate(On.DartMaggot.orig_Update orig, DartMaggot self, bool eu)
+    {
+        orig(self, eu);
+
+        if (self.mode == DartMaggot.Mode.StuckInChunk && self.stuckInChunk != null && self.stuckInChunk.owner != null && self.stuckInChunk.owner is Lizard liz && lizardstorage.TryGetValue(liz.abstractCreature, out LizardData data) && !data.availableBodychunks.Contains(self.stuckInChunk.index))
+        {
+            self.Unstuck();
         }
     }
 
@@ -272,12 +287,16 @@ internal class MiscHooks
 
     static void CreatureUpdate(On.Creature.orig_Update orig, Creature self, bool eu)
     {
-        orig(self, eu);
-
         if (self == null || self is Lizard || self.grasps == null || self.grasps[0] == null || self.grasps[0].grabbed == null || self.grasps[0].grabbed is not Lizard liz || !lizardstorage.TryGetValue(liz.abstractCreature, out LizardData data2))
         {
+            orig(self, eu);
             return;
         }
+
+        if(liz.dead)
+            PreViolenceCheck(liz, data2);
+
+        orig(self, eu);
 
         try
         {
@@ -298,6 +317,9 @@ internal class MiscHooks
                     {
                         UnderwaterDen(data2, liz);
                     }
+
+                    if (liz.dead)
+                        PostViolenceCheck(liz, data2, "Den", self);
                 }
             }
             else
@@ -351,10 +373,12 @@ internal class MiscHooks
         {
             IconSymbol.IconSymbolData icon = CreatureSymbol.SymbolDataFromCreature(victim.abstractCreature);
 
-            data.cheatDeathChance += KillScore(icon);
+            int score = (victim is Player) ? KillScore(icon) * 10 : KillScore(icon);
+
+            data.cheatDeathChance += score;
 
             if (ShadowOfOptions.debug_logs.Value)
-                Debug.Log(all + killer + " killed " + victim + " and gained it's score of " + KillScore(icon));
+                Debug.Log(all + killer + " killed " + victim + " and gained it's score of " + score);
         }
 
         static int KillScore(IconSymbol.IconSymbolData iconData)
@@ -425,6 +449,51 @@ internal class MiscHooks
         else if (self.lizard.lizard.Template.type == CreatureTemplate.Type.WhiteLizard && data.liz.TryGetValue("CanCamo", out string CanCamo2) && CanCamo2 == "False")
         {
             sLeaser.sprites[0].color = LizardGraphicsHooks.WhiteNoCamoHeadColor(self.lizard, timeStacker);
+        }
+    }
+
+    static bool CreatureGrab(On.Creature.orig_Grab orig, Creature self, PhysicalObject obj, int graspUsed, int chunkGrabbed, Creature.Grasp.Shareability shareability, float dominance, bool overrideEquallyDominant, bool pacifying)
+    {
+        if (self.grasps != null && obj is Lizard liz && lizardstorage.TryGetValue(liz.abstractCreature, out LizardData data) && !data.availableBodychunks.Contains(chunkGrabbed))
+        {
+            return false;
+        }
+        return orig(self, obj, graspUsed, chunkGrabbed, shareability, dominance, overrideEquallyDominant, pacifying);
+    }
+
+    static void SingularityBombExplode(On.MoreSlugcats.SingularityBomb.orig_Explode orig, SingularityBomb self)
+    {
+        if (ShadowOfOptions.dynamic_cheat_death.Value)
+        {
+            for (int m = 0; m < self.room.physicalObjects.Length; m++)
+            {
+                for (int n = 0; n < self.room.physicalObjects[m].Count; n++)
+                {
+                    if (self.room.physicalObjects[m][n].abstractPhysicalObject.rippleLayer == self.abstractPhysicalObject.rippleLayer || self.room.physicalObjects[m][n].abstractPhysicalObject.rippleBothSides || self.abstractPhysicalObject.rippleBothSides)
+                    {
+                        if (self.room.physicalObjects[m][n] is Lizard liz && Custom.Dist(self.room.physicalObjects[m][n].firstChunk.pos, self.firstChunk.pos) < 350f && lizardstorage.TryGetValue(liz.abstractCreature, out LizardData data))
+                        {
+                            data.cheatDeathChance -= 100;
+                        }
+                    }
+                }
+            }
+        }
+
+        orig(self);
+
+        for (int m = 0; m < self.room.physicalObjects.Length; m++)
+        {
+            for (int n = 0; n < self.room.physicalObjects[m].Count; n++)
+            {
+                if (self.room.physicalObjects[m][n].abstractPhysicalObject.rippleLayer == self.abstractPhysicalObject.rippleLayer || self.room.physicalObjects[m][n].abstractPhysicalObject.rippleBothSides || self.abstractPhysicalObject.rippleBothSides)
+                {
+                    if (self.room.physicalObjects[m][n] is Lizard && Custom.Dist(self.room.physicalObjects[m][n].firstChunk.pos, self.firstChunk.pos) < 350f)
+                    {
+                        Eviscerate(self.room.physicalObjects[m][n] as Lizard);
+                    }
+                }
+            }
         }
     }
 }

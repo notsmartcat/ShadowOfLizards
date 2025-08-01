@@ -8,11 +8,11 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using UnityEngine;
 using static RoomCamera;
-
+using LizardCosmetics;
 namespace ShadowOfLizards;
 
 [BepInPlugin("notsmartcat.shadowoflizards", "Shadow of Lizards", "1.0.0")]
-internal class ShadowOfLizards : BaseUnityPlugin
+public class ShadowOfLizards : BaseUnityPlugin
 {
     #region Classes
     public class LizardData
@@ -20,7 +20,7 @@ internal class ShadowOfLizards : BaseUnityPlugin
         public bool Beheaded = false;
 
         //Dictionaty stores most of the important values. they are first set inside the "NewLizard" Hook
-        public Dictionary<string, string> liz;
+        public Dictionary<string, string> liz = new();
 
         //Stored inside the LizardHraphics Hook and used outside if LizardGraphics
         public SpriteLeaser sLeaser;
@@ -46,6 +46,8 @@ internal class ShadowOfLizards : BaseUnityPlugin
         //Used to determine which BodyChunks belong to the Lizard In case the Lizard is Cut in Half
         public List<int> availableBodychunks = new() { 0, 1, 2 };
 
+        public List<int> cosmeticBodychunks = new() { 0, 1, 2 };
+
         //Transformation Related Values
 
         //This Ranges from the first stage oka "Melted" to the last stage aka "MeltedTransformation"
@@ -69,12 +71,12 @@ internal class ShadowOfLizards : BaseUnityPlugin
         public int cheatDeathChance = 0;
 
         public List<Spear> spearList = new();
-    }
-    public class LizardGoreData
-    {
-        public LizardData origLizardData;
 
-        public List<int> availableBodychunks = new();
+        public bool actuallyDead = false;
+
+        public bool isGoreHalf = false;
+
+        public bool wasDead = false;
     }
     public class EliteLizardData
     {
@@ -99,6 +101,8 @@ internal class ShadowOfLizards : BaseUnityPlugin
     {
         public int EyesSprites;
 
+        public int CutHalfSprites;
+
         public List<int> SpiderLeg = new() { 0, 0, 0, 0, 0, 0 };
 
         public float legLength = 1;
@@ -111,6 +115,8 @@ internal class ShadowOfLizards : BaseUnityPlugin
         public float lightFlash;
 
         public LightSource lightSource;
+
+        public float shockCharge = 0;
     }
     public class SpiderAsLeg
     {
@@ -142,7 +148,6 @@ internal class ShadowOfLizards : BaseUnityPlugin
 
     #region ConditionalWeakTable
     public static readonly ConditionalWeakTable<AbstractCreature, LizardData> lizardstorage = new();
-    public static readonly ConditionalWeakTable<AbstractCreature, LizardGoreData> lizardGoreStorage = new();
     public static readonly ConditionalWeakTable<LizardGraphics, GraphicsData> graphicstorage = new();
     public static readonly ConditionalWeakTable<Spider, SpiderAsLeg> SpidLeg = new();
     public static readonly ConditionalWeakTable<LizardSpit, ElectricSpit> ShockSpit = new();
@@ -157,7 +162,7 @@ internal class ShadowOfLizards : BaseUnityPlugin
 
     public static string all = "ShadowOf: ";
 
-    public bool init = false;
+    private bool init = false;
 
     public static bool bloodModCheck = false;
 
@@ -168,6 +173,8 @@ internal class ShadowOfLizards : BaseUnityPlugin
     public static List<string> defaultWaterBreather = new() { "Salamander", "EelLizard" };
 
     internal static new ManualLogSource Logger;
+
+    public static ShadowOfOptions optionsMenuInstance;
     #endregion
 
     public void OnEnable()
@@ -223,7 +230,8 @@ internal class ShadowOfLizards : BaseUnityPlugin
                 if (ModManager.Watcher)
                     validTongues.Add("IndigoLizard");
             }
-            MachineConnector.SetRegisteredOI("notsmartcat.shadowoflizards", ShadowOfOptions.instance);
+            optionsMenuInstance = new ShadowOfOptions(this);
+            MachineConnector.SetRegisteredOI("notsmartcat.shadowoflizards", optionsMenuInstance);
         }
         catch (Exception e) { Logger.LogError(e); }
 
@@ -290,11 +298,13 @@ internal class ShadowOfLizards : BaseUnityPlugin
 
                 if (self != null && self.room != null && self.room.game != null && self.room.game.devToolsActive && Input.GetKey("m"))
                 {
-                    foreach (AbstractCreature creature in self.abstractCreature.Room.creatures)
+                    List<AbstractCreature> list = new(self.abstractCreature.Room.creatures);
+
+                    foreach (AbstractCreature creature in list)
                     {
-                        if (creature.realizedCreature != null && creature.realizedCreature is Lizard liz)
+                        if (creature.realizedCreature != null && creature.realizedCreature is Lizard liz && lizardstorage.TryGetValue(liz.abstractCreature, out LizardData data))
                         {
-                            if (lizardstorage.TryGetValue(liz.abstractCreature, out LizardData data) && data.liz.TryGetValue("Tongue", out _) && liz.lizardParams.tongue)
+                            if (ShadowOfOptions.tongue_ability.Value && data.liz.TryGetValue("Tongue", out _) && liz.lizardParams.tongue)
                             {
                                 if (ShadowOfOptions.debug_logs.Value)
                                     Debug.Log(all + liz.ToString() + "'s Mouth Hit by Debug");
@@ -313,12 +323,18 @@ internal class ShadowOfLizards : BaseUnityPlugin
                                 data.liz["CanSpit"] = "False";
                             }
 
-                            if (data.liz.TryGetValue("EyeLeft", out _) && data.liz["EyeLeft"] == "Normal")
+                            if (ShadowOfOptions.blind.Value && data.liz.TryGetValue("EyeLeft", out _) && data.liz["EyeLeft"] == "Normal")
                             {
                                 data.liz["EyeLeft"] = "Cut";
                                 self.Blind(5);
 
                                 EyeCut(liz, "EyeLeft");
+                            }
+
+                            if (ShadowOfOptions.cut_in_half.Value && data.availableBodychunks.Contains(1) && data.availableBodychunks.Contains(2))
+                            {
+                                CutInHalf(liz, data, liz.bodyChunks[1]);
+                                liz.Die();
                             }
                         }
                     }
@@ -329,233 +345,235 @@ internal class ShadowOfLizards : BaseUnityPlugin
     }
 
     #region ViolenceCheck
-    public static void PreViolenceCheck(Creature receiver)
+    public static void PreViolenceCheck(Lizard receiver, LizardData data)
     {
-        storedCreatureWasDead = receiver == null || receiver.dead;
+        data.wasDead = receiver == null || receiver.dead;
     }
 
-    public static void PostViolenceCheck(Lizard receiver, string killType, Creature sender = null)
+    public static void PostViolenceCheck(Lizard receiver, LizardData data, string killType, Creature sender = null)
     {
-        if (receiver != null && receiver.abstractCreature != null && storedCreatureWasDead && receiver.dead)
+        if (receiver != null && data != null && receiver.abstractCreature != null && !data.wasDead && receiver.dead)
         {
-            if (lizardstorage.TryGetValue(receiver.abstractCreature, out LizardData data) && data.lastDamageType != "Melted" && killType != "Explosion")
+            if (data.lastDamageType != "Melted" && killType != "Explosion")
             {
                 data.lastDamageType = killType;
             }
-            ViolenceCheck(receiver, killType, sender);
+
+            ViolenceCheck(receiver, data, killType, sender);
+        }
+
+        if (receiver != null && data != null && receiver.abstractCreature != null && !data.actuallyDead && data.wasDead && receiver.dead && killType == "Den")
+        {
+            receiver.Die();
         }
     }
 
-    public static void ViolenceCheck(Lizard receiver, string killType, Creature sender = null)
+    public static void ViolenceCheck(Lizard receiver, LizardData data, string killType, Creature sender = null)
     {
         if (receiver == null || receiver.abstractCreature == null || killType == null)
         {
             return;
         }
-
-        if (lizardstorage.TryGetValue(receiver.abstractCreature, out LizardData data))
+        if (killType == "Bleed")
         {
-            if (killType == "Bleed")
+            if (ShadowOfOptions.debug_logs.Value)
+                Debug.Log(all + receiver.ToString() + " died by Bleed. Bleed death is Converted to last damage taken: '" + data.lastDamageType + "'");
+
+            ViolenceCheck(receiver, data, data.lastDamageType, sender);
+        }
+
+        if (data.transformation == "Null" || data.transformation == "Spider" || data.transformation == "Electric")
+        {
+            if (ShadowOfOptions.spider_transformation.Value && sender != null && data.transformation == "Null")
             {
-                if (ShadowOfOptions.debug_logs.Value)
-                    Debug.Log(all + receiver.ToString() + " died by Bleed. Bleed death is Converted to last damage taken: '" + data.lastDamageType + "'");
+                CreatureTemplate.Type type = sender.abstractCreature.creatureTemplate.type;
 
-                ViolenceCheck(receiver, data.lastDamageType, sender);
-            }
-
-            if (data.transformation == "Null" || data.transformation == "Spider" || data.transformation == "Electric")
-            {
-                if (ShadowOfOptions.spider_transformation.Value && sender != null && (killType == "Stab" || killType == "Blunt" || killType == "Bite") && data.transformation == "Null")
-                {
-                    CreatureTemplate.Type type = sender.abstractCreature.creatureTemplate.type;
-
-                    if (type == CreatureTemplate.Type.Spider && Chance(receiver, ShadowOfOptions.spider_transformation_chance.Value * 0.25f, "Spider Transformation after being killed by " + sender)
-                        || type == CreatureTemplate.Type.BigSpider && Chance(receiver, ShadowOfOptions.spider_transformation_chance.Value * 0.5f, "Spider Transformation after being killed by " + sender)
-                        || type == CreatureTemplate.Type.SpitterSpider && Chance(receiver, ShadowOfOptions.spider_transformation_chance.Value, "Spider Transformation after being killed by " + sender)
-                        || ModManager.DLCShared && type == DLCSharedEnums.CreatureTemplateType.MotherSpider && Chance(receiver, ShadowOfOptions.spider_transformation_chance.Value * 1.5f, "Spider Transformation after being killed by " + sender)
-                        || sender is Lizard liz && lizardstorage.TryGetValue(liz.abstractCreature, out LizardData data2) && (data2.transformation == "SpiderTransformation" && Chance(receiver, ShadowOfOptions.spider_transformation_chance.Value, "Spider Transformation after being killed by " + sender)
-                        || data2.transformation == "Spider" && Chance(receiver, ShadowOfOptions.spider_transformation_chance.Value * 0.5f, "Spider Transformation after being killed by " + sender)))
-                    {
-                        if (ShadowOfOptions.debug_logs.Value)
-                            Debug.Log(all + receiver.ToString() + " was made a Spider Mother due to being killed by " + sender);
-
-                        data.transformation = "Spider";
-                        data.transformationTimer = receiver.abstractCreature.world.game.IsStorySession ? receiver.abstractCreature.world.game.GetStorySession.saveState.cycleNumber : 1;
-
-                        return;
-                    }
-                }
-
-                if (ShadowOfOptions.melted_transformation.Value && killType == "Melted" && Chance(receiver, ShadowOfOptions.melted_transformation_chance.Value, "Melted Transformation after Dying to Acid"))
+                if (type == CreatureTemplate.Type.Spider && Chance(receiver, ShadowOfOptions.spider_transformation_chance.Value * 0.25f, "Spider Transformation after being killed by " + sender)
+                    || type == CreatureTemplate.Type.BigSpider && Chance(receiver, ShadowOfOptions.spider_transformation_chance.Value * 0.5f, "Spider Transformation after being killed by " + sender)
+                    || type == CreatureTemplate.Type.SpitterSpider && Chance(receiver, ShadowOfOptions.spider_transformation_chance.Value, "Spider Transformation after being killed by " + sender)
+                    || ModManager.DLCShared && type == DLCSharedEnums.CreatureTemplateType.MotherSpider && Chance(receiver, ShadowOfOptions.spider_transformation_chance.Value * 1.5f, "Spider Transformation after being killed by " + sender)
+                    || sender is Lizard liz && lizardstorage.TryGetValue(liz.abstractCreature, out LizardData data2) && (data2.transformation == "SpiderTransformation" && Chance(receiver, ShadowOfOptions.spider_transformation_chance.Value, "Spider Transformation after being killed by " + sender)
+                    || data2.transformation == "Spider" && Chance(receiver, ShadowOfOptions.spider_transformation_chance.Value * 0.5f, "Spider Transformation after being killed by " + sender)))
                 {
                     if (ShadowOfOptions.debug_logs.Value)
-                        Debug.Log(all + receiver.ToString() + " was made Melted due to dying to Acid");
+                        Debug.Log(all + receiver.ToString() + " was made a Spider Mother due to being killed by " + sender);
 
-                    data.transformation = "Melted";
+                    data.transformation = "Spider";
                     data.transformationTimer = receiver.abstractCreature.world.game.IsStorySession ? receiver.abstractCreature.world.game.GetStorySession.saveState.cycleNumber : 1;
 
-                    if (!data.liz.TryGetValue("MeltedR", out string _))
-                    {
-                        if (sender != null && sender is Lizard liz && lizardstorage.TryGetValue(liz.abstractCreature, out LizardData data2))
-                        {
-                            data.liz["MeltedR"] = data2.liz["MeltedR"];
-                            data.liz["MeltedG"] = data2.liz["MeltedG"];
-                            data.liz["MeltedB"] = data2.liz["MeltedB"];
-                        }
-                        else if (receiver.room.waterObject != null && receiver.room.waterObject.WaterIsLethal)
-                        {
-                            data.liz["MeltedR"] = data.rCam.currentPalette.waterColor1.r.ToString();
-                            data.liz["MeltedG"] = data.rCam.currentPalette.waterColor1.g.ToString();
-                            data.liz["MeltedB"] = data.rCam.currentPalette.waterColor1.b.ToString();
-                        }
-                        else
-                        {
-                            data.liz["MeltedR"] = "0.4078431";
-                            data.liz["MeltedG"] = "0.5843138";
-                            data.liz["MeltedB"] = "0.1843137";
-                        }
-                    }
-                    else
-                    {
-                        if (sender != null && sender is Lizard liz && lizardstorage.TryGetValue(liz.abstractCreature, out LizardData data2))
-                        {
-                            data.liz["MeltedR"] = data2.liz["MeltedR"];
-                            data.liz["MeltedG"] = data2.liz["MeltedG"];
-                            data.liz["MeltedB"] = data2.liz["MeltedB"];
-                        }
-                        else if (receiver.room.waterObject != null && receiver.room.waterObject.WaterIsLethal)
-                        {
-                            data.liz["MeltedR"] = data.rCam.currentPalette.waterColor1.r.ToString();
-                            data.liz["MeltedG"] = data.rCam.currentPalette.waterColor1.g.ToString();
-                            data.liz["MeltedB"] = data.rCam.currentPalette.waterColor1.b.ToString();
-                        }
-                        else
-                        {
-                            data.liz["MeltedR"] = "0.4078431";
-                            data.liz["MeltedG"] = "0.5843138";
-                            data.liz["MeltedB"] = "0.1843137";
-                        }
-                    }
-
                     return;
                 }
+            }
 
-                if (ShadowOfOptions.electric_transformation.Value && killType == "Electric" && Chance(receiver, ShadowOfOptions.electric_transformation_chance.Value, "Electric Transformation after Dying to Electricity"))
+            if (ShadowOfOptions.melted_transformation.Value && killType == "Melted" && Chance(receiver, ShadowOfOptions.melted_transformation_chance.Value, "Melted Transformation after Dying to Acid"))
+            {
+                if (ShadowOfOptions.debug_logs.Value)
+                    Debug.Log(all + receiver.ToString() + " was made Melted due to dying to Acid");
+
+                data.transformation = "Melted";
+                data.transformationTimer = receiver.abstractCreature.world.game.IsStorySession ? receiver.abstractCreature.world.game.GetStorySession.saveState.cycleNumber : 1;
+
+                if (!data.liz.TryGetValue("MeltedR", out string _))
                 {
-                    if (data.transformation == "Electric")
+                    if (sender != null && sender is Lizard liz && lizardstorage.TryGetValue(liz.abstractCreature, out LizardData data2))
                     {
-                        data.transformationTimer++;
+                        data.liz["MeltedR"] = data2.liz["MeltedR"];
+                        data.liz["MeltedG"] = data2.liz["MeltedG"];
+                        data.liz["MeltedB"] = data2.liz["MeltedB"];
+                    }
+                    else if (receiver.room.waterObject != null && receiver.room.waterObject.WaterIsLethal)
+                    {
+                        data.liz["MeltedR"] = data.rCam.currentPalette.waterColor1.r.ToString();
+                        data.liz["MeltedG"] = data.rCam.currentPalette.waterColor1.g.ToString();
+                        data.liz["MeltedB"] = data.rCam.currentPalette.waterColor1.b.ToString();
                     }
                     else
                     {
-                        if (ShadowOfOptions.debug_logs.Value)
-                            Debug.Log(all + receiver.ToString() + " was made Electric due to dying to Electricity");
-
-                        data.transformation = "Electric";
-                        data.transformationTimer = 1;
+                        data.liz["MeltedR"] = "0.4078431";
+                        data.liz["MeltedG"] = "0.5843138";
+                        data.liz["MeltedB"] = "0.1843137";
                     }
-                    return;
                 }
-            }
+                else
+                {
+                    if (sender != null && sender is Lizard liz && lizardstorage.TryGetValue(liz.abstractCreature, out LizardData data2))
+                    {
+                        data.liz["MeltedR"] = data2.liz["MeltedR"];
+                        data.liz["MeltedG"] = data2.liz["MeltedG"];
+                        data.liz["MeltedB"] = data2.liz["MeltedB"];
+                    }
+                    else if (receiver.room.waterObject != null && receiver.room.waterObject.WaterIsLethal)
+                    {
+                        data.liz["MeltedR"] = data.rCam.currentPalette.waterColor1.r.ToString();
+                        data.liz["MeltedG"] = data.rCam.currentPalette.waterColor1.g.ToString();
+                        data.liz["MeltedB"] = data.rCam.currentPalette.waterColor1.b.ToString();
+                    }
+                    else
+                    {
+                        data.liz["MeltedR"] = "0.4078431";
+                        data.liz["MeltedG"] = "0.5843138";
+                        data.liz["MeltedB"] = "0.1843137";
+                    }
+                }
 
-            if (!(killType == "Fell"))
-            {
                 return;
             }
 
-            List<string> fallList = new();
-
-            if (ShadowOfOptions.tongue_ability.Value)
-                fallList.Add("Tongue");
-
-            if (ShadowOfOptions.jump_ability.Value)
-                fallList.Add("Jump");
-
-            if (ShadowOfOptions.climb_ability.Value)
+            if (ShadowOfOptions.electric_transformation.Value && killType == "Electric" && Chance(receiver, ShadowOfOptions.electric_transformation_chance.Value, "Electric Transformation after Dying to Electricity"))
             {
-                fallList.Add("ClimbWall");
-                fallList.Add("ClimbCeiling");
-            }
-
-
-            if (fallList.Count == 0)
-            {
-                return;
-            }
-
-            switch (fallList[UnityEngine.Random.Range(0, fallList.Count)])
-            {
-                case "tongue":
-                    if (receiver.tongue == null)
-                    {
-                        if (ShadowOfOptions.debug_logs.Value)
-                            Debug.Log(all + receiver.ToString() + " grew a new Tongue due to Falling out of map");
-
-                        data.liz["Tongue"] = "get";
-                    }
-                    else if (ShadowOfOptions.debug_logs.Value)
-                    {
-                        Debug.Log(all + receiver.ToString() + " did not grow a new Tongue due to Falling out of map because it already has one");
-                    }
-                    break;
-                case "Jump":
-                    if (receiver.jumpModule == null)
-                    {
-                        if (ShadowOfOptions.debug_logs.Value)
-                            Debug.Log(all + receiver.ToString() + " has gained the Jump Ability due to Falling out of map");
-
-                        data.liz["CanJump"] = "True";
-                    }
-                    else if (ShadowOfOptions.debug_logs.Value)
-                    {
-                        Debug.Log(all + receiver.ToString() + " did not gain the Jump Ability due to Falling out of map because it already can Jump");
-                    }
-                    break;
-                case "ClimbWall":
-                    if (receiver.abstractCreature.creatureTemplate.pathingPreferencesTiles[(int)AItile.Accessibility.Wall].legality != PathCost.Legality.Allowed)
-                    {
-                        if (ShadowOfOptions.debug_logs.Value)
-                            Debug.Log(all + receiver.ToString() + " has gained the Climb Walls Ability due to Falling out of map");
-
-                        data.liz["CanClimbWall"] = "True";
-                    }
-                    else if (receiver.abstractCreature.creatureTemplate.pathingPreferencesTiles[(int)AItile.Accessibility.Climb].legality != PathCost.Legality.Allowed)
-                    {
-                        if (ShadowOfOptions.debug_logs.Value)
-                            Debug.Log(all + receiver.ToString() + " has gained the Climb Poles Ability due to Falling out of map");
-
-                        data.liz["CanClimbPole"] = "True";
-                    }
-                    else if (ShadowOfOptions.debug_logs.Value)
-                    {
-                        Debug.Log(all + receiver.ToString() + " did not gain either the Climb Walls or Climb Poles Ability due to Falling out of map because it already has both");
-                    }
-                break;
-                case "ClimbCeiling":
-                    if (receiver.abstractCreature.creatureTemplate.pathingPreferencesTiles[(int)AItile.Accessibility.Ceiling].legality != PathCost.Legality.Allowed)
-                    {
-                        if (ShadowOfOptions.debug_logs.Value)
-                            Debug.Log(all + receiver.ToString() + " has gained the Climb Ceiling Ability due to Falling out of map");
-
-                        data.liz["CanClimbCeiling"] = "True";
-                    }
-                    else if (receiver.abstractCreature.creatureTemplate.pathingPreferencesTiles[(int)AItile.Accessibility.Climb].legality != PathCost.Legality.Allowed)
-                    {
-                        if (ShadowOfOptions.debug_logs.Value)
-                            Debug.Log(all + receiver.ToString() + " has gained the Climb Poles Ability due to Falling out of map");
-
-                        data.liz["CanClimbPole"] = "True";
-                    }
-                    else if (ShadowOfOptions.debug_logs.Value)
-                    {
-                        Debug.Log(all + receiver.ToString() + " did not gain either the Climb Ceiling or Climb Poles Ability due to Falling out of map because it already has both");
-                    }
-                    break;
-                default:
+                if (data.transformation == "Electric")
+                {
+                    data.transformationTimer++;
+                }
+                else
+                {
                     if (ShadowOfOptions.debug_logs.Value)
-                        Debug.Log(all + receiver.ToString() + " did not gain any Ability due to Falling out of map because none if the related Abilities were turned on");
-                break;
+                        Debug.Log(all + receiver.ToString() + " was made Electric due to dying to Electricity");
+
+                    data.transformation = "Electric";
+                    data.transformationTimer = 1;
+                }
+                return;
             }
+        }
+
+        if (!(killType == "Fell"))
+        {
+            return;
+        }
+
+        List<string> fallList = new();
+
+        if (ShadowOfOptions.tongue_ability.Value)
+            fallList.Add("Tongue");
+
+        if (ShadowOfOptions.jump_ability.Value)
+            fallList.Add("Jump");
+
+        if (ShadowOfOptions.climb_ability.Value)
+        {
+            fallList.Add("ClimbWall");
+            fallList.Add("ClimbCeiling");
+        }
+
+
+        if (fallList.Count == 0)
+        {
+            return;
+        }
+
+        switch (fallList[UnityEngine.Random.Range(0, fallList.Count)])
+        {
+            case "tongue":
+                if (receiver.tongue == null)
+                {
+                    if (ShadowOfOptions.debug_logs.Value)
+                        Debug.Log(all + receiver.ToString() + " grew a new Tongue due to Falling out of map");
+
+                    data.liz["Tongue"] = "get";
+                }
+                else if (ShadowOfOptions.debug_logs.Value)
+                {
+                    Debug.Log(all + receiver.ToString() + " did not grow a new Tongue due to Falling out of map because it already has one");
+                }
+                break;
+            case "Jump":
+                if (receiver.jumpModule == null)
+                {
+                    if (ShadowOfOptions.debug_logs.Value)
+                        Debug.Log(all + receiver.ToString() + " has gained the Jump Ability due to Falling out of map");
+
+                    data.liz["CanJump"] = "True";
+                }
+                else if (ShadowOfOptions.debug_logs.Value)
+                {
+                    Debug.Log(all + receiver.ToString() + " did not gain the Jump Ability due to Falling out of map because it already can Jump");
+                }
+                break;
+            case "ClimbWall":
+                if (receiver.abstractCreature.creatureTemplate.pathingPreferencesTiles[(int)AItile.Accessibility.Wall].legality != PathCost.Legality.Allowed)
+                {
+                    if (ShadowOfOptions.debug_logs.Value)
+                        Debug.Log(all + receiver.ToString() + " has gained the Climb Walls Ability due to Falling out of map");
+
+                    data.liz["CanClimbWall"] = "True";
+                }
+                else if (receiver.abstractCreature.creatureTemplate.pathingPreferencesTiles[(int)AItile.Accessibility.Climb].legality != PathCost.Legality.Allowed)
+                {
+                    if (ShadowOfOptions.debug_logs.Value)
+                        Debug.Log(all + receiver.ToString() + " has gained the Climb Poles Ability due to Falling out of map");
+
+                    data.liz["CanClimbPole"] = "True";
+                }
+                else if (ShadowOfOptions.debug_logs.Value)
+                {
+                    Debug.Log(all + receiver.ToString() + " did not gain either the Climb Walls or Climb Poles Ability due to Falling out of map because it already has both");
+                }
+                break;
+            case "ClimbCeiling":
+                if (receiver.abstractCreature.creatureTemplate.pathingPreferencesTiles[(int)AItile.Accessibility.Ceiling].legality != PathCost.Legality.Allowed)
+                {
+                    if (ShadowOfOptions.debug_logs.Value)
+                        Debug.Log(all + receiver.ToString() + " has gained the Climb Ceiling Ability due to Falling out of map");
+
+                    data.liz["CanClimbCeiling"] = "True";
+                }
+                else if (receiver.abstractCreature.creatureTemplate.pathingPreferencesTiles[(int)AItile.Accessibility.Climb].legality != PathCost.Legality.Allowed)
+                {
+                    if (ShadowOfOptions.debug_logs.Value)
+                        Debug.Log(all + receiver.ToString() + " has gained the Climb Poles Ability due to Falling out of map");
+
+                    data.liz["CanClimbPole"] = "True";
+                }
+                else if (ShadowOfOptions.debug_logs.Value)
+                {
+                    Debug.Log(all + receiver.ToString() + " did not gain either the Climb Ceiling or Climb Poles Ability due to Falling out of map because it already has both");
+                }
+                break;
+            default:
+                if (ShadowOfOptions.debug_logs.Value)
+                    Debug.Log(all + receiver.ToString() + " did not gain any Ability due to Falling out of map because none if the related Abilities were turned on");
+                break;
         }
     }
     #endregion
@@ -583,11 +601,11 @@ internal class ShadowOfLizards : BaseUnityPlugin
         return false;
     }
 
-    public static bool HealthBasedChance(Lizard self, float chance)
+    public static bool HealthBasedChance(Lizard self, float chance, string whatFor)
     {
         int roll = UnityEngine.Random.Range(0, 100);
 
-        bool apply = ShadowOfOptions.health_based_chance.Value && (!ShadowOfOptions.health_based_chance_dead.Value || ShadowOfOptions.health_based_chance_dead.Value && !self.dead);
+        bool apply = ShadowOfOptions.health_based_chance.Value && (!ShadowOfOptions.health_based_chance_dead.Value || !self.dead);
 
         float rawMultiplier = apply ? Mathf.Lerp(ShadowOfOptions.health_based_chance_max.Value, ShadowOfOptions.health_based_chance_min.Value, self.LizardState.health) : 100;
 
@@ -598,19 +616,19 @@ internal class ShadowOfLizards : BaseUnityPlugin
         if (roll < chance)
         {
             if (ShadowOfOptions.chance_logs.Value)
-                Debug.Log(all + self + " Success! " + roll + "/" + chance + " for Health Based Chance. Health Based Chance Multiplier is: " + rawMultiplier + "%");
+                Debug.Log(all + self + " Success! " + roll + "/" + chance + " for Health Based Chance. Health Based Chance Multiplier is: " + rawMultiplier + "% for " + whatFor);
 
             return true;
         }
         if (ShadowOfOptions.chance_logs.Value)
-            Debug.Log(all + self + " Failure! " + roll + "/" + chance + " for Health Based Chance. Health Based Chance Multiplier is: " + rawMultiplier + "%");
+            Debug.Log(all + self + " Failure! " + roll + "/" + chance + " for Health Based Chance. Health Based Chance Multiplier is: " + rawMultiplier + "% for " + whatFor);
 
         return false;
     }
 
-    public static bool CWTCycleCheck(LizardData data, string value, int cycleNumber)
+    public static bool CWTCycleCheck(LizardData data, string name, int cycleNumber)
     {
-        return !data.liz.TryGetValue(value, out string Value) || int.TryParse(Value, out _) && Value != cycleNumber.ToString();
+        return !data.liz.TryGetValue(name, out string gotValue) || int.TryParse(gotValue, out int number) && number != cycleNumber;
     }
 
     public static void UnderwaterDen(LizardData data, Lizard self)
@@ -670,48 +688,286 @@ internal class ShadowOfLizards : BaseUnityPlugin
                 break;
         }
     }
-
+    #endregion
 
     #region Gore
-    public static void CutInHalf(Lizard self, BodyChunk hitChunk)
+    public static void CutInHalf(Lizard self, LizardData data, BodyChunk hitChunk)
     {
-        if (!lizardstorage.TryGetValue(self.abstractCreature, out LizardData data))
+        try
         {
-            return;
+            IntVector2 tilePosition = self.room.GetTilePosition(self.bodyChunks[hitChunk.index].pos);
+            WorldCoordinate pos = new(self.room.abstractRoom.index, tilePosition.x, tilePosition.y, 0);
+
+            int index = hitChunk.index != 1 && (!data.availableBodychunks.Contains(hitChunk.index + 1) || UnityEngine.Random.value < 0.5) ? hitChunk.index : hitChunk.index + 1;
+
+            AbstractCreature abstractLizard = new(self.room.world, self.Template, null, pos, self.abstractCreature.ID);
+
+            if (!lizardstorage.TryGetValue(abstractLizard, out LizardData data2))
+            {
+                lizardstorage.Add(abstractLizard, new LizardData());
+                lizardstorage.TryGetValue(abstractLizard, out LizardData dat);
+                data2 = dat;
+            }
+
+
+            if (ShadowOfOptions.dynamic_cheat_death.Value)
+                data.cheatDeathChance -= 50;
+
+            abstractLizard.state.meatLeft = self.State.meatLeft / 2;
+            self.State.meatLeft /= 2;
+
+            data2.isGoreHalf = true;
+            data2.transformation = data.transformation;
+            data2.availableBodychunks = new();
+            data2.ArmState = new(data.ArmState);
+            data2.actuallyDead = true;
+
+            for (int i = index; i < self.bodyChunks.Count() && data.availableBodychunks.Contains(i); i++)
+            {
+                data2.availableBodychunks.Add(i);
+                data.availableBodychunks.Remove(i);
+            }
+
+            self.room.abstractRoom.AddEntity(abstractLizard);
+
+            abstractLizard.RealizeInRoom();
+
+            if (bloodModCheck && ShadowOfOptions.blood_emitter.Value)
+                BloodEmitter();
+
+            if (bloodModCheck && ShadowOfOptions.blood_emitter.Value && abstractLizard.realizedCreature != null)
+                OtherBloodEmitter();
+
+            CutInHalfGraphics(self.graphicsModule as LizardGraphics, data.sLeaser, data.availableBodychunks);
+
+            void BloodEmitter()
+            {
+                self.room.AddObject(new BloodEmitter(null, self.bodyChunks[index], UnityEngine.Random.Range(25f, 20f), UnityEngine.Random.Range(3f, 6f)));
+                self.room.AddObject(new BloodEmitter(null, self.bodyChunks[index], UnityEngine.Random.Range(15f, 20f), UnityEngine.Random.Range(7f, 16f)));
+                self.room.AddObject(new BloodEmitter(null, self.bodyChunks[index], UnityEngine.Random.Range(5f, 8f), UnityEngine.Random.Range(11f, 26f)));
+            }
+
+            void OtherBloodEmitter()
+            {
+                abstractLizard.realizedCreature.room.AddObject(new BloodEmitter(null, self.bodyChunks[index + 1], UnityEngine.Random.Range(25f, 20f), UnityEngine.Random.Range(3f, 6f)));
+                abstractLizard.realizedCreature.room.AddObject(new BloodEmitter(null, self.bodyChunks[index + 1], UnityEngine.Random.Range(15f, 20f), UnityEngine.Random.Range(7f, 16f)));
+                abstractLizard.realizedCreature.room.AddObject(new BloodEmitter(null, self.bodyChunks[index + 1], UnityEngine.Random.Range(5f, 8f), UnityEngine.Random.Range(11f, 26f)));
+            }
         }
-
-        IntVector2 tilePosition = self.room.GetTilePosition(self.bodyChunks[hitChunk.index].pos);
-        WorldCoordinate pos = new(self.room.abstractRoom.index, tilePosition.x, tilePosition.y, 0);
-
-        AbstractCreature abstractLizard = new(self.room.world, self.Template, null, pos, self.abstractCreature.ID);
-
-        lizardGoreStorage.Add(abstractLizard, new LizardGoreData());
-        lizardGoreStorage.TryGetValue(abstractLizard, out LizardGoreData goreData);
-
-        goreData.origLizardData = data;
-
-        for (int i = hitChunk.index; i < self.bodyChunks.Count() && data.availableBodychunks.Contains(i); i++)
-        {
-            goreData.availableBodychunks.Add(i);
-            data.availableBodychunks.Remove(i);
-        }
-
-        self.room.abstractRoom.AddEntity(abstractLizard);
-
-        abstractLizard.RealizeInRoom();
+        catch (Exception e) { Logger.LogError(e); }
     }
 
-    public static void LimbCut(Lizard self, BodyChunk hitChunk, int num4, string spriteVariant)
+    public static void CutInHalfGraphics(LizardGraphics graphics, SpriteLeaser sLeaser, List<int> availableBodychunks)
+    {
+        try
+        {
+            float num3 = graphics.headConnectionRad * 0.5f + graphics.lizard.bodyChunkConnections[0].distance + graphics.lizard.bodyChunkConnections[1].distance / 2;
+
+            for (int c = 0; c < graphics.cosmetics.Count; c++)
+            {
+                #region GetBackPos
+                if (graphics.cosmetics[c] is BodyStripes bodyStripes)
+                {
+                    for (int i = bodyStripes.startSprite + bodyStripes.scalesPositions.Length - 1; i >= bodyStripes.startSprite; i--)
+                    {
+                        float num = Mathf.InverseLerp((float)bodyStripes.startSprite, (float)(bodyStripes.startSprite + bodyStripes.scalesPositions.Length - 1), (float)i);
+
+                        float num2 = bodyStripes.scalesPositions[i - bodyStripes.startSprite].y;
+
+                        float num33 = num3 / graphics.BodyAndTailLength;
+
+                        if (!availableBodychunks.Contains(1) && num2 <= num33)
+                        {
+                            (sLeaser.sprites[i] as TriangleMesh).isVisible = false;
+                        }
+                        if (!availableBodychunks.Contains(2) && num2 > num33)
+                        {
+                            (sLeaser.sprites[i] as TriangleMesh).isVisible = false;
+                        }
+                    }
+                }
+                else if (graphics.cosmetics[c] is LongShoulderScales longShoulderScales)
+                {
+                    for (int i = longShoulderScales.startSprite + longShoulderScales.scalesPositions.Length - 1; i >= longShoulderScales.startSprite; i--)
+                    {
+                        float num = Mathf.InverseLerp((float)longShoulderScales.startSprite, (float)(longShoulderScales.startSprite + longShoulderScales.scalesPositions.Length - 1), (float)i);
+
+                        float num2 = longShoulderScales.scalesPositions[i - longShoulderScales.startSprite].y;
+
+                        float num33 = num3 / graphics.BodyAndTailLength;
+
+                        if (!availableBodychunks.Contains(1) && num2 <= num33)
+                        {
+                            sLeaser.sprites[i].isVisible = false;
+                            if (longShoulderScales.colored)
+                            {
+                                sLeaser.sprites[i + longShoulderScales.scalesPositions.Length].isVisible = false;
+                            }
+                        }
+                        if (!availableBodychunks.Contains(2) && num2 > num33)
+                        {
+                            sLeaser.sprites[i].isVisible = false;
+                            if (longShoulderScales.colored)
+                            {
+                                sLeaser.sprites[i + longShoulderScales.scalesPositions.Length].isVisible = false;
+                            }
+                        }
+                    }
+                }
+                else if (graphics.cosmetics[c] is ShortBodyScales shortBodyScales)
+                {
+                    for (int i = shortBodyScales.startSprite + shortBodyScales.scalesPositions.Length - 1; i >= shortBodyScales.startSprite; i--)
+                    {
+                        float num = Mathf.InverseLerp((float)shortBodyScales.startSprite, (float)(shortBodyScales.startSprite + shortBodyScales.scalesPositions.Length - 1), (float)i);
+
+                        float num2 = shortBodyScales.scalesPositions[i - shortBodyScales.startSprite].y;
+
+                        float num33 = num3 / graphics.BodyAndTailLength;
+
+                        if (!availableBodychunks.Contains(1) && num2 <= num33)
+                        {
+                            sLeaser.sprites[i].isVisible = false;
+                            if (shortBodyScales.colored)
+                            {
+                                sLeaser.sprites[i + shortBodyScales.scalesPositions.Length].isVisible = false;
+                            }
+                        }
+                        if (!availableBodychunks.Contains(2) && num2 > num33)
+                        {
+                            sLeaser.sprites[i].isVisible = false;
+                            if (shortBodyScales.colored)
+                            {
+                                sLeaser.sprites[i + shortBodyScales.scalesPositions.Length].isVisible = false;
+                            }
+                        }
+                    }
+                }
+                #endregion
+
+                #region SpineLength
+                else if (graphics.cosmetics[c] is BumpHawk bumpHawk)
+                {
+                    for (int i = bumpHawk.startSprite + bumpHawk.numberOfSprites - 1; i >= bumpHawk.startSprite; i--)
+                    {
+                        float num = Mathf.InverseLerp((float)bumpHawk.startSprite, (float)(bumpHawk.startSprite + bumpHawk.numberOfSprites - 1), (float)i);
+                        float num2 = Mathf.Lerp(0.05f, bumpHawk.spineLength, num);
+
+                        if (!availableBodychunks.Contains(1) && num2 <= num3)
+                        {
+                            sLeaser.sprites[i].isVisible = false;
+                        }
+                        if (!availableBodychunks.Contains(2) && num2 > num3)
+                        {
+                            sLeaser.sprites[i].isVisible = false;
+                        }
+                    }
+                }
+                else if (graphics.cosmetics[c] is SpineSpikes spineSpikes)
+                {
+                    for (int i = spineSpikes.startSprite + spineSpikes.bumps - 1; i >= spineSpikes.startSprite; i--)
+                    {
+                        float num = Mathf.InverseLerp((float)spineSpikes.startSprite, (float)(spineSpikes.startSprite + spineSpikes.bumps) - 1, (float)i);
+                        float num2 = Mathf.Lerp(0.05f, spineSpikes.spineLength, num);
+
+                        if (!availableBodychunks.Contains(1) && num2 <= num3)
+                        {
+                            sLeaser.sprites[i].isVisible = false;
+                            if (spineSpikes.colored > 0)
+                            {
+                                sLeaser.sprites[i + spineSpikes.bumps].isVisible = false;
+                            }
+                        }
+                        if (!availableBodychunks.Contains(2) && num2 > num3)
+                        {
+                            sLeaser.sprites[i].isVisible = false;
+                            if (spineSpikes.colored > 0)
+                            {
+                                sLeaser.sprites[i + spineSpikes.bumps].isVisible = false;
+                            }
+                        }
+                    }
+                }
+                #endregion
+
+                #region Hide if certain bodychunk is missing
+                #region Chunk1
+                else if (graphics.cosmetics[c] is LongHeadScales longHeadScales)
+                {
+                    if (!availableBodychunks.Contains(1))
+                    {
+                        for (int i = longHeadScales.startSprite; i < longHeadScales.startSprite + longHeadScales.numberOfSprites; i++)
+                        {
+                            sLeaser.sprites[i].isVisible = false;
+                        }
+                    }
+                }
+                else if (graphics.cosmetics[c] is JumpRings jumpRings)
+                {
+                    if (!availableBodychunks.Contains(1))
+                    {
+                        for (int i = jumpRings.startSprite; i < jumpRings.startSprite + jumpRings.numberOfSprites; i++)
+                        {
+                            sLeaser.sprites[i].isVisible = false;
+                        }
+                    }
+
+                }
+                else if (graphics.cosmetics[c] is WingScales wingScales)
+                {
+                    if (!availableBodychunks.Contains(1))
+                    {
+                        for (int i = wingScales.startSprite; i < wingScales.startSprite + wingScales.numberOfSprites; i++)
+                        {
+                            sLeaser.sprites[i].isVisible = false;
+                        }
+                    }
+                }
+                #endregion
+
+                #region Chunk2
+                else if (graphics.cosmetics[c] is TailFin tailFin)
+                {
+                    if (!availableBodychunks.Contains(2))
+                    {
+                        for (int i = tailFin.startSprite; i < tailFin.startSprite + tailFin.numberOfSprites; i++)
+                        {
+                            sLeaser.sprites[i].isVisible = false;
+                        }
+                    }
+                }
+                else if (graphics.cosmetics[c] is TailGeckoScales tailGeckoScales)
+                {
+                    if (!availableBodychunks.Contains(2))
+                    {
+                        for (int i = tailGeckoScales.startSprite; i < tailGeckoScales.startSprite + tailGeckoScales.numberOfSprites; i++)
+                        {
+                            sLeaser.sprites[i].isVisible = false;
+                        }
+                    }
+                }
+                else if (graphics.cosmetics[c] is TailTuft tailTuft)
+                {
+                    if (!availableBodychunks.Contains(2))
+                    {
+                        for (int i = tailTuft.startSprite; i < tailTuft.startSprite + tailTuft.numberOfSprites; i++)
+                        {
+                            sLeaser.sprites[i].isVisible = false;
+                        }
+                    }
+                }
+                #endregion
+                #endregion
+            }
+        }
+        catch (Exception e) { Logger.LogError(e); }
+    }
+
+    public static void LimbCut(Lizard self, LizardData data, BodyChunk hitChunk, int num4, string spriteVariant)
     {
         try
         {
             if (bloodModCheck && ShadowOfOptions.blood_emitter.Value)
                 LimbCutBloodEmitter(self, hitChunk);
-
-            if (!lizardstorage.TryGetValue(self.abstractCreature, out LizardData data))
-            {
-                return;
-            }
 
             if (ShadowOfOptions.dynamic_cheat_death.Value)
                 data.cheatDeathChance -= 5;
@@ -788,7 +1044,7 @@ internal class ShadowOfLizards : BaseUnityPlugin
 
             bool canCamo = !data.liz.TryGetValue("CanCamo", out string CanCamo) && self.Template.type == CreatureTemplate.Type.WhiteLizard || CanCamo == "True";
 
-            LizCutLegAbstract lizardCutLegAbstract = new(self.room.world, pos, self.room.game.GetNewID())
+            LizCutLegAbstract lizCutLegAbstract = new(self.room.world, pos, self.room.game.GetNewID())
             {
                 hue = 1f,
                 saturation = 0.5f,
@@ -820,8 +1076,12 @@ internal class ShadowOfLizards : BaseUnityPlugin
                 canCamo = canCamo
             };
 
-            self.room.abstractRoom.AddEntity(lizardCutLegAbstract);
-            lizardCutLegAbstract.RealizeInRoom();
+            self.room.abstractRoom.AddEntity(lizCutLegAbstract);
+            lizCutLegAbstract.RealizeInRoom();
+
+            if (graphicstorage.TryGetValue(graphicsModule, out GraphicsData data3))
+                (lizCutLegAbstract.realizedObject as LizCutLeg).ElectricColorTimer = data3.ElectricColorTimer;
+
 
             if (ShadowOfOptions.debug_logs.Value)
                 Debug.Log(all + "LizCutLeg Created");
@@ -832,7 +1092,7 @@ internal class ShadowOfLizards : BaseUnityPlugin
                 self.room.AddObject(new BloodEmitter(null, hitChunk, UnityEngine.Random.Range(5f, 8f), UnityEngine.Random.Range(9f, 20f)));
             }
         }
-        catch (Exception e) { ShadowOfLizards.Logger.LogError(e); }
+        catch (Exception e) { Logger.LogError(e); }
     }
 
     public static void Decapitation(Lizard self)
@@ -843,7 +1103,7 @@ internal class ShadowOfLizards : BaseUnityPlugin
                 Debug.Log(all + self.ToString() + " was Decapitated");
 
             if (bloodModCheck && ShadowOfOptions.blood_emitter.Value)
-                DecapitationBloodEmitter(self);
+                BloodEmitter();
 
             if (!lizardstorage.TryGetValue(self.abstractCreature, out LizardData data) || data.sLeaser == null)
             {
@@ -852,6 +1112,8 @@ internal class ShadowOfLizards : BaseUnityPlugin
 
             if (ShadowOfOptions.dynamic_cheat_death.Value)
                 data.cheatDeathChance -= 50;
+
+            data.availableBodychunks.Remove(0);
 
             SpriteLeaser sLeaser = data.sLeaser;
 
@@ -928,7 +1190,7 @@ internal class ShadowOfLizards : BaseUnityPlugin
             float eyeLeftColourG = 0f;
             float eyeLeftColourB = 0f;
 
-            if (ShadowOfOptions.blind.Value && data.liz.TryGetValue("EyeRight", out string eye) && eye != "Incompatible" && graphicstorage.TryGetValue(graphicsModule as LizardGraphics, out GraphicsData data2))
+            if (ShadowOfOptions.blind.Value && data.liz.TryGetValue("EyeRight", out string eye) && eye != "Incompatible" && graphicstorage.TryGetValue(graphicsModule, out GraphicsData data2))
             {
                 headSprite5 = data.sLeaser.sprites[data2.EyesSprites].element.name;
                 headSprite6 = data.sLeaser.sprites[data2.EyesSprites + 1].element.name;
@@ -993,17 +1255,20 @@ internal class ShadowOfLizards : BaseUnityPlugin
             self.room.abstractRoom.AddEntity(lizCutHeadAbstract);
             lizCutHeadAbstract.RealizeInRoom();
 
+            if(graphicstorage.TryGetValue(graphicsModule, out GraphicsData data3))
+                (lizCutHeadAbstract.realizedObject as LizCutHead).ElectricColorTimer = data3.ElectricColorTimer;
+
             if (ShadowOfOptions.debug_logs.Value)
                 Debug.Log(all + self.ToString() + "'s Cut Head Object was Created");
 
-            void DecapitationBloodEmitter(Lizard self)
+            void BloodEmitter()
             {
                 self.room.AddObject(new BloodEmitter(null, self.firstChunk, UnityEngine.Random.Range(25f, 20f), UnityEngine.Random.Range(3f, 6f)));
                 self.room.AddObject(new BloodEmitter(null, self.firstChunk, UnityEngine.Random.Range(15f, 20f), UnityEngine.Random.Range(7f, 16f)));
                 self.room.AddObject(new BloodEmitter(null, self.firstChunk, UnityEngine.Random.Range(5f, 8f), UnityEngine.Random.Range(11f, 26f)));
             }
         }
-        catch (Exception e) { ShadowOfLizards.Logger.LogError(e); }
+        catch (Exception e) { Logger.LogError(e); }
     }
 
     public static void EyeCut(Lizard self, string Eye)
@@ -1107,6 +1372,21 @@ internal class ShadowOfLizards : BaseUnityPlugin
             self.room.AddObject(new BloodParticle(self.bodyChunks[0].pos, new Vector2(UnityEngine.Random.Range(-3f, 3f), UnityEngine.Random.Range(5f, 10f)), colour, self.Template.type.value, null, 2.3f));
         }
     }
-    #endregion
+
+    public static void Eviscerate(Lizard self)
+    {
+        if (bloodModCheck && ShadowOfOptions.blood_emitter.Value)
+            BloodEmitter();
+
+        self.Destroy();
+
+        void BloodEmitter()
+        {
+            for(int i = 0; i < 300; i++)
+            {
+                self.room.AddObject(new BloodParticle(self.bodyChunks[0].pos, new Vector2(UnityEngine.Random.Range(-100f, 100f), UnityEngine.Random.Range(-100f, 100f)), bloodcolours[self.Template.type.ToString()], self.Template.type.value, null, UnityEngine.Random.Range(100f, 700f)));
+            }
+        }
+    }
     #endregion
 }

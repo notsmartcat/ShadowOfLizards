@@ -7,10 +7,9 @@ namespace ShadowOfLizards;
 
 sealed class LizCutHead : PlayerCarryableItem, IDrawable
 {
+    #region values
     public float lastDarkness = -1f;
     public float darkness;
-
-    public List<Color> ColourArray;
 
     public Color LizBodyColour;
     public Color LizEffectColour;
@@ -19,11 +18,11 @@ sealed class LizCutHead : PlayerCarryableItem, IDrawable
 
     public Color LizEyeRightColour;
     public Color LizEyeLeftColour;
+    #endregion
 
-    public Vector2? setRotation;
+    public int ElectricColorTimer = 0;
 
-
-
+    #region Values Misc
     public override float ThrowPowerFactor => 1f;
 
     private int whiteFlicker = 0;
@@ -50,11 +49,9 @@ sealed class LizCutHead : PlayerCarryableItem, IDrawable
     public const float JawOpenSensitivity = 20f;
     public const float JawVelocityOverOpenSensitivity = 2.5f;
 
-    public List<int> headSpriteNum = new List<int> { 9, 16, 16, 10, 10, 10, 15, 14 };
+    public List<int> headSpriteNum = new() { 9, 16, 16, 10, 10, 10, 15, 14 };
 
-    public List<string> HeadSpritess;
-
-    public Color whiteCamoColor = new Color(0f, 0f, 0f);
+    public Color whiteCamoColor = new(0f, 0f, 0f);
     public Color whitePickUpColor;
     private float whiteCamoColorAmount = -1f;
 
@@ -62,6 +59,7 @@ sealed class LizCutHead : PlayerCarryableItem, IDrawable
     public float baseLastBlink;
 
     public bool everySecondDraw;
+    #endregion
 
     public LizCutHeadAbstract Abstr { get; }
 
@@ -255,7 +253,7 @@ sealed class LizCutHead : PlayerCarryableItem, IDrawable
 
         if (Abstr.canCamo)
         {
-            whiteCamoColorAmount = Mathf.Clamp(Mathf.Lerp(whiteCamoColorAmount, 1, 0.1f * UnityEngine.Random.value), 0.15f, 1f);
+            whiteCamoColorAmount = Mathf.Clamp(Mathf.Lerp(whiteCamoColorAmount, 1, 0.05f * UnityEngine.Random.value), 0f, 1f);
         }
 
         lastRotation = rotation;
@@ -344,7 +342,12 @@ sealed class LizCutHead : PlayerCarryableItem, IDrawable
 
     Color Camo(Color col)
     {
-        return Color.Lerp(col, whiteCamoColor, whiteCamoColorAmount);
+        return Abstr.canCamo ? Color.Lerp(col, whiteCamoColor, whiteCamoColorAmount) : col;
+    }
+
+    Color ElectricColor(Color col)
+    {
+        return ElectricColorTimer > 0 ? Color.Lerp(col, new Color(0.7f, 0.7f, 1f), (float)ElectricColorTimer / 50f) : col;
     }
 
     public void Flicker(int fl)
@@ -399,14 +402,13 @@ sealed class LizCutHead : PlayerCarryableItem, IDrawable
                 Abstr.HeadSprite3 + "Cut2"
             };
 
-        if (HeadSprites.Count > 5)
+        if (flag)
         {
             bool right = HeadSprites[6].Contains("Right");
 
             headSpriteNum[6] = right ? 15 : 14;
             headSpriteNum[7] = right ? 14 : 15;
         }
-
 
         sLeaser.sprites = new FSprite[HeadSprites.Count];
 
@@ -449,6 +451,9 @@ sealed class LizCutHead : PlayerCarryableItem, IDrawable
             whiteCamoColor = whitePickUpColor;
         }
 
+        if(ElectricColorTimer > 0)
+            ElectricColorTimer--;
+
         string headAngleNum = "0";
         if (Math.Abs(rotation.x) > 45f)
             headAngleNum = "1";
@@ -490,6 +495,13 @@ sealed class LizCutHead : PlayerCarryableItem, IDrawable
         for (int i = 0; i < HeadSprites.Count; i++)
         {
             string name = HeadSprites[i].Remove(headSpriteNum[i], 1);
+
+            if (!Futile.atlasManager.DoesContainElementWithName(name.Insert(headSpriteNum[i], headAngleNum)))
+            {
+                Destroy();
+                return;
+            }
+
             sLeaser.sprites[i].element = Futile.atlasManager.GetElementWithName(name.Insert(headSpriteNum[i], headAngleNum));
             sLeaser.sprites[i].x = pos.x - camPos.x;
             sLeaser.sprites[i].y = pos.y - camPos.y;
@@ -499,8 +511,11 @@ sealed class LizCutHead : PlayerCarryableItem, IDrawable
         if (Abstr.LizType == "CyanLizard")
         {
             sLeaser.sprites[4].color = effectColor;
-            sLeaser.sprites[1].color = HeadColor(timeStacker);
-            sLeaser.sprites[2].color = HeadColor(timeStacker);
+            sLeaser.sprites[1].color = ElectricColor(HeadColor(timeStacker));
+            sLeaser.sprites[2].color = ElectricColor(HeadColor(timeStacker));
+
+            sLeaser.sprites[0].color = Camo(palette.blackColor);
+            sLeaser.sprites[3].color = Camo(palette.blackColor);
         }
         else if (Abstr.LizType == "IndigoLizard")
         {
@@ -509,56 +524,32 @@ sealed class LizCutHead : PlayerCarryableItem, IDrawable
             sLeaser.sprites[1].color = HeadColor(timeStacker);
             sLeaser.sprites[2].color = palette.blackColor;
 
-            sLeaser.sprites[0].color = palette.blackColor;
-            sLeaser.sprites[3].color = palette.blackColor;
+            sLeaser.sprites[0].color = Camo(palette.blackColor);
+            sLeaser.sprites[3].color = Camo(palette.blackColor);
         }
         else if (Abstr.LizType == "BasiliskLizard")
         {
-            Color color4 = Color.Lerp(HeadColor(timeStacker), effectColor, 0.7f);
+            Color color4 = ElectricColor(Camo(Color.Lerp(HeadColor(timeStacker), effectColor, 0.7f)));
             if (whiteFlicker > 0 && (whiteFlicker > SourceCodeLizardsWhiteFlickerThreshold || everySecondDraw))
             {
-                color4 = new Color(1f, 1f, 1f);
+                color4 = ElectricColor(Camo(new Color(1f, 1f, 1f)));
             }
             sLeaser.sprites[0].color = color4;
             sLeaser.sprites[3].color = color4;
         }
         else
         {
-            sLeaser.sprites[0].color = HeadColor(timeStacker);
-            sLeaser.sprites[3].color = HeadColor(timeStacker);
-        }
-
-        if (Abstr.canCamo)
-        {
-            if (Abstr.LizType == "CyanLizard" || Abstr.LizType == "IndigoLizard")
-            {
-                sLeaser.sprites[0].color = Camo(LizBodyColour);
-                sLeaser.sprites[3].color = Camo(LizBodyColour);
-            }
-            else if (Abstr.LizType == "BasiliskLizard")
-            {
-                Color color4 = Camo(Color.Lerp(HeadColor(timeStacker), effectColor, 0.7f));
-                if (whiteFlicker > 0 && (whiteFlicker > 15 || everySecondDraw))
-                {
-                    color4 = Camo(new Color(1f, 1f, 1f));
-                }
-                sLeaser.sprites[0].color = color4;
-                sLeaser.sprites[3].color = color4;
-            }
-            else
-            {
-                sLeaser.sprites[0].color = Camo(HeadColor(timeStacker));
-                sLeaser.sprites[3].color = Camo(HeadColor(timeStacker));
-            }
+            sLeaser.sprites[0].color = ElectricColor(Camo(HeadColor(timeStacker)));
+            sLeaser.sprites[3].color = ElectricColor(Camo(HeadColor(timeStacker)));
         }
 
         if (Abstr.LizType != "IndigoLizard" || (Abstr.LizType == "IndigoLizard" && Abstr.LizBloodColourR == -1f))
         {
-            sLeaser.sprites[5].color = (Abstr.LizBloodColourR != -1f) ? LizBloodColour : effectColor;
+            sLeaser.sprites[5].color = (Abstr.LizBloodColourR != -1f) ? LizBloodColour : ElectricColor(effectColor);
         }
         else
         {
-            sLeaser.sprites[5].color = palette.blackColor;
+            sLeaser.sprites[5].color = ElectricColor(palette.blackColor);
         }
 
         if (slatedForDeletetion || room != rCam.room)

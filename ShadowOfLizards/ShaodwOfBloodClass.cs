@@ -8,7 +8,7 @@ sealed class ShadowOfBloodEmitter : BloodEmitter
 {
     Vector2 emitAngle;
 
-    public ShadowOfBloodEmitter(global::Spear spear, BodyChunk chunk, float velocity, float bleedTime) : base(spear, chunk, velocity, bleedTime)
+    public ShadowOfBloodEmitter(Spear spear, BodyChunk chunk, float velocity, float bleedTime) : base(spear, chunk, velocity, bleedTime)
     {
         try
         {
@@ -41,63 +41,25 @@ sealed class ShadowOfBloodEmitter : BloodEmitter
         }
     }
 
- 
-
     public override void Update(bool eu)
     {
         base.Update(eu);
-        counter++;
-        velocity = Mathf.Lerp(maxVelocity * UnityEngine.Random.Range(0.5f, 1f), -1f, Mathf.Sin((float)counter / 5f));
-
-        if (emitPos.y > room.RoomRect.top + 100f)
-        {
-            Destroy();
-        }
-
-        if (chunk == null)
-        {
-            Destroy();
-        }
-
-        if (chunk.owner is Creature crit && !crit.dead)
-        {
-            bleedTime -= 0.025f;
-        }
-        else
-        {
-            bleedTime -= 0.05f;
-        }
-
-        if (bleedTime <= 0f)
-        {
-            Destroy();
-            return;
-        }
 
         if (chunk.owner is LizCutHead cutHead)
         {
             emitPos = chunk.pos;
-            emitAngle = Custom.RotateAroundOrigo(cutHead.rotation, 120);
+            emitAngle = Custom.DegToVec(Custom.VecToDeg(cutHead.rotation));
+
 
             if (velocity >= UnityEngine.Random.Range(0.65f, 1.1f))
             {
                 room.AddObject(new ShadowOfBloodParticle(emitPos, emitAngle, creatureColor, splatterColor, this, velocity));
             }
         }
-        else if (chunk.owner is Creature crit2 && !crit2.inShortcut && chunk == chunk.owner.bodyChunks[0])
+        else if (chunk.owner is Creature crit2 && !crit2.inShortcut)
         {
             emitPos = chunk.pos;
-            emitAngle = chunk.owner.bodyChunks[1].Rotation;
-
-            if (velocity >= UnityEngine.Random.Range(0.65f, 1.1f))
-            {
-                room.AddObject(new BloodParticle(emitPos, emitAngle, creatureColor, splatterColor, this, velocity));
-            }
-        }
-        else if (chunk.owner is Creature crit3 && !crit3.inShortcut && chunk == chunk.owner.bodyChunks[0])
-        {
-            emitPos = chunk.pos;
-            emitAngle = chunk.Rotation;
+            emitAngle = chunk == chunk.owner.bodyChunks[0] ? chunk.owner.bodyChunks[1].Rotation : chunk.Rotation;
 
             if (velocity >= UnityEngine.Random.Range(0.65f, 1.1f))
             {
@@ -107,3 +69,31 @@ sealed class ShadowOfBloodEmitter : BloodEmitter
     }
 }
 
+public class ShadowOfBloodParticle : BloodParticle
+{
+    public ShadowOfBloodParticle(Vector2 pos, Vector2 angle, Color color, string splatterColor, BloodEmitter emitter, float vel) : base(pos, angle, color, splatterColor, emitter, vel)
+    {
+        this.splatterColor = splatterColor;
+        lastPos = pos;
+        lastLastPos = pos;
+        lastLastLastPos = pos;
+        this.pos = pos;
+        this.color = color;
+        this.emitter = emitter;
+        if (this.emitter == null)
+        {
+            this.vel = angle;
+            bleedTime = 1f;
+            initialBleedTime = 1f;
+            return;
+        }
+        bleedTime = emitter.bleedTime;
+        initialBleedTime = emitter.bleedTime;
+        if (emitter.chunk == null)
+        {
+            this.vel = Custom.RotateAroundVector(angle, new Vector2(UnityEngine.Random.Range(-1.7f, 1.7f), vel), Custom.VecToDeg(emitter.spear.stuckInAppendage.appendage.OnAppendageDirection(emitter.spear.stuckInAppendage)));
+            return;
+        }
+        this.vel = Custom.RotateAroundVector(angle, new Vector2(UnityEngine.Random.Range(-1.7f, 1.7f), vel), Custom.VecToDeg(angle));
+    }
+}

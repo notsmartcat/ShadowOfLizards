@@ -3,6 +3,7 @@ using RWCustom;
 using UnityEngine;
 using LizardCosmetics;
 using Watcher;
+using MoreSlugcats;
 using static ShadowOfLizards.ShadowOfLizards;
 
 namespace ShadowOfLizards;
@@ -46,7 +47,7 @@ internal class TransformationElectric
     }
 
     #region Misc
-    static void SpearRecharge(On.MoreSlugcats.ElectricSpear.orig_Electrocute orig, MoreSlugcats.ElectricSpear self, PhysicalObject otherObject)
+    static void SpearRecharge(On.MoreSlugcats.ElectricSpear.orig_Electrocute orig, ElectricSpear self, PhysicalObject otherObject)
     {
         orig.Invoke(self, otherObject);
 
@@ -108,7 +109,7 @@ internal class TransformationElectric
                 self.room.AddObject(new CreatureSpasmer(self, false, self.stun));
                 self.LoseAllGrasps();
 
-                data2.ElectricColorTimer = Mathf.Clamp(data2.ElectricColorTimer + 50, 0, 250);;
+                data2.ElectricColorTimer = Mathf.Min(data2.ElectricColorTimer + 50, 250);;
             }
 
             if (self.Submersion > 0f)
@@ -126,7 +127,7 @@ internal class TransformationElectric
     {
         orig(self, pos, vel, lizard);
 
-        if (!ShadowOfOptions.electric_transformation.Value || !ShadowOfOptions.electric_spit.Value || self.lizard == null || !lizardstorage.TryGetValue(self.lizard.abstractCreature, out LizardData data) || !data.liz.TryGetValue("ElectricColorTimer", out _) 
+        if (!ShadowOfOptions.electric_transformation.Value || !ShadowOfOptions.electric_spit.Value || self.lizard == null || !lizardstorage.TryGetValue(self.lizard.abstractCreature, out LizardData data)
             || (data.transformation != "ElectricTransformation" && data.transformation != "Electric"))
         {
             return;
@@ -231,7 +232,7 @@ internal class TransformationElectric
 
                 for (int i = 0; i < number; i++)
                 {
-                    if (UnityEngine.Random.value < (data.ElectricColorTimer == 0 ? 0.025f : 0.025f * ((float)data.ElectricColorTimer / 1f)))
+                    if (UnityEngine.Random.value < (data.ElectricColorTimer == 0 ? 0.025f : 0.025f * (float)data.ElectricColorTimer))
                     {
                         Spark();
                     }
@@ -240,7 +241,6 @@ internal class TransformationElectric
                 void Spark()
                 {
                     self.room.AddObject(new Spark(self.pos, Custom.RNV() * Mathf.Lerp(4f, 14f, UnityEngine.Random.value), new Color(0.7f, 0.7f, 1f), null, 8, 14));
-                    //data.ElectricColorTimer += 1;
                 }
             }
         }
@@ -283,14 +283,14 @@ internal class TransformationElectric
     {
         orig(self);
 
+        if (!ShadowOfOptions.electric_transformation.Value || !lizardstorage.TryGetValue(self.lizard.abstractCreature, out LizardData data)
+            || !graphicstorage.TryGetValue(self, out GraphicsData data2) || (data.transformation != "ElectricTransformation" && data.transformation != "Electric"))
+        {
+            return;
+        }
+
         try
         {
-            if (!ShadowOfOptions.electric_transformation.Value || !lizardstorage.TryGetValue(self.lizard.abstractCreature, out LizardData data) || !data.liz.TryGetValue("ElectricColorTimer", out _)
-                || !graphicstorage.TryGetValue(self, out GraphicsData data2) || (data.transformation != "ElectricTransformation" && data.transformation != "Electric"))
-            {
-                return;
-            }
-
             if (data2.lightSource != null)
             {
                 data2.lightSource.stayAlive = true;
@@ -324,7 +324,7 @@ internal class TransformationElectric
         catch (Exception e) { ShadowOfLizards.Logger.LogError(e); }
     }
 
-    public static void ElectricLizardGraphicsDraw(LizardGraphics self, RoomCamera.SpriteLeaser sLeaser, float timeStacker, Vector2 camPos, LizardData data, GraphicsData data2)
+    public static void ElectricLizardGraphicsDraw(LizardGraphics self, RoomCamera.SpriteLeaser sLeaser, float timeStacker, Vector2 camPos, GraphicsData data2)
     {
         try
         {
@@ -384,6 +384,11 @@ internal class TransformationElectric
                 {
                     sLeaser.sprites[self.SpriteHeadStart].color = headColor;
                     sLeaser.sprites[self.SpriteHeadStart + 3].color = headColor;
+                }
+                else if(self.lizard.Template.type == CreatureTemplate.Type.CyanLizard)
+                {
+                    sLeaser.sprites[self.SpriteHeadStart + 1].color = headColor;
+                    sLeaser.sprites[self.SpriteHeadStart + 2].color = headColor;
                 }
 
                 for (int c = 0; c < self.cosmetics.Count; c++)
@@ -866,7 +871,7 @@ internal class TransformationElectric
 
             if (self.graphicsModule != null)
             {
-                data.ElectricColorTimer = Mathf.Clamp(data.ElectricColorTimer + 50, 0, 250);
+                data.ElectricColorTimer = Mathf.Min(data.ElectricColorTimer + 50, 250);
                 LizardSpark(self, self.mainBodyChunk, data, 1, true);
             }
 
@@ -876,103 +881,60 @@ internal class TransformationElectric
                 obj.vel += Custom.RNV() * 6f * UnityEngine.Random.value;
                 obj.pos += Custom.RNV() * 6f * UnityEngine.Random.value;
             }
-
-            if (owner is Lizard liz && lizardstorage.TryGetValue(liz.abstractCreature, out LizardData data2) && (data2.transformation == "Electric" || data2.transformation == "ElectricTransformation"))
-            {
-                liz.Stun((int)(Custom.LerpMap(owner.TotalMass, 0f, self.TotalMass * 2f, 300f, 30f) * 0.2f));
-                self.room.AddObject(new CreatureSpasmer(liz, false, liz.stun));
-            }
-            else if (owner is Creature creature)
-            {
-                creature.Stun((int)(Custom.LerpMap(owner.TotalMass, 0f, self.TotalMass * 2f, 300f, 30f) * (owner is Centipede ? 0.4f : 1f)));
-                self.room.AddObject(new CreatureSpasmer(creature, false, creature.stun));
-                creature.LoseAllGrasps();
-            }
-
-            if (owner.Submersion > 0f)
-            {
-                self.room.AddObject(new UnderwaterShock(self.room, self, hitChunk.pos, 14, Mathf.Lerp(ModManager.MMF ? 0f : 200f, 1200f, 1400f), 2.1f, self, new Color(0.7f, 0.7f, 1f)));
-            }
         }
         catch (Exception e) { ShadowOfLizards.Logger.LogError(e); }
     }
 
-    public static void ElectricLizardUpdate(Lizard self, GraphicsData data)
+    public static void ElectricLizardUpdate(Lizard self, LizardData data, GraphicsData data2)
     {
-        LizardSpark(self, null, data, UnityEngine.Random.Range(0, 11), false);
+        if (self.grabbedBy.Count > 0 && !self.dead)
+        {
+            data2.shockCharge += 0.016666668f;
+            for (int i = 0; i < self.bodyChunks.Length; i++)
+            {
+                self.bodyChunks[i].vel += Custom.RNV() * UnityEngine.Random.value * 2f;
+            }
+            if (data2.shockCharge >= 1f)
+            {
+                Creature grabber = self.grabbedBy[0].grabber;
+                bool flag = ModManager.MSC && grabber is Player && (grabber as Player).SlugCatClass == MoreSlugcatsEnums.SlugcatStatsName.Saint;
+
+                Shock(self, data, data2, grabber);
+
+                if (flag)
+                {
+                    (grabber as Player).SaintStagger(680);
+                }
+                self.Stun(14);
+                for (int j = 0; j < self.bodyChunks.Length; j++)
+                {
+                    self.bodyChunks[j].vel += Custom.RNV() * UnityEngine.Random.value * 7f;
+                }
+
+                if (self.graphicsModule != null)
+                {
+                    data2.ElectricColorTimer = Mathf.Min(data2.ElectricColorTimer + 50, 250);
+                    LizardSpark(self, self.mainBodyChunk, data2, 1, true);
+                }
+            }
+        }
+
+        LizardSpark(self, null, data2, UnityEngine.Random.Range(0, 11), false);
+
+        data2.shockCharge = Mathf.Max(0f, data2.shockCharge - 0.008333334f);
     }
 
-    public static void PreElectricLizardBite(Lizard self, BodyChunk chunk, GraphicsData data, LizardData data3)
+    public static void PreElectricLizardBite(Lizard self, BodyChunk chunk, GraphicsData graphicData, LizardData data)
     {
         try
         {
-            self.room.PlaySound(SoundID.Centipede_Shock, self.mainBodyChunk.pos);
-
-            if (self.graphicsModule != null)
-            {
-                data.ElectricColorTimer = Mathf.Clamp(data.ElectricColorTimer + 100, 0, 250);
-                LizardSpark(self, self.mainBodyChunk, data, 1, true);
-            }
-
-            if (chunk != null && chunk.owner != null && chunk.owner is Creature owner)
-            {
-                if (owner.TotalMass < self.TotalMass / 2)
-                {
-                    if (ModManager.MSC && owner is Player player && (player.SlugCatClass == MoreSlugcats.MoreSlugcatsEnums.SlugcatStatsName.Artificer || player.SlugCatClass != null && player.SlugCatClass.value == "sproutcat"))
-                    {
-                        player.PyroDeath();
-                    }
-                    else
-                    {
-                        owner.Die();
-                        Room val = self.room;
-                        val.AddObject(new CreatureSpasmer(owner, true, (int)Mathf.Lerp(70f, 120f, self.mainBodyChunk.rad)));
-                    }
-
-                    if (!owner.dead && data3.transformation == "Electric" && owner is Centipede && UnityEngine.Random.value < 0.2)
-                        data3.transformationTimer++;
-                }
-                else
-                {
-                    if (owner is Lizard liz && lizardstorage.TryGetValue(self.abstractCreature, out LizardData data2) && (data2.transformation == "Electric" || data2.transformation == "ElectricTransformation"))
-                    {
-                        liz.Stun((int)(Custom.LerpMap(owner.TotalMass, 0f, self.TotalMass * 2f, 300f, 30f) * 0.2f));
-                        self.room.AddObject(new CreatureSpasmer(liz, false, liz.stun));
-
-                        if (!liz.dead && data3.transformation == "Electric" && (data2.transformation == "Electric" || data2.transformation == "ElectricTransformation") && data2.transformationTimer > 0 && UnityEngine.Random.value < 0.2)
-                        {
-                            data3.transformationTimer++; 
-                            if(data2.transformation == "Electric")
-                                data2.transformationTimer--;
-                        }
-                    }
-                    else
-                    {
-                        owner.Stun((int)(Custom.LerpMap(owner.TotalMass, 0f, self.TotalMass * 2f, 300f, 30f) * (owner is Centipede ? 0.4f : 1f)));
-
-                        Room val = self.room;
-                        val.AddObject(new CreatureSpasmer(owner, false, owner.stun));
-                        owner.LoseAllGrasps();
-                        self.Stun(6);
-
-
-                        if (!owner.dead && data3.transformation == "Electric" && owner is Centipede && UnityEngine.Random.value < 0.2)
-                            data3.transformationTimer++;
-                    }
-                }
-
-
-            }
-
-            if (chunk != null && chunk.owner != null && chunk.owner.Submersion > 0f)
-            {
-                self.room.AddObject(new UnderwaterShock(self.room, self, self.mainBodyChunk.pos, 14, Mathf.Lerp(ModManager.MMF ? 0f : 200f, 1200f, self.mainBodyChunk.rad), 0.2f + 1.9f * self.mainBodyChunk.rad, self, new Color(0.7f, 0.7f, 1f)));
-            }
+            if(chunk != null && chunk.owner != null)
+                Shock(self, data, graphicData, chunk.owner);
         }
         catch (Exception e) { ShadowOfLizards.Logger.LogError(e); }
     }
 
-    public static void PostElectricLizardBite(Lizard self, GraphicsData data)
+    public static void PostElectricLizardBite(Lizard self, GraphicsData data, BodyChunk chunk)
     {
         if (self.graphicsModule != null)
         {
@@ -980,6 +942,15 @@ internal class TransformationElectric
             for (int i = 0; i < (int)Mathf.Lerp(4f, 8f, self.TotalMass / 2); i++)
             {
                 LizardSpark(self, self.mainBodyChunk, data, 1, true);
+            }
+        }
+
+        if (chunk != null && chunk.owner != null && chunk.owner is Lizard liz && lizardstorage.TryGetValue(self.abstractCreature, out LizardData data2))
+        {
+            if (!(liz.TotalMass < self.TotalMass / 2))
+            {
+                data2.lastDamageType = "Electric";
+                PostViolenceCheck(liz, data2, "Electric", self);
             }
         }
     }
@@ -1018,7 +989,6 @@ internal class TransformationElectric
                 Vector2 pos = tempChunk.pos + new Vector2(tempChunk.rad * UnityEngine.Random.Range(-1f, 1f), tempChunk.rad * UnityEngine.Random.Range(-1f, 1f));
 
                 self.room.AddObject(new Spark(pos, Custom.RNV() * Mathf.Lerp(4f, 14f, UnityEngine.Random.value), new Color(0.7f, 0.7f, 1f), null, 8, 14));
-                //data.ElectricColorTimer += 1;
             }
         }
         catch (Exception e) { ShadowOfLizards.Logger.LogError(e); }
@@ -1078,5 +1048,85 @@ internal class TransformationElectric
             }
         }
         catch (Exception e) { ShadowOfLizards.Logger.LogError(e); }
+    }
+
+    static void Shock(Lizard self, LizardData data, GraphicsData graphicData, PhysicalObject shockObj)
+    {
+        self.room.PlaySound(SoundID.Centipede_Shock, self.mainBodyChunk.pos);
+
+        if (self.graphicsModule != null)
+        {
+            graphicData.ElectricColorTimer = Mathf.Min(graphicData.ElectricColorTimer + 100, 250);
+            LizardSpark(self, self.mainBodyChunk, graphicData, 1, true);
+        }
+
+        if (shockObj is Creature crit)
+        {
+            if (crit.TotalMass < self.TotalMass / 2)
+            {
+                if (ModManager.MSC && crit is Player player && (player.SlugCatClass == MoreSlugcatsEnums.SlugcatStatsName.Artificer || player.SlugCatClass != null && player.SlugCatClass.value == "sproutcat"))
+                {
+                    player.PyroDeath();
+                }
+                else
+                {
+                    if (crit is Lizard liz && lizardstorage.TryGetValue(self.abstractCreature, out LizardData data2))
+                    {
+                        data2.lastDamageType = "Electric";
+                        PreViolenceCheck(liz, data2);
+
+                        crit.Die();
+
+                        data2.lastDamageType = "Electric";
+                        PreViolenceCheck(liz, data2);
+                    }
+                    else
+                    {
+                        crit.Die();
+                    }
+
+                    Room val = self.room;
+                    val.AddObject(new CreatureSpasmer(crit, true, (int)Mathf.Lerp(70f, 120f, self.mainBodyChunk.rad)));
+                }
+
+                if (!crit.dead && data.transformation == "Electric" && crit is Centipede && UnityEngine.Random.value < 0.2)
+                    data.transformationTimer++;
+            }
+            else
+            {
+                if (crit is Lizard liz && lizardstorage.TryGetValue(self.abstractCreature, out LizardData data2) && (data2.transformation == "Electric" || data2.transformation == "ElectricTransformation"))
+                {
+                    data2.lastDamageType = "Electric";
+
+                    liz.Stun((int)(Custom.LerpMap(crit.TotalMass, 0f, self.TotalMass * 2f, 300f, 30f) * 0.2f));
+                    self.room.AddObject(new CreatureSpasmer(liz, false, liz.stun));
+
+                    if (!liz.dead && data.transformation == "Electric" && (data2.transformation == "Electric" || data2.transformation == "ElectricTransformation") && data2.transformationTimer > 0 && UnityEngine.Random.value < 0.2)
+                    {
+                        data.transformationTimer++;
+                        if (data2.transformation == "Electric")
+                            data2.transformationTimer--;
+                    }
+                }
+                else
+                {
+                    crit.Stun((int)(Custom.LerpMap(crit.TotalMass, 0f, self.TotalMass * 2f, 300f, 30f) * (crit is Centipede ? 0.4f : 1f)));
+
+                    Room val = self.room;
+                    val.AddObject(new CreatureSpasmer(crit, false, crit.stun));
+                    crit.LoseAllGrasps();
+                    self.Stun(6);
+
+
+                    if (!crit.dead && data.transformation == "Electric" && crit is Centipede && UnityEngine.Random.value < 0.2)
+                        data.transformationTimer++;
+                }
+            }
+        }
+
+        if (shockObj.Submersion > 0f)
+        {
+            self.room.AddObject(new UnderwaterShock(self.room, self, self.mainBodyChunk.pos, 14, Mathf.Lerp(ModManager.MMF ? 0f : 200f, 1200f, self.mainBodyChunk.rad), 0.2f + 1.9f * self.mainBodyChunk.rad, self, new Color(0.7f, 0.7f, 1f)));
+        }
     }
 }

@@ -31,16 +31,16 @@ internal class TransformationMelted
         {
             Creature owner = self.stickChunk.owner as Creature;
 
-            if (owner is Lizard)
+            if (owner is Lizard liz && lizardstorage.TryGetValue(liz.abstractCreature, out LizardData data))
             {
-                PreViolenceCheck(owner);
+                PreViolenceCheck(liz, data);
             }
 
             LethatWaterDamage(owner, self.stickChunk);
 
-            if (owner is Lizard liz)
+            if (owner is Lizard liz2 && lizardstorage.TryGetValue(liz2.abstractCreature, out LizardData data2))
             {
-                PostViolenceCheck(liz, "Melted", self.lizard);
+                PostViolenceCheck(liz2, data2, "Melted", self.lizard);
             }
         }
     }
@@ -132,13 +132,13 @@ internal class TransformationMelted
         #endregion
     }
 
-    public static void PreMeltedLizardBite(Lizard self, BodyChunk chunk)
+    public static void PreMeltedLizardBite(Lizard self, LizardData data, BodyChunk chunk)
     {
         if (chunk != null && chunk.owner != null && chunk.owner is Creature owner)
         {
-            if (owner is Lizard && lizardstorage.TryGetValue(owner.abstractCreature, out ShadowOfLizards.LizardData _))
+            if (owner is Lizard liz && lizardstorage.TryGetValue(owner.abstractCreature, out _))
             {
-                PreViolenceCheck(owner);
+                PreViolenceCheck(liz, data);
             }
 
             LethatWaterDamage(owner, self.mainBodyChunk);
@@ -151,16 +151,16 @@ internal class TransformationMelted
         }
     }
 
-    public static void PostMeltedLizardBite(Lizard self, BodyChunk chunk)
+    public static void PostMeltedLizardBite(Lizard self, LizardData data, BodyChunk chunk)
     {
         if (chunk == null || chunk.owner == null || chunk.owner is not Creature owner)
         {
             return;
         }
 
-        if (owner is Lizard liz && lizardstorage.TryGetValue(liz.abstractCreature, out LizardData _))
+        if (owner is Lizard liz && lizardstorage.TryGetValue(liz.abstractCreature, out _))
         {
-            PostViolenceCheck(liz, "Melted", self);
+            PostViolenceCheck(liz, data, "Melted", self);
         }
     }
 
@@ -200,7 +200,17 @@ internal class TransformationMelted
             }
             else if (!crit.dead)
             {
-                crit.Die();
+                if (crit is Lizard liz2 && lizardstorage.TryGetValue(liz2.abstractCreature, out LizardData data2))
+                {
+                    data2.lastDamageType = "Melted";
+                    PreViolenceCheck(liz2, data2);
+                    crit.Die();
+                    PostViolenceCheck(liz2, data2, "Melted", self.owner as Lizard);
+                }
+                else
+                {
+                    crit.Die();
+                }
             }
 
             if (crit.lavaContactCount == 0)
@@ -300,23 +310,20 @@ internal class TransformationMelted
             if (ShadowOfOptions.debug_logs.Value)
                 Debug.Log(all + self.ToString() + " in Lethal Water");
 
-
             if (Chance(self, ShadowOfOptions.melted_transformation_chance.Value, "Melted Transformation due to swimming in Lethal Water"))
             {
-                return;
+                if (ShadowOfOptions.debug_logs.Value)
+                    Debug.Log(all + self.ToString() + " was made Melted due to swimming in Lethal Water");
+
+                data.transformation = "Melted";
+                data.transformationTimer = cycleNumber;
+
+                data.liz.Remove("PreMeltedCycle");
+
+                data.liz["MeltedR"] = data.rCam != null ? data.rCam.currentPalette.waterColor1.r.ToString() : "0.4078431";
+                data.liz["MeltedG"] = data.rCam != null ? data.rCam.currentPalette.waterColor1.g.ToString() : "0.5843138";
+                data.liz["MeltedB"] = data.rCam != null ? data.rCam.currentPalette.waterColor1.b.ToString() : "0.1843137";
             }
-
-            if (ShadowOfOptions.debug_logs.Value)
-                Debug.Log(all + self.ToString() + " was made Melted due to swimming in Lethal Water");
-
-            data.transformation = "Melted";
-            data.transformationTimer = cycleNumber;
-
-            data.liz.Remove("PreMeltedCycle");
-
-            data.liz["MeltedR"] = data.rCam != null ? data.rCam.currentPalette.waterColor1.r.ToString() : "0.4078431";
-            data.liz["MeltedG"] = data.rCam != null ? data.rCam.currentPalette.waterColor1.g.ToString() : "0.5843138";
-            data.liz["MeltedB"] = data.rCam != null ? data.rCam.currentPalette.waterColor1.b.ToString() : "0.1843137";
         }
         catch (Exception e) { ShadowOfLizards.Logger.LogError(e); }
     }

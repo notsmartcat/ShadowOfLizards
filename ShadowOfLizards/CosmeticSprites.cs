@@ -1,6 +1,7 @@
 ﻿using System;
 using UnityEngine;
 using RWCustom;
+using IL.Smoke;
 
 namespace ShadowOfLizards;
 
@@ -11,7 +12,20 @@ public class BrokenTooth : CosmeticSprite
     public Color colour;
     public Color rootColour;
 
+    public int ElectricColorTimer = 0;
+
     public string spriteName;
+
+    public bool isCyan = false;
+
+    private int flicker;
+    private float flickerColor = 0;
+
+    public float baseBlink;
+    public float baseLastBlink;
+
+    public const int SourceCodeLizardsFlickerThreshold = 10;
+    public const int SourceCodeLizardsWhiteFlickerThreshold = 15;
 
     public BrokenTooth(Vector2 pos, Vector2 vel, string spriteName, Color colour, Color rootColour, float scaleX, float scaleY)
     {
@@ -32,11 +46,15 @@ public class BrokenTooth : CosmeticSprite
         this.colour = colour;
         this.rootColour = rootColour;
         this.spriteName = spriteName;
+
+        baseBlink = UnityEngine.Random.value;
+        baseLastBlink = baseBlink;
     }
 
     public override void Update(bool eu)
     {
         counter++;
+
         if (room.PointSubmerged(pos))
         {
             vel *= 0.92f;
@@ -49,10 +67,26 @@ public class BrokenTooth : CosmeticSprite
             vel *= 0.999f;
             vel.y = vel.y - room.gravity * 0.9f;
         }
+
         if (counter < 10 && UnityEngine.Random.value < 0.1f)
         {
             room.AddObject(new WaterDrip(Vector2.Lerp(lastPos, pos, UnityEngine.Random.value), vel + Custom.RNV() * UnityEngine.Random.value * 2f, false));
         }
+
+        if (flicker > 0)
+        {
+            flicker--;
+            baseBlink = UnityEngine.Random.value;
+            baseLastBlink = UnityEngine.Random.value;
+        }
+        else
+        {
+            baseLastBlink = baseBlink;
+
+            baseBlink = Mathf.Lerp(baseBlink - Mathf.Floor(baseBlink), 0.25f, 0.02f);
+
+        }
+
         lastRotation = rotation;
         rotation += rotVel * Vector2.Distance(lastPos, pos);
         lastZRotation = zRotation;
@@ -116,7 +150,7 @@ public class BrokenTooth : CosmeticSprite
         {
             rotVel *= 0.7f;
             zRotVel *= 0.7f;
-            if (vel.magnitude < 1f)
+            if (vel.magnitude < 1f && ShadowOfOptions.cosmetic_sprite_despawn.Value)
             {
                 dissapearCounter++;
                 if (dissapearCounter > 30)
@@ -151,6 +185,12 @@ public class BrokenTooth : CosmeticSprite
         darkness = rCam.room.Darkness(vector);
         darkness *= 1f - 0.5f * rCam.room.LightSourceExposure(vector);
         Vector2 vector2 = Custom.DegToVec(Mathf.Lerp(lastZRotation, zRotation, timeStacker));
+
+        if (ElectricColorTimer > 0)
+        {
+            ElectricColorTimer--;
+        }
+
         for (int i = 0; i < sLeaser.sprites.Length; i++)
         {
             sLeaser.sprites[i].x = vector.x - camPos.x;
@@ -173,6 +213,11 @@ public class BrokenTooth : CosmeticSprite
 
         sLeaser.sprites[1].color = Color.Lerp(Custom.HSL2RGB(hue, saturation, 0.5f), rootColour, 0.7f + 0.3f * darkness);
 
+        if (isCyan)
+        {
+            sLeaser.sprites[0].color = ElectricColorTimer > 0 ? ElectricColor(HeadColor(timeStacker)) : HeadColor(timeStacker);
+        }
+
         if (num > 0.3f)
         {
             for (int j = 0; j < sLeaser.sprites.Length; j++)
@@ -192,6 +237,21 @@ public class BrokenTooth : CosmeticSprite
     public override void AddToContainer(RoomCamera.SpriteLeaser sLeaser, RoomCamera rCam, FContainer newContatiner)
     {
         base.AddToContainer(sLeaser, rCam, newContatiner);
+    }
+
+    Color ElectricColor(Color col)
+    {
+        return Color.Lerp(col, new Color(0.7f, 0.7f, 1f), (float)ElectricColorTimer / 50f);
+    }
+
+    public Color HeadColor(float timeStacker)
+    {
+        float num = 1f - Mathf.Pow(0.5f + 0.5f * Mathf.Sin(Mathf.Lerp(baseLastBlink, baseBlink, timeStacker) * 2f * 3.1415927f), 1.5f);
+        if (flicker > SourceCodeLizardsFlickerThreshold)
+        {
+            num = flickerColor;
+        }
+        return Color.Lerp(palette.blackColor, colour, num);
     }
 
     public float rotation;
