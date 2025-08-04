@@ -7,26 +7,28 @@ namespace ShadowOfLizards;
 
 sealed class LizCutEye : PlayerCarryableItem, IDrawable
 {
-    public float lastDarkness = -1f;
-    public float darkness;
+    #region Private
+    private float lastDarkness = -1f;
+    private float darkness;
 
-    public RoomPalette palette;
+    private RoomPalette palette;
 
-    public Color LizColour;
-    public Color EyeColour;
+    private Color LizColour;
+    private Color EyeColour;
 
-    bool bump;
+    private bool bump;
 
-    public Vector2[,,] cords;
+    private Vector2[,,] cords;
 
-    public bool lastGrabbed;
+    private bool lastGrabbed;
 
-    public float rotation;
-    public float lastRotation;
+    private float rotation;
+    private float lastRotation;
 
-    public float rotSpeed;
+    private float rotSpeed;
 
     readonly TerrainCollisionData scratchTerrainCollisionData = new();
+    #endregion
 
     public LizCutEyeAbstract Abstr { get; }
 
@@ -211,9 +213,6 @@ sealed class LizCutEye : PlayerCarryableItem, IDrawable
             newContainer.AddChild(fsprite);
         }
         sLeaser.sprites[1].MoveBehindOtherNode(sLeaser.sprites[0]);
-        //sLeaser.sprites[3].MoveBehindOtherNode(sLeaser.sprites[1]);
-        //sLeaser.sprites[4].MoveBehindOtherNode(sLeaser.sprites[1]);
-        //sLeaser.sprites[0].MoveBehindOtherNode(sLeaser.sprites[1]);
     }
 
     public override void Update(bool eu)

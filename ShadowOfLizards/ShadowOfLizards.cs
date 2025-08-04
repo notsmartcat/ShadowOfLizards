@@ -198,6 +198,8 @@ public class ShadowOfLizards : BaseUnityPlugin
 
             MiscHooks.Apply();
 
+            ViolenceTypeCheck.Apply();
+
             ILHooks.Apply();
 
             //Transformations
@@ -254,92 +256,91 @@ public class ShadowOfLizards : BaseUnityPlugin
         }
         catch (Exception e) { Logger.LogError(e); }
 
-        void Blood()
+        static void Blood()
         {
-            try
-            {
-                bloodcolours = BloodData.Load();
-                if (ShadowOfOptions.debug_logs.Value)
-                    Debug.Log((all + "BloodData loaded"));
-            }
-            catch (Exception e) { Logger.LogError(e); }
-
+            bloodcolours = BloodData.Load();
+            if (ShadowOfOptions.debug_logs.Value)
+                Debug.Log(all + "BloodData loaded");
         }
     }
 
     void DebugKeys(On.Player.orig_Update orig, Player self, bool eu)
     {
         orig.Invoke(self, eu);
+
+        if (!ShadowOfOptions.debug_keys.Value || self == null || self.room == null || self.room.game == null || !self.room.game.devToolsActive)
+        {
+            return;
+        }
+
         try
         {
-            if (ShadowOfOptions.debug_keys.Value)
+            if (Input.GetKey("n"))
             {
-                if (self != null && self.room != null && self.room.game != null && self.room.game.devToolsActive && Input.GetKey("n"))
+                List<AbstractCreature> list = new(self.abstractCreature.Room.creatures);
+                foreach (AbstractCreature creature in list)
                 {
-                    List<AbstractCreature> list = new(self.abstractCreature.Room.creatures);
-                    foreach (AbstractCreature creature in list)
+                    if (creature.realizedCreature == null)
                     {
-                        if (creature.realizedCreature == null)
-                        {
-                            continue;
-                        }
+                        continue;
+                    }
 
-                        if (creature.realizedCreature is Lizard liz && lizardstorage.TryGetValue(liz.abstractCreature, out LizardData data) && data.Beheaded == false)
+                    if (creature.realizedCreature is Lizard liz && lizardstorage.TryGetValue(liz.abstractCreature, out LizardData data) && data.Beheaded == false)
+                    {
+                        if (ShadowOfOptions.debug_logs.Value)
+                            Debug.Log(all + liz.ToString() + "'s Neck Hit by Debug");
+
+                        data.Beheaded = true;
+                        Decapitation(liz);
+                        liz.Die();
+                    }
+                }
+            }
+
+            if (Input.GetKey("m"))
+            {
+                List<AbstractCreature> list = new(self.abstractCreature.Room.creatures);
+
+                foreach (AbstractCreature creature in list)
+                {
+                    if (creature.realizedCreature != null && creature.realizedCreature is Lizard liz && lizardstorage.TryGetValue(liz.abstractCreature, out LizardData data))
+                    {
+                        if (ShadowOfOptions.tongue_ability.Value && data.liz.TryGetValue("Tongue", out _) && liz.lizardParams.tongue)
                         {
                             if (ShadowOfOptions.debug_logs.Value)
-                                Debug.Log(all + liz.ToString() + "'s Neck Hit by Debug");
+                                Debug.Log(all + liz.ToString() + "'s Mouth Hit by Debug");
 
-                            data.Beheaded = true;
-                            Decapitation(liz);
+                            data.liz["Tongue"] = "Null";
+                            liz.lizardParams.tongue = false;
+                            liz.tongue.Retract();
+                        }
+
+                        if (data.liz.TryGetValue("CanSpit", out _) && liz.AI.redSpitAI != null)
+                        {
+                            liz.animation = Lizard.Animation.Standard;
+                            liz.AI.behavior = LizardAI.Behavior.Frustrated;
+                            liz.AI.modules.Remove(liz.AI.redSpitAI);
+                            liz.AI.redSpitAI = null;
+                            data.liz["CanSpit"] = "False";
+                        }
+
+                        if (ShadowOfOptions.blind.Value && data.liz.TryGetValue("EyeLeft", out _) && data.liz["EyeLeft"] == "Normal")
+                        {
+                            data.liz["EyeLeft"] = "Cut";
+                            self.Blind(5);
+
+                            EyeCut(liz, "EyeLeft");
+                        }
+
+                        if (ShadowOfOptions.cut_in_half.Value && data.availableBodychunks.Contains(1) && data.availableBodychunks.Contains(2))
+                        {
+                            CutInHalf(liz, data, liz.bodyChunks[1]);
                             liz.Die();
                         }
                     }
                 }
-
-                if (self != null && self.room != null && self.room.game != null && self.room.game.devToolsActive && Input.GetKey("m"))
-                {
-                    List<AbstractCreature> list = new(self.abstractCreature.Room.creatures);
-
-                    foreach (AbstractCreature creature in list)
-                    {
-                        if (creature.realizedCreature != null && creature.realizedCreature is Lizard liz && lizardstorage.TryGetValue(liz.abstractCreature, out LizardData data))
-                        {
-                            if (ShadowOfOptions.tongue_ability.Value && data.liz.TryGetValue("Tongue", out _) && liz.lizardParams.tongue)
-                            {
-                                if (ShadowOfOptions.debug_logs.Value)
-                                    Debug.Log(all + liz.ToString() + "'s Mouth Hit by Debug");
-
-                                data.liz["Tongue"] = "Null";
-                                liz.lizardParams.tongue = false;
-                                liz.tongue.Retract();
-                            }
-
-                            if (data.liz.TryGetValue("CanSpit", out _) && liz.AI.redSpitAI != null)
-                            {
-                                liz.animation = Lizard.Animation.Standard;
-                                liz.AI.behavior = LizardAI.Behavior.Frustrated;
-                                liz.AI.modules.Remove(liz.AI.redSpitAI);
-                                liz.AI.redSpitAI = null;
-                                data.liz["CanSpit"] = "False";
-                            }
-
-                            if (ShadowOfOptions.blind.Value && data.liz.TryGetValue("EyeLeft", out _) && data.liz["EyeLeft"] == "Normal")
-                            {
-                                data.liz["EyeLeft"] = "Cut";
-                                self.Blind(5);
-
-                                EyeCut(liz, "EyeLeft");
-                            }
-
-                            if (ShadowOfOptions.cut_in_half.Value && data.availableBodychunks.Contains(1) && data.availableBodychunks.Contains(2))
-                            {
-                                CutInHalf(liz, data, liz.bodyChunks[1]);
-                                liz.Die();
-                            }
-                        }
-                    }
-                }
             }
+
         }
         catch (Exception e) { Logger.LogError(e); }
     }
@@ -1249,7 +1250,10 @@ public class ShadowOfLizards : BaseUnityPlugin
 
                 LizBreed = self.Template.type.value,
 
-                canCamo = canCamo
+                canCamo = canCamo,
+
+                jawOpenAngle = self.lizardParams != null ? self.lizardParams.jawOpenAngle : 100,
+                jawOpenMoveJawsApart = self.lizardParams != null ? self.lizardParams.jawOpenMoveJawsApart : 20
             };
 
             self.room.abstractRoom.AddEntity(lizCutHeadAbstract);
@@ -1376,13 +1380,13 @@ public class ShadowOfLizards : BaseUnityPlugin
     public static void Eviscerate(Lizard self)
     {
         if (bloodModCheck && ShadowOfOptions.blood_emitter.Value)
-            BloodEmitter();
+            BloodEmitter(lizardstorage.TryGetValue(self.abstractCreature, out LizardData data) ? data : null);
 
         self.Destroy();
 
-        void BloodEmitter()
+        void BloodEmitter(LizardData data)
         {
-            for(int i = 0; i < 300; i++)
+            for(int i = 0; i < (data != null ? data.availableBodychunks.Count * 100 : 300); i++)
             {
                 self.room.AddObject(new BloodParticle(self.bodyChunks[0].pos, new Vector2(UnityEngine.Random.Range(-100f, 100f), UnityEngine.Random.Range(-100f, 100f)), bloodcolours[self.Template.type.ToString()], self.Template.type.value, null, UnityEngine.Random.Range(100f, 700f)));
             }

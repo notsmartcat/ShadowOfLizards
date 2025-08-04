@@ -85,13 +85,13 @@ internal class LizardGraphicsHooks
 
         try
         {
+            data.sLeaser = sLeaser;
+            data.rCam = rCam;
+
             if (data.isGoreHalf)
             {
                 goto Line1;
             }
-
-            data.sLeaser = sLeaser;
-            data.rCam = rCam;
 
             if (data.Beheaded == true)
             {
@@ -289,44 +289,47 @@ internal class LizardGraphicsHooks
         Line1:
 
             //Camo
-            if (ShadowOfOptions.camo_ability.Value && data.liz.TryGetValue("CanCamo", out string CanCamo) && CanCamo == "True" && self.lizard.Template.type != CreatureTemplate.Type.WhiteLizard)
+            if (ShadowOfOptions.camo_ability.Value && data.liz.TryGetValue("CanCamo", out string CanCamo))
             {
-                CamoLizardGraphicsDraw(self, sLeaser, timeStacker, data, data2);
+                if (CanCamo == "True" && self.lizard.Template.type != CreatureTemplate.Type.WhiteLizard)
+                {
+                    CamoLizardGraphicsDraw(self, sLeaser, timeStacker, data, data2);
 
-                Color color = rCam.PixelColorAtCoordinate(self.lizard.mainBodyChunk.pos);
-                Color color2 = rCam.PixelColorAtCoordinate(self.lizard.bodyChunks[1].pos);
-                Color color3 = rCam.PixelColorAtCoordinate(self.lizard.bodyChunks[2].pos);
-                if (color == color2)
-                {
-                    self.whitePickUpColor = color;
+                    Color color = rCam.PixelColorAtCoordinate(self.lizard.mainBodyChunk.pos);
+                    Color color2 = rCam.PixelColorAtCoordinate(self.lizard.bodyChunks[1].pos);
+                    Color color3 = rCam.PixelColorAtCoordinate(self.lizard.bodyChunks[2].pos);
+                    if (color == color2)
+                    {
+                        self.whitePickUpColor = color;
+                    }
+                    else if (color2 == color3)
+                    {
+                        self.whitePickUpColor = color2;
+                    }
+                    else if (color3 == color)
+                    {
+                        self.whitePickUpColor = color3;
+                    }
+                    else
+                    {
+                        self.whitePickUpColor = (color + color2 + color3) / 3f;
+                    }
+                    if (self.whiteCamoColorAmount == -1f)
+                    {
+                        self.whiteCamoColor = self.whitePickUpColor;
+                        self.whiteCamoColorAmount = 1f;
+                    }
                 }
-                else if (color2 == color3)
+                else if (CanCamo == "False" && self.lizard.Template.type == CreatureTemplate.Type.WhiteLizard)
                 {
-                    self.whitePickUpColor = color2;
-                }
-                else if (color3 == color)
-                {
-                    self.whitePickUpColor = color3;
-                }
-                else
-                {
-                    self.whitePickUpColor = (color + color2 + color3) / 3f;
-                }
-                if (self.whiteCamoColorAmount == -1f)
-                {
-                    self.whiteCamoColor = self.whitePickUpColor;
-                    self.whiteCamoColorAmount = 1f;
-                }
-            }
-            else if (ShadowOfOptions.camo_ability.Value && self.lizard.Template.type == CreatureTemplate.Type.WhiteLizard && data.liz.TryGetValue("CanCamo", out string CanCamo2) && CanCamo2 == "False")
-            {
-                self.whiteCamoColor = new Color(1f, 1f, 1f);
-                self.whiteCamoColorAmount = 0f;
+                    self.whiteCamoColor = new Color(1f, 1f, 1f);
+                    self.whiteCamoColorAmount = 0f;
 
-                self.ColorBody(sLeaser, new Color(1f, 1f, 1f));
+                    self.ColorBody(sLeaser, new Color(1f, 1f, 1f));
 
-                sLeaser.sprites[self.SpriteHeadStart].color = WhiteNoCamoHeadColor(self, timeStacker);
-                sLeaser.sprites[self.SpriteHeadStart + 3].color = WhiteNoCamoHeadColor(self, timeStacker);
+                    sLeaser.sprites[self.SpriteHeadStart].color = WhiteNoCamoHeadColor(self, timeStacker);
+                    sLeaser.sprites[self.SpriteHeadStart + 3].color = WhiteNoCamoHeadColor(self, timeStacker);
+                }
             }
 
             if (ShadowOfOptions.cut_in_half.Value)
@@ -1338,6 +1341,7 @@ internal class LizardGraphicsHooks
         {
             return orig.Invoke(self, spriteIndex, cosmetic);
         }
+
         if (ShadowOfOptions.water_breather.Value && cosmetic is AxolotlGills && (!ModManager.Watcher || self.lizard.Template.type != WatcherEnums.CreatureTemplateType.BlizzardLizard))
         {
             if (data.liz.TryGetValue("WaterBreather", out string WaterBreather) && WaterBreather != "True")
@@ -1345,10 +1349,12 @@ internal class LizardGraphicsHooks
                 return spriteIndex;
             }
         }
+
         if (!data.cosmeticBodychunks.Contains(0) && cosmetic is Whiskers && self.lizard.Template.type != CreatureTemplate.Type.BlackLizard)
         {
             return spriteIndex;
         }
+
         if (!data.cosmeticBodychunks.Contains(2) && (cosmetic is TailFin || cosmetic is TailGeckoScales || cosmetic is TailTuft))
         {
             return spriteIndex;

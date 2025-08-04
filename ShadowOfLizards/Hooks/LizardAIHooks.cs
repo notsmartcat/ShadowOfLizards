@@ -35,11 +35,12 @@ internal class LizardAIHooks
                 }
             }
 
-            if (!data.liz.TryGetValue("CanSpit", out string _))
+            if (!data.liz.TryGetValue("CanSpit", out string canSpit))
             {
                 return;
             }
-            if (data.liz["CanSpit"] == "True" && self.redSpitAI == null)
+
+            if (canSpit == "True" && self.redSpitAI == null)
             {
                 self.redSpitAI = new LizardAI.LizardSpitTracker(self);
                 self.AddModule(self.redSpitAI);
@@ -47,7 +48,7 @@ internal class LizardAIHooks
                 if (ShadowOfOptions.debug_logs.Value)
                     Debug.Log(all + self.ToString() + " added Spit ability");
             }
-            else if (data.liz["CanSpit"] == "False" && self.redSpitAI != null)
+            else if (canSpit == "False" && self.redSpitAI != null)
             {
                 self.modules.Remove(self.redSpitAI);
                 self.redSpitAI = null;

@@ -7,58 +7,63 @@ namespace ShadowOfLizards;
 
 sealed class LizCutHead : PlayerCarryableItem, IDrawable
 {
-    #region values
-    public float lastDarkness = -1f;
-    public float darkness;
-
-    public Color LizBodyColour;
-    public Color LizEffectColour;
-
-    public Color LizBloodColour;
-
-    public Color LizEyeRightColour;
-    public Color LizEyeLeftColour;
-    #endregion
-
+    #region Public
     public int ElectricColorTimer = 0;
 
-    #region Values Misc
+    public float donned = 0;
+
+    public Color LizBloodColour;
+    #endregion
+
+    public Vector2 rotation;
+    private Vector2 lastRotation;
+
+    #region Private
     public override float ThrowPowerFactor => 1f;
+
+    private float lastDarkness = -1f;
+    private float darkness;
+
+    private Color LizBodyColour;
+    private Color LizEffectColour;
+
+    private Color LizEyeRightColour;
+    private Color LizEyeLeftColour;
+
+    private bool flipX = false;
 
     private int whiteFlicker = 0;
     private int flicker;
     private float flickerColor = 0;
 
-    public const int SourceCodeLizardsFlickerThreshold = 10;
-    public const int SourceCodeLizardsWhiteFlickerThreshold = 15;
+    private const int SourceCodeLizardsFlickerThreshold = 10;
+    private const int SourceCodeLizardsWhiteFlickerThreshold = 15;
 
-    public RoomPalette palette;
+    private RoomPalette palette;
 
-    public const int TotalSprites = 3;
-    public const int SpriteJawStart = 2;
+    private const int SpriteJawStart = 2;
 
-    public List<string> HeadSprites;
+    private List<string> HeadSprites;
 
-    public Vector2 rotation;
-    public Vector2 lastRotation;
+    private float jawRotation;
+    private float lastJawRotation;
 
-    public float jawRotation;
-    public float lastJawRotation;
+    private const float JawVelocityOverOpenSensitivity = 2.5f;
 
-    public const float MaxJawRotation = 100f;
-    public const float JawOpenSensitivity = 20f;
-    public const float JawVelocityOverOpenSensitivity = 2.5f;
+    private readonly List<int> headSpriteNum = new() { 9, 16, 16, 10, 10, 10, 15, 14 };
 
-    public List<int> headSpriteNum = new() { 9, 16, 16, 10, 10, 10, 15, 14 };
-
-    public Color whiteCamoColor = new(0f, 0f, 0f);
-    public Color whitePickUpColor;
+    private Color whiteCamoColor = new(0f, 0f, 0f);
+    private Color whitePickUpColor;
     private float whiteCamoColorAmount = -1f;
 
-    public float baseBlink;
-    public float baseLastBlink;
+    private float baseBlink;
+    private float baseLastBlink;
 
-    public bool everySecondDraw;
+    private bool everySecondDraw;
+
+    private Vector2 rotVel;
+
+    private bool facingRight;
     #endregion
 
     public LizCutHeadAbstract Abstr { get; }
@@ -116,7 +121,10 @@ sealed class LizCutHead : PlayerCarryableItem, IDrawable
             grabber.firstChunk.vel += push;
         }
 
-        firstChunk.vel = Vector2.zero;
+        if (weapon.firstChunk.pos.x > firstChunk.pos.x && facingRight || weapon.firstChunk.pos.x < firstChunk.pos.x && !facingRight)
+        {
+            rotation = Custom.rotateVectorDeg(rotation, 180);
+        }
 
         HitEffect(weapon.firstChunk.vel);
 
@@ -125,7 +133,6 @@ sealed class LizCutHead : PlayerCarryableItem, IDrawable
             var num = UnityEngine.Random.Range(3, 8);
             for (int k = 0; k < num; k++)
             {
-                //-- MR7: Figure out how to make sparks have the lizard graphics thing where they change color, without NEEDING lizard graphics.
                 Vector2 pos = firstChunk.pos + Custom.DegToVec(Rand * 360f) * 5f * Rand;
                 Vector2 vel = -impactVelocity * -0.1f + Custom.DegToVec(Rand * 360f) * Mathf.Lerp(0.2f, 0.4f, Rand) * impactVelocity.magnitude;
                 room.AddObject(new Spark(pos, vel, Abstr.canCamo ? Camo(HeadColor(UnityEngine.Random.value)) : HeadColor(UnityEngine.Random.value), null, 10, 170));
@@ -176,7 +183,18 @@ sealed class LizCutHead : PlayerCarryableItem, IDrawable
     {
         base.Update(eu);
 
+        lastRotation = rotation;
+
+        rotation = Custom.DegToVec(Custom.VecToDeg(rotation) + rotVel.x);
+
+        rotVel = Vector2.ClampMagnitude(rotVel, 50f);
+        rotVel *= Custom.LerpMap(rotVel.magnitude, 5f, 50f, 1f, 0.8f);
+
+        facingRight = Custom.VecToDeg(rotation) > 0;
+
         var chunk = firstChunk;
+
+        float to = 0;
 
         if (flicker > 0)
         {
@@ -187,9 +205,7 @@ sealed class LizCutHead : PlayerCarryableItem, IDrawable
         else
         {
             baseLastBlink = baseBlink;
-
             baseBlink = Mathf.Lerp(baseBlink - Mathf.Floor(baseBlink), 0.25f, 0.02f);
-
         }
         if (whiteFlicker > 0)
             whiteFlicker--;
@@ -198,30 +214,45 @@ sealed class LizCutHead : PlayerCarryableItem, IDrawable
         {
             var grabber = grabbedBy[0].grabber;
 
-            if (grabber is Player && (grabber as Player).Sneak > 0.01f)
+            if (grabber is Player scug && scug.privSneak > 0.5f)
             {
-                var scug = grabber as Player;
+                Vector2 faceDir = Custom.DegToVec(Custom.AimFromOneVectorToAnother(scug.bodyChunks[1].pos, scug.bodyChunks[0].pos));
 
-                Vector2 scugAimDir = new Vector2(scug.ThrowDirection, 0);
+                rotation = faceDir;
 
-                if (scug.Sneak < 0.5f)
+                //to = Mathf.InverseLerp(15f, 10f, Vector2.Distance((scug.graphicsModule as PlayerGraphics).hands[grabbedBy[0].graspUsed].pos, scug.mainBodyChunk.pos));
+
+                to = 1;
+
+                if (faceDir.x > 0 == Abstr.scaleX > 0)
                 {
-                    Vector2 faceDir = new Vector2(scug.ThrowDirection, 0);
-
-                    bodyChunks[0].pos = Vector2.Lerp(bodyChunks[0].pos, bodyChunks[0].pos + faceDir * 15, 0.3f);
+                    flipX = true;
                 }
-                bodyChunks[0].vel = Vector2.Lerp(bodyChunks[0].vel, Vector2.zero, 0.3f);
-                rotation = Vector2.Lerp(rotation, Custom.DirVec(grabber.mainBodyChunk.pos + scugAimDir * 2, chunk.pos), 0.3f);
+                else
+                {
+                    flipX = false;
+                }
             }
             else
             {
-                rotation = Custom.PerpendicularVector(Custom.DirVec(chunk.pos, grabber.mainBodyChunk.pos));
+                rotation = Abstr.scaleX < 0 ? Custom.RotateAroundOrigo(Custom.PerpendicularVector(Custom.DirVec(chunk.pos, grabber.mainBodyChunk.pos)), 180) : Custom.PerpendicularVector(Custom.DirVec(chunk.pos, grabber.mainBodyChunk.pos));
                 rotation.y = Mathf.Abs(rotation.y);
+
+                flipX = false;
             }
         }
-        else
+        else if (firstChunk.ContactPoint.y < 0)
         {
-            rotation += 0.9f * Custom.DirVec(chunk.lastPos, chunk.pos) * Custom.Dist(chunk.lastPos, chunk.pos);
+            Vector2 b;
+
+            b = Custom.DegToVec(90f * (facingRight ? 1 : -1));
+
+            rotation = Vector2.Lerp(rotation, b, UnityEngine.Random.value);
+            rotVel *= UnityEngine.Random.value;
+        }
+        else if (Vector2.Distance(firstChunk.lastPos, firstChunk.pos) > 5f && rotVel.magnitude < 7f)
+        {
+            rotVel += Custom.RNV() * (Mathf.Lerp(7f, 25f, UnityEngine.Random.value) + firstChunk.vel.magnitude * 2f);
         }
 
         if (!Custom.DistLess(chunk.lastPos, chunk.pos, 3f) && room.GetTile(chunk.pos).Solid && !room.GetTile(chunk.lastPos).Solid)
@@ -256,11 +287,13 @@ sealed class LizCutHead : PlayerCarryableItem, IDrawable
             whiteCamoColorAmount = Mathf.Clamp(Mathf.Lerp(whiteCamoColorAmount, 1, 0.05f * UnityEngine.Random.value), 0f, 1f);
         }
 
+        donned = Custom.LerpAndTick(donned, to, 0.11f, 0.033333335f);
+
         lastRotation = rotation;
     }
 
     #region Colours
-    public Color effectColor
+    private Color effectColor
     {
         get
         {
@@ -272,7 +305,7 @@ sealed class LizCutHead : PlayerCarryableItem, IDrawable
         }
     }
 
-    public Color SalamanderColor
+    private Color SalamanderColor
     {
         get
         {
@@ -326,7 +359,7 @@ sealed class LizCutHead : PlayerCarryableItem, IDrawable
         }
     }
 
-    public Color HeadColor(float timeStacker)
+    private Color HeadColor(float timeStacker)
     {
         if (whiteFlicker > 0 && (whiteFlicker > SourceCodeLizardsWhiteFlickerThreshold || everySecondDraw))
         {
@@ -340,17 +373,17 @@ sealed class LizCutHead : PlayerCarryableItem, IDrawable
         return Color.Lerp(HeadColor1, HeadColor2, num);
     }
 
-    Color Camo(Color col)
+    private Color Camo(Color col)
     {
         return Abstr.canCamo ? Color.Lerp(col, whiteCamoColor, whiteCamoColorAmount) : col;
     }
 
-    Color ElectricColor(Color col)
+    private Color ElectricColor(Color col)
     {
         return ElectricColorTimer > 0 ? Color.Lerp(col, new Color(0.7f, 0.7f, 1f), (float)ElectricColorTimer / 50f) : col;
     }
 
-    public void Flicker(int fl)
+    private void Flicker(int fl)
     {
         if (Abstr.canCamo)
         {
@@ -361,7 +394,7 @@ sealed class LizCutHead : PlayerCarryableItem, IDrawable
             flicker = fl;
     }
 
-    public void WhiteFlicker(int fl)
+    private void WhiteFlicker(int fl)
     {
         if (Abstr.canCamo)
         {
@@ -415,6 +448,22 @@ sealed class LizCutHead : PlayerCarryableItem, IDrawable
         for (int i = 0; i < HeadSprites.Count; i++)
         {
             sLeaser.sprites[i] = new FSprite(HeadSprites[i], true);
+            sLeaser.sprites[i].scaleX = Abstr.scaleX;
+            sLeaser.sprites[i].scaleY = Abstr.scaleY;
+        }
+
+        int headLength3 = Abstr.HeadSprite3.Length;
+        char head3 = Abstr.HeadSprite3[headLength3 - 3];
+
+        if (head3 == 3)
+        {
+            sLeaser.sprites[4].anchorY = 0.55f;
+
+            if (flag)
+            {
+                sLeaser.sprites[6].anchorY = 0.75f;
+                sLeaser.sprites[7].anchorY = 0.75f;
+            }
         }
 
         if (flag)
@@ -474,11 +523,19 @@ sealed class LizCutHead : PlayerCarryableItem, IDrawable
 
         lastJawRotation = jawRotation;
 
-        float desiredJawRotation = -Mathf.Clamp(jawOpenRatio * JawOpenSensitivity, 0, MaxJawRotation);
+        bool flipJaw = Abstr.scaleX > 0 ^ flipX;
+
+        float desiredJawRotation = Mathf.Clamp(jawOpenRatio * Abstr.jawOpenMoveJawsApart, 0, Abstr.jawOpenAngle) * (flipJaw ? -1 : 1);
         jawRotation = Mathf.Lerp(lastJawRotation, headRotation + desiredJawRotation, 0.25f);
 
-        if (jawRotation > headRotation + 10)
+        if (flipJaw && jawRotation > headRotation + 10)
+        {
             jawRotation = headRotation + 10;
+        }
+        else if (!flipJaw && jawRotation < headRotation - 10)
+        {
+            jawRotation = headRotation - 10;
+        }
 
         headRotation %= 360f;
         jawRotation %= 360f;
@@ -506,6 +563,9 @@ sealed class LizCutHead : PlayerCarryableItem, IDrawable
             sLeaser.sprites[i].x = pos.x - camPos.x;
             sLeaser.sprites[i].y = pos.y - camPos.y;
             sLeaser.sprites[i].rotation = i < SpriteJawStart ? jawRotation : headRotation;
+
+            sLeaser.sprites[i].scaleX = flipX ? Abstr.scaleX * -1 : Abstr.scaleX;
+            sLeaser.sprites[i].scaleY = Abstr.scaleY;
         }
 
         if (Abstr.LizType == "CyanLizard")

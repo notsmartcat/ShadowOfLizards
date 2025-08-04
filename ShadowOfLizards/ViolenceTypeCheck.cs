@@ -13,7 +13,7 @@ public class ViolenceTypeCheck
 
     static void ViolenceDamageTypeCheck(On.Creature.orig_Violence orig, Creature self, BodyChunk source, Vector2? directionAndMomentum, BodyChunk hitChunk, Pos hitAppendage, DamageType type, float damage, float stunBonus)
     {
-        if (type == DamageType.Bite && source != null && source.owner != null && source.owner.abstractPhysicalObject is AbstractCreature liz && ShadowOfLizards.lizardstorage.TryGetValue(liz, out ShadowOfLizards.LizardData data) && (data.transformation == "Electric" || data.transformation == "ElectricTransformation"))
+        if (type == DamageType.Bite && source != null && source.owner != null && source.owner is Lizard liz && ShadowOfLizards.lizardstorage.TryGetValue(liz.abstractCreature, out ShadowOfLizards.LizardData data) && (data.transformation == "Electric" || data.transformation == "ElectricTransformation"))
         {
             self.Violence(source, directionAndMomentum, hitChunk, hitAppendage, DamageType.Electric, damage / 2, stunBonus / 2);
 

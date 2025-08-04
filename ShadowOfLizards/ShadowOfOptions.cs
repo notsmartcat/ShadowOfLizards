@@ -16,13 +16,13 @@ public class ShadowOfOptions : OptionInterface
         debug_logs = config.Bind("debug_logs", false, new ConfigurableInfo("If turned On Messages that include a lot of info about Lizards will show up when you turn on Debug Logs, these will also appear in the 'consoleLog.txt' all logs from this mod start with 'ShadowOf:' for easy locating. (Default = false)", null, "", new object[1] { "Debug Logs" }));
         chance_logs = config.Bind("chance_logs", false, new ConfigurableInfo("If turned On Messages that include exact chance numbers Lizards rolled compared to the target number to succed a check, these will also appear in the 'consoleLog.txt' all logs from this mod start with 'ShadowOf:' for easy locating. (Default = false)", null, "", new object[1] { "Chance Debug Logs" }));
 
-        damage_based_chance = config.Bind("damage_based_chance", true, new ConfigurableInfo("If On all Physical Chances will be multiplied by the Damage value. (Default = true)", null, "", new object[1] { "Damage Based Physical Chance" }));
+        damage_based_chance = config.Bind("damage_based_chance", true, new ConfigurableInfo("If On all Physical Chances will be multiplied by the Damage value. (Default = true)", null, "", new object[1] { "Damage Based Chance" }));
         cosmetic_sprite_despawn = config.Bind("cosmetic_sprite_despawn", true, new ConfigurableInfo("If On Cosmetic Sprites from this mod such as Broken Teeth Despawn after a short amount of time the same way Centipede Shells Despawn. (Default = true)", null, "", new object[1] { "Cosmetic Sprite Despawn" }));
 
         #region Transformations
         #region Spider Transformation
         spider_transformation = config.Bind("spider_transformation", true, new ConfigurableInfo("Enables the Spider Transformation for Lizards. (Default = true)", null, "", new object[1] { "Spider Transformation" }));
-        spider_transformation_chance = config.Bind("spider_transformation_chance", 50, new ConfigurableInfo("This is the Chance for Lizards who die by any type of Spider or Spider-Lizard to become Spider Mothers. Depending on what killed the Lizard this value will be multiplied in ranges from 25% to 150% (Default = 50%)", null, "", new object[1] { "Chance for Lizards to become Spider Mothers" }));
+        spider_transformation_chance = config.Bind("spider_transformation_chance", 30, new ConfigurableInfo("This is the Chance for Lizards who die by any type of Spider or Spider-Lizard to become Spider Mothers. Depending on what killed the Lizard this value will be multiplied in ranges from 25% to 150% (Default = 30%)", null, "", new object[1] { "Chance for Lizards to become Spider Mothers" }));
         spider_transformation_skip = config.Bind("spider_transformation_skip", false, new ConfigurableInfo("If this is On Lizards who become Spider Mothers will gain the Spider Transformation instantly next cycle. (Default = False)", null, "", new object[1] { "Skip Transformation" }));
         spawn_spider_transformation_chance = config.Bind("spawn_spider_transformation_chance", 1, new ConfigurableInfo("If the slider is at 0% new lizards will not spawn with the Transformation. " +
         "This will not stop them from getting the Transformattion by normal means as long as the Transformation is not turned off. \nLizards can only have one Transformation. When the Lizards are created the Transformations are picked from the top, " +
@@ -32,7 +32,7 @@ public class ShadowOfOptions : OptionInterface
 
         #region Electric Transformation
         electric_transformation = config.Bind("electric_transformation", true, new ConfigurableInfo("Enables the Electric Transformation for Lizards. (Default = true)", null, "", new object[1] { "Electric Transformation" }));
-        electric_transformation_chance = config.Bind("electric_transformation_chance", 50, new ConfigurableInfo("This is the Chance for Lizards who die by Electricity to become Electric. (Default = 50%)", null, "", new object[1] { "Chance for Lizards to become Electric" }));
+        electric_transformation_chance = config.Bind("electric_transformation_chance", 30, new ConfigurableInfo("This is the Chance for Lizards who die by Electricity to become Electric. (Default = 30%)", null, "", new object[1] { "Chance for Lizards to become Electric" }));
         electric_transformation_skip = config.Bind("electric_transformation_skip", false, new ConfigurableInfo("If this if On Lizards who become Electric will instantly gain the Electric Transformation instantly next cycle. (Default = false)", null, "", new object[1] { "Skip Transformation" }));
         spawn_electric_transformation_chance = config.Bind("spawn_electric_transformation_chance", 1, new ConfigurableInfo("If the slider is at 0% new lizards will not spawn with the Transformation. " +
         "This will not stop them from getting the Transformattion by normal means as long as the Transformation is not turned off. \nLizards can only have one Transformation. When the Lizards are created the Transformations are picked from the top, " +
@@ -42,7 +42,7 @@ public class ShadowOfOptions : OptionInterface
 
         #region Melted Transformation
         melted_transformation = config.Bind("melted_transformation", true, new ConfigurableInfo("Enables the Melted Transformation for Lizards. (Default = true)", null, "", new object[1] { "Melted Transformation" }));
-        melted_transformation_chance = config.Bind("melted_transformation_chance", 50, new ConfigurableInfo("This is the Chance for Lizards who die by Acid/Lava to become Melted. (Default = 50%)", null, "", new object[1] { "Chance for Lizards to become Melted" }));
+        melted_transformation_chance = config.Bind("melted_transformation_chance", 30, new ConfigurableInfo("This is the Chance for Lizards who die by Acid/Lava to become Melted. (Default = 30%)", null, "", new object[1] { "Chance for Lizards to become Melted" }));
         melted_transformation_skip = config.Bind("melted_transformation_skip", false, new ConfigurableInfo("If this if On Lizards who become Melted will instantly gain the Melted Transformation instantly next cycle. (Default = false)", null, "", new object[1] { "Skip Transformation" }));
         spawn_melted_transformation_chance = config.Bind("spawn_melted_transformation_chance", 1, new ConfigurableInfo("If the slider is at 0% new lizards will not spawn with the Transformation. " +
         "This will not stop them from getting the Transformattion by normal means as long as the Transformation is not turned off. \nLizards can only have one Transformation. When the Lizards are created the Transformations are picked from the top, " +
@@ -76,19 +76,19 @@ public class ShadowOfOptions : OptionInterface
 
         #region Abilities
         tongue_ability = config.Bind("tongue_ability", true, new ConfigurableInfo("If On Lizards can gain or lose their Tongue. (Default = true)", null, "", new object[1] { "Tongue" }));
-        tongue_ability_chance = config.Bind("tongue_ability_chance", 40, new ConfigurableInfo("Chance for Lizard to lose their tongue when hit in the Mouth. (Default = 40%)", null, "", new object[1] { "Chance to Cut Tongue" }));
+        tongue_ability_chance = config.Bind("tongue_ability_chance", 30, new ConfigurableInfo("Chance for Lizard to lose their tongue when hit in the Mouth. (Default = 30%)", null, "", new object[1] { "Chance to Cut Tongue" }));
 
         jump_ability = config.Bind("jump_ability", true, new ConfigurableInfo("If On Lizards can gain or lose their Jump ability (The Cyan Lizards Jump). (Default = true)", null, "", new object[1] { "Jump" }));
-        jump_ability_chance = config.Bind("jump_ability_chance", 50, new ConfigurableInfo("Chance for Lizard to lose their Jump ability when they get a Gas Leak. (Default = 50%)", null, "", new object[1] { "Chance to Disable Jump" }));
+        jump_ability_chance = config.Bind("jump_ability_chance", 20, new ConfigurableInfo("Chance for Lizard to lose their Jump ability when they get a Gas Leak. (Default = 20%)", null, "", new object[1] { "Chance to Disable Jump" }));
 
-        swim_ability = config.Bind("swim_ability", true, new ConfigurableInfo("If On Lizards can gain or lose their Jump ability (The Cyan Lizards Jump). (Default = true)", null, "", new object[1] { "Swim" }));
-        swim_ability_chance = config.Bind("swim_ability_chance", 50, new ConfigurableInfo("Chance for Lizard to lose their Jump ability when they get a Gas Leak. (Default = 50%)", null, "", new object[1] { "Chance to Lose Swim Ability" }));
+        swim_ability = config.Bind("swim_ability", true, new ConfigurableInfo("If On Lizards can gain or lose their Swim ability. (Default = true)", null, "", new object[1] { "Swim" }));
+        swim_ability_chance = config.Bind("swim_ability_chance", 15, new ConfigurableInfo("Chance for Lizard to lose their Swim ability when they... (Default = 15%)", null, "", new object[1] { "Chance to Lose Swim Ability" }));
 
-        climb_ability = config.Bind("climb_ability", true, new ConfigurableInfo("If On Lizards can gain or lose their Jump ability (The Cyan Lizards Jump). (Default = true)", null, "", new object[1] { "Climb" }));
-        climb_ability_chance = config.Bind("climb_ability_chance", 50, new ConfigurableInfo("Chance for Lizard to lose their Jump ability when they get a Gas Leak. (Default = 50%)", null, "", new object[1] { "Chance to Lose Climb Ability" }));
+        climb_ability = config.Bind("climb_ability", true, new ConfigurableInfo("If On Lizards can gain or lose their Climb ability. (Default = true)", null, "", new object[1] { "Climb" }));
+        climb_ability_chance = config.Bind("climb_ability_chance", 10, new ConfigurableInfo("Chance for Lizard to lose their Climb ability whenever any of their legs get cut. (Default = 10%)", null, "", new object[1] { "Chance to Lose Climb Ability" }));
 
-        camo_ability = config.Bind("camo_ability", true, new ConfigurableInfo("If On Lizards can gain or lose their Jump ability (The Cyan Lizards Jump). (Default = true)", null, "", new object[1] { "Camo" }));
-        camo_ability_chance = config.Bind("camo_ability_chance", 50, new ConfigurableInfo("Chance for Lizard to lose their Jump ability when they get a Gas Leak. (Default = 50%)", null, "", new object[1] { "Chance to Disable Camo" }));
+        camo_ability = config.Bind("camo_ability", true, new ConfigurableInfo("If On Lizards can gain or lose their Camo ability. (Default = true)", null, "", new object[1] { "Camo" }));
+        camo_ability_chance = config.Bind("camo_ability_chance", 15, new ConfigurableInfo("Chance for Lizard to lose their Camo ability when... (Default = 15%)", null, "", new object[1] { "Chance to Disable Camo" }));
         #endregion
 
         #region Immunities
@@ -181,10 +181,6 @@ public class ShadowOfOptions : OptionInterface
         #region Main Options
         Tabs[0] = new OpTab(this, "Main Options");
         InitializeMarginAndPos();
-
-        AddNewLine();
-        AddTextLabel("Shadow of Lizards\nMod Options", 0, bigText: true);
-        DrawTextLabels(ref Tabs[0]);
 
         AddNewLine();
         AddBox();

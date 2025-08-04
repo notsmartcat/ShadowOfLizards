@@ -23,25 +23,29 @@ internal class TransformationElectric
 
     public static void ElectricBubbleDraw( LizardBubble self, RoomCamera.SpriteLeaser sLeaser, float timeStacker, GraphicsData data2, bool camo)
     {
+        if (data2.ElectricColorTimer <= 0)
+        {
+            return;
+        }
+
         try
         {
-            if (data2.ElectricColorTimer > 0)
+
+            Color color = Color.Lerp(self.lizardGraphics.effectColor, new Color(0.7f, 0.7f, 1f), (float)data2.ElectricColorTimer / 50f);
+
+            float num = 1f - Mathf.Pow(0.5f + 0.5f * Mathf.Sin(Mathf.Lerp(self.lizardGraphics.lastBlink, self.lizardGraphics.blink, timeStacker) * 2f * 3.1415927f), 1.5f + self.lizardGraphics.lizard.AI.excitement * 1.5f);
+            if (self.lizardGraphics.headColorSetter != 0f)
             {
-                Color color = Color.Lerp(self.lizardGraphics.effectColor, new Color(0.7f, 0.7f, 1f), (float)data2.ElectricColorTimer / 50f);
-
-                float num = 1f - Mathf.Pow(0.5f + 0.5f * Mathf.Sin(Mathf.Lerp(self.lizardGraphics.lastBlink, self.lizardGraphics.blink, timeStacker) * 2f * 3.1415927f), 1.5f + self.lizardGraphics.lizard.AI.excitement * 1.5f);
-                if (self.lizardGraphics.headColorSetter != 0f)
-                {
-                    num = Mathf.Lerp(num, (self.lizardGraphics.headColorSetter > 0f) ? 1f : 0f, Mathf.Abs(self.lizardGraphics.headColorSetter));
-                }
-                if (self.lizardGraphics.flicker > 10)
-                {
-                    num = self.lizardGraphics.flickerColor;
-                }
-                num = Mathf.Lerp(num, Mathf.Pow(Mathf.Max(0f, Mathf.Lerp(self.lizardGraphics.lastVoiceVisualization, self.lizardGraphics.voiceVisualization, timeStacker)), 0.75f), Mathf.Lerp(self.lizardGraphics.lastVoiceVisualizationIntensity, self.lizardGraphics.voiceVisualizationIntensity, timeStacker));
-
-                sLeaser.sprites[0].color = Color.Lerp(Color.Lerp(Color.Lerp(self.lizardGraphics.HeadColor1, self.lizardGraphics.whiteCamoColor, self.lizardGraphics.whiteCamoColorAmount), color, num), self.lizardGraphics.palette.blackColor, 1f - Mathf.Clamp(Mathf.Lerp(self.lastLife, self.life, timeStacker) * 2f, 0f, 1f));
+                num = Mathf.Lerp(num, (self.lizardGraphics.headColorSetter > 0f) ? 1f : 0f, Mathf.Abs(self.lizardGraphics.headColorSetter));
             }
+            if (self.lizardGraphics.flicker > 10)
+            {
+                num = self.lizardGraphics.flickerColor;
+            }
+            num = Mathf.Lerp(num, Mathf.Pow(Mathf.Max(0f, Mathf.Lerp(self.lizardGraphics.lastVoiceVisualization, self.lizardGraphics.voiceVisualization, timeStacker)), 0.75f), Mathf.Lerp(self.lizardGraphics.lastVoiceVisualizationIntensity, self.lizardGraphics.voiceVisualizationIntensity, timeStacker));
+
+            sLeaser.sprites[0].color = Color.Lerp(Color.Lerp(Color.Lerp(self.lizardGraphics.HeadColor1, self.lizardGraphics.whiteCamoColor, self.lizardGraphics.whiteCamoColorAmount), color, num), self.lizardGraphics.palette.blackColor, 1f - Mathf.Clamp(Mathf.Lerp(self.lastLife, self.life, timeStacker) * 2f, 0f, 1f));
+
         }
         catch (Exception e) { ShadowOfLizards.Logger.LogError(e); }
     }
@@ -982,16 +986,16 @@ internal class TransformationElectric
                     Spark();
                 }
             }
-
-            void Spark()
-            {
-                BodyChunk tempChunk = chunk == null ? self.bodyChunks[UnityEngine.Random.Range(0, self.bodyChunks.Length)] : chunk;
-                Vector2 pos = tempChunk.pos + new Vector2(tempChunk.rad * UnityEngine.Random.Range(-1f, 1f), tempChunk.rad * UnityEngine.Random.Range(-1f, 1f));
-
-                self.room.AddObject(new Spark(pos, Custom.RNV() * Mathf.Lerp(4f, 14f, UnityEngine.Random.value), new Color(0.7f, 0.7f, 1f), null, 8, 14));
-            }
         }
         catch (Exception e) { ShadowOfLizards.Logger.LogError(e); }
+
+        void Spark()
+        {
+            BodyChunk tempChunk = chunk == null ? self.bodyChunks[UnityEngine.Random.Range(0, self.bodyChunks.Length)] : chunk;
+            Vector2 pos = tempChunk.pos + new Vector2(tempChunk.rad * UnityEngine.Random.Range(-1f, 1f), tempChunk.rad * UnityEngine.Random.Range(-1f, 1f));
+
+            self.room.AddObject(new Spark(pos, Custom.RNV() * Mathf.Lerp(4f, 14f, UnityEngine.Random.value), new Color(0.7f, 0.7f, 1f), null, 8, 14));
+        }
     }
 
     public static void ElectricEatRegrowth(Lizard self, Lizard liz, LizardData data, LizardData data2)
@@ -1036,18 +1040,18 @@ internal class TransformationElectric
                     return;
                 }
             }
-
-            bool ElectricChance()
-            {
-                return self.grasps[0].grabbed is JellyFish && Chance(self, ShadowOfOptions.electric_regrowth_chance.Value * 0.25f, "Electric Regrowth by eating YellyFish")
-                    || self.grasps[0].grabbed is Centipede centi && (centi.abstractCreature.creatureTemplate.type == CreatureTemplate.Type.SmallCentipede && Chance(self, ShadowOfOptions.electric_regrowth_chance.Value * 0.5f, "Electric Regrowth by eating " + centi)
-                    || centi.abstractCreature.creatureTemplate.type == CreatureTemplate.Type.Centipede && Chance(self, ShadowOfOptions.electric_regrowth_chance.Value, "Electric Regrowth by eating " + centi)
-                    || centi.abstractCreature.creatureTemplate.type == CreatureTemplate.Type.Centiwing && Chance(self, ShadowOfOptions.electric_regrowth_chance.Value * 1.5f, "Electric Regrowth by eating " + centi)
-                    || centi.abstractCreature.creatureTemplate.type == CreatureTemplate.Type.RedCentipede && Chance(self, ShadowOfOptions.electric_regrowth_chance.Value * 2f, "Electric Regrowth by eating " + centi)
-                    || (ModManager.DLCShared && centi.abstractCreature.creatureTemplate.type == DLCSharedEnums.CreatureTemplateType.AquaCenti && Chance(self, ShadowOfOptions.electric_regrowth_chance.Value * 2f, "Electric Regrowth by eating " + centi)));
-            }
         }
         catch (Exception e) { ShadowOfLizards.Logger.LogError(e); }
+
+        bool ElectricChance()
+        {
+            return self.grasps[0].grabbed is JellyFish && Chance(self, ShadowOfOptions.electric_regrowth_chance.Value * 0.25f, "Electric Regrowth by eating YellyFish")
+                || self.grasps[0].grabbed is Centipede centi && (centi.abstractCreature.creatureTemplate.type == CreatureTemplate.Type.SmallCentipede && Chance(self, ShadowOfOptions.electric_regrowth_chance.Value * 0.5f, "Electric Regrowth by eating " + centi)
+                || centi.abstractCreature.creatureTemplate.type == CreatureTemplate.Type.Centipede && Chance(self, ShadowOfOptions.electric_regrowth_chance.Value, "Electric Regrowth by eating " + centi)
+                || centi.abstractCreature.creatureTemplate.type == CreatureTemplate.Type.Centiwing && Chance(self, ShadowOfOptions.electric_regrowth_chance.Value * 1.5f, "Electric Regrowth by eating " + centi)
+                || centi.abstractCreature.creatureTemplate.type == CreatureTemplate.Type.RedCentipede && Chance(self, ShadowOfOptions.electric_regrowth_chance.Value * 2f, "Electric Regrowth by eating " + centi)
+                || (ModManager.DLCShared && centi.abstractCreature.creatureTemplate.type == DLCSharedEnums.CreatureTemplateType.AquaCenti && Chance(self, ShadowOfOptions.electric_regrowth_chance.Value * 2f, "Electric Regrowth by eating " + centi)));
+        }
     }
 
     static void Shock(Lizard self, LizardData data, GraphicsData graphicData, PhysicalObject shockObj)

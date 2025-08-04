@@ -6,6 +6,7 @@ using Menu;
 using MoreSlugcats;
 using System.Collections.Generic;
 using System.Linq;
+using static MonoMod.InlineRT.MonoModRule;
 
 namespace ShadowOfLizards;
 
@@ -38,31 +39,68 @@ internal class MiscHooks
         On.Creature.Grab += CreatureGrab;
 
         On.MoreSlugcats.SingularityBomb.Explode += SingularityBombExplode;
+
+        On.SlugcatHand.Update += SlugcatHandUpdate;
+
+        On.Player.HeavyCarry += PlayerHeavyCarry;
+
+        On.SlugcatHand.EngageInMovement += SlugcatHandEngageInMovement;
+    }
+
+    static bool SlugcatHandEngageInMovement(On.SlugcatHand.orig_EngageInMovement orig, SlugcatHand self)
+    {
+        Player scug = self.owner.owner as Player;
+
+        if (scug.privSneak > 0.5f && scug.grasps[self.limbNumber] != null && scug.grasps[self.limbNumber].grabbed is LizCutHead)
+        {
+            self.huntSpeed = 12f;
+            self.quickness = 0.7f;
+            return true;
+        }
+
+        return orig(self);
+    }
+
+    static bool PlayerHeavyCarry(On.Player.orig_HeavyCarry orig, Player self, PhysicalObject obj)
+    {
+        if (obj is LizCutHead && self.privSneak > 0.5f)
+        {
+            return false;
+        }
+
+        return orig(self, obj);
+    }
+
+    static void SlugcatHandUpdate(On.SlugcatHand.orig_Update orig, SlugcatHand self)
+    {
+        orig(self);
+
+        Player scug = self.owner.owner as Player;
+
+        if (scug.privSneak > 0.5f && scug.grasps[self.limbNumber] != null)
+        {
+            if (scug.grasps[self.limbNumber].grabbed is LizCutHead)
+            {
+                self.relativeHuntPos *= 1f - (scug.grasps[self.limbNumber].grabbed as LizCutHead).donned;
+            }
+        }
     }
 
     static void GasLeak(On.LizardJumpModule.orig_Update orig, LizardJumpModule self)
     {
         orig.Invoke(self);
 
-        float roll = UnityEngine.Random.Range(0, 100);
-
-        if (!ShadowOfOptions.jump_ability.Value || self.gasLeakSpear == null || !lizardstorage.TryGetValue(self.lizard.abstractCreature, out LizardData data) || roll >= ShadowOfOptions.jump_ability_chance.Value)
+        if (!ShadowOfOptions.jump_ability.Value || self.lizard == null || self.gasLeakSpear == null || !lizardstorage.TryGetValue(self.lizard.abstractCreature, out LizardData data) || !Chance(self.lizard, ShadowOfOptions.jump_ability_chance.Value, "Removing Jump Ability due to Gas Leak"))
         {
-            if (ShadowOfOptions.chance_logs.Value && ShadowOfOptions.jump_ability.Value && self.gasLeakSpear != null && lizardstorage.TryGetValue(self.lizard.abstractCreature, out LizardData _))
-                Debug.Log(all + self + " Failure! " + ShadowOfOptions.jump_ability_chance.Value + "/" + roll  + " for Removing Jump ABility due to Gas Leak");
-
             return;
         }
 
         try
         {
-            if (ShadowOfOptions.chance_logs.Value)
-                Debug.Log(all + self + " Success! " + ShadowOfOptions.jump_ability_chance.Value + "/" + roll + " for Removing Jump ABility due to Gas Leak");
-
             data.liz["CanJump"] = "False";
 
             if (ShadowOfOptions.debug_logs.Value)
-                Debug.Log(all + self.ToString() + " lost the ability to Jump due to Gas Leak");
+                Debug.Log(all + self.ToString() + " lost the Jump Ability due to Gas Leak");
 
             if (ShadowOfOptions.dynamic_cheat_death.Value)
                 data.cheatDeathChance -= 5;

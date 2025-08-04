@@ -1,5 +1,4 @@
 using RWCustom;
-using System.Collections.Generic;
 using UnityEngine;
 using static Creature;
 using static RoomCamera;
@@ -8,52 +7,7 @@ namespace ShadowOfLizards;
 
 internal sealed class LizCutLeg : PlayerCarryableItem, IDrawable, IPlayerEdible
 {
-    public float lastDarkness = -1f;
-    public float darkness;
-
-    public Color LizBodyColour;
-    public Color LizEffectColour;
-    public Color BloodColour;
-
-    public Vector2 rotation;
-    public Vector2 lastRotation;
-    public Vector2? setRotation;
-
-    public int ElectricColorTimer = 0;
-
-    public override float ThrowPowerFactor => 1f;
-
-
-    private int whiteFlicker = 0;
-    private int flicker;
-    private float flickerColor = 0;
-
-    public const int SourceCodeLizardsFlickerThreshold = 10;
-    public const int SourceCodeLizardsWhiteFlickerThreshold = 15;
-
-    public RoomPalette palette;
-
-    public const int TotalSprites = 3;
-    public const int SpriteJawStart = 2;
-
-    //public float jawRotation;
-    //public float lastJawRotation;
-
-    public const float MaxJawRotation = 100f;
-    public const float JawOpenSensitivity = 20f;
-    public const float JawVelocityOverOpenSensitivity = 2.5f;
-
-    public List<int> headSpriteNum = new() { 9, 16, 16, 10, 10, 10, 14, 15 };
-
-    public Color whiteCamoColor = new(0f, 0f, 0f);
-    public Color whitePickUpColor;
-    private float whiteCamoColorAmount = -1f;
-
-    public float baseBlink;
-    public float baseLastBlink;
-
-    public bool everySecondDraw;
-
+    #region Public
     public AbstractConsumable AbstrConsumable
     {
         get
@@ -62,7 +16,9 @@ internal sealed class LizCutLeg : PlayerCarryableItem, IDrawable, IPlayerEdible
         }
     }
 
-    public LizCutLegAbstract Abstr { get; }
+    public override float ThrowPowerFactor => 1f;
+
+    public int ElectricColorTimer = 0;
 
     public int bites = 3;
     public int BitesLeft => bites;
@@ -71,6 +27,40 @@ internal sealed class LizCutLeg : PlayerCarryableItem, IDrawable, IPlayerEdible
     public bool Edible => true;
 
     public bool AutomaticPickUp => false;
+    #endregion
+
+    #region Private
+    private float lastDarkness = -1f;
+    private float darkness;
+
+    private Color LizBodyColour;
+    private Color LizEffectColour;
+    private Color BloodColour;
+
+    private Vector2 rotation;
+    private Vector2 lastRotation;
+    private Vector2? setRotation;
+
+    private int whiteFlicker = 0;
+    private int flicker;
+    private float flickerColor = 0;
+
+    private const int SourceCodeLizardsFlickerThreshold = 10;
+    private const int SourceCodeLizardsWhiteFlickerThreshold = 15;
+
+    private RoomPalette palette;
+
+    private Color whiteCamoColor = new(0f, 0f, 0f);
+    private Color whitePickUpColor;
+    private float whiteCamoColorAmount = -1f;
+
+    private float baseBlink;
+    private float baseLastBlink;
+
+    private bool everySecondDraw;
+    #endregion
+
+    private LizCutLegAbstract Abstr { get; }
 
     public LizCutLeg(LizCutLegAbstract abstr) : base(abstr)
     {
@@ -118,7 +108,8 @@ internal sealed class LizCutLeg : PlayerCarryableItem, IDrawable, IPlayerEdible
     }
 
     #region Colours
-    public Color effectColor
+
+    private Color effectColor
     {
         get
         {
@@ -130,7 +121,7 @@ internal sealed class LizCutLeg : PlayerCarryableItem, IDrawable, IPlayerEdible
         }
     }
 
-    public Color BodyColor(float f)
+    private Color BodyColor(float f)
     {
         if (Abstr.LizBreed == "SpitLizard" || Abstr.LizBreed == "ZoopLizard")
         {
@@ -148,7 +139,7 @@ internal sealed class LizCutLeg : PlayerCarryableItem, IDrawable, IPlayerEdible
         return palette.blackColor;
     }
 
-    public Color DynamicBodyColor(float f)
+    private Color DynamicBodyColor(float f)
     {
         if (Abstr.LizBreed == "WhiteLizard")
         {
@@ -161,7 +152,7 @@ internal sealed class LizCutLeg : PlayerCarryableItem, IDrawable, IPlayerEdible
         return palette.blackColor;
     }
 
-    public Color SalamanderColor
+    private Color SalamanderColor
     {
         get
         {
@@ -215,7 +206,7 @@ internal sealed class LizCutLeg : PlayerCarryableItem, IDrawable, IPlayerEdible
         }
     }
 
-    public Color HeadColor(float timeStacker)
+    private Color HeadColor(float timeStacker)
     {
         if (whiteFlicker > 0 && (whiteFlicker > SourceCodeLizardsWhiteFlickerThreshold || everySecondDraw))
         {
@@ -229,24 +220,18 @@ internal sealed class LizCutLeg : PlayerCarryableItem, IDrawable, IPlayerEdible
         return Color.Lerp(HeadColor1, HeadColor2, num);
     }
 
-    public void Flicker(int fl)
+    private void Flicker(int fl)
     {
         if (fl > flicker)
             flicker = fl;
     }
 
-    public void WhiteFlicker(int fl)
-    {
-        if (fl > whiteFlicker)
-            whiteFlicker = fl;
-    }
-
-    Color Camo(Color col)
+    private Color Camo(Color col)
     {
         return Color.Lerp(col, whiteCamoColor, whiteCamoColorAmount);
     }
 
-    Color ElectricColor(Color col)
+    private Color ElectricColor(Color col)
     {
         return Color.Lerp(col, new Color(0.7f, 0.7f, 1f), (float)ElectricColorTimer / 50f);
     }

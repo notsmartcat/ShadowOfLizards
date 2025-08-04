@@ -20,9 +20,9 @@ sealed class LizCutHeadFisobs : Fisob
     {
         string[] array = saveData.CustomData.Split(';');
 
-        if (array.Length < 31)
+        if (array.Length < 33)
         {
-            array = new string[31];
+            array = new string[33];
         }
 
         return new LizCutHeadAbstract(world, saveData.Pos, saveData.ID)
@@ -70,7 +70,10 @@ sealed class LizCutHeadFisobs : Fisob
 
             LizBreed = string.IsNullOrEmpty(array[30]) ? "GreenLizard" : array[30],
 
-            canCamo = bool.TryParse(array[31], out bool cc) && cc
+            canCamo = bool.TryParse(array[31], out bool cc) && cc,
+
+            jawOpenAngle = float.TryParse(array[32], out float joa) ? joa : 100f,
+            jawOpenMoveJawsApart = float.TryParse(array[33], out float jomja) ? jomja : 20f
         };
     }
 

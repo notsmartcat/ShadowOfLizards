@@ -52,7 +52,7 @@ internal class TransformationSpider
 
     public static void BabyPuff(Lizard self)
     {
-        if (self.inShortcut || self.slatedForDeletetion || self.room == null || self.room.world == null || self.room.game.cameras[0].room != self.room || !lizardstorage.TryGetValue(self.abstractCreature, out ShadowOfLizards.LizardData data)
+        if (self.inShortcut || self.slatedForDeletetion || self.room == null || self.room.world == null || self.room.game.cameras[0].room != self.room || !lizardstorage.TryGetValue(self.abstractCreature, out LizardData data)
             || (data.transformation != "Spider" && data.transformation != "SpiderTransformation"))
         {
             return;
@@ -156,13 +156,13 @@ internal class TransformationSpider
     #region Small Spider
     static bool SpiderConsiderPrey(On.Spider.orig_ConsiderPrey orig, Spider self, Creature crit)
     {
-        return (!ShadowOfOptions.spider_transformation.Value || crit == null || crit is not Lizard || !lizardstorage.TryGetValue(crit.abstractCreature, out ShadowOfLizards.LizardData data) || (data.transformation != "Spider" && data.transformation != "SpiderTransformation"))
+        return (!ShadowOfOptions.spider_transformation.Value || crit == null || crit is not Lizard || !lizardstorage.TryGetValue(crit.abstractCreature, out LizardData data) || (data.transformation != "Spider" && data.transformation != "SpiderTransformation"))
             && orig.Invoke(self, crit);
     }
 
     static void SpiderLegMove(On.Spider.orig_Move_Vector2 orig, Spider self, Vector2 dest)
     {
-        if (ShadowOfOptions.spider_transformation.Value && SpidLeg.TryGetValue(self, out ShadowOfLizards.SpiderAsLeg data) && data.liz != null && !data.liz.dead && self.room == data.liz.room)
+        if (ShadowOfOptions.spider_transformation.Value && SpidLeg.TryGetValue(self, out SpiderAsLeg data) && data.liz != null && !data.liz.dead && self.room == data.liz.room)
         {
             self.moving = false;
         }
@@ -174,13 +174,13 @@ internal class TransformationSpider
 
     static void SpiderLegStopCentipede(On.Spider.orig_FormCentipede orig, Spider self, Spider otherSpider)
     {
-        if (!ShadowOfOptions.spider_transformation.Value || !SpidLeg.TryGetValue(self, out ShadowOfLizards.SpiderAsLeg data) || data.liz == null || data.liz.dead)
+        if (!ShadowOfOptions.spider_transformation.Value || !SpidLeg.TryGetValue(self, out SpiderAsLeg data) || data.liz == null || data.liz.dead)
         {
             orig.Invoke(self, otherSpider);
         }
     }
 
-    public static void SpiderLizardGraphicsDraw(LizardGraphics self, RoomCamera.SpriteLeaser sLeaser, ShadowOfLizards.LizardData data)
+    public static void SpiderLizardGraphicsDraw(LizardGraphics self, RoomCamera.SpriteLeaser sLeaser, LizardData data)
     {
         if (!data.liz.TryGetValue("SpiderNumber", out _))
         {
@@ -235,7 +235,6 @@ internal class TransformationSpider
             }
         }
 
-
         for (int i = self.SpriteLimbsStart; i < self.SpriteLimbsEnd; i++)
         {
             int armNo = i - self.SpriteLimbsStart;
@@ -285,7 +284,7 @@ internal class TransformationSpider
                     ((Spider)spid.realizedCreature).bloodLust = 0f;
 
                     SpidLeg.Add((Spider)spid.realizedCreature, new ShadowOfLizards.SpiderAsLeg());
-                    SpidLeg.TryGetValue((Spider)spid.realizedCreature, out ShadowOfLizards.SpiderAsLeg spidData);
+                    SpidLeg.TryGetValue((Spider)spid.realizedCreature, out SpiderAsLeg spidData);
 
                     spidData.liz = self.lizard;
                     data.legSpiders[armNo].Add((Spider)spid.realizedCreature);

@@ -49,6 +49,9 @@ sealed class LizCutHeadAbstract : AbstractPhysicalObject
 
     public bool canCamo;
 
+    public float jawOpenAngle;
+    public float jawOpenMoveJawsApart;
+
     public LizCutHeadAbstract(World world, WorldCoordinate pos, EntityID ID) : base(world, LizCutHeadFisobs.AbstrLizCutHead, null, pos, ID)
     {
     }
@@ -61,6 +64,6 @@ sealed class LizCutHeadAbstract : AbstractPhysicalObject
 
     public override string ToString()
     {
-        return this.SaveToString($"{hue};{saturation};{scaleX};{scaleY};{LizType};{LizBodyColourR};{LizBodyColourG};{LizBodyColourB};{LizEffectColourR};{LizEffectColourG};{LizEffectColourB};{EyeRightColourR};{EyeRightColourG};{EyeRightColourB};{EyeLeftColourR};{EyeLeftColourG};{EyeLeftColourB};{HeadSprite0};{HeadSprite1};{HeadSprite2};{HeadSprite3};{HeadSprite4};{HeadSprite5};{HeadSprite6};{blackSalamander};{rad};{mass};{LizBloodColourR};{LizBloodColourG};{LizBloodColourB};{LizBreed};{canCamo}");
+        return this.SaveToString($"{hue};{saturation};{scaleX};{scaleY};{LizType};{LizBodyColourR};{LizBodyColourG};{LizBodyColourB};{LizEffectColourR};{LizEffectColourG};{LizEffectColourB};{EyeRightColourR};{EyeRightColourG};{EyeRightColourB};{EyeLeftColourR};{EyeLeftColourG};{EyeLeftColourB};{HeadSprite0};{HeadSprite1};{HeadSprite2};{HeadSprite3};{HeadSprite4};{HeadSprite5};{HeadSprite6};{blackSalamander};{rad};{mass};{LizBloodColourR};{LizBloodColourG};{LizBloodColourB};{LizBreed};{canCamo};{jawOpenAngle};{jawOpenMoveJawsApart}");
     }
 }
