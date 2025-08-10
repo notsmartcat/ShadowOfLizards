@@ -70,4 +70,3 @@ internal class LizardAIHooks
         }
     }
 }
-

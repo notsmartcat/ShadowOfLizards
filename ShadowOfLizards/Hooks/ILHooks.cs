@@ -1,5 +1,4 @@
-﻿using BepInEx;
-using Mono.Cecil.Cil;
+﻿using Mono.Cecil.Cil;
 using MonoMod.Cil;
 using MonoMod.RuntimeDetour;
 using System;
@@ -15,6 +14,10 @@ internal class ILHooks
     {
         IL.Creature.Update += Creature_Update;
 
+        IL.DaddyTentacle.Update += ILDaddyTentacleUpdate;
+
+        IL.Watcher.LizardRotModule.ctor += ILNewLizardRotModule;
+
         IL.Lizard.ctor += ILLizard; //Tongue
 
         IL.Lizard.SpearStick += ILSpearStick; //Jump
@@ -29,6 +32,8 @@ internal class ILHooks
         IL.Lizard.SwimBehavior += ILLizardSwimBehavior; //Swim
 
         IL.Lizard.Update += ILLizardUpdate; //Breathing
+
+        IL.Leech.Attached += ILLeechAttached;
 
         On.LizardAI.LurkTracker.Utility += ShadowOfLizardAILurkTrackerUtility; //Both Swim/Breathe and Camo Related
 
@@ -46,6 +51,80 @@ internal class ILHooks
             typeof(ILHooks).GetMethod(nameof(ShadowOfTotalMass)));
     }
 
+
+    static void ILNewLizardRotModule(ILContext il)
+    {
+        ILCursor val = new(il);
+        if (val.TryGotoNext(MoveType.After, new Func<Instruction, bool>[2]
+        {
+            x => x.MatchDiv(),
+            x => x.MatchCallvirt(typeof(List<float>).GetMethod("Add")),
+        }))
+        {
+            //val.MoveAfterLabels();
+
+            val.Emit(OpCodes.Ldarg_0);
+            val.Emit(OpCodes.Ldloc_1);
+            val.Emit(OpCodes.Ldloc_2);
+            val.EmitDelegate(ShadowOfNewLizardRotModule);
+        }
+        else
+        {
+            ShadowOfLizards.Logger.LogInfo(all + "Could not find match for ILNewLizardRotModule!");
+        }
+    }
+    public static void ShadowOfNewLizardRotModule(Watcher.LizardRotModule self, List<float> list, int num)
+    {
+        if (self.lizard != null && self.lizard.abstractCreature != null && lizardstorage.TryGetValue(self.lizard.abstractCreature, out LizardData data))
+        {
+            if (data.cutAppendage.ContainsKey(num) && data.cutAppendageCycle.ContainsKey(num) && data.cutAppendageCycle[num] != CycleNum(self.lizard.abstractCreature))
+            {
+                float listNum;
+
+                if (ModManager.MMF)
+                {
+                    listNum = Math.Max(3, list[num] / 40f);
+                }
+                else
+                {
+                    listNum = list[num] / 40f;
+                }
+
+                float percentage = (float)data.cutAppendage[num] / (float)listNum;
+
+                //Debug.Log(percentage);
+
+                list[num] *= percentage;
+            }
+        }
+    }
+
+    static void ILDaddyTentacleUpdate(ILContext il)
+    {
+        ILCursor val = new(il);
+        if (val.TryGotoNext(MoveType.Before, new Func<Instruction, bool>[2]
+        {  
+            x => x.MatchLdcI4(0),
+            x => x.MatchStloc(6),
+        }))
+        {
+            val.Emit(OpCodes.Ldarg_0);
+            val.EmitDelegate(ShadowOfDaddyTentacleUpdate);
+        }
+        else
+        {
+            ShadowOfLizards.Logger.LogInfo(all + "Could not find match for ILDaddyTentacleUpdate!");
+        }
+    }
+    public static void ShadowOfDaddyTentacleUpdate(DaddyTentacle self)
+    {
+        if (self.daddy is Lizard liz && liz.rotModule.tentacles.Length > 0 && lizardstorage.TryGetValue(liz.abstractCreature, out LizardData data) && data.cutAppendage.Count > 0 && TransformationRot.InnactiveTentacleCheck(data, liz.rotModule.tentacles.IndexOf(self), CycleNum(liz.abstractCreature)))
+        {
+            self.stun = 0;
+            self.limp = true;
+        } 
+    }
+
     #region Creature_Update
     public static void Creature_Update(ILContext il)
     {
@@ -54,12 +133,12 @@ internal class ILHooks
         {
             c.GotoNext(new Func<Instruction, bool>[6]
             {
-                (Instruction x) => ILPatternMatchingExt.MatchLdarg(x, 0),
-                (Instruction x) => ILPatternMatchingExt.MatchLdnull(x),
-                (Instruction x) => ILPatternMatchingExt.MatchLdcR4(x, 0f),
-                (Instruction x) => ILPatternMatchingExt.MatchLdcR4(x, 5f),
-                (Instruction x) => ILPatternMatchingExt.MatchNewobj<Vector2>(x),
-                (Instruction x) => ILPatternMatchingExt.MatchNewobj<Vector2?>(x)
+                x => x.MatchLdarg(0),
+                x => x.MatchLdnull(),
+                x => x.MatchLdcR4(0f),
+                x => x.MatchLdcR4(5f),
+                x => x.MatchNewobj<Vector2>(),
+                x => x.MatchNewobj<Vector2?>()
             });
             try
             {
@@ -80,14 +159,14 @@ internal class ILHooks
         {
             c.GotoNext(new Func<Instruction, bool>[1]
             {
-                (Instruction x) => ILPatternMatchingExt.MatchCallvirt<Creature>(x, "Violence")
+                x => x.MatchCallvirt<Creature>("Violence")
             });
             try
             {
                 int index = c.Index;
                 c.Index = index + 1;
                 c.Emit(OpCodes.Ldarg_0);
-                c.EmitDelegate<Action<Creature>>((Action<Creature>)delegate (Creature creature)
+                c.EmitDelegate(delegate (Creature creature)
                 {
                     ILPostViolenceCheck(creature, "Melted");
                 });
@@ -106,25 +185,25 @@ internal class ILHooks
         {
             c.GotoNext(new Func<Instruction, bool>[10]
             {
-                (Instruction x) => ILPatternMatchingExt.MatchCall<Creature>(x, "get_dead"),
-                (Instruction x) => ILPatternMatchingExt.Match(x, OpCodes.Brtrue_S),
-                (Instruction x) => ILPatternMatchingExt.MatchLdarg(x, 0),
-                (Instruction x) => ILPatternMatchingExt.MatchCall<Creature>(x, "get_State"),
-                (Instruction x) => ILPatternMatchingExt.MatchIsinst<HealthState>(x),
-                (Instruction x) => ILPatternMatchingExt.Match(x, OpCodes.Brfalse_S),
-                (Instruction x) => ILPatternMatchingExt.MatchLdarg(x, 0),
-                (Instruction x) => ILPatternMatchingExt.MatchCall<Creature>(x, "get_State"),
-                (Instruction x) => ILPatternMatchingExt.MatchIsinst<HealthState>(x),
-                (Instruction x) => ILPatternMatchingExt.MatchCallvirt<HealthState>(x, "get_health")
+                x => x.MatchCall<Creature>("get_dead"),
+                x => x.Match(OpCodes.Brtrue_S),
+                x => x.MatchLdarg(0),
+                x => x.MatchCall<Creature>("get_State"),
+                x => x.MatchIsinst<HealthState>(),
+                x => x.Match(OpCodes.Brfalse_S),
+                x => x.MatchLdarg(0),
+                x => x.MatchCall<Creature>("get_State"),
+                x => x.MatchIsinst<HealthState>(),
+                x => x.MatchCallvirt<HealthState>("get_health")
             });
             c.GotoNext(new Func<Instruction, bool>[1]
             {
-                (Instruction x) => ILPatternMatchingExt.MatchCallvirt<Creature>(x, "Die")
+                x => x.MatchCallvirt<Creature>("Die")
             });
             try
             {
                 c.Emit(OpCodes.Ldarg_0);
-                c.EmitDelegate<Action<Creature>>((Action<Creature>)delegate (Creature creature)
+                c.EmitDelegate(delegate (Creature creature)
                 {
                     if (!creature.dead)
                     {
@@ -146,28 +225,28 @@ internal class ILHooks
         {
             c.GotoNext(new Func<Instruction, bool>[8]
             {
-                (Instruction x) => ILPatternMatchingExt.MatchLdarg(x, 0),
-                (Instruction x) => ILPatternMatchingExt.MatchCall<PhysicalObject>(x, "get_bodyChunks"),
-                (Instruction x) => ILPatternMatchingExt.MatchLdcI4(x, 0),
-                (Instruction x) => ILPatternMatchingExt.MatchLdelemRef(x),
-                (Instruction x) => ILPatternMatchingExt.MatchLdflda<BodyChunk>(x, "pos"),
-                (Instruction x) => ILPatternMatchingExt.MatchLdfld<Vector2>(x, "y"),
-                (Instruction x) => ILPatternMatchingExt.MatchLdloc(x, 0),
-                (Instruction x) => ILPatternMatchingExt.Match(x, OpCodes.Bge_Un)
+                x => x.MatchLdarg(0),
+                x => x.MatchCall<PhysicalObject>("get_bodyChunks"),
+                x => x.MatchLdcI4(0),
+                x => x.MatchLdelemRef(),
+                x => x.MatchLdflda<BodyChunk>("pos"),
+                x => x.MatchLdfld<Vector2>("y"),
+                x => x.MatchLdloc(0),
+                x => x.Match(OpCodes.Bge_Un)
             });
             c.GotoNext(new Func<Instruction, bool>[4]
             {
-                (Instruction x) => ILPatternMatchingExt.MatchLdsfld<ModManager>(x, "CoopAvailable"),
-                (Instruction x) => ILPatternMatchingExt.Match(x, OpCodes.Brfalse_S),
-                (Instruction x) => ILPatternMatchingExt.MatchLdarg(x, 0),
-                (Instruction x) => ILPatternMatchingExt.MatchCall<Creature>(x, "get_State")
+                x => x.MatchLdsfld<ModManager>("CoopAvailable"),
+                x => x.Match(OpCodes.Brfalse_S),
+                x => x.MatchLdarg(0),
+                x => x.MatchCall<Creature>("get_State")
             });
             int index = c.Index;
             c.Index = index + 1;
             try
             {
                 c.Emit(OpCodes.Ldarg_0);
-                c.EmitDelegate<Action<Creature>>((Action<Creature>)delegate (Creature creature)
+                c.EmitDelegate(delegate (Creature creature)
                 {
                     if (!creature.dead)
                     {
@@ -221,24 +300,24 @@ internal class ILHooks
             ILLabel target = null;
             if (val.TryGotoNext(MoveType.After, new Func<Instruction, bool>[4]
             {
-            (Instruction x) => ILPatternMatchingExt.MatchLdarg(x, 0),
-            (Instruction x) => ILPatternMatchingExt.MatchLdfld<Lizard>(x, "lizardParams"),
-            (Instruction x) => ILPatternMatchingExt.MatchLdfld<LizardBreedParams>(x, "tongue"),
-            (Instruction x) => ILPatternMatchingExt.MatchBrfalse(x, out target)
+            x => x.MatchLdarg(0),
+            x => x.MatchLdfld<Lizard>("lizardParams"),
+            x => x.MatchLdfld<LizardBreedParams>("tongue"),
+            x => x.MatchBrfalse(out target)
             }))
             {
                 val.Emit(OpCodes.Ldarg_1);
-                val.Emit<ILHooks>(OpCodes.Call, "ShadowOfLizardCtor");
+                val.EmitDelegate(ShadowOfLizardTongue);
                 val.Emit(OpCodes.Brfalse_S, target);
             }
             else
             {
-                ShadowOfLizards.Logger.LogInfo(all + "Could not find match for ILLizard!");
+                ShadowOfLizards.Logger.LogInfo(all + "Could not find match for ILLizard Tongue!");
             }
         }
         catch (Exception e) { ShadowOfLizards.Logger.LogError(e); }
     }
-    public static bool ShadowOfLizardCtor(AbstractCreature liz)
+    public static bool ShadowOfLizardTongue(AbstractCreature liz)
     {
         if (ShadowOfOptions.tongue_ability.Value && lizardstorage.TryGetValue(liz, out LizardData data) && data.liz.TryGetValue("Tongue", out string tongue) && (tongue == "Null" || tongue == "get"))
         {
@@ -247,6 +326,7 @@ internal class ILHooks
 
         return true;
     }
+
     #endregion
 
     #region Jump
@@ -258,11 +338,11 @@ internal class ILHooks
             ILLabel target = null;
             if (val.TryGotoNext(0, new Func<Instruction, bool>[5]
             {
-            (Instruction x) => ILPatternMatchingExt.MatchLdarg(x, 0),
-            (Instruction x) => ILPatternMatchingExt.MatchLdfld<Lizard>(x, "jumpModule"),
-            (Instruction x) => ILPatternMatchingExt.MatchLdfld<LizardJumpModule>(x, "gasLeakPower"),
-            (Instruction x) => ILPatternMatchingExt.MatchLdcR4(x, 0f),
-            (Instruction x) => ILPatternMatchingExt.MatchBleUn(x, out target)
+            x => x.MatchLdarg(0),
+            x => x.MatchLdfld<Lizard>("jumpModule"),
+            x => x.MatchLdfld<LizardJumpModule>("gasLeakPower"),
+            x => x.MatchLdcR4(0f),
+            x => x.MatchBleUn(out target)
             }))
             {
                 val.Emit(OpCodes.Ldarg_0);
@@ -285,10 +365,10 @@ internal class ILHooks
         ILLabel target = null;
         if (val.TryGotoNext(new Func<Instruction, bool>[4]
         {
-            (Instruction x) => ILPatternMatchingExt.MatchLdarg(x, 0),
-            (Instruction x) => ILPatternMatchingExt.MatchLdfld<LizardAI>(x, "redSpitAI"),
-            (Instruction x) => ILPatternMatchingExt.MatchLdfld<LizardAI.LizardSpitTracker>(x, "spitting"),
-            (Instruction x) => ILPatternMatchingExt.MatchBrfalse(x, out target)
+            x => x.MatchLdarg(0),
+            x => x.MatchLdfld<LizardAI>("redSpitAI"),
+            x => x.MatchLdfld<LizardAI.LizardSpitTracker>("spitting"),
+            x => x.MatchBrfalse(out target)
         }))
         {
             int index = val.Index;
@@ -312,10 +392,10 @@ internal class ILHooks
             ILCursor val = new(il);
             if (val.TryGotoNext(0, new Func<Instruction, bool>[4]
             {
-            (Instruction x) => ILPatternMatchingExt.MatchLdarg(x, 1),
-            (Instruction x) => ILPatternMatchingExt.MatchLdfld<WormGrass.WormGrassPatch.CreatureAndPull>(x, "creature"),
-            (Instruction x) => ILPatternMatchingExt.MatchCallvirt<UpdatableAndDeletable>(x, "Destroy"),
-            (Instruction x) => ILPatternMatchingExt.MatchRet(x)
+            x => x.MatchLdarg(1),
+            x => x.MatchLdfld<WormGrass.WormGrassPatch.CreatureAndPull>("creature"),
+            x => x.MatchCallvirt<UpdatableAndDeletable>("Destroy"),
+            x => x.MatchRet()
             }))
             {
                 val.Emit(OpCodes.Ldarg_1);
@@ -359,9 +439,9 @@ internal class ILHooks
             ILCursor val = new(il);
             if (val.TryGotoNext(MoveType.After, new Func<Instruction, bool>[3]
             {
-            (Instruction x) => ILPatternMatchingExt.MatchLdarg(x, 0),
-            (Instruction x) => ILPatternMatchingExt.MatchLdfld<DaddyCorruption.EatenCreature>(x, "creature"),
-            (Instruction x) => ILPatternMatchingExt.MatchCallvirt<Creature>(x, "Die")
+            x => x.MatchLdarg(0),
+            x => x.MatchLdfld<DaddyCorruption.EatenCreature>("creature"),
+            x => x.MatchCallvirt<Creature>("Die")
             }))
             {
                 val.Emit(OpCodes.Ldarg_0);
@@ -382,13 +462,13 @@ internal class ILHooks
             ILCursor val = new(il);
             if (val.TryGotoNext(MoveType.Before, new Func<Instruction, bool>[7]
             {
-            (Instruction x) => ILPatternMatchingExt.MatchLdarg(x, 0),
-            (Instruction x) => ILPatternMatchingExt.MatchLdfld<DaddyLongLegs>(x, "eatObjects"),
-            (Instruction x) => ILPatternMatchingExt.MatchLdloc(x, 1),
-            (Instruction x) => ILPatternMatchingExt.MatchCallvirt(x, typeof(List<DaddyLongLegs.EatObject>).GetMethod("get_Item")),
-            (Instruction x) => ILPatternMatchingExt.MatchLdfld<DaddyLongLegs.EatObject>(x, "chunk"),
-            (Instruction x) => ILPatternMatchingExt.MatchCallvirt<BodyChunk>(x, "get_owner"),
-            (Instruction x) => ILPatternMatchingExt.MatchCallvirt<UpdatableAndDeletable>(x, "Destroy")
+            x => x.MatchLdarg(0),
+            x => x.MatchLdfld<DaddyLongLegs>("eatObjects"),
+            x => x.MatchLdloc(1),
+            x => x.MatchCallvirt(typeof(List<DaddyLongLegs.EatObject>).GetMethod("get_Item")),
+            x => x.MatchLdfld<DaddyLongLegs.EatObject>("chunk"),
+            x => x.MatchCallvirt<BodyChunk>("get_owner"),
+            x => x.MatchCallvirt<UpdatableAndDeletable>("Destroy")
             }))
             {
                 val.MoveAfterLabels();
@@ -439,12 +519,12 @@ internal class ILHooks
             
             if (val.TryGotoNext(MoveType.Before, new Func<Instruction, bool>[6]
             {
-            (Instruction x) => ILPatternMatchingExt.MatchLdarg(x, 0),
-            (Instruction x) => ILPatternMatchingExt.MatchCall<Creature>(x, "get_Template"),
-            (Instruction x) => ILPatternMatchingExt.MatchLdfld<CreatureTemplate>(x, "type"),
-            (Instruction x) => ILPatternMatchingExt.MatchLdsfld<CreatureTemplate.Type>(x, "Salamander"),
-            (Instruction x) => ILPatternMatchingExt.MatchCall(x, "ExtEnum`1<CreatureTemplate/Type>", "op_Inequality"),
-            (Instruction x) => ILPatternMatchingExt.MatchBrfalse(x, out target)
+            x => x.MatchLdarg(0),
+            x => x.MatchCall<Creature>("get_Template"),
+            x => x.MatchLdfld<CreatureTemplate>("type"),
+            x => x.MatchLdsfld<CreatureTemplate.Type>("Salamander"),
+            x => x.MatchCall("ExtEnum`1<CreatureTemplate/Type>", "op_Inequality"),
+            x => x.MatchBrfalse(out target)
             }))
             {
                 val.Emit(OpCodes.Ldarg_0);
@@ -462,12 +542,12 @@ internal class ILHooks
             
             if (val.TryGotoNext(MoveType.Before, new Func<Instruction, bool>[6]
             {
-                (Instruction x) => ILPatternMatchingExt.MatchLdarg(x, 0),
-                (Instruction x) => ILPatternMatchingExt.MatchCall<Creature>(x, "get_Template"),
-                (Instruction x) => ILPatternMatchingExt.MatchLdfld<CreatureTemplate>(x, "type"),
-                (Instruction x) => ILPatternMatchingExt.MatchLdsfld<CreatureTemplate.Type>(x, "Salamander"),
-                (Instruction x) => ILPatternMatchingExt.MatchCall(x, "ExtEnum`1<CreatureTemplate/Type>", "op_Equality"),
-                (Instruction x) => ILPatternMatchingExt.MatchBrtrue(x, out target)
+                x => x.MatchLdarg(0),
+                x => x.MatchCall<Creature>("get_Template"),
+                x => x.MatchLdfld<CreatureTemplate>("type"),
+                x => x.MatchLdsfld<CreatureTemplate.Type>("Salamander"),
+                x => x.MatchCall("ExtEnum`1<CreatureTemplate/Type>", "op_Equality"),
+                x => x.MatchBrtrue(out target)
             }))
             {
                 val.Emit(OpCodes.Ldarg_0);
@@ -506,18 +586,18 @@ internal class ILHooks
 
             if (val.TryGotoNext(MoveType.After, new Func<Instruction, bool>[2]
             {
-            (Instruction x) => ILPatternMatchingExt.MatchCall<ModManager>(x, "get_DLCShared"),
-            (Instruction x) => ILPatternMatchingExt.MatchBrfalse(x, out target)
+            x => x.MatchCall<ModManager>("get_DLCShared"),
+            x => x.MatchBrfalse(out target)
             }))
             {
                 if (val.TryGotoPrev(MoveType.Before, new Func<Instruction, bool>[6]
                 {
-                (Instruction x) => ILPatternMatchingExt.MatchLdarg(x, 0),
-                (Instruction x) => ILPatternMatchingExt.MatchCall<Creature>(x, "get_Template"),
-                (Instruction x) => ILPatternMatchingExt.MatchLdfld<CreatureTemplate>(x, "type"),
-                (Instruction x) => ILPatternMatchingExt.MatchLdsfld<CreatureTemplate.Type>(x, "Salamander"),
-                (Instruction x) => ILPatternMatchingExt.MatchCall(x, "ExtEnum`1<CreatureTemplate/Type>", "op_Equality"),
-                (Instruction x) => ILPatternMatchingExt.MatchBrtrue(x, out target2)
+                x => x.MatchLdarg(0),
+                x => x.MatchCall<Creature>("get_Template"),
+                x => x.MatchLdfld<CreatureTemplate>("type"),
+                x => x.MatchLdsfld<CreatureTemplate.Type>("Salamander"),
+                x => x.MatchCall("ExtEnum`1<CreatureTemplate/Type>", "op_Equality"),
+                x => x.MatchBrtrue(out target2)
                 }))
                 {
                     val.MoveAfterLabels();
@@ -558,9 +638,57 @@ internal class ILHooks
         }
         return true;
     }
+
+    static void ILLeechAttached(ILContext il)
+    {
+        try
+        {
+            ILCursor val = new(il);
+
+            if (val.TryGotoNext(MoveType.Before, new Func<Instruction, bool>[4]
+            {
+                x => x.MatchLdloc(0),
+                x => x.MatchCallvirt<BodyChunk>("get_owner"),
+                x => x.MatchIsinst(typeof(Creature)),
+                x => x.MatchCallvirt<Creature>("Die"),
+            }))
+            {
+                val.MoveAfterLabels();
+
+                val.Emit(OpCodes.Ldloc_0);
+                val.Emit<BodyChunk>(OpCodes.Callvirt, "get_owner");
+                val.Emit(OpCodes.Isinst, typeof(Creature));
+                val.EmitDelegate(ShadowOfLeechAttached);
+            }
+            else
+            {
+                ShadowOfLizards.Logger.LogInfo(all + "Could not find match for ILLeechAttached!");
+            }
+        }
+        catch (Exception e) { ShadowOfLizards.Logger.LogError(e); }
+    }
+
+    public static void ShadowOfLeechAttached(Creature self)
+    {
+        if (ShadowOfOptions.water_breather.Value && self is Lizard && !self.dead && lizardstorage.TryGetValue(self.abstractCreature, out LizardData data))
+        {
+            if (!data.liz.TryGetValue("WaterBreather", out string WaterBreather) && !defaultWaterBreather.Contains(self.Template.type.ToString()) || WaterBreather != "True")
+            {
+                if (ShadowOfOptions.debug_logs.Value)
+                    Debug.Log(all + self.ToString() + " gained the Drowning Immunity due to dying to a Leech");
+
+                data.liz["WaterBreather"] = "True";
+            }
+            else if (ShadowOfOptions.debug_logs.Value)
+            {
+                Debug.Log(all + self.ToString() + " did not gain the Drowning Immunity due to dying to a Leech because it already is Immune to Drowning");
+            }
+        }
+    }
     #endregion
     #endregion
 
+    #region Both Swim/Breathe and Camo Related
     static float ShadowOfLizardAILurkTrackerUtility(On.LizardAI.LurkTracker.orig_Utility orig, LizardAI.LurkTracker self) //Both Swim/Breathe and Camo Related
     {
         if (lizardstorage.TryGetValue(self.lizard.abstractCreature, out LizardData data))
@@ -604,13 +732,13 @@ internal class ILHooks
 
             if (val.TryGotoNext(MoveType.Before, new Func<Instruction, bool>[7]
             {
-                (Instruction x) => ILPatternMatchingExt.MatchLdarg(x, 0),
-                (Instruction x) => ILPatternMatchingExt.MatchLdfld<LizardAI.LurkTracker>(x, "lizard"),
-                (Instruction x) => ILPatternMatchingExt.MatchCallvirt<Creature>(x, "get_Template"),
-                (Instruction x) => ILPatternMatchingExt.MatchLdfld<CreatureTemplate>(x, "type"),
-                (Instruction x) => ILPatternMatchingExt.MatchLdsfld<CreatureTemplate.Type>(x, "WhiteLizard"),
-                (Instruction x) => ILPatternMatchingExt.MatchCall(x, "ExtEnum`1<CreatureTemplate/Type>", "op_Equality"),
-                (Instruction x) => ILPatternMatchingExt.MatchBrfalse(x, out target)
+                x => x.MatchLdarg(0),
+                x => x.MatchLdfld<LizardAI.LurkTracker>("lizard"),
+                x => x.MatchCallvirt<Creature>("get_Template"),
+                x => x.MatchLdfld<CreatureTemplate>("type"),
+                x => x.MatchLdsfld<CreatureTemplate.Type>("WhiteLizard"),
+                x => x.MatchCall("ExtEnum`1<CreatureTemplate/Type>", "op_Equality"),
+                x => x.MatchBrfalse(out target)
             }))
             {
                 val.MoveAfterLabels();
@@ -632,8 +760,8 @@ internal class ILHooks
 
             if (val.TryGotoNext(MoveType.Before, new Func<Instruction, bool>[2]
             {
-                (Instruction x) => ILPatternMatchingExt.MatchCall<ModManager>(x, "get_DLCShared"),
-                (Instruction x) => ILPatternMatchingExt.MatchBrfalse(x, out target2)
+                x => x.MatchCall<ModManager>("get_DLCShared"),
+                x => x.MatchBrfalse(out target2)
             }))
             {}
             else
@@ -643,13 +771,13 @@ internal class ILHooks
 
             if (val.TryGotoPrev(MoveType.Before, new Func<Instruction, bool>[7]
             {
-                (Instruction x) => ILPatternMatchingExt.MatchLdarg(x, 0),
-                (Instruction x) => ILPatternMatchingExt.MatchLdfld<LizardAI.LurkTracker>(x, "lizard"),
-                (Instruction x) => ILPatternMatchingExt.MatchCallvirt<Creature>(x, "get_Template"),
-                (Instruction x) => ILPatternMatchingExt.MatchLdfld<CreatureTemplate>(x, "type"),
-                (Instruction x) => ILPatternMatchingExt.MatchLdsfld<CreatureTemplate.Type>(x, "Salamander"),
-                (Instruction x) => ILPatternMatchingExt.MatchCall(x, "ExtEnum`1<CreatureTemplate/Type>", "op_Equality"),
-                (Instruction x) => ILPatternMatchingExt.MatchBrtrue(x, out target)
+                x => x.MatchLdarg(0),
+                x => x.MatchLdfld<LizardAI.LurkTracker>("lizard"),
+                x => x.MatchCallvirt<Creature>("get_Template"),
+                x => x.MatchLdfld<CreatureTemplate>("type"),
+                x => x.MatchLdsfld<CreatureTemplate.Type>("Salamander"),
+                x => x.MatchCall("ExtEnum`1<CreatureTemplate/Type>", "op_Equality"),
+                x => x.MatchBrtrue(out target)
             }))
             {
                 val.MoveAfterLabels();
@@ -690,13 +818,14 @@ internal class ILHooks
     {
         if (ShadowOfOptions.camo_ability.Value && lizardstorage.TryGetValue(self.abstractCreature, out LizardData data))
         {
-            if (!data.liz.TryGetValue("CanCamo", out string CanCamo) && self.Template.type == CreatureTemplate.Type.WhiteLizard || CanCamo == "True")
+            if (CanCamoCheck(data, self.Template.type.ToString()))
             {
                 return true;
             }
         }
         return false;
     }
+    #endregion
 
     #region Camo
     static void ILLizardGraphicsDrawSprites(ILContext il)
@@ -708,19 +837,19 @@ internal class ILHooks
             ILLabel target2 = null;
             if (val.TryGotoNext(MoveType.Before, new Func<Instruction, bool>[2]
             {
-            (Instruction x) => ILPatternMatchingExt.MatchCall<ModManager>(x, "get_DLCShared"),
-            (Instruction x) => ILPatternMatchingExt.MatchBrfalse (x, out target2)
+            x => x.MatchCall<ModManager>("get_DLCShared"),
+            x => x.MatchBrfalse (out target2)
             }))
             {
                 if (val.TryGotoPrev(MoveType.Before, new Func<Instruction, bool>[7]
                 {
-                (Instruction x) => ILPatternMatchingExt.MatchLdarg(x, 0),
-                (Instruction x) => ILPatternMatchingExt.MatchLdfld<LizardGraphics>(x, "lizard"),
-                (Instruction x) => ILPatternMatchingExt.MatchCallvirt<Creature>(x, "get_Template"),
-                (Instruction x) => ILPatternMatchingExt.MatchLdfld<CreatureTemplate>(x, "type"),
-                (Instruction x) => ILPatternMatchingExt.MatchLdsfld<CreatureTemplate.Type>(x, "WhiteLizard"),
-                (Instruction x) => ILPatternMatchingExt.MatchCall(x, "ExtEnum`1<CreatureTemplate/Type>", "op_Equality"),
-                (Instruction x) => ILPatternMatchingExt.MatchBrtrue(x, out target)
+                x => x.MatchLdarg(0),
+                x => x.MatchLdfld<LizardGraphics>("lizard"),
+                x => x.MatchCallvirt<Creature>("get_Template"),
+                x => x.MatchLdfld<CreatureTemplate>("type"),
+                x => x.MatchLdsfld<CreatureTemplate.Type>("WhiteLizard"),
+                x => x.MatchCall("ExtEnum`1<CreatureTemplate/Type>", "op_Equality"),
+                x => x.MatchBrtrue(out target)
                 }))
                 {
                     val.MoveAfterLabels();
@@ -757,21 +886,21 @@ internal class ILHooks
 
             if (val.TryGotoNext(MoveType.After, new Func<Instruction, bool>[4]
             {
-            (Instruction x) => ILPatternMatchingExt.MatchLdarg(x, 0),
-            (Instruction x) => ILPatternMatchingExt.MatchLdfld<LizardGraphics>(x, "lizard"),
-            (Instruction x) => ILPatternMatchingExt.MatchCallvirt<Creature>(x, "get_dead"),
-            (Instruction x) => ILPatternMatchingExt.MatchBrfalse(x, out target2)
+            x => x.MatchLdarg(0),
+            x => x.MatchLdfld<LizardGraphics>("lizard"),
+            x => x.MatchCallvirt<Creature>("get_dead"),
+            x => x.MatchBrfalse(out target2)
             }))
             {
                 if (val.TryGotoPrev(MoveType.Before, new Func<Instruction, bool>[7]
                 {
-                (Instruction x) => ILPatternMatchingExt.MatchLdarg(x, 0),
-                (Instruction x) => ILPatternMatchingExt.MatchLdfld<LizardGraphics>(x, "lizard"),
-                (Instruction x) => ILPatternMatchingExt.MatchCallvirt<Creature>(x, "get_Template"),
-                (Instruction x) => ILPatternMatchingExt.MatchLdfld<CreatureTemplate>(x, "type"),
-                (Instruction x) => ILPatternMatchingExt.MatchLdsfld<CreatureTemplate.Type>(x, "WhiteLizard"),
-                (Instruction x) => ILPatternMatchingExt.MatchCall(x, "ExtEnum`1<CreatureTemplate/Type>", "op_Equality"),
-                (Instruction x) => ILPatternMatchingExt.MatchBrfalse(x, out target)
+                x => x.MatchLdarg(0),
+                x => x.MatchLdfld<LizardGraphics>("lizard"),
+                x => x.MatchCallvirt<Creature>("get_Template"),
+                x => x.MatchLdfld<CreatureTemplate>("type"),
+                x => x.MatchLdsfld<CreatureTemplate.Type>("WhiteLizard"),
+                x => x.MatchCall("ExtEnum`1<CreatureTemplate/Type>", "op_Equality"),
+                x => x.MatchBrfalse(out target)
                 }))
                 {
                     val.MoveAfterLabels();

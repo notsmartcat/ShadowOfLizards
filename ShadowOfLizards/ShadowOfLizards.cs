@@ -9,9 +9,10 @@ using System.Runtime.CompilerServices;
 using UnityEngine;
 using static RoomCamera;
 using LizardCosmetics;
+
 namespace ShadowOfLizards;
 
-[BepInPlugin("notsmartcat.shadowoflizards", "Shadow of Lizards", "1.0.0")]
+[BepInPlugin("notsmartcat.shadowoflizards", "Shadow of Lizards", "2.0.0")]
 public class ShadowOfLizards : BaseUnityPlugin
 {
     #region Classes
@@ -77,6 +78,9 @@ public class ShadowOfLizards : BaseUnityPlugin
         public bool isGoreHalf = false;
 
         public bool wasDead = false;
+
+        public Dictionary<int, int> cutAppendage = new();
+        public Dictionary<int, int> cutAppendageCycle = new();
     }
     public class EliteLizardData
     {
@@ -117,6 +121,8 @@ public class ShadowOfLizards : BaseUnityPlugin
         public LightSource lightSource;
 
         public float shockCharge = 0;
+
+        public List<int> deadLeg = new();
     }
     public class SpiderAsLeg
     {
@@ -198,14 +204,13 @@ public class ShadowOfLizards : BaseUnityPlugin
 
             MiscHooks.Apply();
 
-            ViolenceTypeCheck.Apply();
-
             ILHooks.Apply();
 
             //Transformations
             TransformationSpider.Apply();
             TransformationElectric.Apply();
             TransformationMelted.Apply();
+            TransformationRot.Apply();
             #endregion
 
             On.RainWorld.OnModsInit += ModInit;
@@ -236,7 +241,6 @@ public class ShadowOfLizards : BaseUnityPlugin
             MachineConnector.SetRegisteredOI("notsmartcat.shadowoflizards", optionsMenuInstance);
         }
         catch (Exception e) { Logger.LogError(e); }
-
     }
 
     void BloodModCheck(On.RainWorldGame.orig_ctor orig, RainWorldGame self, ProcessManager manager)
@@ -264,6 +268,23 @@ public class ShadowOfLizards : BaseUnityPlugin
         }
     }
 
+    #region Checks
+    public static bool BloodColoursCheck(string Template)
+    {
+        return ShadowOfOptions.blood.Value && bloodcolours != null && bloodcolours.ContainsKey(Template);
+    }
+
+    public static bool CanCamoCheck(LizardData data, string Template)
+    {
+        return !data.liz.TryGetValue("CanCamo", out string CanCamo) && Template == "WhiteLizard" || CanCamo == "True";
+    }
+
+    public static bool RotModuleCheck(Lizard liz)
+    {
+        return !ModManager.Watcher || liz.LizardState.rotType == LizardState.RotType.None || liz.LizardState.rotType == LizardState.RotType.Slight;
+    }
+    #endregion
+
     void DebugKeys(On.Player.orig_Update orig, Player self, bool eu)
     {
         orig.Invoke(self, eu);
@@ -285,7 +306,7 @@ public class ShadowOfLizards : BaseUnityPlugin
                         continue;
                     }
 
-                    if (creature.realizedCreature is Lizard liz && lizardstorage.TryGetValue(liz.abstractCreature, out LizardData data) && data.Beheaded == false)
+                    if (creature.realizedCreature is Lizard liz && lizardstorage.TryGetValue(liz.abstractCreature, out LizardData data) && data.Beheaded == false && !data.isGoreHalf)
                     {
                         if (ShadowOfOptions.debug_logs.Value)
                             Debug.Log(all + liz.ToString() + "'s Neck Hit by Debug");
@@ -300,7 +321,6 @@ public class ShadowOfLizards : BaseUnityPlugin
             if (Input.GetKey("m"))
             {
                 List<AbstractCreature> list = new(self.abstractCreature.Room.creatures);
-
                 foreach (AbstractCreature creature in list)
                 {
                     if (creature.realizedCreature != null && creature.realizedCreature is Lizard liz && lizardstorage.TryGetValue(liz.abstractCreature, out LizardData data))
@@ -332,7 +352,7 @@ public class ShadowOfLizards : BaseUnityPlugin
                             EyeCut(liz, "EyeLeft");
                         }
 
-                        if (ShadowOfOptions.cut_in_half.Value && data.availableBodychunks.Contains(1) && data.availableBodychunks.Contains(2))
+                        if (ShadowOfOptions.cut_in_half.Value && RotModuleCheck(liz) && data.availableBodychunks.Contains(1) && data.availableBodychunks.Contains(2))
                         {
                             CutInHalf(liz, data, liz.bodyChunks[1]);
                             liz.Die();
@@ -340,7 +360,6 @@ public class ShadowOfLizards : BaseUnityPlugin
                     }
                 }
             }
-
         }
         catch (Exception e) { Logger.LogError(e); }
     }
@@ -388,13 +407,9 @@ public class ShadowOfLizards : BaseUnityPlugin
             if (ShadowOfOptions.spider_transformation.Value && sender != null && data.transformation == "Null")
             {
                 CreatureTemplate.Type type = sender.abstractCreature.creatureTemplate.type;
+                string chanceText = "Spider Transformation after being killed by " + sender;
 
-                if (type == CreatureTemplate.Type.Spider && Chance(receiver, ShadowOfOptions.spider_transformation_chance.Value * 0.25f, "Spider Transformation after being killed by " + sender)
-                    || type == CreatureTemplate.Type.BigSpider && Chance(receiver, ShadowOfOptions.spider_transformation_chance.Value * 0.5f, "Spider Transformation after being killed by " + sender)
-                    || type == CreatureTemplate.Type.SpitterSpider && Chance(receiver, ShadowOfOptions.spider_transformation_chance.Value, "Spider Transformation after being killed by " + sender)
-                    || ModManager.DLCShared && type == DLCSharedEnums.CreatureTemplateType.MotherSpider && Chance(receiver, ShadowOfOptions.spider_transformation_chance.Value * 1.5f, "Spider Transformation after being killed by " + sender)
-                    || sender is Lizard liz && lizardstorage.TryGetValue(liz.abstractCreature, out LizardData data2) && (data2.transformation == "SpiderTransformation" && Chance(receiver, ShadowOfOptions.spider_transformation_chance.Value, "Spider Transformation after being killed by " + sender)
-                    || data2.transformation == "Spider" && Chance(receiver, ShadowOfOptions.spider_transformation_chance.Value * 0.5f, "Spider Transformation after being killed by " + sender)))
+                if (type == CreatureTemplate.Type.Spider && Chance(receiver, ShadowOfOptions.spider_transformation_chance.Value * 0.25f, chanceText) || type == CreatureTemplate.Type.BigSpider && Chance(receiver, ShadowOfOptions.spider_transformation_chance.Value * 0.5f, chanceText) || type == CreatureTemplate.Type.SpitterSpider && Chance(receiver, ShadowOfOptions.spider_transformation_chance.Value, chanceText) || ModManager.DLCShared && type == DLCSharedEnums.CreatureTemplateType.MotherSpider && Chance(receiver, ShadowOfOptions.spider_transformation_chance.Value * 1.5f, chanceText) || sender is Lizard liz && lizardstorage.TryGetValue(liz.abstractCreature, out LizardData data2) && (data2.transformation == "SpiderTransformation" && Chance(receiver, ShadowOfOptions.spider_transformation_chance.Value, chanceText) || data2.transformation == "Spider" && Chance(receiver, ShadowOfOptions.spider_transformation_chance.Value * 0.5f, chanceText)))
                 {
                     if (ShadowOfOptions.debug_logs.Value)
                         Debug.Log(all + receiver.ToString() + " was made a Spider Mother due to being killed by " + sender);
@@ -456,7 +471,6 @@ public class ShadowOfLizards : BaseUnityPlugin
                         data.liz["MeltedB"] = "0.1843137";
                     }
                 }
-
                 return;
             }
 
@@ -496,7 +510,6 @@ public class ShadowOfLizards : BaseUnityPlugin
             fallList.Add("ClimbWall");
             fallList.Add("ClimbCeiling");
         }
-
 
         if (fallList.Count == 0)
         {
@@ -689,6 +702,162 @@ public class ShadowOfLizards : BaseUnityPlugin
                 break;
         }
     }
+
+    public static void TemplatePathingUpdate(Lizard self, LizardData data)
+    {     
+        if (ShadowOfOptions.swim_ability.Value && data.liz.TryGetValue("CanSwim", out string CanSwim))
+        {
+            bool canSwim = CanSwim == "True";
+
+            if (canSwim)
+            {
+                PathCost dropToWater = self.Template.pathingPreferencesConnections[(int)MovementConnection.MovementType.DropToWater];
+                if (dropToWater.legality == PathCost.Legality.Unallowed || dropToWater.legality == PathCost.Legality.Unwanted)
+                {
+                    List<TileConnectionResistance> list2 = new()
+                            {
+                            new TileConnectionResistance(MovementConnection.MovementType.DropToWater, 20f, PathCost.Legality.Allowed)
+                            };
+                    for (int n = 0; n < list2.Count; n++)
+                    {
+                        self.Template.pathingPreferencesConnections[(int)list2[n].movementType] = list2[n].cost;
+                    }
+                }
+            }
+            else
+            {
+                PathCost dropToWater = self.Template.pathingPreferencesConnections[(int)MovementConnection.MovementType.DropToWater];
+                if (dropToWater.legality == PathCost.Legality.Allowed)
+                {
+                    self.Template.pathingPreferencesConnections[(int)MovementConnection.MovementType.DropToWater].resistance *= 2;
+                }
+            }
+        } //CanSwim: Set Here
+
+        if (ShadowOfOptions.climb_ability.Value)
+        {
+            if (data.liz.TryGetValue("CanClimbPole", out string CanClimbPole))
+            {
+                bool canClimb = CanClimbPole == "True";
+
+                if (canClimb)
+                {
+                    List<TileTypeResistance> list = new();
+                    self.lizardParams.terrainSpeeds[(int)AItile.Accessibility.Climb] = new LizardBreedParams.SpeedMultiplier(self.lizardParams.terrainSpeeds[(int)AItile.Accessibility.Floor].speed * 0.8f, self.lizardParams.terrainSpeeds[(int)AItile.Accessibility.Floor].horizontal, self.lizardParams.terrainSpeeds[(int)AItile.Accessibility.Floor].up, self.lizardParams.terrainSpeeds[(int)AItile.Accessibility.Floor].down);
+                    list.Add(new TileTypeResistance(AItile.Accessibility.Climb, 1f, PathCost.Legality.Allowed));
+
+                    for (int l = 0; l < list.Count; l++)
+                    {
+                        self.Template.pathingPreferencesTiles[(int)list[l].accessibility] = list[l].cost;
+                        if (self.Template.maxAccessibleTerrain < (int)list[l].accessibility && list[l].accessibility != AItile.Accessibility.Sand)
+                        {
+                            self.Template.maxAccessibleTerrain = (int)list[l].accessibility;
+                        }
+                    }
+                }
+                else
+                {
+                    List<TileTypeResistance> list = new();
+                    self.lizardParams.terrainSpeeds[(int)AItile.Accessibility.Climb] = new LizardBreedParams.SpeedMultiplier(0, 1f, 1f, 1f);
+                    list.Add(new TileTypeResistance(AItile.Accessibility.Climb, 0f, PathCost.Legality.Unallowed));
+
+                    for (int l = 0; l < list.Count; l++)
+                    {
+                        self.Template.pathingPreferencesTiles[(int)list[l].accessibility] = list[l].cost;
+                        if (self.Template.maxAccessibleTerrain < (int)list[l].accessibility && list[l].accessibility != AItile.Accessibility.Sand)
+                        {
+                            self.Template.maxAccessibleTerrain = (int)list[l].accessibility;
+                        }
+                    }
+                }
+            }
+
+            if (data.liz.TryGetValue("CanClimbWall", out string CanClimbWall))
+            {
+                bool canClimb = CanClimbWall == "True";
+
+                if (canClimb)
+                {
+                    List<TileTypeResistance> list = new();
+                    self.lizardParams.terrainSpeeds[(int)AItile.Accessibility.Wall] = new LizardBreedParams.SpeedMultiplier(self.lizardParams.terrainSpeeds[(int)AItile.Accessibility.Floor].speed * 0.6f, self.lizardParams.terrainSpeeds[(int)AItile.Accessibility.Floor].horizontal, self.lizardParams.terrainSpeeds[(int)AItile.Accessibility.Floor].up, self.lizardParams.terrainSpeeds[(int)AItile.Accessibility.Floor].down);
+                    list.Add(new TileTypeResistance(AItile.Accessibility.Wall, 1f, PathCost.Legality.Allowed));
+
+                    for (int l = 0; l < list.Count; l++)
+                    {
+                        self.Template.pathingPreferencesTiles[(int)list[l].accessibility] = list[l].cost;
+                        if (self.Template.maxAccessibleTerrain < (int)list[l].accessibility && list[l].accessibility != AItile.Accessibility.Sand)
+                        {
+                            self.Template.maxAccessibleTerrain = (int)list[l].accessibility;
+                        }
+                    }
+                }
+                else
+                {
+                    List<TileTypeResistance> list = new();
+                    self.lizardParams.terrainSpeeds[(int)AItile.Accessibility.Wall] = new LizardBreedParams.SpeedMultiplier(0, 1f, 1f, 1f);
+                    list.Add(new TileTypeResistance(AItile.Accessibility.Wall, 0f, PathCost.Legality.Unallowed));
+
+                    for (int l = 0; l < list.Count; l++)
+                    {
+                        self.Template.pathingPreferencesTiles[(int)list[l].accessibility] = list[l].cost;
+                        if (self.Template.maxAccessibleTerrain < (int)list[l].accessibility && list[l].accessibility != AItile.Accessibility.Sand)
+                        {
+                            self.Template.maxAccessibleTerrain = (int)list[l].accessibility;
+                        }
+                    }
+                }
+            }
+
+            if (data.liz.TryGetValue("CanClimbCeiling", out string CanClimbCeiling))
+            {
+                bool canClimb = CanClimbCeiling == "True";
+
+                if (canClimb)
+                {
+                    List<TileTypeResistance> list = new();
+
+                    self.lizardParams.terrainSpeeds[(int)AItile.Accessibility.Ceiling] = new LizardBreedParams.SpeedMultiplier(self.lizardParams.terrainSpeeds[(int)AItile.Accessibility.Wall].speed != 0f ? self.lizardParams.terrainSpeeds[(int)AItile.Accessibility.Wall].speed * 0.9f : self.lizardParams.terrainSpeeds[(int)AItile.Accessibility.Floor].speed * 0.6f, self.lizardParams.terrainSpeeds[(int)AItile.Accessibility.Floor].horizontal, self.lizardParams.terrainSpeeds[(int)AItile.Accessibility.Floor].up, self.lizardParams.terrainSpeeds[(int)AItile.Accessibility.Floor].down);
+                    list.Add(new TileTypeResistance(AItile.Accessibility.Ceiling, 1.2f, PathCost.Legality.Allowed));
+
+                    for (int l = 0; l < list.Count; l++)
+                    {
+                        self.Template.pathingPreferencesTiles[(int)list[l].accessibility] = list[l].cost;
+                        if (self.Template.maxAccessibleTerrain < (int)list[l].accessibility && list[l].accessibility != AItile.Accessibility.Sand)
+                        {
+                            self.Template.maxAccessibleTerrain = (int)list[l].accessibility;
+                        }
+                    }
+                }
+                else
+                {
+                    List<TileTypeResistance> list = new();
+
+                    self.lizardParams.terrainSpeeds[(int)AItile.Accessibility.Ceiling] = new LizardBreedParams.SpeedMultiplier(0, 1f, 1f, 1f);
+                    list.Add(new TileTypeResistance(AItile.Accessibility.Ceiling, 0f, PathCost.Legality.Unallowed));
+
+                    for (int l = 0; l < list.Count; l++)
+                    {
+                        self.Template.pathingPreferencesTiles[(int)list[l].accessibility] = list[l].cost;
+                        if (self.Template.maxAccessibleTerrain < (int)list[l].accessibility && list[l].accessibility != AItile.Accessibility.Sand)
+                        {
+                            self.Template.maxAccessibleTerrain = (int)list[l].accessibility;
+                        }
+                    }
+                }
+            }
+        } //CanClimb: Set Here
+    }
+
+    public static int CycleNum(AbstractCreature self)
+    {
+        return self.world.game.IsStorySession ? self.world.game.GetStorySession.saveState.cycleNumber : -1;
+    }
+
+    public static Color CamoElectric(LizardGraphics self, GraphicsData data, Color col)
+    {
+        return Color.Lerp(Color.Lerp(col, new Color(0.7f, 0.7f, 1f), (float)(data.ElectricColorTimer / 50f)), self.whiteCamoColor, self.whiteCamoColorAmount);
+    }
+
     #endregion
 
     #region Gore
@@ -710,7 +879,6 @@ public class ShadowOfLizards : BaseUnityPlugin
                 data2 = dat;
             }
 
-
             if (ShadowOfOptions.dynamic_cheat_death.Value)
                 data.cheatDeathChance -= 50;
 
@@ -719,6 +887,7 @@ public class ShadowOfLizards : BaseUnityPlugin
 
             data2.isGoreHalf = true;
             data2.transformation = data.transformation;
+            data2.liz = new(data.liz);
             data2.availableBodychunks = new();
             data2.ArmState = new(data.ArmState);
             data2.actuallyDead = true;
@@ -733,13 +902,11 @@ public class ShadowOfLizards : BaseUnityPlugin
 
             abstractLizard.RealizeInRoom();
 
-            if (bloodModCheck && ShadowOfOptions.blood_emitter.Value)
+            if (ShadowOfOptions.blood_emitter.Value && BloodColoursCheck(self.Template.type.ToString()))
                 BloodEmitter();
 
-            if (bloodModCheck && ShadowOfOptions.blood_emitter.Value && abstractLizard.realizedCreature != null)
+            if (false && ShadowOfOptions.blood_emitter.Value && abstractLizard.realizedCreature != null && BloodColoursCheck(self.Template.type.ToString()))
                 OtherBloodEmitter();
-
-            CutInHalfGraphics(self.graphicsModule as LizardGraphics, data.sLeaser, data.availableBodychunks);
 
             void BloodEmitter()
             {
@@ -750,15 +917,15 @@ public class ShadowOfLizards : BaseUnityPlugin
 
             void OtherBloodEmitter()
             {
-                abstractLizard.realizedCreature.room.AddObject(new BloodEmitter(null, self.bodyChunks[index + 1], UnityEngine.Random.Range(25f, 20f), UnityEngine.Random.Range(3f, 6f)));
-                abstractLizard.realizedCreature.room.AddObject(new BloodEmitter(null, self.bodyChunks[index + 1], UnityEngine.Random.Range(15f, 20f), UnityEngine.Random.Range(7f, 16f)));
-                abstractLizard.realizedCreature.room.AddObject(new BloodEmitter(null, self.bodyChunks[index + 1], UnityEngine.Random.Range(5f, 8f), UnityEngine.Random.Range(11f, 26f)));
+                abstractLizard.realizedCreature.room.AddObject(new BloodEmitter(null, abstractLizard.realizedCreature.bodyChunks[index + 1], UnityEngine.Random.Range(25f, 20f), UnityEngine.Random.Range(3f, 6f)));
+                abstractLizard.realizedCreature.room.AddObject(new BloodEmitter(null, abstractLizard.realizedCreature.bodyChunks[index + 1], UnityEngine.Random.Range(15f, 20f), UnityEngine.Random.Range(7f, 16f)));
+                abstractLizard.realizedCreature.room.AddObject(new BloodEmitter(null, abstractLizard.realizedCreature.bodyChunks[index + 1], UnityEngine.Random.Range(5f, 8f), UnityEngine.Random.Range(11f, 26f)));
             }
         }
         catch (Exception e) { Logger.LogError(e); }
     }
 
-    public static void CutInHalfGraphics(LizardGraphics graphics, SpriteLeaser sLeaser, List<int> availableBodychunks)
+    public static void CutInHalfGraphics(LizardGraphics graphics, SpriteLeaser sLeaser, List<int> availableBodychunks, Vector2 camPos, float timeStacker)
     {
         try
         {
@@ -958,20 +1125,100 @@ public class ShadowOfLizards : BaseUnityPlugin
                 }
                 #endregion
                 #endregion
+
+                if (!ModManager.Watcher)
+                {
+                    continue;
+                }
+
+                else if (graphics.cosmetics[c] is Watcher.SkinkStripes skinkStripes)
+                {
+                    float s = -1;
+
+                    float num4 = num3 / graphics.BodyAndTailLength;
+
+                    if (!availableBodychunks.Contains(1))
+                    {
+                        for (int i = skinkStripes.segs - 1; i > -1; i--)
+                        {
+                            float num2 = Mathf.InverseLerp(0f, (float)skinkStripes.segs, (float)i);
+
+                            if (num2 <= num4)
+                            {
+                                if (s == -1)
+                                    s = Mathf.InverseLerp(0f, (float)skinkStripes.segs, (float)i + 1);
+
+                                LizardGraphics.LizardSpineData lizardSpineData = skinkStripes.lGraphics.SpinePosition(s, timeStacker);
+                                Vector2 pos = lizardSpineData.pos;
+                                Vector2 perp = lizardSpineData.perp;
+                                float rad = lizardSpineData.rad;
+
+                                (sLeaser.sprites[skinkStripes.startSprite] as TriangleMesh).MoveVertice(i * 2, pos - perp * rad - camPos);
+                                (sLeaser.sprites[skinkStripes.startSprite] as TriangleMesh).MoveVertice(i * 2 + 1, pos + perp * rad - camPos);
+                                (sLeaser.sprites[skinkStripes.startSprite + 1] as TriangleMesh).MoveVertice(i * 2, pos - perp * rad - camPos);
+                                (sLeaser.sprites[skinkStripes.startSprite + 1] as TriangleMesh).MoveVertice(i * 2 + 1, pos + perp * rad - camPos);
+                            }
+                        }
+                    }
+                    else if (!availableBodychunks.Contains(2))
+                    {
+                        for (int i = 0; i < skinkStripes.segs; i++)
+                        {
+                            float num2 = Mathf.InverseLerp(0f, (float)skinkStripes.segs, (float)i);
+
+                            if (num2 > num4)
+                            {
+                                if (s == -1)
+                                    s = Mathf.InverseLerp(0f, (float)skinkStripes.segs, (float)i - 1);
+
+                                LizardGraphics.LizardSpineData lizardSpineData = skinkStripes.lGraphics.SpinePosition(s, timeStacker);
+                                Vector2 pos = lizardSpineData.pos;
+                                Vector2 perp = lizardSpineData.perp;
+                                float rad = lizardSpineData.rad;
+
+                                (sLeaser.sprites[skinkStripes.startSprite] as TriangleMesh).MoveVertice(i * 2, pos - perp * rad - camPos);
+                                (sLeaser.sprites[skinkStripes.startSprite] as TriangleMesh).MoveVertice(i * 2 + 1, pos + perp * rad - camPos);
+                                (sLeaser.sprites[skinkStripes.startSprite + 1] as TriangleMesh).MoveVertice(i * 2, pos - perp * rad - camPos);
+                                (sLeaser.sprites[skinkStripes.startSprite + 1] as TriangleMesh).MoveVertice(i * 2 + 1, pos + perp * rad - camPos);
+                            }
+                        }
+                    }
+                }
+                else if (graphics.cosmetics[c] is Watcher.SkinkSpeckles skinkSpeckles)
+                {
+                    for (int i = 0; i < skinkSpeckles.spots; i++)
+                    {
+                        float num2 = skinkSpeckles.spotInfo[i].x;
+
+                        float num4 = num3 / graphics.BodyAndTailLength;
+
+                        if (!availableBodychunks.Contains(1) && num2 <= num4)
+                        {
+                            sLeaser.sprites[skinkSpeckles.startSprite + i].isVisible = false;
+                        }
+                        if (!availableBodychunks.Contains(2) && num2 > num4)
+                        {
+                            sLeaser.sprites[skinkSpeckles.startSprite + i].isVisible = false;
+                        }
+                    }
+                }
             }
         }
         catch (Exception e) { Logger.LogError(e); }
     }
 
-    public static void LimbCut(Lizard self, LizardData data, BodyChunk hitChunk, int num4, string spriteVariant)
+    public static void LimbCut(Lizard self, LizardData data, BodyChunk hitChunk, int limbNum, string spriteVariant)
     {
         try
         {
-            if (bloodModCheck && ShadowOfOptions.blood_emitter.Value)
-                LimbCutBloodEmitter(self, hitChunk);
-
             if (ShadowOfOptions.dynamic_cheat_death.Value)
                 data.cheatDeathChance -= 5;
+
+            LizardGraphics graphicsModule = (LizardGraphics)self.graphicsModule;
+
+            self.LizardState.limbHealth[limbNum] = 0f;
+
+            graphicsModule.limbs[limbNum].currentlyDisabled = true;
 
             SpriteLeaser sLeaser = data.sLeaser;
 
@@ -980,114 +1227,67 @@ public class ShadowOfLizards : BaseUnityPlugin
 
             string template = self.Template.type.ToString();
 
-            float r = self.effectColor.r;
-            float g = self.effectColor.g;
-            float b = self.effectColor.b;
-
-            float lizBloodColourR = -1f;
-            float lizBloodColourG = -1f;
-            float lizBloodColourB = -1f;
-
-            if (ShadowOfOptions.blood.Value && bloodcolours != null)
-            {
-                lizBloodColourR = bloodcolours[self.Template.type.ToString()].r;
-                lizBloodColourG = bloodcolours[self.Template.type.ToString()].g;
-                lizBloodColourB = bloodcolours[self.Template.type.ToString()].b;
-            }
-
-            float r2;
-            float g2;
-            float b2;
-
-            LizardGraphics graphicsModule = (LizardGraphics)self.graphicsModule;
-
-            if (template == "Salamander")
-            {
-                r2 = graphicsModule.SalamanderColor.r;
-                g2 = graphicsModule.SalamanderColor.g;
-                b2 = graphicsModule.SalamanderColor.b;
-            }
-            else
-            {
-                r2 = graphicsModule.ivarBodyColor.r;
-                g2 = graphicsModule.ivarBodyColor.g;
-                b2 = graphicsModule.ivarBodyColor.b;
-            }
-
-            int num17 = graphicsModule.SpriteLimbsStart + num4;
-            int num18 = graphicsModule.SpriteLimbsColorStart + num4;
-
-            self.LizardState.limbHealth[num4] = 0f;
-
-            graphicsModule.limbs[num4].currentlyDisabled = true;
-
-            string lizardArm = sLeaser.sprites[num17].element.name;
-            string lizardArmColor = sLeaser.sprites[num18].element.name;
-
-            string lizardArmCut;
-            string lizardArmColorCut;
+            string lizardArm = sLeaser.sprites[graphicsModule.SpriteLimbsStart + limbNum].element.name;
+            string lizardArmColor = sLeaser.sprites[graphicsModule.SpriteLimbsColorStart + limbNum].element.name;
 
             if (lizardArm == "LizardArm_28A")
                 lizardArm = "LizardArm_28";
 
-            if (Futile.atlasManager.DoesContainElementWithName(lizardArm + (spriteVariant == "Cut1" ? "Cut2" : "Cut4")))
-            {
-                lizardArmCut = lizardArm + (spriteVariant == "Cut1" ? "Cut2" : "Cut4");
-                lizardArmColorCut = lizardArmColor + (spriteVariant == "Cut1" ? "Cut2" : "Cut4");
-            }
-            else
+            string lizardArmCut = lizardArm + (spriteVariant == "Cut1" ? "Cut2" : "Cut4"); ;
+            string lizardArmColorCut = lizardArmColor + (spriteVariant == "Cut1" ? "Cut2" : "Cut4"); ;
+
+            if (!Futile.atlasManager.DoesContainElementWithName(lizardArm + (spriteVariant == "Cut1" ? "Cut2" : "Cut4")))
             {
                 lizardArmCut = "LizardArm_28Cut2";
                 lizardArmColorCut = "LizardArmColor_28Cut2";
 
                 Debug.Log(all + "LizCutLeg object could not be properily created due to the: " + lizardArm + " Leg Sprite not having a valid variation, if able please report to the mod author of Shadow Of Lizards");
+                Logger.LogError(all + "LizCutLeg object could not be properily created due to the: " + lizardArm + " Leg Sprite not having a valid variation, if able please report to the mod author of Shadow Of Lizards");
             }
-
-            bool canCamo = !data.liz.TryGetValue("CanCamo", out string CanCamo) && self.Template.type == CreatureTemplate.Type.WhiteLizard || CanCamo == "True";
 
             LizCutLegAbstract lizCutLegAbstract = new(self.room.world, pos, self.room.game.GetNewID())
             {
                 hue = 1f,
                 saturation = 0.5f,
 
-                scaleX = sLeaser.sprites[num17].scaleX,
-                scaleY = sLeaser.sprites[num17].scaleY,
+                scaleX = sLeaser.sprites[graphicsModule.SpriteLimbsStart + limbNum].scaleX,
+                scaleY = sLeaser.sprites[graphicsModule.SpriteLimbsStart + limbNum].scaleY,
 
-                LizType = template,
+                LizBreed = template,
 
-                LizBodyColourR = r2,
-                LizBodyColourG = g2,
-                LizBodyColourB = b2,
+                LizBodyColourR = graphicsModule.ivarBodyColor.r,
+                LizBodyColourG = graphicsModule.ivarBodyColor.g,
+                LizBodyColourB = graphicsModule.ivarBodyColor.b,
 
-                LizBloodColourR = lizBloodColourR,
-                LizBloodColourG = lizBloodColourG,
-                LizBloodColourB = lizBloodColourB,
+                LizBloodColourR = BloodColoursCheck(template) ? bloodcolours[template].r : -1f,
+                LizBloodColourG = BloodColoursCheck(template) ? bloodcolours[template].g : -1f,
+                LizBloodColourB = BloodColoursCheck(template) ? bloodcolours[template].b : -1f,
 
-                LizEffectColourR = r,
-                LizEffectColourG = g,
-                LizEffectColourB = b,
+                LizEffectColourR = self.effectColor.r,
+                LizEffectColourG = self.effectColor.g,
+                LizEffectColourB = self.effectColor.b,
 
                 LizSpriteName = lizardArmCut,
                 LizColourSpriteName = lizardArmColorCut,
 
-                LizBreed = self.Template.type.value,
+                blackSalamander = graphicsModule.blackSalamander,
 
-                blackSalamander = ((LizardGraphics)self.graphicsModule).blackSalamander,
-
-                canCamo = canCamo
+                canCamo = CanCamoCheck(data, template)
             };
 
             self.room.abstractRoom.AddEntity(lizCutLegAbstract);
             lizCutLegAbstract.RealizeInRoom();
 
-            if (graphicstorage.TryGetValue(graphicsModule, out GraphicsData data3))
-                (lizCutLegAbstract.realizedObject as LizCutLeg).ElectricColorTimer = data3.ElectricColorTimer;
+            if (bloodModCheck && ShadowOfOptions.blood_emitter.Value)
+                LimbCutBloodEmitter();
 
+            if (graphicstorage.TryGetValue(graphicsModule, out GraphicsData data2))
+                (lizCutLegAbstract.realizedObject as LizCutLeg).ElectricColorTimer = data2.ElectricColorTimer;
 
             if (ShadowOfOptions.debug_logs.Value)
                 Debug.Log(all + "LizCutLeg Created");
 
-            void LimbCutBloodEmitter(Lizard self, BodyChunk hitChunk)
+            void LimbCutBloodEmitter()
             {
                 self.room.AddObject(new BloodEmitter(null, hitChunk, UnityEngine.Random.Range(11f, 15f), UnityEngine.Random.Range(7f, 14f)));
                 self.room.AddObject(new BloodEmitter(null, hitChunk, UnityEngine.Random.Range(5f, 8f), UnityEngine.Random.Range(9f, 20f)));
@@ -1102,9 +1302,6 @@ public class ShadowOfLizards : BaseUnityPlugin
         {
             if (ShadowOfOptions.debug_logs.Value)
                 Debug.Log(all + self.ToString() + " was Decapitated");
-
-            if (bloodModCheck && ShadowOfOptions.blood_emitter.Value)
-                BloodEmitter();
 
             if (!lizardstorage.TryGetValue(self.abstractCreature, out LizardData data) || data.sLeaser == null)
             {
@@ -1124,86 +1321,22 @@ public class ShadowOfLizards : BaseUnityPlugin
 
             string template = self.Template.type.ToString();
 
-            float r = self.effectColor.r;
-            float g = self.effectColor.g;
-            float b = self.effectColor.b;
-
-            float lizBloodColourR = -1f;
-            float lizBloodColourG = -1f;
-            float lizBloodColourB = -1f;
-
-            if (bloodcolours != null && ShadowOfOptions.blood.Value)
-            {
-                lizBloodColourR = bloodcolours[self.Template.type.ToString()].r;
-                lizBloodColourG = bloodcolours[self.Template.type.ToString()].g;
-                lizBloodColourB = bloodcolours[self.Template.type.ToString()].b;
-            }
-
-            float r2;
-            float g2;
-            float b2;
-
             LizardGraphics graphicsModule = (LizardGraphics)self.graphicsModule;
-
-            if (template == "Salamander")
-            {
-                r2 = graphicsModule.SalamanderColor.r;
-                g2 = graphicsModule.SalamanderColor.g;
-                b2 = graphicsModule.SalamanderColor.b;
-            }
-            else
-            {
-                r2 = graphicsModule.ivarBodyColor.r;
-                g2 = graphicsModule.ivarBodyColor.g;
-                b2 = graphicsModule.ivarBodyColor.b;
-            }
 
             int spriteHeadStart = graphicsModule.SpriteHeadStart;
 
             FSprite[] sprites = data.sLeaser.sprites;
 
-            bool validHead;
-
-            if (Futile.atlasManager.DoesContainElementWithName(sprites[graphicsModule.SpriteHeadStart + 3].element.name + "Cut2"))
-            {
-                validHead = true;
-            }
-            else
+            bool validHead = true;
+            if (!Futile.atlasManager.DoesContainElementWithName(sprites[graphicsModule.SpriteHeadStart + 3].element.name + "Cut2"))
             {
                 validHead = false;
 
                 Debug.Log(all + "LizCutHead object could not be properily created due to the: " + sprites[graphicsModule.SpriteHeadStart + 3].element.name + " Head Sprite not having a valid variation, if able please report to the mod author of Shadow Of Lizards");
+                Logger.LogError(all + "LizCutHead object could not be properily created due to the: " + sprites[graphicsModule.SpriteHeadStart + 3].element.name + " Head Sprite not having a valid variation, if able please report to the mod author of Shadow Of Lizards");
             }
 
-            string headSprite0 = sprites[graphicsModule.SpriteHeadStart].element.name;
-            string headSprite1 = sprites[graphicsModule.SpriteHeadStart + 1].element.name;
-            string headSprite2 = sprites[graphicsModule.SpriteHeadStart + 2].element.name;
-            string headSprite3 = validHead ? sprites[graphicsModule.SpriteHeadStart + 3].element.name : "LizardHead0.1";
-            string headSprite4 = sprites[graphicsModule.SpriteHeadStart + 4].element.name;
-            string headSprite5 = null;
-            string headSprite6 = null;
-
-            float eyeRightColourR = 0f;
-            float eyeRightColourG = 0f;
-            float eyeRightColourB = 0f;
-
-            float eyeLeftColourR = 0f;
-            float eyeLeftColourG = 0f;
-            float eyeLeftColourB = 0f;
-
-            if (ShadowOfOptions.blind.Value && data.liz.TryGetValue("EyeRight", out string eye) && eye != "Incompatible" && graphicstorage.TryGetValue(graphicsModule, out GraphicsData data2))
-            {
-                headSprite5 = data.sLeaser.sprites[data2.EyesSprites].element.name;
-                headSprite6 = data.sLeaser.sprites[data2.EyesSprites + 1].element.name;
-                eyeRightColourR = data.sLeaser.sprites[data2.EyesSprites].color.r;
-                eyeRightColourG = data.sLeaser.sprites[data2.EyesSprites].color.g;
-                eyeRightColourB = data.sLeaser.sprites[data2.EyesSprites].color.b;
-                eyeLeftColourR = data.sLeaser.sprites[data2.EyesSprites + 1].color.r;
-                eyeLeftColourG = data.sLeaser.sprites[data2.EyesSprites + 1].color.g;
-                eyeLeftColourB = data.sLeaser.sprites[data2.EyesSprites + 1].color.b;
-            }
-
-            bool canCamo = !data.liz.TryGetValue("CanCamo", out string CanCamo) && self.Template.type == CreatureTemplate.Type.WhiteLizard || CanCamo == "True";
+            bool eyeCheck = graphicstorage.TryGetValue(graphicsModule, out GraphicsData data2) && ShadowOfOptions.blind.Value && data.liz.TryGetValue("EyeRight", out string eye) && eye != "Incompatible";
 
             LizCutHeadAbstract lizCutHeadAbstract = new(self.room.world, pos, self.room.game.GetNewID())
             {
@@ -1213,44 +1346,42 @@ public class ShadowOfLizards : BaseUnityPlugin
                 scaleX = sLeaser.sprites[spriteHeadStart].scaleX,
                 scaleY = sLeaser.sprites[spriteHeadStart].scaleY,
 
-                LizType = template,
+                LizBreed = template,
 
-                LizBodyColourR = r2,
-                LizBodyColourG = g2,
-                LizBodyColourB = b2,
+                LizBodyColourR = graphicsModule.BodyColor(0f).r,
+                LizBodyColourG = graphicsModule.BodyColor(0f).r,
+                LizBodyColourB = graphicsModule.BodyColor(0f).r,
 
-                LizEffectColourR = r,
-                LizEffectColourG = g,
-                LizEffectColourB = b,
+                LizEffectColourR = self.effectColor.r,
+                LizEffectColourG = self.effectColor.g,
+                LizEffectColourB = self.effectColor.b,
 
-                LizBloodColourR = lizBloodColourR,
-                LizBloodColourG = lizBloodColourG,
-                LizBloodColourB = lizBloodColourB,
+                LizBloodColourR = BloodColoursCheck(template) ? bloodcolours[template].r : -1,
+                LizBloodColourG = BloodColoursCheck(template) ? bloodcolours[template].g : -1,
+                LizBloodColourB = BloodColoursCheck(template) ? bloodcolours[template].b : -1,
 
-                EyeRightColourR = eyeRightColourR,
-                EyeRightColourG = eyeRightColourG,
-                EyeRightColourB = eyeRightColourB,
+                EyeRightColourR = eyeCheck ? data.sLeaser.sprites[data2.EyesSprites].color.r : 0,
+                EyeRightColourG = eyeCheck ? data.sLeaser.sprites[data2.EyesSprites].color.g : 0,
+                EyeRightColourB = eyeCheck ? data.sLeaser.sprites[data2.EyesSprites].color.b : 0,
 
-                EyeLeftColourR = eyeLeftColourR,
-                EyeLeftColourG = eyeLeftColourG,
-                EyeLeftColourB = eyeLeftColourB,
+                EyeLeftColourR = eyeCheck ? data.sLeaser.sprites[data2.EyesSprites + 1].color.r : 0,
+                EyeLeftColourG = eyeCheck ? data.sLeaser.sprites[data2.EyesSprites + 1].color.g : 0,
+                EyeLeftColourB = eyeCheck ? data.sLeaser.sprites[data2.EyesSprites + 1].color.b : 0,
 
-                HeadSprite0 = headSprite0,
-                HeadSprite1 = headSprite1,
-                HeadSprite2 = headSprite2,
-                HeadSprite3 = headSprite3,
-                HeadSprite4 = headSprite4,
-                HeadSprite5 = headSprite5,
-                HeadSprite6 = headSprite6,
+                HeadSprite0 = sprites[graphicsModule.SpriteHeadStart].element.name,
+                HeadSprite1 = sprites[graphicsModule.SpriteHeadStart + 1].element.name,
+                HeadSprite2 = sprites[graphicsModule.SpriteHeadStart + 2].element.name,
+                HeadSprite3 = validHead ? sprites[graphicsModule.SpriteHeadStart + 3].element.name : "LizardHead0.1",
+                HeadSprite4 = sprites[graphicsModule.SpriteHeadStart + 4].element.name,
+                HeadSprite5 = eyeCheck ? data.sLeaser.sprites[data2.EyesSprites].element.name : null,
+                HeadSprite6 = eyeCheck ? data.sLeaser.sprites[data2.EyesSprites + 1].element.name : null,
 
-                blackSalamander = ((LizardGraphics)self.graphicsModule).blackSalamander,
+                blackSalamander = graphicsModule.blackSalamander,
 
                 rad = self.bodyChunks[0].rad,
                 mass = self.bodyChunks[0].mass / 2,
 
-                LizBreed = self.Template.type.value,
-
-                canCamo = canCamo,
+                canCamo = CanCamoCheck(data, template),
 
                 jawOpenAngle = self.lizardParams != null ? self.lizardParams.jawOpenAngle : 100,
                 jawOpenMoveJawsApart = self.lizardParams != null ? self.lizardParams.jawOpenMoveJawsApart : 20
@@ -1259,7 +1390,10 @@ public class ShadowOfLizards : BaseUnityPlugin
             self.room.abstractRoom.AddEntity(lizCutHeadAbstract);
             lizCutHeadAbstract.RealizeInRoom();
 
-            if(graphicstorage.TryGetValue(graphicsModule, out GraphicsData data3))
+            if (bloodModCheck && ShadowOfOptions.blood_emitter.Value)
+                BloodEmitter();
+
+            if (graphicstorage.TryGetValue(graphicsModule, out GraphicsData data3))
                 (lizCutHeadAbstract.realizedObject as LizCutHead).ElectricColorTimer = data3.ElectricColorTimer;
 
             if (ShadowOfOptions.debug_logs.Value)
@@ -1288,83 +1422,34 @@ public class ShadowOfLizards : BaseUnityPlugin
 
             WorldCoordinate pos = new(self.room.abstractRoom.index, tilePosition.x, tilePosition.y, 0);
 
-            string text = self.Template.type.ToString();
-
-            float r = data.sLeaser.sprites[data2.EyesSprites].color.r;
-            float g = data.sLeaser.sprites[data2.EyesSprites].color.g;
-            float b = data.sLeaser.sprites[data2.EyesSprites].color.b;
-
-            float r2 = data.sLeaser.sprites[data2.EyesSprites + 1].color.r;
-            float g2 = data.sLeaser.sprites[data2.EyesSprites + 1].color.g;
-            float b2 = data.sLeaser.sprites[data2.EyesSprites + 1].color.b;
-
-            float eyeColourR;
-            float eyeColourG;
-            float eyeColourB;
-
-            if (Eye == "EyeRight")
-            {
-                eyeColourR = r;
-                eyeColourG = g;
-                eyeColourB = b;
-            }
-            else
-            {
-                eyeColourR = r2;
-                eyeColourG = g2;
-                eyeColourB = b2;
-            }
-
-            float lizBloodColourR = -1f;
-            float lizBloodColourG = -1f;
-            float lizBloodColourB = -1f;
-
-            if (bloodcolours != null && ShadowOfOptions.blood.Value)
-            {
-                lizBloodColourR = bloodcolours[self.Template.type.ToString()].r;
-                lizBloodColourG = bloodcolours[self.Template.type.ToString()].g;
-                lizBloodColourB = bloodcolours[self.Template.type.ToString()].b;
-            }
-
-            if (bloodModCheck && ShadowOfOptions.blood_emitter.Value)
-                EyeCutBloodEmitter(self, new Color(lizBloodColourR, lizBloodColourG, lizBloodColourB));
-
-            float r3;
-            float g3;
-            float b3;
-
             LizardGraphics graphicsModule = (LizardGraphics)self.graphicsModule;
 
-            if (text == "Salamander")
-            {
-                r3 = graphicsModule.SalamanderColor.r;
-                g3 = graphicsModule.SalamanderColor.g;
-                b3 = graphicsModule.SalamanderColor.b;
-            }
-            else
-            {
-                r3 = graphicsModule.effectColor.r;
-                g3 = graphicsModule.effectColor.g;
-                b3 = graphicsModule.effectColor.b;
-            }
+            bool isSalamander = self.Template.type.ToString() == "Salamander";
+
+            bool bloodColour = BloodColoursCheck(self.Template.type.ToString());
+
+            bool rightEye = Eye == "EyeRight";
 
             LizCutEyeAbstract lizCutEyeAbstract = new(self.room.world, pos, self.room.game.GetNewID())
             {
-                LizColourR = r3,
-                LizColourG = g3,
-                LizColourB = b3,
+                BodyColourR = graphicsModule.BodyColor(0f).r,
+                BodyColourG = graphicsModule.BodyColor(0f).g,
+                BodyColourB = graphicsModule.BodyColor(0f).b,
 
-                LizBloodColourR = lizBloodColourR,
-                LizBloodColourG = lizBloodColourG,
-                LizBloodColourB = lizBloodColourB,
+                BloodColourR = bloodColour ? bloodcolours[self.Template.type.ToString()].r : isSalamander ? graphicsModule.SalamanderColor.r : graphicsModule.effectColor.r,
+                BloodColourG = bloodColour ? bloodcolours[self.Template.type.ToString()].g : isSalamander ? graphicsModule.SalamanderColor.g : graphicsModule.effectColor.g,
+                BloodColourB = bloodColour ? bloodcolours[self.Template.type.ToString()].b : isSalamander ? graphicsModule.SalamanderColor.b : graphicsModule.effectColor.b,
 
-                EyeColourR = eyeColourR,
-                EyeColourG = eyeColourG,
-                EyeColourB = eyeColourB
+                EyeColourR = rightEye ? data.sLeaser.sprites[data2.EyesSprites].color.r : data.sLeaser.sprites[data2.EyesSprites + 1].color.r,
+                EyeColourG = rightEye ? data.sLeaser.sprites[data2.EyesSprites].color.g : data.sLeaser.sprites[data2.EyesSprites + 1].color.g,
+                EyeColourB = rightEye ? data.sLeaser.sprites[data2.EyesSprites].color.b : data.sLeaser.sprites[data2.EyesSprites + 1].color.b
             };
 
             self.room.abstractRoom.AddEntity(lizCutEyeAbstract);
             lizCutEyeAbstract.RealizeInRoom();
+
+            if (bloodModCheck && ShadowOfOptions.blood_emitter.Value)
+                EyeCutBloodEmitter(self, new Color(lizCutEyeAbstract.BloodColourR, lizCutEyeAbstract.BloodColourG, lizCutEyeAbstract.BloodColourB));
 
             if (ShadowOfOptions.debug_logs.Value)
                 Debug.Log(all + self.ToString() + "'s Cut Eye Object was Created");
@@ -1379,16 +1464,16 @@ public class ShadowOfLizards : BaseUnityPlugin
 
     public static void Eviscerate(Lizard self)
     {
-        if (bloodModCheck && ShadowOfOptions.blood_emitter.Value)
-            BloodEmitter(lizardstorage.TryGetValue(self.abstractCreature, out LizardData data) ? data : null);
+        if (ShadowOfOptions.blood.Value && ShadowOfOptions.blood_emitter.Value && BloodColoursCheck(self.Template.type.ToString()))
+            BloodEmitter(lizardstorage.TryGetValue(self.abstractCreature, out LizardData data) ? data : null, bloodcolours[self.Template.type.ToString()]);
 
         self.Destroy();
 
-        void BloodEmitter(LizardData data)
+        void BloodEmitter(LizardData data, Color colour)
         {
             for(int i = 0; i < (data != null ? data.availableBodychunks.Count * 100 : 300); i++)
             {
-                self.room.AddObject(new BloodParticle(self.bodyChunks[0].pos, new Vector2(UnityEngine.Random.Range(-100f, 100f), UnityEngine.Random.Range(-100f, 100f)), bloodcolours[self.Template.type.ToString()], self.Template.type.value, null, UnityEngine.Random.Range(100f, 700f)));
+                self.room.AddObject(new BloodParticle(self.bodyChunks[0].pos, new Vector2(UnityEngine.Random.Range(-100f, 100f), UnityEngine.Random.Range(-100f, 100f)), colour, self.Template.type.value, null, UnityEngine.Random.Range(100f, 700f)));
             }
         }
     }

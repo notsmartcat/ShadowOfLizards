@@ -1,12 +1,11 @@
 ﻿using System;
+using System.Linq;
 using System.Collections.Generic;
 using UnityEngine;
 using RWCustom;
 using MoreSlugcats;
-using static ShadowOfLizards.ShadowOfLizards;
-using System.Linq;
 using Watcher;
-using System.Text.RegularExpressions;
+using static ShadowOfLizards.ShadowOfLizards;
 
 namespace ShadowOfLizards;
 
@@ -44,13 +43,6 @@ internal class LizardHooks
             data = dat;
         }
 
-        bool firstTime;
-
-        bool isStorySession = self.world.game.IsStorySession;
-        int cycleNumber = isStorySession ? self.world.game.GetStorySession.saveState.cycleNumber : -1;
-
-        string abstractAll = all + "Abstract " + self;
-
         try
         {
             self.creatureTemplate = new CreatureTemplate(self.creatureTemplate);
@@ -82,8 +74,6 @@ internal class LizardHooks
                 data.ArmState.Add("Normal");
             }
 
-            firstTime = data.lizardUpdatedCycle != (isStorySession ? cycleNumber : 0);
-
             LizardBreedParams breedParameters = creatureTemplate.breedParameters as LizardBreedParams;
 
             Abilities();
@@ -92,44 +82,27 @@ internal class LizardHooks
 
             if (ShadowOfOptions.debug_logs.Value)
                 Debug.Log(all + "Finished creating Abstract " + self);
-
-            data.lizardUpdatedCycle = isStorySession ? cycleNumber : -1;
         }
         catch (Exception e) { ShadowOfLizards.Logger.LogError(e); }
 
         #region Local
         void Abilities()
-        {
-            //Tongue: Set inside Lizard
-            if (ShadowOfOptions.tongue_ability.Value && firstTime && (data.liz.TryGetValue("Tongue", out _) || ModManager.MSC && self.creatureTemplate.type == MoreSlugcatsEnums.CreatureTemplateType.TrainLizard && !data.liz.TryGetValue("Tongue", out _)))
+        {           
+            if (ShadowOfOptions.tongue_ability.Value && ModManager.MSC && self.creatureTemplate.type == MoreSlugcatsEnums.CreatureTemplateType.TrainLizard)
             {
-                bool tongue = data.liz.TryGetValue("Tongue", out string Tongue) && Tongue != "Null";
+                data.liz["Tongue"] = "Null";
+            } //Tongue: Set inside Lizard
 
-                if (!data.liz.TryGetValue("Tongue", out _) && ModManager.MSC && self.creatureTemplate.type == MoreSlugcatsEnums.CreatureTemplateType.TrainLizard)
-                {
-                    data.liz["Tongue"] = "Null";
-                }
-                else if (tongue && data.liz["Tongue"] == "get")
-                {
-                    int num = UnityEngine.Random.Range(0, 7);
-                    data.liz["Tongue"] = (validTongues[num].Contains(self.creatureTemplate.type.ToString()) && UnityEngine.Random.value < 0.5) ? self.creatureTemplate.type.ToString() : validTongues[num];
-
-                    if (ShadowOfOptions.debug_logs.Value)
-                        Debug.Log(abstractAll + " got new " + data.liz["Tongue"] + " Tongue");
-                }
-
-                if (ShadowOfOptions.debug_logs.Value)
-                    Debug.Log(abstractAll + (tongue ? " has a " + data.liz["Tongue"] + " Tongue" : " does not have a Tongue"));
-
-                if (data.liz["Tongue"] == self.creatureTemplate.type.ToString())
-                {
-                    data.liz.Remove("Tongue");
-                }
-            }
-            else if (!ShadowOfOptions.tongue_ability.Value && data.liz.TryGetValue("Tongue", out _))
+            /*
+            if (creatureTemplate.type != CreatureTemplate.Type.WhiteLizard)
             {
-                data.liz.Remove("Tongue");
+                data.liz["CanCamo"] = "True";
             }
+            else
+            {
+                data.liz["CanCamo"] = "False";
+            }
+            */
         }
 
         void Transformations()
@@ -192,8 +165,7 @@ internal class LizardHooks
 
         bool firstTime;
 
-        bool isStorySession = self.creature.world.game.IsStorySession;
-        int cycleNumber = isStorySession ? self.creature.world.game.GetStorySession.saveState.cycleNumber : -1;
+        int cycleNumber = CycleNum(self.creature);
 
         string abstractAll = all + "Abstract " + self.creature;
 
@@ -205,44 +177,45 @@ internal class LizardHooks
 
             Dictionary<string, string> savedData = self.unrecognizedSaveStrings;
 
-            if (!savedData.TryGetValue("ShadowOfBeheaded", out string beheaded)) //First Time Creating Check
-            {
-                if (ShadowOfOptions.debug_logs.Value)
-                    Debug.Log(all + "First time creating Abstract " + self);
-
-                data.Beheaded = false;
-
-                if (ShadowOfOptions.dynamic_cheat_death.Value)
-                {
-                    data.cheatDeathChance = UnityEngine.Random.Range(0, 101) + ShadowOfOptions.cheat_death_chance.Value;
-
-                    if (ShadowOfOptions.debug_logs.Value)
-                        Debug.Log(all + self.creature + " got " + data.cheatDeathChance + " Chance to Cheat Death due to Dynamic Death Chance being On.");
-                }
-                else
-                {
-                    data.cheatDeathChance = ShadowOfOptions.cheat_death_chance.Value;
-
-                    if (ShadowOfOptions.debug_logs.Value)
-                        Debug.Log(all + self.creature + " got a flat " + data.cheatDeathChance + " Chance to Cheat Death due to Dynamic Death Chance being Off.");
-                }
-
-                for (int i = 0; i < (ModManager.DLCShared && creatureTemplate.type == DLCSharedEnums.CreatureTemplateType.SpitLizard ? 6 : 4); i++)
-                {
-                    data.ArmState.Add("Normal");
-                }
-            }
-            else //Loads info from the Lizard
+            if (savedData.TryGetValue("ShadowOfBeheaded", out string beheaded)) //Loads info from the Lizard
             {
                 if (ShadowOfOptions.debug_logs.Value)
                     Debug.Log(all + "Not the first time creating Abstract " + self.creature + " Loading values for Abstract");
 
                 if (beheaded == "Gore")
                 {
-                    data.Beheaded = true;
                     savedData.Remove("ShadowOfBeheaded");
 
-                    if (savedData.TryGetValue("ShadowOfArmState", out _))
+                    if (savedData.ContainsKey("ShadowOfLiz"))
+                    {
+                        string lizKeyTemp = "";
+                        string lizTemp = "";
+                        for (int i = 0; i < savedData["ShadowOfLiz"].Length; i++)
+                        {
+                            char letter = savedData["ShadowOfLiz"][i];
+
+                            if (letter.ToString() == "=")
+                            {
+                                lizKeyTemp = lizTemp;
+                                lizTemp = "";
+                            }
+                            else if (letter.ToString() == ";")
+                            {
+                                if (!data.liz.TryGetValue(lizKeyTemp, out _))
+                                    data.liz[lizKeyTemp] = lizTemp;
+
+                                lizKeyTemp = "";
+                                lizTemp = "";
+                            }
+                            else
+                            {
+                                lizTemp += letter;
+                            }
+                        }
+                        savedData.Remove("ShadowOfLiz");
+                    }
+
+                    if (savedData.ContainsKey("ShadowOfArmState"))
                     {
                         data.ArmState.Clear();
 
@@ -265,13 +238,13 @@ internal class LizardHooks
                         savedData.Remove("ShadowOfArmState");
                     }
 
-                    if (savedData.TryGetValue("ShadowOfTransformation", out _))
+                    if (savedData.ContainsKey("ShadowOfTransformation"))
                     {
                         data.transformation = savedData["ShadowOfTransformation"];
                         savedData.Remove("ShadowOfTransformation");
                     }
 
-                    if (savedData.TryGetValue("ShadowOfAvailableBodychunks", out _))
+                    if (savedData.ContainsKey("ShadowOfAvailableBodychunks"))
                     {
                         data.availableBodychunks.Clear();
 
@@ -291,29 +264,25 @@ internal class LizardHooks
                             }
                         }
                         savedData.Remove("ShadowOfAvailableBodychunks");
-
-
-                        data.actuallyDead = true;
-
-                        if (ShadowOfOptions.debug_logs.Value)
-                        {
-                            Debug.Log(all + self.creature + " beheaded = " + data.Beheaded);
-
-                            Debug.Log(all + self.creature + " bodyChunks = " + data.availableBodychunks);
-
-                            Debug.Log(all + self.creature + " transformation = " + data.transformation);
-
-                            Debug.Log(all + self.creature + " armState = " + data.ArmState);
-                        }
-
-                        return;
                     }
+
+                    data.actuallyDead = true;
+
+                    if (ShadowOfOptions.debug_logs.Value)
+                    {
+                        Debug.Log(all + self.creature + " beheaded = " + data.Beheaded);
+                        Debug.Log(all + self.creature + " bodyChunks = " + data.availableBodychunks);
+                        Debug.Log(all + self.creature + " transformation = " + data.transformation);
+                        Debug.Log(all + self.creature + " armState = " + data.ArmState);
+                    }
+
+                    return;
                 }
 
                 data.Beheaded = beheaded == "True";
                 savedData.Remove("ShadowOfBeheaded");
 
-                if (savedData.TryGetValue("ShadowOfLiz", out _))
+                if (savedData.ContainsKey("ShadowOfLiz"))
                 {
                     string lizKeyTemp = "";
                     string lizTemp = "";
@@ -342,7 +311,7 @@ internal class LizardHooks
                     savedData.Remove("ShadowOfLiz");
                 }
 
-                if (savedData.TryGetValue("ShadowOfArmState", out _))
+                if (savedData.ContainsKey("ShadowOfArmState"))
                 {
                     data.ArmState.Clear();
 
@@ -365,19 +334,19 @@ internal class LizardHooks
                     savedData.Remove("ShadowOfArmState");
                 }
 
-                if (savedData.TryGetValue("ShadowOfTransformation", out _))
+                if (savedData.ContainsKey("ShadowOfTransformation"))
                 {
                     data.transformation = savedData["ShadowOfTransformation"];
                     savedData.Remove("ShadowOfTransformation");
                 }
 
-                if (savedData.TryGetValue("ShadowOfTransformationTimer", out _))
+                if (savedData.ContainsKey("ShadowOfTransformationTimer"))
                 {
                     data.transformationTimer = int.Parse(savedData["ShadowOfTransformationTimer"]);
                     savedData.Remove("ShadowOfTransformationTimer");
                 }
 
-                if (savedData.TryGetValue("ShadowOfCheatDeathChance", out _))
+                if (savedData.ContainsKey("ShadowOfCheatDeathChance"))
                 {
                     data.cheatDeathChance = int.Parse(savedData["ShadowOfCheatDeathChance"]);
                     savedData.Remove("ShadowOfCheatDeathChance");
@@ -400,7 +369,7 @@ internal class LizardHooks
                     }
                 }
 
-                if (savedData.TryGetValue("ShadowOfLizardUpdatedCycle", out _))
+                if (savedData.ContainsKey("ShadowOfLizardUpdatedCycle"))
                 {
                     data.lizardUpdatedCycle = int.Parse(savedData["ShadowOfLizardUpdatedCycle"]);
                     savedData.Remove("ShadowOfLizardUpdatedCycle");
@@ -408,7 +377,7 @@ internal class LizardHooks
 
                 List<int> TempavailableBodychunks = new();
 
-                if (savedData.TryGetValue("ShadowOfAvailableBodychunks", out _))
+                if (savedData.ContainsKey("ShadowOfAvailableBodychunks"))
                 {
                     if (data.actuallyDead)
                     {
@@ -436,7 +405,7 @@ internal class LizardHooks
                     savedData.Remove("ShadowOfAvailableBodychunks");
                 }
 
-                if (savedData.TryGetValue("ShadowOfCosmeticBodychunks", out _))
+                if (savedData.ContainsKey("ShadowOfCosmeticBodychunks"))
                 {
                     data.cosmeticBodychunks.Clear();
 
@@ -458,58 +427,126 @@ internal class LizardHooks
                     savedData.Remove("ShadowOfCosmeticBodychunks");
                 }
 
+                if (ModManager.Watcher)
+                {
+                    if (savedData.ContainsKey("ShadowOfCutAppendage"))
+                    {
+                        string lizKeyTemp = "";
+                        string lizTemp = "";
+                        for (int i = 0; i < savedData["ShadowOfCutAppendage"].Length; i++)
+                        {
+                            char letter = savedData["ShadowOfCutAppendage"][i];
+
+                            if (letter.ToString() == "=")
+                            {
+                                lizKeyTemp = lizTemp;
+                                lizTemp = "";
+                            }
+                            else if (letter.ToString() == ";")
+                            {
+                                if (!data.liz.TryGetValue(lizKeyTemp, out _))
+                                    data.liz[lizKeyTemp] = lizTemp;
+
+                                lizKeyTemp = "";
+                                lizTemp = "";
+                            }
+                            else
+                            {
+                                lizTemp += letter;
+                            }
+                        }
+                        savedData.Remove("ShadowOfCutAppendage");
+                    }
+                    if (savedData.ContainsKey("ShadowOfCutAppendageCycle"))
+                    {
+                        string lizKeyTemp = "";
+                        string lizTemp = "";
+                        for (int i = 0; i < savedData["ShadowOfCutAppendageCycle"].Length; i++)
+                        {
+                            char letter = savedData["ShadowOfCutAppendageCycle"][i];
+
+                            if (letter.ToString() == "=")
+                            {
+                                lizKeyTemp = lizTemp;
+                                lizTemp = "";
+                            }
+                            else if (letter.ToString() == ";")
+                            {
+                                if (!data.liz.TryGetValue(lizKeyTemp, out _))
+                                    data.liz[lizKeyTemp] = lizTemp;
+
+                                lizKeyTemp = "";
+                                lizTemp = "";
+                            }
+                            else
+                            {
+                                lizTemp += letter;
+                            }
+                        }
+                        savedData.Remove("ShadowOfCutAppendageCycle");
+                    }
+                }
+                else
+                {
+                    if (savedData.ContainsKey("ShadowOfCutAppendage"))
+                    {
+                        savedData.Remove("ShadowOfCutAppendage");
+                    }
+                    if (savedData.ContainsKey("ShadowOfCutAppendageCycle"))
+                    {
+                        savedData.Remove("ShadowOfCutAppendageCycle");
+                    }
+                }
+
                 if (ShadowOfOptions.debug_logs.Value)
                 {
                     Debug.Log(all + self.creature + " beheaded = " + data.Beheaded);
                     Debug.Log(all + self.creature + " lizDictionary = " + data.liz);
-
                     Debug.Log(all + self.creature + " bodyChunks = " + data.availableBodychunks);
-
                     Debug.Log(all + self.creature + " transformation = " + data.transformation);
                     Debug.Log(all + self.creature + " transformationTimer = " + data.transformationTimer);
-
                     Debug.Log(all + self.creature + " armState = " + data.ArmState);
-
                     Debug.Log(all + self.creature + " updatedCycle = " + data.lizardUpdatedCycle);
-
                     Debug.Log(all + self.creature + " cheatDeathChance = " + data.cheatDeathChance);
+                    if (ModManager.Watcher)
+                    {
+                        Debug.Log(all + self.creature + " cutAppendage = " + data.cutAppendage);
+                        Debug.Log(all + self.creature + " cutAppendageCycle = " + data.cutAppendageCycle);
+                    }
                 }
 
                 if (!TempavailableBodychunks.Contains(0) && !data.actuallyDead)
-                {
-                    //Blind: Set inside Lizard
-                    if (ShadowOfOptions.blind.Value && data.liz.TryGetValue("EyeRight", out _) && data.liz["EyeRight"] != "Incompatible")
+                {                   
+                    if (ShadowOfOptions.blind.Value && data.liz.ContainsKey("EyeRight") && data.liz["EyeRight"] != "Incompatible")
                     {
                         data.liz["EyeLeft"] = "Normal";
                         data.liz["EyeRight"] = "Normal";
-                    }
+                    } //Blind: Set inside Lizard
 
-                    //Deaf: Set inside Lizard
-                    if (ShadowOfOptions.deafen.Value && data.liz.TryGetValue("EarRight", out _))
+                    if (ShadowOfOptions.deafen.Value && data.liz.ContainsKey("EarRight"))
                     {
                         data.liz["EarLeft"] = "Normal";
                         data.liz["EarRight"] = "Normal";
-                    }
+                    } //Deaf: Set inside Lizard
 
-                    //Teeth: Set inside Lizard
-                    if (ShadowOfOptions.teeth.Value && data.liz.TryGetValue("UpperTeeth", out _) && data.liz["UpperTeeth"] != "Incompatible")
+                    if (ShadowOfOptions.teeth.Value && data.liz.ContainsKey("UpperTeeth") && data.liz["UpperTeeth"] != "Incompatible")
                     {
                         data.liz["UpperTeeth"] = "Normal";
                         data.liz["LowerTeeth"] = "Normal";
-                    }
+                    } //Teeth: Set inside Lizard
                 }
+
                 if (ShadowOfOptions.dismemberment.Value && !TempavailableBodychunks.Contains(2) && (!ModManager.DLCShared || creatureTemplate.type != DLCSharedEnums.CreatureTemplateType.EelLizard) && !data.actuallyDead)
                 {
                     data.ArmState[2] = "Normal";
                     data.ArmState[3] = "Normal";
                 }
-
-                //Add Head Back if next cycle
-                if (ShadowOfOptions.decapitation.Value && data.Beheaded == true && isStorySession && !data.actuallyDead)
+                
+                if (ShadowOfOptions.decapitation.Value && data.Beheaded == true && !data.actuallyDead)
                 {
                     if (!data.liz.TryGetValue("BeheadedCycle", out string beheadedCycle))
                     {
-                        data.liz["BeheadedCycle"] = "-1";
+                        data.liz["BeheadedCycle"] = cycleNumber.ToString();
                     }
                     else if (beheadedCycle != cycleNumber.ToString())
                     {
@@ -520,14 +557,14 @@ internal class LizardHooks
                         if (ShadowOfOptions.debug_logs.Value)
                             Debug.Log(all + self.creature + " gained back it's head");
                     }
-                }
-                else if (data.liz.TryGetValue("BeheadedCycle", out _))
+                } //Add Head Back if next cycle
+                else if (data.liz.ContainsKey("BeheadedCycle"))
                 {
                     data.liz.Remove("BeheadedCycle");
                 }
             }
 
-            firstTime = data.lizardUpdatedCycle != (isStorySession ? cycleNumber : 0);
+            firstTime = data.lizardUpdatedCycle != (self.creature.world.game.IsStorySession ? cycleNumber : 0);
 
             LizardBreedParams breedParameters = creatureTemplate.breedParameters as LizardBreedParams;
 
@@ -542,23 +579,18 @@ internal class LizardHooks
             if (ShadowOfOptions.debug_logs.Value)
                 Debug.Log(all + "Finished creating Abstract " + self.creature);
 
-            data.lizardUpdatedCycle = isStorySession ? cycleNumber : -1;
+            data.lizardUpdatedCycle = cycleNumber;
         }
         catch (Exception e) { ShadowOfLizards.Logger.LogError(e); }
 
         #region Local
         void Abilities()
-        {
-            //Tongue: Set inside Lizard
-            if (ShadowOfOptions.tongue_ability.Value && firstTime && (data.liz.TryGetValue("Tongue", out _) || ModManager.MSC && creatureTemplate.type == MoreSlugcatsEnums.CreatureTemplateType.TrainLizard && !data.liz.TryGetValue("Tongue", out _)))
+        {           
+            if (ShadowOfOptions.tongue_ability.Value && firstTime && data.liz.ContainsKey("Tongue"))
             {
                 bool tongue = data.liz.TryGetValue("Tongue", out string Tongue) && Tongue != "Null";
 
-                if (!data.liz.TryGetValue("Tongue", out _) && ModManager.MSC && creatureTemplate.type == MoreSlugcatsEnums.CreatureTemplateType.TrainLizard)
-                {
-                    data.liz["Tongue"] = "Null";
-                }
-                else if (tongue && data.liz["Tongue"] == "get")
+                if (tongue && data.liz["Tongue"] == "get")
                 {
                     int num = UnityEngine.Random.Range(0, 7);
                     data.liz["Tongue"] = (validTongues[num].Contains(creatureTemplate.type.ToString()) && UnityEngine.Random.value < 0.5) ? creatureTemplate.type.ToString() : validTongues[num];
@@ -574,94 +606,72 @@ internal class LizardHooks
                 {
                     data.liz.Remove("Tongue");
                 }
-            }
-            else if (!ShadowOfOptions.tongue_ability.Value && data.liz.TryGetValue("Tongue", out _))
+            } //Tongue: Set inside Lizard
+            else if (!ShadowOfOptions.tongue_ability.Value && data.liz.ContainsKey("Tongue"))
             {
                 data.liz.Remove("Tongue");
             }
-
-            //Jump: Set inside Lizard
-            if (ShadowOfOptions.jump_ability.Value && firstTime && data.liz.TryGetValue("CanJump", out string CanJump))
+            
+            if (ShadowOfOptions.jump_ability.Value && firstTime && data.liz.TryGetValue("CanJump", out string CanJump) && ShadowOfOptions.debug_logs.Value)
             {
-                if (ShadowOfOptions.debug_logs.Value)
-                    AbilityLog(CanJump == "True", "Jump");
-            }
-            else if (!ShadowOfOptions.jump_ability.Value && data.liz.TryGetValue("CanJump", out _))
+                AbilityLog(CanJump == "True", "Jump");
+            } //Jump: Set inside Lizard
+            else if (!ShadowOfOptions.jump_ability.Value && data.liz.ContainsKey("CanJump"))
             {
                 data.liz.Remove("CanJump");
             }
-
-            //Can Swim: Set inside Lizard
+           
             if (ShadowOfOptions.swim_ability.Value && firstTime && data.liz.TryGetValue("CanSwim", out string CanSwim))
             {
                 if (CanSwim == "True" && defaultWaterBreather.Contains(creatureTemplate.type.ToString()) || CanSwim != "True" && !defaultWaterBreather.Contains(creatureTemplate.type.ToString()))
                 {
                     data.liz.Remove("CanSwim");
                 }
-
                 if (ShadowOfOptions.debug_logs.Value)
                     AbilityLog(CanSwim == "True", "Swim");
-            }
-            else if (!ShadowOfOptions.swim_ability.Value && data.liz.TryGetValue("CanSwim", out _))
+            } //Can Swim: Set inside Lizard
+            else if (!ShadowOfOptions.swim_ability.Value && data.liz.ContainsKey("CanSwim"))
             {
                 data.liz.Remove("CanSwim");
             }
-
-            //CanClimb: Set inside Lizard
-            if (ShadowOfOptions.climb_ability.Value && firstTime)
+            
+            if (ShadowOfOptions.climb_ability.Value && firstTime && ShadowOfOptions.debug_logs.Value)
             {
                 if (data.liz.TryGetValue("CanClimbPole", out string CanClimbPole))
                 {
-                    if (ShadowOfOptions.debug_logs.Value)
-                        AbilityLog(CanClimbPole == "True", "Climb Poles");
+                    AbilityLog(CanClimbPole == "True", "Climb Poles");
                 }
-
                 if (data.liz.TryGetValue("CanClimbWall", out string CanClimbWall))
                 {
-                    if (ShadowOfOptions.debug_logs.Value)
-                        AbilityLog(CanClimbWall == "True", "Climb Walls");
+                    AbilityLog(CanClimbWall == "True", "Climb Walls");
                 }
-
                 if (data.liz.TryGetValue("CanClimbCeiling", out string CanClimbCeiling))
                 {
-                    if (ShadowOfOptions.debug_logs.Value)
-                        AbilityLog(CanClimbCeiling == "True", "Climb Walls");
+                    AbilityLog(CanClimbCeiling == "True", "Climb Walls");
                 }
-            }
+            } //CanClimb: Set inside Lizard
             else if (!ShadowOfOptions.climb_ability.Value)
             {
-                if (data.liz.TryGetValue("CanClimbWall", out _))
+                if (data.liz.ContainsKey("CanClimbWall"))
                 {
                     data.liz.Remove("CanClimbPole");
                 }
-                if (data.liz.TryGetValue("CanClimbWall", out _))
+                if (data.liz.ContainsKey("CanClimbWall"))
                 {
                     data.liz.Remove("CanClimbWall");
                 }
-                if (data.liz.TryGetValue("CanClimbCeiling", out _))
+                if (data.liz.ContainsKey("CanClimbCeiling"))
                 {
                     data.liz.Remove("CanClimbCeiling");
                 }
             }
-
-            /*
-            if (creatureTemplate.type != CreatureTemplate.Type.WhiteLizard)
-            {
-                data.liz["CanCamo"] = "True";
-            }
-            else
-            {
-                data.liz["CanCamo"] = "False";
-            }
-            */
-
-            //CanCamo
+           
             if (ShadowOfOptions.camo_ability.Value && firstTime && data.liz.TryGetValue("CanCamo", out string CanCamo))
             {
                 if (ShadowOfOptions.debug_logs.Value)
                     AbilityLog(CanCamo == "True", "Camo");
-            }
-            else if (!ShadowOfOptions.camo_ability.Value && data.liz.TryGetValue("CanCamo", out _))
+            } //CanCamo
+            else if (!ShadowOfOptions.camo_ability.Value && data.liz.ContainsKey("CanCamo"))
             {
                 data.liz.Remove("CanCamo");
             }
@@ -673,19 +683,17 @@ internal class LizardHooks
         }
 
         void Immunities()
-        {
-            //WormGrassImmune: Set inside Lizard
+        {            
             if (ShadowOfOptions.grass_immune.Value && firstTime && data.liz.TryGetValue("WormGrassImmune", out string WormGrassImmune))
             {
                 if (ShadowOfOptions.debug_logs.Value)
                     ImmuneLog(WormGrassImmune == "True", "Worm Grass");
-            }
-            else if (!ShadowOfOptions.grass_immune.Value && data.liz.TryGetValue("WormGrassImmune", out _))
+            } //WormGrassImmune: Set inside Lizard
+            else if (!ShadowOfOptions.grass_immune.Value && data.liz.ContainsKey("WormGrassImmune"))
             {
                 data.liz.Remove("WormGrassImmune");
             }
-
-            //HypothermiaImmune: Set Here
+          
             if (ModManager.HypothermiaModule && ShadowOfOptions.hypothermia_immune.Value && firstTime && data.liz.TryGetValue("HypothermiaImmune", out string HypothermiaImmune))
             {
                 bool hypothermia = HypothermiaImmune == "True";
@@ -694,42 +702,31 @@ internal class LizardHooks
                 {
                     self.creature.HypothermiaImmune = hypothermia;
                 }
-                else if (hypothermia || !int.TryParse(HypothermiaImmune, out _) || HypothermiaImmune != (isStorySession ? cycleNumber.ToString() : "-1"))
+                else if (hypothermia || !int.TryParse(HypothermiaImmune, out int HypothermiaImmuneInt) || HypothermiaImmuneInt != CycleNum(self.creature))
                 {
                     data.liz.Remove("HypothermiaImmune");
                 }
 
                 if (ShadowOfOptions.debug_logs.Value)
                     ImmuneLog(hypothermia, "Hypothermia");
-            }
-            else if (!ShadowOfOptions.hypothermia_immune.Value && data.liz.TryGetValue("HypothermiaImmune", out _))
+            } //HypothermiaImmune: Set Here
+            else if (!ShadowOfOptions.hypothermia_immune.Value && data.liz.ContainsKey("HypothermiaImmune"))
             {
                 data.liz.Remove("HypothermiaImmune");
             }
-
-            //TentacleImmune: Set Here
+           
             if (ShadowOfOptions.tentacle_immune.Value && firstTime && data.liz.TryGetValue("TentacleImmune", out string TentacleImmune))
             {
-                bool tentacle = TentacleImmune == "True";
-
-                if (self.creature.tentacleImmune != tentacle)
-                {
-                    self.creature.tentacleImmune = tentacle;
-                }
-                else
-                {
-                    data.liz.Remove("TentacleImmune");
-                }
+                self.creature.tentacleImmune = TentacleImmune == "True";
 
                 if (ShadowOfOptions.debug_logs.Value)
-                    ImmuneLog(tentacle, "Rot Tentacles");
-            }
-            else if (!ShadowOfOptions.tentacle_immune.Value && data.liz.TryGetValue("TentacleImmune", out _))
+                    ImmuneLog(TentacleImmune == "True", "Rot Tentacles");
+            } //TentacleImmune: Set Here
+            else if (!ShadowOfOptions.tentacle_immune.Value && data.liz.ContainsKey("TentacleImmune"))
             {
                 data.liz.Remove("TentacleImmune");
             }
-
-            //LavaImmune: Set Here
+            
             if (ShadowOfOptions.lava_immune.Value && firstTime && data.liz.TryGetValue("LavaImmune", out string LavaImmune))
             {
                 bool lava = LavaImmune == "True";
@@ -738,20 +735,19 @@ internal class LizardHooks
                 {
                     self.creature.lavaImmune = lava;
                 }
-                else if (lava || !int.TryParse(LavaImmune, out _) || LavaImmune != (isStorySession ? cycleNumber.ToString() : "-1"))
+                else if (lava || !int.TryParse(LavaImmune, out int LavaImmuneInt) || LavaImmuneInt != CycleNum(self.creature))
                 {
                     data.liz.Remove("LavaImmune");
                 }
 
                 if (ShadowOfOptions.debug_logs.Value)
                     ImmuneLog(lava, "Lava/Acid");
-            }
-            else if (!ShadowOfOptions.lava_immune.Value && data.liz.TryGetValue("LavaImmune", out _))
+            } //LavaImmune: Set Here
+            else if (!ShadowOfOptions.lava_immune.Value && data.liz.ContainsKey("LavaImmune"))
             {
                 data.liz.Remove("LavaImmune");
             }
-
-            //WaterBreather: Set Here
+            
             if (ShadowOfOptions.water_breather.Value && firstTime && data.liz.TryGetValue("WaterBreather", out string WaterBreather))
             {
                 bool waterBreather = WaterBreather == "True";
@@ -763,8 +759,8 @@ internal class LizardHooks
 
                 if (ShadowOfOptions.debug_logs.Value)
                     Debug.Log(abstractAll + (waterBreather ? " can " : " cannot ") + "Breathe Underwater");
-            }
-            else if (!ShadowOfOptions.water_breather.Value && data.liz.TryGetValue("WaterBreather", out _))
+            } //WaterBreather: Set Here
+            else if (!ShadowOfOptions.water_breather.Value && data.liz.ContainsKey("WaterBreather"))
             {
                 data.liz.Remove("WaterBreather");
             }
@@ -776,84 +772,41 @@ internal class LizardHooks
         }
 
         void Physical()
-        {
-            //Blind: Set inside Lizard
-            if (!ShadowOfOptions.blind.Value && data.liz.TryGetValue("EyeRight", out _))
+        {           
+            if (!ShadowOfOptions.blind.Value && data.liz.ContainsKey("EyeRight"))
             {
                 data.liz.Remove("EyeRight");
                 data.liz.Remove("EyeLeft");
-            }
+            } //Blind: Set inside Lizard
 
-            //Deaf: Set inside Lizard
-            if (!ShadowOfOptions.deafen.Value && data.liz.TryGetValue("EarRight", out _))
+            if (!ShadowOfOptions.deafen.Value && data.liz.ContainsKey("EarRight"))
             {
                 data.liz.Remove("EarRight");
                 data.liz.Remove("EarLeft");
-            }
+            } //Deaf: Set inside Lizard
 
-            //Teeth: Set inside Lizard
-            if (!ShadowOfOptions.teeth.Value && data.liz.TryGetValue("UpperTeeth", out _))
+            if (!ShadowOfOptions.teeth.Value && data.liz.ContainsKey("UpperTeeth"))
             {
                 data.liz.Remove("UpperTeeth");
                 data.liz.Remove("LowerTeeth");
-            }
+            } //Teeth: Set inside Lizard
         }
 
         void Transformations()
         {
-            if (data.transformation == "Start")
-            {
-                if (ShadowOfOptions.spider_transformation.Value && UnityEngine.Random.Range(0, 100) < ShadowOfOptions.spawn_spider_transformation_chance.Value)
-                {
-                    data.transformation = "SpiderTransformation";
-
-                    data.liz["SpiderNumber"] = UnityEngine.Random.Range(30, 55).ToString();
-
-                    if (ShadowOfOptions.debug_logs.Value)
-                        Debug.Log(all + self + " gained the Spider Transformation due to Chance");
-
-                    return;
-                }
-                else if (ShadowOfOptions.electric_transformation.Value && UnityEngine.Random.Range(0, 100) < ShadowOfOptions.spawn_electric_transformation_chance.Value)
-                {
-                    data.transformation = "ElectricTransformation";
-
-                    if (ShadowOfOptions.debug_logs.Value)
-                        Debug.Log(all + self + " gained the Electric Transformation due to Chance");
-
-                    return;
-                }
-                else if (ShadowOfOptions.melted_transformation.Value && UnityEngine.Random.Range(0, 100) < ShadowOfOptions.spawn_melted_transformation_chance.Value)
-                {
-                    data.transformation = "MeltedTransformation";
-
-                    if (ShadowOfOptions.debug_logs.Value)
-                        Debug.Log(all + self + " gained the Melted Transformation due to Chance");
-
-                    return;
-                }
-                else
-                {
-                    data.transformation = "Null";
-                }
-            }
-
             if (!firstTime)
             {
                 return;
             }
-
-            //Rot Transformation: Set inside Lizard
-            if (data.transformation.Contains("Rot"))
+           
+            if (data.transformation.Contains("Rot") && ShadowOfOptions.debug_logs.Value) //Rot Transformation: Set inside Lizard
             {
-                if (ShadowOfOptions.debug_logs.Value)
-                    Debug.Log(abstractAll + " has the Rot Transformation");
+                Debug.Log(abstractAll + " has the Rot Transformation");
             }
-
-            //Spider Transformation
+            
             if (ShadowOfOptions.spider_transformation.Value && (data.transformation == "Spider" || data.transformation == "SpiderTransformation"))
             {
-                if (isStorySession && data.transformation == "Spider")
+                if (data.transformation == "Spider")
                 {
                     if (data.transformationTimer <= cycleNumber - 3 || data.transformationTimer >= cycleNumber + 3 || ShadowOfOptions.spider_transformation_skip.Value)
                     {
@@ -886,13 +839,12 @@ internal class LizardHooks
                     if (ShadowOfOptions.debug_logs.Value)
                         Debug.Log(abstractAll + " has the Spider Transformation");
                 }
-            }
+            } //Spider Transformation
             else if ((!ShadowOfOptions.spider_transformation.Value || data.transformation != "Spider" && data.transformation != "SpiderTransformation") && data.liz.TryGetValue("SpiderNumber", out string _))
             {
                 data.liz.Remove("SpiderNumber");
             }
-
-            //Electric Transformation
+            
             if (ShadowOfOptions.electric_transformation.Value && (data.transformation == "Electric" || data.transformation == "ElectricTransformation"))
             {
                 if (data.transformationTimer <= 0)
@@ -914,12 +866,11 @@ internal class LizardHooks
                     if (ShadowOfOptions.debug_logs.Value)
                         Debug.Log(abstractAll + " has the Electric Transformation");
                 }
-            }
+            } //Electric Transformation
 
-            //Melted Transformation
             if (ShadowOfOptions.melted_transformation.Value && (data.transformation == "Melted" || data.transformation == "MeltedTransformation"))
             {
-                if (data.transformation == "Melted" && isStorySession && (data.transformationTimer <= cycleNumber - 3 || data.transformationTimer >= cycleNumber + 3 || ShadowOfOptions.melted_transformation_skip.Value))
+                if (data.transformation == "Melted" && (data.transformationTimer <= cycleNumber - 3 || data.transformationTimer >= cycleNumber + 3 || ShadowOfOptions.melted_transformation_skip.Value))
                 {
                     data.transformation = "MeltedTransformation";
 
@@ -935,14 +886,13 @@ internal class LizardHooks
                 {
                     data.liz.Remove("PreMeltedCycle");
                 }
-            }
-            else if ((!ShadowOfOptions.melted_transformation.Value || data.transformation != "SpiderTransformation" && data.transformation != "ElectricTransformation") && data.liz.TryGetValue("PreMeltedCycle", out string _))
+            } //Melted Transformation
+            else if ((!ShadowOfOptions.melted_transformation.Value || data.transformation == "SpiderTransformation" || data.transformation == "ElectricTransformation") && data.liz.TryGetValue("PreMeltedCycle", out string _))
             {
                 data.liz.Remove("PreMeltedCycle");
             }
         }
         #endregion
-
     }
 
     static void NewLizard(On.Lizard.orig_ctor orig, Lizard self, AbstractCreature abstractCreature, World world)
@@ -954,14 +904,24 @@ internal class LizardHooks
             return;
         }
 
+        string lizardAll = all + self.ToString();
+
+        //TentacleImmune: Set inside AbstractLizard
+        if (ModManager.Watcher && self.LizardState.rotType == LizardState.RotType.None && (data.transformation.Contains("Rot") || ShadowOfOptions.tentacle_immune.Value && data.liz.TryGetValue("TentacleImmune", out string TentacleImmune) && TentacleImmune == "True"))
+        {
+            self.LizardState.SetRotType(new LizardState.RotType("Slight", false));
+
+            self.rotModule ??= new LizardRotModule(self);
+        }
+
         if (data.isGoreHalf)
         {
             self.Die();
 
+            Transformations();
+
             return;
         }
-
-        string lizardAll = all + self.ToString();
 
         try
         {
@@ -986,14 +946,12 @@ internal class LizardHooks
 
             if (ShadowOfOptions.debug_logs.Value)
                 Debug.Log(all + "Finished creating " + self);
-
         }
         catch (Exception e) { ShadowOfLizards.Logger.LogError(e); }
 
         #region Local
         void Abilities()
-        {
-            //Tongue: Set Here
+        {            
             if (ShadowOfOptions.tongue_ability.Value && data.liz.TryGetValue("Tongue", out string Tongue))
             {
                 self.lizardParams.tongue = Tongue != "Null";
@@ -1012,9 +970,8 @@ internal class LizardHooks
                     if (ShadowOfOptions.debug_logs.Value)
                         Debug.Log(lizardAll + " does not have a Tongue");
                 }
-            }
+            } //Tongue: Set Here
 
-            //CanJump: Set Here
             if (ShadowOfOptions.jump_ability.Value && data.liz.TryGetValue("CanJump", out string CanJump))
             {
                 bool canJump = CanJump == "True";
@@ -1027,9 +984,8 @@ internal class LizardHooks
                 {
                     data.liz.Remove("CanJump");
                 }
-            }
+            } //CanJump: Set Here
 
-            //CanSwim: Set Here ToDo: Chance to gain this when dying to: drowning, leeches, kelp, leviathan possibly water den
             if (ShadowOfOptions.swim_ability.Value && data.liz.TryGetValue("CanSwim", out string CanSwim))
             {
                 bool canSwim = CanSwim == "True";
@@ -1083,9 +1039,8 @@ internal class LizardHooks
                 {
                     data.liz.Remove("CanSwim");
                 }
-            }
+            } //CanSwim: Set Here
 
-            //CanClimb: Set Here
             if (ShadowOfOptions.climb_ability.Value)
             {
                 if (data.liz.TryGetValue("CanClimbPole", out string CanClimbPole))
@@ -1209,44 +1164,24 @@ internal class LizardHooks
                         }
                     }
                 }
-            }
+            } //CanClimb: Set Here
 
             //CanCamo
         }
 
         void Immunities()
-        {
-            //WormGrassImmune: Set here
+        {            
             if (ShadowOfOptions.grass_immune.Value && data.liz.TryGetValue("WormGrassImmune", out string WormGrassImmune))
             {
-                bool wormGrass = WormGrassImmune == "True";
-                if (self.Template.wormGrassImmune != wormGrass)
-                {
-                    self.Template.wormGrassImmune = wormGrass;
-                }
-                else
-                {
-                    data.liz.Remove("WormGrassImmune");
-                }
-            }
+                self.Template.wormGrassImmune = WormGrassImmune == "True";
+            } //WormGrassImmune: Set here
 
-            //HypothermiaImmune: Set inside AbstractLizard
             if (ModManager.HypothermiaModule && ShadowOfOptions.hypothermia_immune.Value && data.liz.TryGetValue("HypothermiaImmune", out string HypothermiaImmune))
             {
-                bool hypothermia = HypothermiaImmune == "True";
-
-                self.Template.BlizzardWanderer = hypothermia;
-            }
+                self.Template.BlizzardWanderer = HypothermiaImmune == "True";
+            } //HypothermiaImmune: Set inside AbstractLizard
 
             //TentacleImmune: Set inside AbstractLizard
-            if (ShadowOfOptions.tentacle_immune.Value && ModManager.Watcher && data.liz.TryGetValue("TentacleImmune", out string TentacleImmune) && TentacleImmune == "True")
-            {
-                if (self.LizardState.rotType == LizardState.RotType.None)
-                {
-                    self.LizardState.rotType = LizardState.RotType.Slight;
-                    self.rotModule = new LizardRotModule(self);
-                }
-            }
 
             //LavaImmune: Set inside AbstractLizard
 
@@ -1254,15 +1189,13 @@ internal class LizardHooks
         }
 
         void Physical()
-        {
-            //Blind: Set Here
+        {          
             if (ShadowOfOptions.blind.Value && self.Template.visualRadius > 0f)
             {
                 if (!data.liz.TryGetValue("EyeRight", out _))
                 {
                     data.liz["EyeLeft"] = "Normal";
                     data.liz["EyeRight"] = "Normal";
-
                     if (ShadowOfOptions.debug_logs.Value)
                         Debug.Log(lizardAll + " is not Blind");
                 }
@@ -1293,6 +1226,7 @@ internal class LizardHooks
                         float visualRadius = data.visualRadius;
                         float waterVision = data.waterVision;
                         float throughSurfaceVision = data.throughSurfaceVision;
+
                         if (data.liz["EyeRight"] != "Normal")
                         {
                             if (data.liz["EyeRight"] == "Scar" || data.liz["EyeRight"] == "Scar2")
@@ -1326,16 +1260,14 @@ internal class LizardHooks
                         }
                     }
                 }
-            }
+            } //Blind: Set Here
 
-            //Deaf: Set Here
             if (ShadowOfOptions.deafen.Value)
             {
                 if (!data.liz.TryGetValue("EarRight", out _))
                 {
                     data.liz["EarLeft"] = "Normal";
                     data.liz["EarRight"] = "Normal";
-
                     if (ShadowOfOptions.debug_logs.Value)
                         Debug.Log(lizardAll + " is not Deaf");
                 }
@@ -1344,22 +1276,21 @@ internal class LizardHooks
                     bool flag = data.liz["EarRight"] == "Deaf";
                     bool flag2 = data.liz["EarLeft"] == "Deaf";
 
-                    if (flag && flag2 && self.deaf < 120)
+                    if (flag && flag2)
                     {
                         self.deaf = 120;
                         if (ShadowOfOptions.debug_logs.Value)
                             Debug.Log(lizardAll + " is Deaf");
                     }
-                    else if ((flag ^ flag2) && self.deaf < 4)
+                    else if (flag ^ flag2)
                     {
                         self.deaf = 4;
                         if (ShadowOfOptions.debug_logs.Value)
                             Debug.Log(lizardAll + " is Half-Deaf");
                     }
                 }
-            }
+            } //Deaf: Set Here
 
-            //Teeth: Set Here
             if (ShadowOfOptions.teeth.Value)
             {
                 if (!data.liz.TryGetValue("UpperTeeth", out string _))
@@ -1391,12 +1322,11 @@ internal class LizardHooks
                         self.lizardParams.getFreeBiteChance *= 0.7f;
                     }
                 }
-            }
+            } //Teeth: Set Here
         }
 
         void Transformations()
-        {
-            //Rot Transformation: Set Here
+        {           
             if (ModManager.Watcher && self.LizardState.rotType != LizardState.RotType.None)
             {
                 if (ShadowOfOptions.tentacle_immune.Value && (!data.liz.TryGetValue("TentacleImmune", out string TentacleImmune) || TentacleImmune != "True"))
@@ -1416,17 +1346,16 @@ internal class LizardHooks
                         Debug.Log(lizardAll + "'s Rot Transformation has overridden the Transformation to " + data.transformation);
                 }
                 return;
-            }
+            } //Rot Transformation: Set Here
 
             //Spider Transformation: Set inside AbstractCreature
 
             //Electric Transformation: Set inside AbstractCreature
-
-            //Melted Transformation: Set inside AbstractCreature
+            
             if (ShadowOfOptions.melted_transformation.Value && (data.transformation == "Melted" || data.transformation == "MeltedTransformation"))
             {
                 TransformationMelted.NewMeltedLizard(self, world, data);
-            }
+            } //Melted Transformation: Set inside AbstractCreature
         }
 
         LizardBreedParams LizBread(Lizard liz)
@@ -1525,59 +1454,53 @@ internal class LizardHooks
                 return;
             }
 
+            self.lizardParams.tongue = true;
+
             switch (Tongue)
             {
                 case "WhiteLizard":
-                    self.lizardParams.tongue = true;
                     self.lizardParams.tongueAttackRange = 440f;
                     self.lizardParams.tongueWarmUp = 80;
                     self.lizardParams.tongueSegments = 10;
                     self.lizardParams.tongueChance = 0.1f;
                     break;
                 case "Salamander":
-                    self.lizardParams.tongue = true;
                     self.lizardParams.tongueAttackRange = 150f;
                     self.lizardParams.tongueWarmUp = 8;
                     self.lizardParams.tongueSegments = 7;
                     self.lizardParams.tongueChance = 1f / 3f;
                     break;
                 case "BlueLizard":
-                    self.lizardParams.tongue = true;
                     self.lizardParams.tongueAttackRange = 140f;
                     self.lizardParams.tongueWarmUp = 10;
                     self.lizardParams.tongueSegments = 5;
                     self.lizardParams.tongueChance = 0.25f;
                     break;
                 case "CyanLizard":
-                    self.lizardParams.tongue = true;
                     self.lizardParams.tongueAttackRange = 160f;
                     self.lizardParams.tongueWarmUp = 8;
                     self.lizardParams.tongueSegments = 7;
                     self.lizardParams.tongueChance = 1f / 3f;
                     break;
                 case "RedLizard":
-                    self.lizardParams.tongue = true;
                     self.lizardParams.tongueAttackRange = 350f;
                     self.lizardParams.tongueWarmUp = 8;
                     self.lizardParams.tongueSegments = 10;
                     self.lizardParams.tongueChance = 0.1f;
                     break;
                 case "ZoopLizard":
-                    self.lizardParams.tongue = true;
                     self.lizardParams.tongueAttackRange = 440f;
                     self.lizardParams.tongueWarmUp = 140;
                     self.lizardParams.tongueSegments = 10;
                     self.lizardParams.tongueChance = 0.3f;
                     break;
                 case "Tube":
-                    self.lizardParams.tongue = true;
                     self.lizardParams.tongueAttackRange = 200f;
                     self.lizardParams.tongueWarmUp = 0;
                     self.lizardParams.tongueSegments = 20;
                     self.lizardParams.tongueChance = 0.3f;
                     break;
                 case "IndigoLizard":
-                    self.lizardParams.tongue = true;
                     self.lizardParams.tongueAttackRange = 190f;
                     self.lizardParams.tongueWarmUp = 8;
                     self.lizardParams.tongueSegments = 7;
@@ -1586,7 +1509,6 @@ internal class LizardHooks
                 default:
                     Debug.Log(all + "Failed Getting the " + Tongue + " Tongue for " + self);
                     ShadowOfLizards.Logger.LogError(all + "Failed Getting the " + Tongue + " Tongue for " + self);
-                    self.lizardParams.tongue = true;
                     self.lizardParams.tongueAttackRange = 140f;
                     self.lizardParams.tongueWarmUp = 10;
                     self.lizardParams.tongueSegments = 5;
@@ -1655,7 +1577,7 @@ internal class LizardHooks
         {
             bool sourceOwnerFlag = source != null && source.owner != null;
 
-            bool sourceValidTypeFlag = (source == null && type.ToString() == "Explosion") || (source != null && (source.owner == null || (source.owner != null && source.owner is not JellyFish)));
+            bool sourceValidTypeFlag = (source == null && type == Creature.DamageType.Explosion) || (source != null && (source.owner == null || (source.owner != null && source.owner is not JellyFish && source.owner is not Leech)));
 
             #region Electric Damage Reduction
             if (type == Creature.DamageType.Electric && (data.transformation == "Electric" || data.transformation == "ElectricTransformation"))
@@ -1683,6 +1605,27 @@ internal class LizardHooks
 
             float multiplier = ShadowOfOptions.damage_based_chance.Value ? damage : 1;
 
+            if (onAppendagePos != null && sourceValidTypeFlag && (type == Creature.DamageType.Stab || type == Creature.DamageType.Bite) && (true || ShadowOfOptions.dismemberment.Value && HealthBasedChance(self, ShadowOfOptions.dismemberment_chance.Value * multiplier, "Dismembernment")))
+            {
+                if (!TransformationRot.InnactiveTentacleCheck(data, onAppendagePos.appendage.appIndex, CycleNum(self.abstractCreature)))
+                {
+                    int prevPos = data.cutAppendage.TryGetValue(onAppendagePos.appendage.appIndex, out int pos) ? pos : onAppendagePos.appendage.segments.Length;
+
+                    data.cutAppendage[onAppendagePos.appendage.appIndex] = onAppendagePos.prevSegment < prevPos ? onAppendagePos.prevSegment : prevPos;
+                    data.cutAppendageCycle[onAppendagePos.appendage.appIndex] = CycleNum(self.abstractCreature);
+
+                    onAppendagePos.appendage.canBeHit = false;
+
+                    if (ShadowOfOptions.debug_logs.Value)
+                        Debug.Log(onAppendagePos.appendage.appIndex + " appendage was cut down to size " + data.cutAppendage[onAppendagePos.appendage.appIndex]);
+
+                    if (source.owner is Spear spear)
+                    {
+                        data.spearList.Add(spear);
+                    }
+                }
+            }
+
             if (hitChunk == null || damage < 0f || !sourceValidTypeFlag || !directionAndMomentum.HasValue)
             {
                 return;
@@ -1694,7 +1637,7 @@ internal class LizardHooks
                 {
                     if (LizHitHeadShield(directionAndMomentum.Value))
                     {
-                        if (ShadowOfOptions.blind.Value && data.liz.TryGetValue("EyeRight", out _) && Chance(self, ShadowOfOptions.blind_cut_chance.Value * multiplier, "Eye being Hit"))
+                        if (ShadowOfOptions.blind.Value && data.liz.ContainsKey("EyeRight") && Chance(self, ShadowOfOptions.blind_cut_chance.Value * multiplier, "Eye being Hit"))
                         {
                             string eye = (UnityEngine.Random.Range(0, 2) == 0) ? "EyeRight" : "EyeLeft";
 
@@ -1710,6 +1653,7 @@ internal class LizardHooks
                                 else if (data.liz[eye] == "Cut")
                                 {
                                     self.Blind(5);
+
                                     if (ShadowOfOptions.debug_logs.Value)
                                         Debug.Log(all + self.ToString() + "'s " + eye + " is already Cut");
                                 }
@@ -1730,18 +1674,21 @@ internal class LizardHooks
                                 }
                             }
                         }
-                        else if (ShadowOfOptions.teeth.Value && data.liz.TryGetValue("UpperTeeth", out _) && type != Creature.DamageType.Bite && Chance(self, ShadowOfOptions.teeth_chance.Value * multiplier, "Teeth being Hit"))
+                        else if (ShadowOfOptions.teeth.Value && data.liz.ContainsKey("UpperTeeth") && type != Creature.DamageType.Bite && Chance(self, ShadowOfOptions.teeth_chance.Value * multiplier, "Teeth being Hit"))
                         {
                             string teeth = UnityEngine.Random.Range(0, 2) == 0 ? "UpperTeeth" : "LowerTeeth";
                             int teethNum = UnityEngine.Random.Range(1, 5);
 
                             if (data.liz[teeth] == "Normal")
                             {
+                                bool alreadyBroken = data.liz["UpperTeeth"] != "Normal" || data.liz["LowerTeeth"] != "Normal";
+
                                 data.liz[teeth] = "Broken" + teethNum.ToString();
-                                self.lizardParams.biteDamageChance *= 0.5f;
-                                self.lizardParams.biteDominance *= 0.5f;
-                                self.lizardParams.biteDamage *= 1.1f;
-                                self.lizardParams.getFreeBiteChance *= 1.1f;
+
+                                self.lizardParams.biteDamageChance *= alreadyBroken ? 0.5714285714285714f : 0.7f;
+                                self.lizardParams.biteDominance *= alreadyBroken ? 0.5714285714285714f : 0.7f;
+                                self.lizardParams.biteDamage *= alreadyBroken ? 0.5714285714285714f : 0.7f;
+                                self.lizardParams.getFreeBiteChance *= alreadyBroken ? 0.5714285714285714f : 0.7f;
 
                                 if (ShadowOfOptions.debug_logs.Value)
                                     Debug.Log(all + self.ToString() + " " + (teeth == "UpperTeeth" ? "Upper" : "Lower") + " Teeth were broken");
@@ -1873,7 +1820,7 @@ internal class LizardHooks
                                 {
                                     for (int j = 0; j < 2; j++)
                                     {
-                                        BrokenTooth brokenTooth = new(self.bodyChunks[0].pos + new Vector2(self.bodyChunks[0].rad * UnityEngine.Random.Range(-1f, 1f), self.bodyChunks[0].rad * UnityEngine.Random.Range(-1f, 1f)), directionAndMomentum.Value * UnityEngine.Random.Range(0.8f, 1.2f), spriteName + spriteNameEnder[i], colour, bloodcolours != null ? bloodcolours[self.Template.type.ToString()] : self.effectColor, scaleX, scaleY);
+                                        BrokenTooth brokenTooth = new(self.bodyChunks[0].pos + new Vector2(self.bodyChunks[0].rad * UnityEngine.Random.Range(-1f, 1f), self.bodyChunks[0].rad * UnityEngine.Random.Range(-1f, 1f)), directionAndMomentum.Value * UnityEngine.Random.Range(0.8f, 1.2f), spriteName + spriteNameEnder[i], colour, BloodColoursCheck(self.Template.type.ToString()) ? bloodcolours[self.Template.type.ToString()] : self.effectColor, scaleX, scaleY);
 
                                         self.room.AddObject(brokenTooth);
 
@@ -1950,7 +1897,8 @@ internal class LizardHooks
             } //Hitting Head
             else if (hitChunk.index == 1 && ShadowOfOptions.decapitation.Value && data.Beheaded == false && sourceOwnerFlag && source.owner is Spear && Vector2.Dot(source.pos - self.bodyChunks[1].pos, self.bodyChunks[0].pos - self.bodyChunks[1].pos) > 0f && HealthBasedChance(self, ShadowOfOptions.decapitation_chance.Value * multiplier, "Decapitation"))
             {
-                Debug.Log(all + self.ToString() + " was hit it's Neck through bodychunk 1");
+                if (ShadowOfOptions.debug_logs.Value)
+                    Debug.Log(all + self.ToString() + " was hit it's Neck through bodychunk 1");
 
                 data.Beheaded = true;
                 Decapitation(self);
@@ -1982,7 +1930,7 @@ internal class LizardHooks
                         }
                     }
                 }
-                else if ((ModManager.DLCShared && self.Template.type == DLCSharedEnums.CreatureTemplateType.SpitLizard) || (self.graphicsModule as LizardGraphics).limbs.Length == 6)
+                else if ((ModManager.DLCShared && self.Template.type == DLCSharedEnums.CreatureTemplateType.SpitLizard) || (self.graphicsModule as LizardGraphics).limbs.Length >= 6)
                 {
                     if (hitChunk.index == 1)
                     {
@@ -2013,8 +1961,8 @@ internal class LizardHooks
                         }
                     }
                 }
-                else
-                {
+                else if((self.graphicsModule as LizardGraphics).limbs.Length == 4)
+                {                 
                     if (hitChunk.index == 1)
                     {
                         num8 = (num5 < 0f) ? 0 : 1;
@@ -2035,7 +1983,7 @@ internal class LizardHooks
                     }
                 }
             }
-            else if (ShadowOfOptions.cut_in_half.Value && data.availableBodychunks.Contains(hitChunk.index) && (hitChunk.index == 1 && data.availableBodychunks.Contains(hitChunk.index + 1) || hitChunk.index != 1 && data.availableBodychunks.Count > 1) && HealthBasedChance(self, ShadowOfOptions.cut_in_half_chance.Value * multiplier, "Cutting in Half")) //Cut in Half
+            else if (ShadowOfOptions.cut_in_half.Value && RotModuleCheck(self) && data.availableBodychunks.Contains(hitChunk.index) && (hitChunk.index == 1 && data.availableBodychunks.Contains(hitChunk.index + 1) || hitChunk.index != 1 && data.availableBodychunks.Count > 1) && HealthBasedChance(self, ShadowOfOptions.cut_in_half_chance.Value * multiplier, "Cutting in Half")) //Cut in Half
             {
                 CutInHalf(self, data, hitChunk);
 
@@ -2202,7 +2150,7 @@ internal class LizardHooks
 
         void BloodParticle()
         {
-            self.room.AddObject(new BloodParticle(self.bodyChunks[0].pos, new Vector2(UnityEngine.Random.Range(-3f, 3f), UnityEngine.Random.Range(5f, 10f)), bloodcolours != null ? bloodcolours[self.Template.type.ToString()] : self.effectColor, self.Template.type.value, null, 2.3f));
+            self.room.AddObject(new BloodParticle(self.bodyChunks[0].pos, new Vector2(UnityEngine.Random.Range(-3f, 3f), UnityEngine.Random.Range(5f, 10f)), BloodColoursCheck(self.Template.type.ToString()) ? bloodcolours[self.Template.type.ToString()] : self.effectColor, self.Template.type.value, null, 2.3f));
         }
         #endregion
     }
@@ -2265,8 +2213,7 @@ internal class LizardHooks
                 TransformationElectric.PreElectricLizardBite(self, chunk, graphicData, data);
                 elec = true;
             }
-
-            if (ShadowOfOptions.melted_transformation.Value && (data.transformation == "Melted" || data.transformation == "MeltedTransformation"))
+            else if (ShadowOfOptions.melted_transformation.Value && (data.transformation == "Melted" || data.transformation == "MeltedTransformation"))
             {
                 TransformationMelted.PreMeltedLizardBite(self, data, chunk);
                 melt = true;
@@ -2278,14 +2225,12 @@ internal class LizardHooks
             {
                 TransformationElectric.PostElectricLizardBite(self, graphicData2, chunk);
             }
-
-            if (melt)
+            else if (melt)
             {
                 TransformationMelted.PostMeltedLizardBite(self, data, chunk);
             }
         }
         catch (Exception e) { ShadowOfLizards.Logger.LogError(e); }
-
     }
 
     static void LizardUpdate(On.Lizard.orig_Update orig, Lizard self, bool eu)
@@ -2321,18 +2266,18 @@ internal class LizardHooks
             }
 
             //Deaf
-            if (ShadowOfOptions.deafen.Value && data.liz.TryGetValue("EarRight", out _))
+            if (ShadowOfOptions.deafen.Value && data.liz.ContainsKey("EarRight"))
             {
                 bool flag = data.liz["EarRight"] == "Deaf";
                 bool flag2 = data.liz["EarLeft"] == "Deaf";
 
-                if (flag && flag2 && self.deaf < 120)
+                if (flag && flag2)
                 {
-                    self.deaf = 120;
+                    self.deaf = Mathf.Max(self.deaf, 120);
                 }
-                else if ((flag ^ flag2) && self.deaf < 4)
+                else if (flag ^ flag2)
                 {
-                    self.deaf = 4;
+                    self.deaf = Mathf.Max(self.deaf, 4);
                 }
             }
 
@@ -2360,8 +2305,7 @@ internal class LizardHooks
             }
             */
 
-            bool isStorySession = self.abstractCreature.world.game.IsStorySession;
-            int cycleNumber = isStorySession ? self.abstractCreature.world.game.GetStorySession.saveState.cycleNumber : -1;
+            int cycleNumber = CycleNum(self.abstractCreature);
 
             //HypothermiaImmune
             if (ModManager.HypothermiaModule && ShadowOfOptions.hypothermia_immune.Value && self.dead && self.Hypothermia >= 1f)
@@ -2418,8 +2362,7 @@ internal class LizardHooks
             }
 
             //Regrowth
-            if (self.enteringShortCut.HasValue && self.room != null && self.room.shortcutData(self.enteringShortCut.Value).shortCutType != null &&
-                self.room.shortcutData(self.enteringShortCut.Value).shortCutType == ShortcutData.Type.CreatureHole && self.grasps[0] != null)
+            if (self.enteringShortCut.HasValue && self.room != null && self.room.shortcutData(self.enteringShortCut.Value).shortCutType != null && self.room.shortcutData(self.enteringShortCut.Value).shortCutType == ShortcutData.Type.CreatureHole && self.grasps[0] != null)
             {
                 if (data.denCheck == false)
                 {
@@ -2448,6 +2391,64 @@ internal class LizardHooks
 
         static void EatRegrowth(Lizard self, LizardData data, Lizard liz, LizardData data2)
         {
+            #region Camo
+            if (ShadowOfOptions.camo_ability.Value && ShadowOfOptions.camo_regrowth.Value && (self.grasps[0].grabbed is Hazer || ShadowOfOptions.eat_lizard.Value && liz != null && CanCamoCheck(data2, liz.Template.type.ToString()) && Chance(self, ShadowOfOptions.tongue_regrowth_chance.Value, "Tongue Regrowth by eating " + (Creature)self.grasps[0].grabbed)))
+            {
+                if (self.grasps[0].grabbed is Hazer)
+                {
+                    if (!CanCamoCheck(data, self.Template.type.ToString()))
+                    {
+                        data.liz["CanCamo"] = "True";
+
+                        if (self.Template.type == CreatureTemplate.Type.WhiteLizard)
+                        {
+                            data.liz.Remove("CanCamo");
+                        }
+
+                        if (ShadowOfOptions.debug_logs.Value)
+                            Debug.Log(all + self.ToString() + " gained the Camo Ability due to eating a " + self.grasps[0].grabbed);
+
+                        if (ShadowOfOptions.dynamic_cheat_death.Value)
+                            data.cheatDeathChance += 5;
+                    }
+                    else if (ShadowOfOptions.debug_logs.Value)
+                        Debug.Log(all + self.ToString() + " did not gain the Camo Ability due to eating a " + self.grasps[0].grabbed + " because it already can Camo");
+                }
+                else if (ShadowOfOptions.eat_lizard.Value && CanCamoCheck(data2, liz.Template.type.ToString()))
+                {
+                    if (!CanCamoCheck(data, self.Template.type.ToString()))
+                    {
+                        data.liz["CanCamo"] = "True";
+
+                        if (self.Template.type == CreatureTemplate.Type.WhiteLizard)
+                        {
+                            data.liz.Remove("CanCamo");
+                        }
+
+                        if (ShadowOfOptions.debug_logs.Value)
+                            Debug.Log(all + self.ToString() + " gained the Camo Ability due to eating " + self.grasps[0].grabbed + " who had a Tongue");
+
+                        if (ShadowOfOptions.dynamic_cheat_death.Value)
+                            data.cheatDeathChance += 5;
+
+                        //OtherLizard
+                        if (data2 != null)
+                        {
+                            data2.liz["CanCamo"] = "False";
+
+                            if (ShadowOfOptions.debug_logs.Value)
+                                Debug.Log(all + liz.ToString() + " lost it's Camo Ability due to being eaten by " + self + " that took it's Ability");
+
+                            if (ShadowOfOptions.dynamic_cheat_death.Value)
+                                data2.cheatDeathChance -= 5;
+                        }
+                    }
+                    else if (ShadowOfOptions.debug_logs.Value)
+                        Debug.Log(all + self.ToString() + " did not gain the Camo Ability due to eating " + self.grasps[0].grabbed + " because it already can Camo");
+                }
+            }
+            #endregion
+
             #region Tongue
             if (ShadowOfOptions.tongue_ability.Value && ShadowOfOptions.tongue_regrowth.Value && TongueValid() && Chance(self, ShadowOfOptions.tongue_regrowth_chance.Value, "Tongue Regrowth by eating " + (Creature)self.grasps[0].grabbed))
             {
@@ -2489,7 +2490,7 @@ internal class LizardHooks
                             data2.liz["Tongue"] = "Null";
 
                             if (ShadowOfOptions.debug_logs.Value)
-                                Debug.Log(all + liz.ToString() + " lost it's Tongue due to being eaten by " + self.grasps[0].grabbed + " that took it's Tongue");
+                                Debug.Log(all + liz.ToString() + " lost it's Tongue due to being eaten by " + self + " that took it's Tongue");
 
                             if (ShadowOfOptions.dynamic_cheat_death.Value)
                                 data2.cheatDeathChance -= 5;
@@ -2613,51 +2614,31 @@ internal class LizardHooks
                 {
                     TransformationSpider.BabyPuff(liz);
                 }
-                int chance = data.cheatDeathChance;
 
                 if(ShadowOfOptions.dynamic_cheat_death.Value && data.lastDamageType == "BigEel")
                 {
-                    chance -= 50;
+                    data.cheatDeathChance -= 50;
 
                     if (ShadowOfOptions.debug_logs.Value)
                         Debug.Log(all + self + " gets a - 50% Chance to Cheat Death due to dying to a Big Eel");
                 }
 
-                if (Chance(liz, chance, "Cheating Death"))
+                if (Chance(liz, data.cheatDeathChance, "Cheating Death"))
                 {
-                    self.dead = true;
-                    self.LoseAllGrasps();
+                    self.dead = false;
 
                     if (ShadowOfOptions.debug_logs.Value)
                         Debug.Log(all + self + " Cheated Death");
-
-                    if (ShadowOfOptions.dynamic_cheat_death.Value && data.Beheaded == true)
-                    {
-                        data.cheatDeathChance += 25;
-
-                        if (ShadowOfOptions.debug_logs.Value)
-                            Debug.Log(all + self + " Cheated Death while Decapitated!!!");
-                    }
 
                     if(liz.abstractCreature.state != null)
                         liz.abstractCreature.state.alive = false;
 
                     orig.Invoke(self);
-
-                    self.WantsToBurrow = false;
-                    if (self.killTag != null && self.killTag.realizedCreature != null)
-                    {
-                        Room room = self.room;
-                        room ??= self.abstractCreature.Room.realizedRoom;
-
-                        if (room != null && room.socialEventRecognizer != null)
-                        {
-                            room.socialEventRecognizer.Killing(self.killTag.realizedCreature, self);
-                        }
-                    }
                 }
                 else
                 {
+                    self.dead = false;
+
                     if (liz.abstractCreature.state != null)
                         liz.abstractCreature.state.alive = true;
 
@@ -2695,6 +2676,14 @@ internal class LizardHooks
             {
                 savedData["ShadowOfBeheaded"] = "Gore";
 
+                string liz = "";
+                for (int i = 0; i < data.liz.Count; i++)
+                {
+                    liz += data.liz.ElementAt(i).Key + "=";
+                    liz += data.liz.ElementAt(i).Value + ";";
+                }
+                savedData["ShadowOfLiz"] = liz;
+
                 string chunk = "";
                 for (int i = 0; i < data.availableBodychunks.Count; i++)
                 {
@@ -2714,6 +2703,8 @@ internal class LizardHooks
                 if (ShadowOfOptions.debug_logs.Value)
                 {
                     Debug.Log(all + self + " beheaded = " + savedData["ShadowOfBeheaded"]);
+
+                    Debug.Log(all + self + " lizDictionary = " + savedData["ShadowOfLiz"]);
 
                     Debug.Log(all + self + " bodyChunks = " + savedData["ShadowOfAvailableBodychunks"]);
 
@@ -2771,6 +2762,31 @@ internal class LizardHooks
 
                 savedData["ShadowOfCheatDeathChance"] = data.cheatDeathChance.ToString();
 
+                if (ModManager.Watcher)
+                {
+                    if (data.cutAppendage.Count > 0)
+                    {
+                        string appendage = "";
+                        for (int i = 0; i < data.liz.Count; i++)
+                        {
+                            appendage += data.cutAppendage.ElementAt(i).Key + "=";
+                            appendage += data.cutAppendage.ElementAt(i).Value + ";";
+                        }
+                        savedData["ShadowOfCutAppendage"] = appendage;
+                    }
+
+                    if (data.cutAppendageCycle.Count > 0)
+                    {
+                        string appendage = "";
+                        for (int i = 0; i < data.liz.Count; i++)
+                        {
+                            appendage += data.cutAppendageCycle.ElementAt(i).Key + "=";
+                            appendage += data.cutAppendageCycle.ElementAt(i).Value + ";";
+                        }
+                        savedData["ShadowOfCutAppendageCycle"] = appendage;
+                    }
+                }
+
                 if (ShadowOfOptions.debug_logs.Value)
                 {
                     Debug.Log(all + self + " beheaded = " + savedData["ShadowOfBeheaded"]);
@@ -2788,6 +2804,15 @@ internal class LizardHooks
                     Debug.Log(all + self + " updatedCycle = " + savedData["ShadowOfLizardUpdatedCycle"]);
 
                     Debug.Log(all + self + " cheatDeathChance = " + savedData["ShadowOfCheatDeathChance"]);
+
+                    if (ModManager.Watcher)
+                    {
+                        if(savedData.ContainsKey("ShadowOfCutAppendage"))
+                            Debug.Log(all + self + " cutAppendage = " + savedData["ShadowOfCutAppendage"]);
+
+                        if (savedData.ContainsKey("ShadowOfCutAppendageCycle"))
+                            Debug.Log(all + self + " cutAppendageCycle = " + savedData["ShadowOfCutAppendageCycle"]);
+                    }
                 }
             }
         }
@@ -2796,4 +2821,3 @@ internal class LizardHooks
         return orig(self, cc);
     }
 }
-

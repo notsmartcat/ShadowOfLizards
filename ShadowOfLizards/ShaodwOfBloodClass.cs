@@ -50,7 +50,6 @@ sealed class ShadowOfBloodEmitter : BloodEmitter
             emitPos = chunk.pos;
             emitAngle = Custom.DegToVec(Custom.VecToDeg(cutHead.rotation));
 
-
             if (velocity >= UnityEngine.Random.Range(0.65f, 1.1f))
             {
                 room.AddObject(new ShadowOfBloodParticle(emitPos, emitAngle, creatureColor, splatterColor, this, velocity));

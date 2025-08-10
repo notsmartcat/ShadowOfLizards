@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using RWCustom;
-using static ShadowOfLizards.ShadowOfLizards;
 using static RoomCamera;
+using static ShadowOfLizards.ShadowOfLizards;
 
 namespace ShadowOfLizards;
 
@@ -21,20 +21,17 @@ internal class LizardSpitHooks
         {
             return;
         }
-
-        if (ShadowOfOptions.spider_transformation.Value && ShadowOfOptions.spider_spit.Value && data.transformation == "SpiderTransformation")
+        else if (ShadowOfOptions.spider_transformation.Value && ShadowOfOptions.spider_spit.Value && data.transformation == "SpiderTransformation")
         {
             TransformationSpider.SpiderSpitDraw(sLeaser);
             return;
         }
-
-        if (ShadowOfOptions.melted_transformation.Value && ShadowOfOptions.melted_spit.Value && data.liz.TryGetValue("MeltedR", out _) && (data.transformation == "Melted" || data.transformation == "MeltedTransformation"))
+        else if (ShadowOfOptions.melted_transformation.Value && ShadowOfOptions.melted_spit.Value && data.liz.TryGetValue("MeltedR", out _) && (data.transformation == "Melted" || data.transformation == "MeltedTransformation"))
         {
             TransformationMelted.MeltedSpitDraw(self, sLeaser, data);
             return;
         }
-
-        if (ShadowOfOptions.electric_transformation.Value && ShadowOfOptions.electric_spit.Value && ShockSpit.TryGetValue(self, out ElectricSpit electricData) && data.transformation == "ElectricTransformation")
+        else if (ShadowOfOptions.electric_transformation.Value && ShadowOfOptions.electric_spit.Value && ShockSpit.TryGetValue(self, out ElectricSpit electricData) && data.transformation == "ElectricTransformation")
         {
             TransformationElectric.ElectricSpitDraw(self, sLeaser, electricData);
             return;
@@ -48,8 +45,7 @@ internal class LizardSpitHooks
             orig.Invoke(self, eu);
             return;
         }
-
-        if (ShadowOfOptions.spider_transformation.Value && ShadowOfOptions.spider_spit.Value && data.transformation == "SpiderTransformation" && data.liz.TryGetValue("SpiderNumber", out _))
+        else if (ShadowOfOptions.spider_transformation.Value && ShadowOfOptions.spider_spit.Value && data.transformation == "SpiderTransformation" && data.liz.TryGetValue("SpiderNumber", out _))
         {
             TransformationSpider.SpiderSpitUpdate(self, data);
             return;
@@ -57,18 +53,15 @@ internal class LizardSpitHooks
 
         orig.Invoke(self, eu);
 
-        if (ShadowOfOptions.melted_transformation.Value && ShadowOfOptions.melted_spit.Value && (data.transformation == "Melted" ||
-            data.transformation == "MeltedTransformation") && self.stickChunk != null && self.stickChunk.owner != null && self.stickChunk.owner.room == self.room && Custom.DistLess(self.stickChunk.pos, self.pos, self.stickChunk.rad + 40f) && self.fallOff > 0)
+        if (ShadowOfOptions.melted_transformation.Value && ShadowOfOptions.melted_spit.Value && (data.transformation == "Melted" || data.transformation == "MeltedTransformation") && self.stickChunk != null && self.stickChunk.owner != null && self.stickChunk.owner.room == self.room && Custom.DistLess(self.stickChunk.pos, self.pos, self.stickChunk.rad + 40f) && self.fallOff > 0)
         {
             TransformationMelted.MeltedSpitUpdate(self);
             return;
         }
-
-        if (ShadowOfOptions.electric_transformation.Value && ShadowOfOptions.electric_spit.Value && ShockSpit.TryGetValue(self, out ElectricSpit electricData) && data.transformation == "ElectricTransformation")
+        else if (ShadowOfOptions.electric_transformation.Value && ShadowOfOptions.electric_spit.Value && ShockSpit.TryGetValue(self, out ElectricSpit electricData) && data.transformation == "ElectricTransformation")
         {
             TransformationElectric.ElectricSpitUpdate(self, electricData);
             return;
         }
     }
 }
-

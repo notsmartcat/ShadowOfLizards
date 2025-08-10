@@ -97,6 +97,8 @@ sealed class LizCutHead : PlayerCarryableItem, IDrawable
 
         baseBlink = UnityEngine.Random.value;
         baseLastBlink = baseBlink;
+
+        facingRight = Abstr.scaleX > 0f;
     }
 
     private static float Rand => UnityEngine.Random.value;
@@ -194,7 +196,7 @@ sealed class LizCutHead : PlayerCarryableItem, IDrawable
 
         var chunk = firstChunk;
 
-        float to = 0;
+        donned = 0;
 
         if (flicker > 0)
         {
@@ -222,7 +224,7 @@ sealed class LizCutHead : PlayerCarryableItem, IDrawable
 
                 //to = Mathf.InverseLerp(15f, 10f, Vector2.Distance((scug.graphicsModule as PlayerGraphics).hands[grabbedBy[0].graspUsed].pos, scug.mainBodyChunk.pos));
 
-                to = 1;
+                donned = 1;
 
                 if (faceDir.x > 0 == Abstr.scaleX > 0)
                 {
@@ -287,7 +289,7 @@ sealed class LizCutHead : PlayerCarryableItem, IDrawable
             whiteCamoColorAmount = Mathf.Clamp(Mathf.Lerp(whiteCamoColorAmount, 1, 0.05f * UnityEngine.Random.value), 0f, 1f);
         }
 
-        donned = Custom.LerpAndTick(donned, to, 0.11f, 0.033333335f);
+        //donned = Custom.LerpAndTick(donned, to, 0.11f, 0.033333335f);
 
         lastRotation = rotation;
     }
@@ -321,15 +323,15 @@ sealed class LizCutHead : PlayerCarryableItem, IDrawable
     {
         get
         { 
-            if (Abstr.LizType == "WhiteLizard")
+            if (Abstr.LizBreed == "WhiteLizard")
             {
                 return Abstr.canCamo ? Color.Lerp(new Color(1f, 1f, 1f), whiteCamoColor, whiteCamoColorAmount) : new Color(1f, 1f, 1f);
             }
-            if (Abstr.LizType == "BlackLizard")
+            if (Abstr.LizBreed == "BlackLizard")
             {
                 return palette.blackColor;
             }
-            if (Abstr.LizType == "Salamander")
+            if (Abstr.LizBreed == "Salamander")
             {
                 return SalamanderColor;
             }
@@ -342,15 +344,15 @@ sealed class LizCutHead : PlayerCarryableItem, IDrawable
     {
         get
         {
-            if (Abstr.LizType == "WhiteLizard")
+            if (Abstr.LizBreed == "WhiteLizard")
             {
                 return Abstr.canCamo ? Color.Lerp(palette.blackColor, whiteCamoColor, whiteCamoColorAmount) : palette.blackColor;
             }
-            if (Abstr.LizType == "BlackLizard")
+            if (Abstr.LizBreed == "BlackLizard")
             {
                 return palette.blackColor;
             }
-            if (Abstr.LizType == "Salamander")
+            if (Abstr.LizBreed == "Salamander")
             {
                 return SalamanderColor;
             }
@@ -493,7 +495,7 @@ sealed class LizCutHead : PlayerCarryableItem, IDrawable
             ApplyPalette(sLeaser, rCam, rCam.currentPalette);
         }
 
-        if (Abstr.canCamo || Abstr.LizType == "ZoopLizard")
+        if (Abstr.canCamo || Abstr.LizBreed == "ZoopLizard")
         {
             whitePickUpColor = rCam.PixelColorAtCoordinate(bodyChunks[0].pos);
 
@@ -568,7 +570,7 @@ sealed class LizCutHead : PlayerCarryableItem, IDrawable
             sLeaser.sprites[i].scaleY = Abstr.scaleY;
         }
 
-        if (Abstr.LizType == "CyanLizard")
+        if (Abstr.LizBreed == "CyanLizard")
         {
             sLeaser.sprites[4].color = effectColor;
             sLeaser.sprites[1].color = ElectricColor(HeadColor(timeStacker));
@@ -577,7 +579,7 @@ sealed class LizCutHead : PlayerCarryableItem, IDrawable
             sLeaser.sprites[0].color = Camo(palette.blackColor);
             sLeaser.sprites[3].color = Camo(palette.blackColor);
         }
-        else if (Abstr.LizType == "IndigoLizard")
+        else if (Abstr.LizBreed == "IndigoLizard")
         {
             Vector3 vector7 = Custom.RGB2HSL(LizEffectColour);
             sLeaser.sprites[4].color = new HSLColor(vector7.x, vector7.y, 0.7f).rgb;
@@ -587,7 +589,7 @@ sealed class LizCutHead : PlayerCarryableItem, IDrawable
             sLeaser.sprites[0].color = Camo(palette.blackColor);
             sLeaser.sprites[3].color = Camo(palette.blackColor);
         }
-        else if (Abstr.LizType == "BasiliskLizard")
+        else if (Abstr.LizBreed == "BasiliskLizard")
         {
             Color color4 = ElectricColor(Camo(Color.Lerp(HeadColor(timeStacker), effectColor, 0.7f)));
             if (whiteFlicker > 0 && (whiteFlicker > SourceCodeLizardsWhiteFlickerThreshold || everySecondDraw))
@@ -603,7 +605,7 @@ sealed class LizCutHead : PlayerCarryableItem, IDrawable
             sLeaser.sprites[3].color = ElectricColor(Camo(HeadColor(timeStacker)));
         }
 
-        if (Abstr.LizType != "IndigoLizard" || (Abstr.LizType == "IndigoLizard" && Abstr.LizBloodColourR == -1f))
+        if (Abstr.LizBreed != "IndigoLizard" || (Abstr.LizBreed == "IndigoLizard" && Abstr.LizBloodColourR == -1f))
         {
             sLeaser.sprites[5].color = (Abstr.LizBloodColourR != -1f) ? LizBloodColour : ElectricColor(effectColor);
         }
@@ -635,12 +637,12 @@ sealed class LizCutHead : PlayerCarryableItem, IDrawable
     {
         this.palette = palette;
 
-        if (Abstr.LizType == "BlizzardLizard")
+        if (Abstr.LizBreed == "BlizzardLizard")
         {
             palette.blackColor = new Color(0.8f, 0.81f, 0.84f);
             this.palette = palette;
         }
-        else if (Abstr.LizType == "IndigoLizard")
+        else if (Abstr.LizBreed == "IndigoLizard")
         {
             Color IndigoColour = new Color(Abstr.LizEffectColourR, Abstr.LizEffectColourG, Abstr.LizEffectColourB);
 
@@ -653,16 +655,16 @@ sealed class LizCutHead : PlayerCarryableItem, IDrawable
         sLeaser.sprites[2].color = palette.blackColor;
         sLeaser.sprites[4].color = palette.blackColor;
 
-        if (Abstr.LizType == "Salamander" && Abstr.blackSalamander)
+        if (Abstr.LizBreed == "Salamander" && Abstr.blackSalamander)
         {
             sLeaser.sprites[4].color = effectColor;
         }
-        else if (Abstr.LizType == "CyanLizard" || Abstr.LizType == "IndigoLizard")
+        else if (Abstr.LizBreed == "CyanLizard" || Abstr.LizBreed == "IndigoLizard")
         {
             sLeaser.sprites[0].color = palette.blackColor;
             sLeaser.sprites[3].color = palette.blackColor;
         }
-        else if (Abstr.LizType == "BlizzardLizard")
+        else if (Abstr.LizBreed == "BlizzardLizard")
         {
             Color color = new Color(0.99f, 1f, 0.98f);
             sLeaser.sprites[4].color = color;

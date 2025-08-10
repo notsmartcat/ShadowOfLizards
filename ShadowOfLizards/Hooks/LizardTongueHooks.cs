@@ -1,7 +1,6 @@
 ﻿using UnityEngine;
-using static ShadowOfLizards.ShadowOfLizards;
 using System;
-using MoreSlugcats;
+using static ShadowOfLizards.ShadowOfLizards;
 
 namespace ShadowOfLizards;
 
@@ -167,4 +166,3 @@ internal class LizardTongueHooks
         self.delay = 100;
     }
 }
-

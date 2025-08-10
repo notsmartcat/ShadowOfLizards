@@ -168,15 +168,15 @@ internal sealed class LizCutLeg : PlayerCarryableItem, IDrawable, IPlayerEdible
     {
         get
         {
-            if (Abstr.LizType == "WhiteLizard")
+            if (Abstr.LizBreed == "WhiteLizard")
             {
                 return Abstr.canCamo ?  Color.Lerp(new Color(1f, 1f, 1f), whiteCamoColor, whiteCamoColorAmount) : new Color(1f, 1f, 1f);
             }
-            if (Abstr.LizType == "BlackLizard")
+            if (Abstr.LizBreed == "BlackLizard")
             {
                 return palette.blackColor;
             }
-            if (Abstr.LizType == "Salamander")
+            if (Abstr.LizBreed == "Salamander")
             {
                 return SalamanderColor;
             }
@@ -189,15 +189,15 @@ internal sealed class LizCutLeg : PlayerCarryableItem, IDrawable, IPlayerEdible
     {
         get
         {
-            if (Abstr.LizType == "WhiteLizard")
+            if (Abstr.LizBreed == "WhiteLizard")
             {
                 return Abstr.canCamo ? Color.Lerp(palette.blackColor, whiteCamoColor, whiteCamoColorAmount) : palette.blackColor;
             }
-            if (Abstr.LizType == "BlackLizard")
+            if (Abstr.LizBreed == "BlackLizard")
             {
                 return palette.blackColor;
             }
-            if (Abstr.LizType == "Salamander")
+            if (Abstr.LizBreed == "Salamander")
             {
                 return SalamanderColor;
             }

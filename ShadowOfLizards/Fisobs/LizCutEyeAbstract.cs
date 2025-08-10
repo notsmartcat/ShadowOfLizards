@@ -1,22 +1,20 @@
 using Fisobs.Core;
-using System;
-using System.Runtime.CompilerServices;
 
 namespace ShadowOfLizards;
 
 sealed class LizCutEyeAbstract : AbstractPhysicalObject
 {
+    public float BodyColourR;
+    public float BodyColourG;
+    public float BodyColourB;
+
+    public float BloodColourR;
+    public float BloodColourG;
+    public float BloodColourB;
+
     public float EyeColourR;
     public float EyeColourG;
     public float EyeColourB;
-
-    public float LizBloodColourR;
-    public float LizBloodColourG;
-    public float LizBloodColourB;
-
-    public float LizColourR;
-    public float LizColourG;
-    public float LizColourB;
 
     public string LizBreed;
 
@@ -32,6 +30,6 @@ sealed class LizCutEyeAbstract : AbstractPhysicalObject
 
     public override string ToString()
     {
-        return this.SaveToString($"{EyeColourR};{EyeColourG};{EyeColourB};{LizColourR};{LizColourG};{LizColourB};{LizBloodColourR};{LizBloodColourG};{LizBloodColourB};{LizBreed}");
+        return this.SaveToString($"{BodyColourR};{BodyColourG};{BodyColourB};{BloodColourR};{BloodColourG};{BloodColourB};{BloodColourR};{BloodColourG};{BloodColourB};{LizBreed}");
     }
 }

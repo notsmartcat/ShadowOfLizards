@@ -13,7 +13,8 @@ sealed class LizCutEye : PlayerCarryableItem, IDrawable
 
     private RoomPalette palette;
 
-    private Color LizColour;
+    private Color BodyColour;
+    private Color BloodColour;
     private Color EyeColour;
 
     private bool bump;
@@ -98,8 +99,8 @@ sealed class LizCutEye : PlayerCarryableItem, IDrawable
 
     public void InitiateSprites(SpriteLeaser sLeaser, RoomCamera rCam)
     {
-        LizColour = Abstr.LizBloodColourR != -1f ? new Color(Abstr.LizBloodColourR, Abstr.LizBloodColourG, Abstr.LizBloodColourB) : new Color(Abstr.LizColourR, Abstr.LizColourG, Abstr.LizColourB);
-
+        BodyColour = new Color(Abstr.BodyColourR, Abstr.BodyColourG, Abstr.BodyColourB);
+        BloodColour = new Color(Abstr.BloodColourR, Abstr.BloodColourG, Abstr.BloodColourB);
         EyeColour = new Color(Abstr.EyeColourR, Abstr.EyeColourG, Abstr.EyeColourB);
 
         sLeaser.sprites = new FSprite[5];
@@ -156,8 +157,8 @@ sealed class LizCutEye : PlayerCarryableItem, IDrawable
         sLeaser.sprites[0].rotation = Custom.VecToDeg(vector2);
         sLeaser.sprites[1].rotation = Custom.VecToDeg(vector2);
         sLeaser.sprites[4].rotation = Custom.VecToDeg(vector2);
-        sLeaser.sprites[0].color = palette.blackColor;
-        sLeaser.sprites[1].color = LizColour;
+        sLeaser.sprites[0].color = BodyColour;
+        sLeaser.sprites[1].color = BloodColour;
         sLeaser.sprites[4].color = EyeColour;
 
         if (blink > 0 && Random.value < 0.5f)
@@ -188,7 +189,7 @@ sealed class LizCutEye : PlayerCarryableItem, IDrawable
                 }
                 ((TriangleMesh)sLeaser.sprites[2 + i]).MoveVertice(j * 4 + 2, vector5 - a * 0.5f - normalized * d - camPos);
                 ((TriangleMesh)sLeaser.sprites[2 + i]).MoveVertice(j * 4 + 3, vector5 + a * 0.5f - normalized * d - camPos);
-                ((TriangleMesh)sLeaser.sprites[2 + i]).color = LizColour;
+                ((TriangleMesh)sLeaser.sprites[2 + i]).color = BloodColour;
                 vector4 = vector5;
             }
         }

@@ -1,35 +1,33 @@
 ﻿using System;
 using UnityEngine;
 using RWCustom;
-using IL.Smoke;
 
 namespace ShadowOfLizards;
 
 public class BrokenTooth : CosmeticSprite
 {
-    public RoomPalette palette;
+    private RoomPalette palette;
 
-    public Color colour;
-    public Color rootColour;
+    private Color colour;
+    private Color rootColour;
 
     public int ElectricColorTimer = 0;
 
-    public string spriteName;
+    private readonly string spriteName;
 
-    public bool isCyan = false;
+    private readonly bool isCyan = false;
 
     private int flicker;
-    private float flickerColor = 0;
+    private readonly float flickerColor = 0;
 
-    public float baseBlink;
-    public float baseLastBlink;
+    private float baseBlink;
+    private float baseLastBlink;
 
-    public const int SourceCodeLizardsFlickerThreshold = 10;
-    public const int SourceCodeLizardsWhiteFlickerThreshold = 15;
+    private const int SourceCodeLizardsFlickerThreshold = 10;
 
     public BrokenTooth(Vector2 pos, Vector2 vel, string spriteName, Color colour, Color rootColour, float scaleX, float scaleY)
     {
-        pos = pos + vel;
+        pos += vel;
         lastPos = pos;
         this.vel = vel;
         hue = 1f;
@@ -53,23 +51,25 @@ public class BrokenTooth : CosmeticSprite
 
     public override void Update(bool eu)
     {
-        counter++;
+        if (ShadowOfOptions.cosmetic_sprite_despawn.Value)
+            counter++;
 
         if (room.PointSubmerged(pos))
         {
             vel *= 0.92f;
-            vel.y = vel.y - room.gravity * 0.1f;
+            vel.y -= room.gravity * 0.1f;
             rotVel *= 0.965f;
             zRotVel *= 0.965f;
         }
         else
         {
             vel *= 0.999f;
-            vel.y = vel.y - room.gravity * 0.9f;
+            vel.y -= room.gravity * 0.9f;
         }
 
-        if (counter < 10 && UnityEngine.Random.value < 0.1f)
+        if (dripCounter < 10 && UnityEngine.Random.value < 0.1f)
         {
+            dripCounter++;
             room.AddObject(new WaterDrip(Vector2.Lerp(lastPos, pos, UnityEngine.Random.value), vel + Custom.RNV() * UnityEngine.Random.value * 2f, false));
         }
 
@@ -82,9 +82,7 @@ public class BrokenTooth : CosmeticSprite
         else
         {
             baseLastBlink = baseBlink;
-
             baseBlink = Mathf.Lerp(baseBlink - Mathf.Floor(baseBlink), 0.25f, 0.02f);
-
         }
 
         lastRotation = rotation;
@@ -254,19 +252,19 @@ public class BrokenTooth : CosmeticSprite
         return Color.Lerp(palette.blackColor, colour, num);
     }
 
-    public float rotation;
-    public float lastRotation;
+    private float rotation;
+    private float lastRotation;
 
-    public float rotVel;
+    private float rotVel;
 
-    public float lastDarkness = -1f;
-    public float darkness;
+    private float lastDarkness = -1f;
+    private float darkness;
 
-    private float hue;
-    private float saturation;
+    private readonly float hue;
+    private readonly float saturation;
 
-    private float scaleX;
-    private float scaleY;
+    private readonly float scaleX;
+    private readonly float scaleY;
 
     private float zRotation;
     private float lastZRotation;
@@ -275,13 +273,14 @@ public class BrokenTooth : CosmeticSprite
 
     private SharedPhysics.TerrainCollisionData scratchTerrainCollisionData;
 
-    public int counter;
+    private int counter;
+    private int dripCounter;
 
-    public int dissapearCounter;
+    private int dissapearCounter;
 
-    public SoundID impactSound = SoundID.SS_AI_Marble_Hit_Floor;
+    private readonly SoundID impactSound = SoundID.SS_AI_Marble_Hit_Floor;
 
-    public bool firstImpact;
+    private bool firstImpact;
 
-    public Color earthColor;
+    private Color earthColor;
 }

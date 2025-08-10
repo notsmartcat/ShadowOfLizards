@@ -10,7 +10,7 @@ internal sealed class LizCutLegAbstract : AbstractPhysicalObject
     public float scaleX;
     public float scaleY;
 
-    public string LizType;
+    public string LizBreed;
 
     public float LizBodyColourR;
     public float LizBodyColourG;
@@ -26,8 +26,6 @@ internal sealed class LizCutLegAbstract : AbstractPhysicalObject
 
     public string LizSpriteName;
     public string LizColourSpriteName;
-
-    public string LizBreed;
 
     public bool blackSalamander;
 
@@ -45,6 +43,6 @@ internal sealed class LizCutLegAbstract : AbstractPhysicalObject
 
     public override string ToString()
     {
-        return this.SaveToString($"{hue};{saturation};{scaleX};{scaleY};{LizType};{LizBodyColourR};{LizBodyColourG};{LizBodyColourB};{LizEffectColourR};{LizEffectColourG};{LizEffectColourB};{LizBloodColourR};{LizBloodColourG};{LizBloodColourB};{LizSpriteName};{LizColourSpriteName};{LizBreed};{blackSalamander};{canCamo}");
+        return this.SaveToString($"{hue};{saturation};{scaleX};{scaleY};{LizBreed};{LizBodyColourR};{LizBodyColourG};{LizBodyColourB};{LizEffectColourR};{LizEffectColourG};{LizEffectColourB};{LizBloodColourR};{LizBloodColourG};{LizBloodColourB};{LizSpriteName};{LizColourSpriteName};{blackSalamander};{canCamo}");
     }
 }

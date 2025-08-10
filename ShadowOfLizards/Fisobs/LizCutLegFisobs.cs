@@ -20,9 +20,9 @@ sealed class LizCutLegFisobs : Fisob
     {
         string[] array = saveData.CustomData.Split(';');
 
-        if (array.Length < 18)
+        if (array.Length < 17)
         {
-            array = new string[18];
+            array = new string[17];
         }
 
         return new LizCutLegAbstract(world, saveData.Pos, saveData.ID)
@@ -33,7 +33,7 @@ sealed class LizCutLegFisobs : Fisob
             scaleX = float.TryParse(array[2], out float sX) ? sX : 1f,
             scaleY = float.TryParse(array[3], out float sY) ? sY : 1f,
 
-            LizType = (string.IsNullOrEmpty(array[4]) ? "GreenLizard" : array[4]),
+            LizBreed = (string.IsNullOrEmpty(array[4]) ? "GreenLizard" : array[4]),
 
             LizBodyColourR = float.TryParse(array[5], out float lbr) ? lbr : 0f,
             LizBodyColourB = float.TryParse(array[6], out float lbb) ? lbb : 0f,
@@ -50,11 +50,9 @@ sealed class LizCutLegFisobs : Fisob
             LizSpriteName = string.IsNullOrEmpty(array[14]) ? "LizardArm_14" : array[14],
             LizColourSpriteName = string.IsNullOrEmpty(array[15]) ? "LizardArmColor_14" : array[15],
 
-            LizBreed = string.IsNullOrEmpty(array[16]) ? "GreenLizard" : array[16],
+            blackSalamander = bool.TryParse(array[16], out bool bs) && bs,
 
-            blackSalamander = bool.TryParse(array[17], out bool bs) && bs,
-
-            canCamo = bool.TryParse(array[18], out bool cc) && cc
+            canCamo = bool.TryParse(array[17], out bool cc) && cc
         };
     }
 

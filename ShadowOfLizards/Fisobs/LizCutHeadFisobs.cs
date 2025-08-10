@@ -20,9 +20,9 @@ sealed class LizCutHeadFisobs : Fisob
     {
         string[] array = saveData.CustomData.Split(';');
 
-        if (array.Length < 33)
+        if (array.Length < 32)
         {
-            array = new string[33];
+            array = new string[32];
         }
 
         return new LizCutHeadAbstract(world, saveData.Pos, saveData.ID)
@@ -33,7 +33,7 @@ sealed class LizCutHeadFisobs : Fisob
             scaleX = float.TryParse(array[2], out float sX) ? sX : 1f,
             scaleY = float.TryParse(array[3], out float sY) ? sY : 1f,
 
-            LizType = string.IsNullOrEmpty(array[4]) ? "GreenLizard" : array[4],
+            LizBreed = string.IsNullOrEmpty(array[4]) ? "GreenLizard" : array[4],
 
             LizBodyColourR = float.TryParse(array[5], out float lbr) ? lbr : 0f,
             LizBodyColourB = float.TryParse(array[6], out float lbb) ? lbb : 0f,
@@ -68,12 +68,10 @@ sealed class LizCutHeadFisobs : Fisob
             LizBloodColourG = float.TryParse(array[28], out float bg) ? bg : -1f,
             LizBloodColourB = float.TryParse(array[29], out float bb) ? bb : -1f,
 
-            LizBreed = string.IsNullOrEmpty(array[30]) ? "GreenLizard" : array[30],
+            canCamo = bool.TryParse(array[30], out bool cc) && cc,
 
-            canCamo = bool.TryParse(array[31], out bool cc) && cc,
-
-            jawOpenAngle = float.TryParse(array[32], out float joa) ? joa : 100f,
-            jawOpenMoveJawsApart = float.TryParse(array[33], out float jomja) ? jomja : 20f
+            jawOpenAngle = float.TryParse(array[31], out float joa) ? joa : 100f,
+            jawOpenMoveJawsApart = float.TryParse(array[32], out float jomja) ? jomja : 20f
         };
     }
 

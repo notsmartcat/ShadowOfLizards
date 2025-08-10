@@ -61,7 +61,10 @@ public class ShadowOfOptions : OptionInterface
         jump_regrowth = config.Bind("jump_regrowth", true, new ConfigurableInfo("If On Lizards can gain a Jump ability by either eating other Lizards who have a Jump ability ur Yeeks, Jetfish and Centiwings. Only works when the Lizard doesn't already have a Jump ability. (Default = true)", null, "", new object[1] { "Jump Regrowth" }));
         jump_regrowth_chance = config.Bind("jump_regrowth_chance", 20, new ConfigurableInfo("Chance for the Jump Regrowth to trigger. (Default = 20%)", null, "", new object[1] { "Jump Regrowth Chance" }));
 
-        tentacle_regrowth = config.Bind("tentacle_regrowth", false, new ConfigurableInfo("If On Lizards can become a Rotten by either eating other Lizards who are Rotten or eating other Rot creatures. (Default = false)", null, "", new object[1] { "Rot Regrowth" }));
+        camo_regrowth = config.Bind("camo_regrowth", true, new ConfigurableInfo("If On Lizards can gain the Camo Ability either eating other Lizards who have the Camo Ability or eating Hazers. (Default = true)", null, "", new object[1] { "Camo Regrowth" }));
+        camo_regrowth_chance = config.Bind("camo_regrowth_chance", 20, new ConfigurableInfo("Chance for the Camo Ability Regrowth to trigger. (Default = 20%)", null, "", new object[1] { "Camo Regrowth Chance" }));
+
+        tentacle_regrowth = config.Bind("tentacle_regrowth", false, new ConfigurableInfo("If On Lizards can become Rotten by either eating other Lizards who are Rotten or eating other Rot creatures. (Default = false)", null, "", new object[1] { "Rot Regrowth" }));
         tentacle_regrowth_chance = config.Bind("tentacle_regrowth_chance", 20, new ConfigurableInfo("Chance for the Rot Transformation Regrowth to trigger. (Default = 20%)", null, "", new object[1] { "Rot Transformation Regrowth Chance" }));
 
         spider_regrowth = config.Bind("spider_regrowth", false, new ConfigurableInfo("If On Lizards can become a Spider Mother by either eating other Lizards who are Spider Mothers/have the Spider Transformation or eating spiders. (Default = false)", null, "", new object[1] { "Spider Regrowth" }));
@@ -292,15 +295,17 @@ public class ShadowOfOptions : OptionInterface
         AddNewLine();
         AddBox();
         AddCheckBox(grass_immune, (string)grass_immune.info.Tags[0]);
-        AddSlider(grass_immune_chance, (string)grass_immune_chance.info.Tags[0], "0%", "100%");
-        DrawCheckBoxAndSliderCombo(ref Tabs[2]);
+        DrawCheckBoxes(ref Tabs[2]);
+        //AddSlider(grass_immune_chance, (string)grass_immune_chance.info.Tags[0], "0%", "100%");
+        //DrawCheckBoxAndSliderCombo(ref Tabs[2]);
         DrawBox(ref Tabs[2]);
 
         AddNewLine();
         AddBox();
         AddCheckBox(hypothermia_immune, (string)hypothermia_immune.info.Tags[0]);
-        AddSlider(hypothermia_immune_chance, (string)hypothermia_immune_chance.info.Tags[0], "0%", "100%");
-        DrawCheckBoxAndSliderCombo(ref Tabs[2]);
+        DrawCheckBoxes(ref Tabs[2]);
+        //AddSlider(hypothermia_immune_chance, (string)hypothermia_immune_chance.info.Tags[0], "0%", "100%");
+        //DrawCheckBoxAndSliderCombo(ref Tabs[2]);
         DrawBox(ref Tabs[2]);
 
         AddNewLine();
@@ -312,15 +317,17 @@ public class ShadowOfOptions : OptionInterface
         AddNewLine();
         AddBox();
         AddCheckBox(lava_immune, (string)lava_immune.info.Tags[0]);
-        AddSlider(lava_immune_chance, (string)lava_immune_chance.info.Tags[0], "0%", "100%");
-        DrawCheckBoxAndSliderCombo(ref Tabs[2]);
+        DrawCheckBoxes(ref Tabs[2]);
+        //AddSlider(lava_immune_chance, (string)lava_immune_chance.info.Tags[0], "0%", "100%");
+        //DrawCheckBoxAndSliderCombo(ref Tabs[2]);
         DrawBox(ref Tabs[2]);
 
         AddNewLine();
         AddBox();
         AddCheckBox(water_breather, (string)water_breather.info.Tags[0]);
-        AddSlider(water_breather_chance, (string)water_breather_chance.info.Tags[0], "0%", "100%");
-        DrawCheckBoxAndSliderCombo(ref Tabs[2]);
+        DrawCheckBoxes(ref Tabs[2]);
+        //AddSlider(water_breather_chance, (string)water_breather_chance.info.Tags[0], "0%", "100%");
+        //DrawCheckBoxAndSliderCombo(ref Tabs[2]);
         DrawBox(ref Tabs[2]);
         #endregion
 
@@ -410,7 +417,7 @@ public class ShadowOfOptions : OptionInterface
         #endregion
 
         #region Regrowth
-        spacing = 15;
+        spacing = 11;
 
         Tabs[5] = new OpTab(this, "Regrowth");
         InitializeMarginAndPos();
@@ -433,6 +440,13 @@ public class ShadowOfOptions : OptionInterface
         AddBox();
         AddCheckBox(jump_regrowth, (string)jump_regrowth.info.Tags[0]);
         AddSlider(jump_regrowth_chance, (string)jump_regrowth_chance.info.Tags[0], "0%", "100%");
+        DrawCheckBoxAndSliderCombo(ref Tabs[5]);
+        DrawBox(ref Tabs[5]);
+
+        AddNewLine();
+        AddBox();
+        AddCheckBox(camo_regrowth, (string)camo_regrowth.info.Tags[0]);
+        AddSlider(camo_regrowth_chance, (string)camo_regrowth_chance.info.Tags[0], "0%", "100%");
         DrawCheckBoxAndSliderCombo(ref Tabs[5]);
         DrawBox(ref Tabs[5]);
 
@@ -769,6 +783,9 @@ public class ShadowOfOptions : OptionInterface
     public static Configurable<bool> jump_regrowth;
     public static Configurable<int> jump_regrowth_chance;
 
+    public static Configurable<bool> camo_regrowth;
+    public static Configurable<int> camo_regrowth_chance;
+
     public static Configurable<bool> tentacle_regrowth;
     public static Configurable<int> tentacle_regrowth_chance;
 
@@ -794,7 +811,6 @@ public class ShadowOfOptions : OptionInterface
 
     public static Configurable<bool> climb_ability;
     public static Configurable<int> climb_ability_chance;
-
 
     public static Configurable<bool> camo_ability;
     public static Configurable<int> camo_ability_chance;

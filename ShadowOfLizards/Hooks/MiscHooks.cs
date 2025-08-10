@@ -1,12 +1,9 @@
 ﻿using System;
 using UnityEngine;
 using RWCustom;
-using static ShadowOfLizards.ShadowOfLizards;
 using Menu;
 using MoreSlugcats;
-using System.Collections.Generic;
-using System.Linq;
-using static MonoMod.InlineRT.MonoModRule;
+using static ShadowOfLizards.ShadowOfLizards;
 
 namespace ShadowOfLizards;
 
@@ -27,6 +24,7 @@ internal class MiscHooks
         On.LizardBubble.DrawSprites += BubbleDraw;
 
         On.Creature.Update += CreatureUpdate;
+        On.Creature.Grab += CreatureGrab;
 
         On.BigEel.Swallow += BigEelSwallow;
         On.BigEel.JawsSnap += BigEelJawsSnap;
@@ -35,8 +33,6 @@ internal class MiscHooks
 
         On.Spark.DrawSprites += SparkDrawSprites;
         On.StationaryEffect.DrawSprites += StationaryEffectDrawSprites;
-
-        On.Creature.Grab += CreatureGrab;
 
         On.MoreSlugcats.SingularityBomb.Explode += SingularityBombExplode;
 
@@ -57,7 +53,6 @@ internal class MiscHooks
             self.quickness = 0.7f;
             return true;
         }
-
         return orig(self);
     }
 
@@ -67,7 +62,6 @@ internal class MiscHooks
         {
             return false;
         }
-
         return orig(self, obj);
     }
 
@@ -128,10 +122,7 @@ internal class MiscHooks
         {
             return false;
         }
-        else
-        {
-            return orig(self, result, eu);
-        }
+        return orig(self, result, eu);
     }
 
     static void DartMaggotUpdate(On.DartMaggot.orig_Update orig, DartMaggot self, bool eu)
@@ -164,12 +155,9 @@ internal class MiscHooks
 
             for (int i = 0; i < self.room.abstractRoom.creatures.Count; i++)
             {
-                if (self.room.abstractRoom.creatures[i].realizedCreature != null && (self.room.abstractRoom.creatures[i].rippleLayer == self.abstractPhysicalObject.rippleLayer || self.room.abstractRoom.creatures[i].rippleBothSides || self.abstractPhysicalObject.rippleBothSides)
-                    && (Custom.DistLess(self.firstChunk.pos, self.room.abstractRoom.creatures[i].realizedCreature.mainBodyChunk.pos, self.LightIntensity * 600f) || (Custom.DistLess(self.firstChunk.pos, self.room.abstractRoom.creatures[i].realizedCreature.mainBodyChunk.pos, self.LightIntensity * 1600f)
-                    && self.room.VisualContact(self.firstChunk.pos, self.room.abstractRoom.creatures[i].realizedCreature.mainBodyChunk.pos))))
+                if (self.room.abstractRoom.creatures[i].realizedCreature != null && (self.room.abstractRoom.creatures[i].rippleLayer == self.abstractPhysicalObject.rippleLayer || self.room.abstractRoom.creatures[i].rippleBothSides || self.abstractPhysicalObject.rippleBothSides) && (Custom.DistLess(self.firstChunk.pos, self.room.abstractRoom.creatures[i].realizedCreature.mainBodyChunk.pos, self.LightIntensity * 600f) || (Custom.DistLess(self.firstChunk.pos, self.room.abstractRoom.creatures[i].realizedCreature.mainBodyChunk.pos, self.LightIntensity * 1600f) && self.room.VisualContact(self.firstChunk.pos, self.room.abstractRoom.creatures[i].realizedCreature.mainBodyChunk.pos))))
                 {
-                    if (self.room.abstractRoom.creatures[i].realizedCreature is Lizard liz && lizardstorage.TryGetValue(liz.abstractCreature, out LizardData data) && data.liz.TryGetValue("EyeRight", out string eye) && eye != "Incompatible" && !data2.lizStorage.Contains(liz)
-                        && (!ShadowOfOptions.distance_based_blind.Value || (int)Custom.LerpMap(Vector2.Distance(self.firstChunk.pos, self.room.abstractRoom.creatures[i].realizedCreature.VisionPoint), 60f, 600f, 400f, 20f) > 300))
+                    if (self.room.abstractRoom.creatures[i].realizedCreature is Lizard liz && lizardstorage.TryGetValue(liz.abstractCreature, out LizardData data) && data.liz.TryGetValue("EyeRight", out string eye) && eye != "Incompatible" && !data2.lizStorage.Contains(liz) && (!ShadowOfOptions.distance_based_blind.Value || (int)Custom.LerpMap(Vector2.Distance(self.firstChunk.pos, self.room.abstractRoom.creatures[i].realizedCreature.VisionPoint), 60f, 600f, 400f, 20f) > 300))
                     {
                         data2.lizStorage.Add(liz);
 
@@ -253,8 +241,7 @@ internal class MiscHooks
                     }
                     if (self.sourceObject != self.room.physicalObjects[j][k] && (self.sourceObject == null || self.sourceObject.abstractPhysicalObject.rippleLayer == self.room.physicalObjects[j][k].abstractPhysicalObject.rippleLayer || self.sourceObject.abstractPhysicalObject.rippleBothSides || self.room.physicalObjects[j][k].abstractPhysicalObject.rippleBothSides) && !self.room.physicalObjects[j][k].slatedForDeletetion)
                     {
-                        if (self.deafen > 0f && self.room.physicalObjects[j][k] is Lizard liz && lizardstorage.TryGetValue(liz.abstractCreature, out LizardData data) && data.liz.TryGetValue("EarRight", out string ear) && !data2.lizStorage.Contains(liz)
-                            && (!ShadowOfOptions.distance_based_deafen.Value || (int)Custom.LerpMap(num3, num * 1.5f * self.deafen, num * Mathf.Lerp(1f, 4f, self.deafen), 650f * self.deafen, 0f) > 90))
+                        if (self.deafen > 0f && self.room.physicalObjects[j][k] is Lizard liz && lizardstorage.TryGetValue(liz.abstractCreature, out LizardData data) && data.liz.TryGetValue("EarRight", out string ear) && !data2.lizStorage.Contains(liz) && (!ShadowOfOptions.distance_based_deafen.Value || (int)Custom.LerpMap(num3, num * 1.5f * self.deafen, num * Mathf.Lerp(1f, 4f, self.deafen), 650f * self.deafen, 0f) > 90))
                         {
                             data2.lizStorage.Add(liz);
 
@@ -456,18 +443,9 @@ internal class MiscHooks
     {
         orig(self, sLeaser, rCam, timeStacker, camPos);
 
-        if (!ShadowOfOptions.camo_ability.Value || self.lizard == null || !lizardstorage.TryGetValue(self.lizard.lizard.abstractCreature, out LizardData data))
+        if (self.lizard != null && graphicstorage.TryGetValue(self.lizard, out GraphicsData data2))
         {
-            return;
-        }
-
-        if (data.liz.TryGetValue("CanCamo", out string CanCamo) && CanCamo == "True" && self.lizard.lizard.Template.type != CreatureTemplate.Type.WhiteLizard)
-        {
-            sLeaser.sprites[0].color = LizardGraphicsHooks.Camo(self.lizard ,self.lizard.HeadColor(timeStacker));
-        }
-        else if (self.lizard.lizard.Template.type == CreatureTemplate.Type.WhiteLizard && data.liz.TryGetValue("CanCamo", out string CanCamo2) && CanCamo2 == "False")
-        {
-            sLeaser.sprites[0].color = LizardGraphicsHooks.WhiteNoCamoHeadColor(self.lizard, timeStacker);
+            sLeaser.sprites[0].color = CamoElectric(self.lizard, data2, self.lizard.HeadColor(timeStacker));
         }
     }
 
@@ -475,18 +453,9 @@ internal class MiscHooks
     {
         orig(self, sLeaser, rCam, timeStacker, camPos);
 
-        if (!ShadowOfOptions.camo_ability.Value || self.lizard == null || !lizardstorage.TryGetValue(self.lizard.lizard.abstractCreature, out LizardData data))
+        if (self.lizard != null && graphicstorage.TryGetValue(self.lizard, out GraphicsData data2))
         {
-            return;
-        }
-
-        if (data.liz.TryGetValue("CanCamo", out string CanCamo) && CanCamo == "True" && self.lizard.lizard.Template.type != CreatureTemplate.Type.WhiteLizard)
-        {
-            sLeaser.sprites[0].color = LizardGraphicsHooks.Camo(self.lizard, self.lizard.HeadColor(timeStacker));
-        }
-        else if (self.lizard.lizard.Template.type == CreatureTemplate.Type.WhiteLizard && data.liz.TryGetValue("CanCamo", out string CanCamo2) && CanCamo2 == "False")
-        {
-            sLeaser.sprites[0].color = LizardGraphicsHooks.WhiteNoCamoHeadColor(self.lizard, timeStacker);
+            sLeaser.sprites[0].color = CamoElectric(self.lizard, data2, self.lizard.HeadColor(timeStacker));
         }
     }
 
@@ -535,4 +504,3 @@ internal class MiscHooks
         }
     }
 }
-

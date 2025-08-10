@@ -2,10 +2,10 @@ using MoreSlugcats;
 using RWCustom;
 using Smoke;
 using UnityEngine;
-using static ShadowOfLizards.ShadowOfLizards;
 using static Explosion;
 using System;
 using System.Collections.Generic;
+using static ShadowOfLizards.ShadowOfLizards;
 
 namespace ShadowOfLizards;
 
@@ -117,7 +117,7 @@ internal class TransformationMelted
         #endregion
 
         #region Colour
-        if (!data.liz.TryGetValue("MeltedR", out string _))
+        if (!data.liz.ContainsKey("MeltedR"))
         {
             Color waterColour = (world != null && world.activeRooms[0] != null && world.activeRooms[0].waterObject != null && world.activeRooms[0].waterObject.WaterIsLethal && world.activeRooms[0].game.cameras[0].currentPalette.waterColor1 != null) ? world.activeRooms[0].game.cameras[0].currentPalette.waterColor1 : new Color(0.4078431f, 0.5843138f, 0.1843137f);
             data.liz["MeltedR"] = waterColour.r.ToString();
@@ -153,15 +153,11 @@ internal class TransformationMelted
 
     public static void PostMeltedLizardBite(Lizard self, LizardData data, BodyChunk chunk)
     {
-        if (chunk == null || chunk.owner == null || chunk.owner is not Creature owner)
+        if (chunk == null || chunk.owner == null || chunk.owner is not Creature owner || owner is not Lizard liz || !lizardstorage.TryGetValue(liz.abstractCreature, out _))
         {
             return;
         }
-
-        if (owner is Lizard liz && lizardstorage.TryGetValue(liz.abstractCreature, out _))
-        {
-            PostViolenceCheck(liz, data, "Melted", self);
-        }
+        PostViolenceCheck(liz, data, "Melted", self);
     }
 
     static void LethatWaterDamage(Creature crit, BodyChunk self)
@@ -363,12 +359,10 @@ internal class TransformationMelted
 
     static void NoBite(On.LizardAI.orig_AggressiveBehavior orig, LizardAI self, Tracker.CreatureRepresentation target, float tongueChance)
     {
-        if (ShadowOfOptions.melted_transformation.Value && lizardstorage.TryGetValue(self.lizard.abstractCreature, out LizardData data) && data.transformation == "Melted")
+        if (!ShadowOfOptions.melted_transformation.Value || !lizardstorage.TryGetValue(self.lizard.abstractCreature, out LizardData data) || data.transformation != "Melted")
         {
-            return;
-        }
-
-        orig.Invoke(self, target, tongueChance);
+            orig.Invoke(self, target, tongueChance);
+        }    
     }
     #endregion
 }
