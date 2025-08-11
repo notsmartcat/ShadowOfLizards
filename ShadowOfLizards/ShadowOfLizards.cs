@@ -18,7 +18,7 @@ public class ShadowOfLizards : BaseUnityPlugin
     #region Classes
     public class LizardData
     {
-        public bool Beheaded = false;
+        public bool beheaded = false;
 
         //Dictionaty stores most of the important values. they are first set inside the "NewLizard" Hook
         public Dictionary<string, string> liz = new();
@@ -66,7 +66,7 @@ public class ShadowOfLizards : BaseUnityPlugin
         public int lizardUpdatedCycle = -1;
 
         //Values for Lizard Legs, these will be added when the lizard is Created to make sure it has the exact same number of Legs as the Lizard
-        public List<string> ArmState = new();
+        public List<string> armState = new();
 
         //Chance for the Lizard to Cheat Death
         public int cheatDeathChance = 0;
@@ -103,15 +103,15 @@ public class ShadowOfLizards : BaseUnityPlugin
     }
     public class GraphicsData
     {
-        public int EyesSprites;
+        public int eyeSprites;
 
-        public int CutHalfSprites;
+        public int cutHalfSprites;
 
-        public List<int> SpiderLeg = new() { 0, 0, 0, 0, 0, 0 };
+        public List<int> spiderLeg = new() { 0, 0, 0, 0, 0, 0 };
 
         public float legLength = 1;
 
-        public int ElectricColorTimer = 0;
+        public int electricColorTimer = 0;
 
         public bool once = false;
         public bool camoOnce = false;    
@@ -130,11 +130,11 @@ public class ShadowOfLizards : BaseUnityPlugin
     }
     public class ElectricSpit
     {
-        public bool Shocked = false;
+        public bool shocked = false;
 
         public Color origColor;
 
-        public int ElectricColorTimer = 0;
+        public int electricColorTimer = 0;
 
         public bool once = false;
 
@@ -155,9 +155,9 @@ public class ShadowOfLizards : BaseUnityPlugin
     #region ConditionalWeakTable
     public static readonly ConditionalWeakTable<AbstractCreature, LizardData> lizardstorage = new();
     public static readonly ConditionalWeakTable<LizardGraphics, GraphicsData> graphicstorage = new();
-    public static readonly ConditionalWeakTable<Spider, SpiderAsLeg> SpidLeg = new();
-    public static readonly ConditionalWeakTable<LizardSpit, ElectricSpit> ShockSpit = new();
-    public static readonly ConditionalWeakTable<PhysicalObject, OneTimeUseData> singleuse = new();
+    public static readonly ConditionalWeakTable<Spider, SpiderAsLeg> spidLeg = new();
+    public static readonly ConditionalWeakTable<LizardSpit, ElectricSpit> shockSpit = new();
+    public static readonly ConditionalWeakTable<PhysicalObject, OneTimeUseData> singleUse = new();
     public static readonly ConditionalWeakTable<AbstractCreature, CreatureDenCheck> denCheck = new();
     #endregion
 
@@ -306,12 +306,12 @@ public class ShadowOfLizards : BaseUnityPlugin
                         continue;
                     }
 
-                    if (creature.realizedCreature is Lizard liz && lizardstorage.TryGetValue(liz.abstractCreature, out LizardData data) && data.Beheaded == false && !data.isGoreHalf)
+                    if (creature.realizedCreature is Lizard liz && lizardstorage.TryGetValue(liz.abstractCreature, out LizardData data) && data.beheaded == false && !data.isGoreHalf)
                     {
                         if (ShadowOfOptions.debug_logs.Value)
                             Debug.Log(all + liz.ToString() + "'s Neck Hit by Debug");
 
-                        data.Beheaded = true;
+                        data.beheaded = true;
                         Decapitation(liz);
                         liz.Die();
                     }
@@ -421,7 +421,7 @@ public class ShadowOfLizards : BaseUnityPlugin
                 }
             }
 
-            if (ShadowOfOptions.melted_transformation.Value && killType == "Melted" && Chance(receiver, ShadowOfOptions.melted_transformation_chance.Value, "Melted Transformation after Dying to Acid"))
+            if (ShadowOfOptions.melted_transformation.Value && killType == "Melted" && CWTCycleCheck(data, "PreMeltedCycle", CycleNum(receiver.abstractCreature)) && Chance(receiver, ShadowOfOptions.melted_transformation_chance.Value, "Melted Transformation after Dying to Acid"))
             {
                 if (ShadowOfOptions.debug_logs.Value)
                     Debug.Log(all + receiver.ToString() + " was made Melted due to dying to Acid");
@@ -472,6 +472,10 @@ public class ShadowOfLizards : BaseUnityPlugin
                     }
                 }
                 return;
+            }
+            else if (ShadowOfOptions.melted_transformation.Value && killType == "Melted")
+            {
+                data.liz["PreMeltedCycle"] = CycleNum(receiver.abstractCreature).ToString();
             }
 
             if (ShadowOfOptions.electric_transformation.Value && killType == "Electric" && Chance(receiver, ShadowOfOptions.electric_transformation_chance.Value, "Electric Transformation after Dying to Electricity"))
@@ -855,7 +859,7 @@ public class ShadowOfLizards : BaseUnityPlugin
 
     public static Color CamoElectric(LizardGraphics self, GraphicsData data, Color col)
     {
-        return Color.Lerp(Color.Lerp(col, new Color(0.7f, 0.7f, 1f), (float)(data.ElectricColorTimer / 50f)), self.whiteCamoColor, self.whiteCamoColorAmount);
+        return Color.Lerp(Color.Lerp(col, new Color(0.7f, 0.7f, 1f), (float)(data.electricColorTimer / 50f)), self.whiteCamoColor, self.whiteCamoColorAmount);
     }
 
     #endregion
@@ -889,7 +893,7 @@ public class ShadowOfLizards : BaseUnityPlugin
             data2.transformation = data.transformation;
             data2.liz = new(data.liz);
             data2.availableBodychunks = new();
-            data2.ArmState = new(data.ArmState);
+            data2.armState = new(data.armState);
             data2.actuallyDead = true;
 
             for (int i = index; i < self.bodyChunks.Count() && data.availableBodychunks.Contains(i); i++)
@@ -1253,22 +1257,22 @@ public class ShadowOfLizards : BaseUnityPlugin
                 scaleX = sLeaser.sprites[graphicsModule.SpriteLimbsStart + limbNum].scaleX,
                 scaleY = sLeaser.sprites[graphicsModule.SpriteLimbsStart + limbNum].scaleY,
 
-                LizBreed = template,
+                breed = template,
 
-                LizBodyColourR = graphicsModule.ivarBodyColor.r,
-                LizBodyColourG = graphicsModule.ivarBodyColor.g,
-                LizBodyColourB = graphicsModule.ivarBodyColor.b,
+                bodyColourR = graphicsModule.ivarBodyColor.r,
+                bodyColourG = graphicsModule.ivarBodyColor.g,
+                bodyColourB = graphicsModule.ivarBodyColor.b,
 
-                LizBloodColourR = BloodColoursCheck(template) ? bloodcolours[template].r : -1f,
-                LizBloodColourG = BloodColoursCheck(template) ? bloodcolours[template].g : -1f,
-                LizBloodColourB = BloodColoursCheck(template) ? bloodcolours[template].b : -1f,
+                bloodColourR = BloodColoursCheck(template) ? bloodcolours[template].r : -1f,
+                bloodColourG = BloodColoursCheck(template) ? bloodcolours[template].g : -1f,
+                bloodColourB = BloodColoursCheck(template) ? bloodcolours[template].b : -1f,
 
-                LizEffectColourR = self.effectColor.r,
-                LizEffectColourG = self.effectColor.g,
-                LizEffectColourB = self.effectColor.b,
+                effectColourR = self.effectColor.r,
+                effectColourG = self.effectColor.g,
+                effectColourB = self.effectColor.b,
 
-                LizSpriteName = lizardArmCut,
-                LizColourSpriteName = lizardArmColorCut,
+                spriteName = lizardArmCut,
+                colourSpriteName = lizardArmColorCut,
 
                 blackSalamander = graphicsModule.blackSalamander,
 
@@ -1282,7 +1286,7 @@ public class ShadowOfLizards : BaseUnityPlugin
                 LimbCutBloodEmitter();
 
             if (graphicstorage.TryGetValue(graphicsModule, out GraphicsData data2))
-                (lizCutLegAbstract.realizedObject as LizCutLeg).ElectricColorTimer = data2.ElectricColorTimer;
+                (lizCutLegAbstract.realizedObject as LizCutLeg).electricColorTimer = data2.electricColorTimer;
 
             if (ShadowOfOptions.debug_logs.Value)
                 Debug.Log(all + "LizCutLeg Created");
@@ -1315,7 +1319,7 @@ public class ShadowOfLizards : BaseUnityPlugin
 
             SpriteLeaser sLeaser = data.sLeaser;
 
-            data.liz["BeheadedCycle"] = self.abstractCreature.world.game.IsStorySession ? self.abstractCreature.world.game.GetStorySession.saveState.cycleNumber.ToString() : "-1";
+            data.liz["beheadedCycle"] = self.abstractCreature.world.game.IsStorySession ? self.abstractCreature.world.game.GetStorySession.saveState.cycleNumber.ToString() : "-1";
             IntVector2 tilePosition = self.room.GetTilePosition(self.bodyChunks[0].pos);
             WorldCoordinate pos = new(self.room.abstractRoom.index, tilePosition.x, tilePosition.y, 0);
 
@@ -1346,35 +1350,35 @@ public class ShadowOfLizards : BaseUnityPlugin
                 scaleX = sLeaser.sprites[spriteHeadStart].scaleX,
                 scaleY = sLeaser.sprites[spriteHeadStart].scaleY,
 
-                LizBreed = template,
+                breed = template,
 
-                LizBodyColourR = graphicsModule.BodyColor(0f).r,
-                LizBodyColourG = graphicsModule.BodyColor(0f).r,
-                LizBodyColourB = graphicsModule.BodyColor(0f).r,
+                bodyColourR = graphicsModule.BodyColor(0f).r,
+                bodyColourG = graphicsModule.BodyColor(0f).r,
+                bodyColourB = graphicsModule.BodyColor(0f).r,
 
-                LizEffectColourR = self.effectColor.r,
-                LizEffectColourG = self.effectColor.g,
-                LizEffectColourB = self.effectColor.b,
+                effectColourR = self.effectColor.r,
+                effectColourG = self.effectColor.g,
+                effectColourB = self.effectColor.b,
 
-                LizBloodColourR = BloodColoursCheck(template) ? bloodcolours[template].r : -1,
-                LizBloodColourG = BloodColoursCheck(template) ? bloodcolours[template].g : -1,
-                LizBloodColourB = BloodColoursCheck(template) ? bloodcolours[template].b : -1,
+                bloodColourR = BloodColoursCheck(template) ? bloodcolours[template].r : -1,
+                bloodColourG = BloodColoursCheck(template) ? bloodcolours[template].g : -1,
+                bloodColourB = BloodColoursCheck(template) ? bloodcolours[template].b : -1,
 
-                EyeRightColourR = eyeCheck ? data.sLeaser.sprites[data2.EyesSprites].color.r : 0,
-                EyeRightColourG = eyeCheck ? data.sLeaser.sprites[data2.EyesSprites].color.g : 0,
-                EyeRightColourB = eyeCheck ? data.sLeaser.sprites[data2.EyesSprites].color.b : 0,
+                eyeRightColourR = eyeCheck ? data.sLeaser.sprites[data2.eyeSprites].color.r : 0,
+                eyeRightColourG = eyeCheck ? data.sLeaser.sprites[data2.eyeSprites].color.g : 0,
+                eyeRightColourB = eyeCheck ? data.sLeaser.sprites[data2.eyeSprites].color.b : 0,
 
-                EyeLeftColourR = eyeCheck ? data.sLeaser.sprites[data2.EyesSprites + 1].color.r : 0,
-                EyeLeftColourG = eyeCheck ? data.sLeaser.sprites[data2.EyesSprites + 1].color.g : 0,
-                EyeLeftColourB = eyeCheck ? data.sLeaser.sprites[data2.EyesSprites + 1].color.b : 0,
+                eyeLeftColourR = eyeCheck ? data.sLeaser.sprites[data2.eyeSprites + 1].color.r : 0,
+                eyeLeftColourG = eyeCheck ? data.sLeaser.sprites[data2.eyeSprites + 1].color.g : 0,
+                eyeLeftColourB = eyeCheck ? data.sLeaser.sprites[data2.eyeSprites + 1].color.b : 0,
 
-                HeadSprite0 = sprites[graphicsModule.SpriteHeadStart].element.name,
-                HeadSprite1 = sprites[graphicsModule.SpriteHeadStart + 1].element.name,
-                HeadSprite2 = sprites[graphicsModule.SpriteHeadStart + 2].element.name,
-                HeadSprite3 = validHead ? sprites[graphicsModule.SpriteHeadStart + 3].element.name : "LizardHead0.1",
-                HeadSprite4 = sprites[graphicsModule.SpriteHeadStart + 4].element.name,
-                HeadSprite5 = eyeCheck ? data.sLeaser.sprites[data2.EyesSprites].element.name : null,
-                HeadSprite6 = eyeCheck ? data.sLeaser.sprites[data2.EyesSprites + 1].element.name : null,
+                headSprite0 = sprites[graphicsModule.SpriteHeadStart].element.name,
+                headSprite1 = sprites[graphicsModule.SpriteHeadStart + 1].element.name,
+                headSprite2 = sprites[graphicsModule.SpriteHeadStart + 2].element.name,
+                headSprite3 = validHead ? sprites[graphicsModule.SpriteHeadStart + 3].element.name : "LizardHead0.1",
+                headSprite4 = sprites[graphicsModule.SpriteHeadStart + 4].element.name,
+                headSprite5 = eyeCheck ? data.sLeaser.sprites[data2.eyeSprites].element.name : null,
+                headSprite6 = eyeCheck ? data.sLeaser.sprites[data2.eyeSprites + 1].element.name : null,
 
                 blackSalamander = graphicsModule.blackSalamander,
 
@@ -1394,7 +1398,7 @@ public class ShadowOfLizards : BaseUnityPlugin
                 BloodEmitter();
 
             if (graphicstorage.TryGetValue(graphicsModule, out GraphicsData data3))
-                (lizCutHeadAbstract.realizedObject as LizCutHead).ElectricColorTimer = data3.ElectricColorTimer;
+                (lizCutHeadAbstract.realizedObject as LizCutHead).electricColorTimer = data3.electricColorTimer;
 
             if (ShadowOfOptions.debug_logs.Value)
                 Debug.Log(all + self.ToString() + "'s Cut Head Object was Created");
@@ -1432,24 +1436,24 @@ public class ShadowOfLizards : BaseUnityPlugin
 
             LizCutEyeAbstract lizCutEyeAbstract = new(self.room.world, pos, self.room.game.GetNewID())
             {
-                BodyColourR = graphicsModule.BodyColor(0f).r,
-                BodyColourG = graphicsModule.BodyColor(0f).g,
-                BodyColourB = graphicsModule.BodyColor(0f).b,
+                bodyColourR = graphicsModule.BodyColor(0f).r,
+                bodyColourG = graphicsModule.BodyColor(0f).g,
+                bodyColourB = graphicsModule.BodyColor(0f).b,
 
-                BloodColourR = bloodColour ? bloodcolours[self.Template.type.ToString()].r : isSalamander ? graphicsModule.SalamanderColor.r : graphicsModule.effectColor.r,
-                BloodColourG = bloodColour ? bloodcolours[self.Template.type.ToString()].g : isSalamander ? graphicsModule.SalamanderColor.g : graphicsModule.effectColor.g,
-                BloodColourB = bloodColour ? bloodcolours[self.Template.type.ToString()].b : isSalamander ? graphicsModule.SalamanderColor.b : graphicsModule.effectColor.b,
+                bloodColourR = bloodColour ? bloodcolours[self.Template.type.ToString()].r : isSalamander ? graphicsModule.SalamanderColor.r : graphicsModule.effectColor.r,
+                bloodColourG = bloodColour ? bloodcolours[self.Template.type.ToString()].g : isSalamander ? graphicsModule.SalamanderColor.g : graphicsModule.effectColor.g,
+                bloodColourB = bloodColour ? bloodcolours[self.Template.type.ToString()].b : isSalamander ? graphicsModule.SalamanderColor.b : graphicsModule.effectColor.b,
 
-                EyeColourR = rightEye ? data.sLeaser.sprites[data2.EyesSprites].color.r : data.sLeaser.sprites[data2.EyesSprites + 1].color.r,
-                EyeColourG = rightEye ? data.sLeaser.sprites[data2.EyesSprites].color.g : data.sLeaser.sprites[data2.EyesSprites + 1].color.g,
-                EyeColourB = rightEye ? data.sLeaser.sprites[data2.EyesSprites].color.b : data.sLeaser.sprites[data2.EyesSprites + 1].color.b
+                eyeColourR = rightEye ? data.sLeaser.sprites[data2.eyeSprites].color.r : data.sLeaser.sprites[data2.eyeSprites + 1].color.r,
+                eyeColourG = rightEye ? data.sLeaser.sprites[data2.eyeSprites].color.g : data.sLeaser.sprites[data2.eyeSprites + 1].color.g,
+                eyeColourB = rightEye ? data.sLeaser.sprites[data2.eyeSprites].color.b : data.sLeaser.sprites[data2.eyeSprites + 1].color.b
             };
 
             self.room.abstractRoom.AddEntity(lizCutEyeAbstract);
             lizCutEyeAbstract.RealizeInRoom();
 
             if (bloodModCheck && ShadowOfOptions.blood_emitter.Value)
-                EyeCutBloodEmitter(self, new Color(lizCutEyeAbstract.BloodColourR, lizCutEyeAbstract.BloodColourG, lizCutEyeAbstract.BloodColourB));
+                EyeCutBloodEmitter(self, new Color(lizCutEyeAbstract.bloodColourR, lizCutEyeAbstract.bloodColourG, lizCutEyeAbstract.bloodColourB));
 
             if (ShadowOfOptions.debug_logs.Value)
                 Debug.Log(all + self.ToString() + "'s Cut Eye Object was Created");

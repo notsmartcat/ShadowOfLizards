@@ -289,7 +289,7 @@ internal class TransformationMelted
 
                 for (int i = 0; i < 6; i++)
                 {
-                    if (data.ArmState[i] != "Normal" && Random.value < 0.015f)
+                    if (data.armState[i] != "Normal" && Random.value < 0.015f)
                     {
                         self.room.AddObject(new LizardSpit(graphicsModule.limbs[0].pos, new Vector2(0f, 0f), self));
                     }        

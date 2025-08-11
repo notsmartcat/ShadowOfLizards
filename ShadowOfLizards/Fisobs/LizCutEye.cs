@@ -11,15 +11,13 @@ sealed class LizCutEye : PlayerCarryableItem, IDrawable
     private float lastDarkness = -1f;
     private float darkness;
 
-    private RoomPalette palette;
-
-    private Color BodyColour;
-    private Color BloodColour;
-    private Color EyeColour;
+    private Color bodyColour;
+    private Color bloodColour;
+    private Color eyeColour;
 
     private bool bump;
 
-    private Vector2[,,] cords;
+    private readonly Vector2[,,] cords;
 
     private bool lastGrabbed;
 
@@ -99,9 +97,9 @@ sealed class LizCutEye : PlayerCarryableItem, IDrawable
 
     public void InitiateSprites(SpriteLeaser sLeaser, RoomCamera rCam)
     {
-        BodyColour = new Color(Abstr.BodyColourR, Abstr.BodyColourG, Abstr.BodyColourB);
-        BloodColour = new Color(Abstr.BloodColourR, Abstr.BloodColourG, Abstr.BloodColourB);
-        EyeColour = new Color(Abstr.EyeColourR, Abstr.EyeColourG, Abstr.EyeColourB);
+        bodyColour = new Color(Abstr.bodyColourR, Abstr.bodyColourG, Abstr.bodyColourB);
+        bloodColour = new Color(Abstr.bloodColourR, Abstr.bloodColourG, Abstr.bloodColourB);
+        eyeColour = new Color(Abstr.eyeColourR, Abstr.eyeColourG, Abstr.eyeColourB);
 
         sLeaser.sprites = new FSprite[5];
         sLeaser.sprites[0] = new FSprite("mouseEyeA1", true)
@@ -157,9 +155,9 @@ sealed class LizCutEye : PlayerCarryableItem, IDrawable
         sLeaser.sprites[0].rotation = Custom.VecToDeg(vector2);
         sLeaser.sprites[1].rotation = Custom.VecToDeg(vector2);
         sLeaser.sprites[4].rotation = Custom.VecToDeg(vector2);
-        sLeaser.sprites[0].color = BodyColour;
-        sLeaser.sprites[1].color = BloodColour;
-        sLeaser.sprites[4].color = EyeColour;
+        sLeaser.sprites[0].color = bodyColour;
+        sLeaser.sprites[1].color = bloodColour;
+        sLeaser.sprites[4].color = eyeColour;
 
         if (blink > 0 && Random.value < 0.5f)
         {
@@ -189,7 +187,7 @@ sealed class LizCutEye : PlayerCarryableItem, IDrawable
                 }
                 ((TriangleMesh)sLeaser.sprites[2 + i]).MoveVertice(j * 4 + 2, vector5 - a * 0.5f - normalized * d - camPos);
                 ((TriangleMesh)sLeaser.sprites[2 + i]).MoveVertice(j * 4 + 3, vector5 + a * 0.5f - normalized * d - camPos);
-                ((TriangleMesh)sLeaser.sprites[2 + i]).color = BloodColour;
+                ((TriangleMesh)sLeaser.sprites[2 + i]).color = bloodColour;
                 vector4 = vector5;
             }
         }
@@ -201,7 +199,6 @@ sealed class LizCutEye : PlayerCarryableItem, IDrawable
 
     public void ApplyPalette(SpriteLeaser sLeaser, RoomCamera rCam, RoomPalette palette)
     {
-        this.palette = palette;
     }
 
     public void AddToContainer(SpriteLeaser sLeaser, RoomCamera rCam, FContainer newContainer)

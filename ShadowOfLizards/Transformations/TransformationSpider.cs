@@ -11,8 +11,8 @@ internal class TransformationSpider
     public static void Apply()
     {
         On.Spider.ConsiderPrey += SpiderConsiderPrey;
-        On.Spider.Move_Vector2 += SpiderLegMove;
-        On.Spider.FormCentipede += SpiderLegStopCentipede;
+        On.Spider.Move_Vector2 += spiderLegMove;
+        On.Spider.FormCentipede += spiderLegStopCentipede;
     }
 
     #region Spit
@@ -64,9 +64,9 @@ internal class TransformationSpider
                 data.liz.Add("SpiderNumber", "0");
             }
 
-            if (data.Beheaded == false && data.transformation != "SpiderTransformation")
+            if (data.beheaded == false && data.transformation != "SpiderTransformation")
             {
-                data.Beheaded = true;
+                data.beheaded = true;
                 Decapitation(self);
             }
             data.transformation = "Null";
@@ -151,9 +151,9 @@ internal class TransformationSpider
         return (!ShadowOfOptions.spider_transformation.Value || crit == null || crit is not Lizard || !lizardstorage.TryGetValue(crit.abstractCreature, out LizardData data) || (data.transformation != "Spider" && data.transformation != "SpiderTransformation")) && orig.Invoke(self, crit);
     }
 
-    static void SpiderLegMove(On.Spider.orig_Move_Vector2 orig, Spider self, Vector2 dest)
+    static void spiderLegMove(On.Spider.orig_Move_Vector2 orig, Spider self, Vector2 dest)
     {
-        if (ShadowOfOptions.spider_transformation.Value && SpidLeg.TryGetValue(self, out SpiderAsLeg data) && data.liz != null && !data.liz.dead && self.room == data.liz.room)
+        if (ShadowOfOptions.spider_transformation.Value && spidLeg.TryGetValue(self, out SpiderAsLeg data) && data.liz != null && !data.liz.dead && self.room == data.liz.room)
         {
             self.moving = false;
             return;
@@ -161,9 +161,9 @@ internal class TransformationSpider
         orig.Invoke(self, dest);
     }
 
-    static void SpiderLegStopCentipede(On.Spider.orig_FormCentipede orig, Spider self, Spider otherSpider)
+    static void spiderLegStopCentipede(On.Spider.orig_FormCentipede orig, Spider self, Spider otherSpider)
     {
-        if (!ShadowOfOptions.spider_transformation.Value || !SpidLeg.TryGetValue(self, out SpiderAsLeg data) || data.liz == null || data.liz.dead)
+        if (!ShadowOfOptions.spider_transformation.Value || !spidLeg.TryGetValue(self, out SpiderAsLeg data) || data.liz == null || data.liz.dead)
         {
             orig.Invoke(self, otherSpider);
         }
@@ -230,9 +230,9 @@ internal class TransformationSpider
             int armNo = i - self.SpriteLimbsStart;
 
             Vector2 bodyPos = self.lizard.bodyChunks[(armNo != 2 || armNo != 3) ? 1 : 2].pos;
-            string ArmState = data.ArmState[armNo];
+            string armState = data.armState[armNo];
 
-            if (ArmState != "Spider")
+            if (armState != "Spider")
             {
                 continue;
             }
@@ -273,8 +273,8 @@ internal class TransformationSpider
                     spid.RealizeInRoom();
                     ((Spider)spid.realizedCreature).bloodLust = 0f;
 
-                    SpidLeg.Add((Spider)spid.realizedCreature, new ShadowOfLizards.SpiderAsLeg());
-                    SpidLeg.TryGetValue((Spider)spid.realizedCreature, out SpiderAsLeg spidData);
+                    spidLeg.Add((Spider)spid.realizedCreature, new ShadowOfLizards.SpiderAsLeg());
+                    spidLeg.TryGetValue((Spider)spid.realizedCreature, out SpiderAsLeg spidData);
 
                     spidData.liz = self.lizard;
                     data.legSpiders[armNo].Add((Spider)spid.realizedCreature);
@@ -293,7 +293,7 @@ internal class TransformationSpider
                     }
                     else if (data.legSpiders[armNo].Count != 0 && data.legSpiders[armNo].Count < 5 && data.legSpiders[armNo][n] != null)
                     {
-                        SpidLeg.Remove((Spider)data.legSpiders[armNo][n]);
+                        spidLeg.Remove((Spider)data.legSpiders[armNo][n]);
 
                         ((Spider)data.legSpiders[armNo][n].abstractCreature.realizedCreature).bloodLust = 1f;
                         data.legSpiders[armNo].RemoveAt(n);

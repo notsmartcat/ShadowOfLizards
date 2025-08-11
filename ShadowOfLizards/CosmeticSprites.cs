@@ -11,7 +11,7 @@ public class BrokenTooth : CosmeticSprite
     private Color colour;
     private Color rootColour;
 
-    public int ElectricColorTimer = 0;
+    public int electricColorTimer = 0;
 
     private readonly string spriteName;
 
@@ -184,9 +184,9 @@ public class BrokenTooth : CosmeticSprite
         darkness *= 1f - 0.5f * rCam.room.LightSourceExposure(vector);
         Vector2 vector2 = Custom.DegToVec(Mathf.Lerp(lastZRotation, zRotation, timeStacker));
 
-        if (ElectricColorTimer > 0)
+        if (electricColorTimer > 0)
         {
-            ElectricColorTimer--;
+            electricColorTimer--;
         }
 
         for (int i = 0; i < sLeaser.sprites.Length; i++)
@@ -213,7 +213,7 @@ public class BrokenTooth : CosmeticSprite
 
         if (isCyan)
         {
-            sLeaser.sprites[0].color = ElectricColorTimer > 0 ? ElectricColor(HeadColor(timeStacker)) : HeadColor(timeStacker);
+            sLeaser.sprites[0].color = electricColorTimer > 0 ? ElectricColor(HeadColor(timeStacker)) : HeadColor(timeStacker);
         }
 
         if (num > 0.3f)
@@ -239,7 +239,7 @@ public class BrokenTooth : CosmeticSprite
 
     Color ElectricColor(Color col)
     {
-        return Color.Lerp(col, new Color(0.7f, 0.7f, 1f), (float)ElectricColorTimer / 50f);
+        return Color.Lerp(col, new Color(0.7f, 0.7f, 1f), (float)electricColorTimer / 50f);
     }
 
     public Color HeadColor(float timeStacker)

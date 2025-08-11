@@ -27,19 +27,19 @@ sealed class LizCutEyeFisobs : Fisob
 
         return new LizCutEyeAbstract(world, saveData.Pos, saveData.ID)
         {
-            BodyColourR = float.TryParse(array[0], out float efr) ? efr : 1f,
-            BodyColourG = float.TryParse(array[1], out float efg) ? efg : 1f,
-            BodyColourB = float.TryParse(array[2], out float efb) ? efb : 0f,
+            bodyColourR = float.TryParse(array[0], out float efr) ? efr : 1f,
+            bodyColourG = float.TryParse(array[1], out float efg) ? efg : 1f,
+            bodyColourB = float.TryParse(array[2], out float efb) ? efb : 0f,
 
-            BloodColourR = float.TryParse(array[3], out float br) ? br : -1f,
-            BloodColourG = float.TryParse(array[4], out float bg) ? bg : -1f,
-            BloodColourB = float.TryParse(array[5], out float bb) ? bb : -1f,
+            bloodColourR = float.TryParse(array[3], out float br) ? br : -1f,
+            bloodColourG = float.TryParse(array[4], out float bg) ? bg : -1f,
+            bloodColourB = float.TryParse(array[5], out float bb) ? bb : -1f,
 
-            EyeColourR = float.TryParse(array[6], out float er) ? er : 0f,
-            EyeColourG = float.TryParse(array[7], out float eg) ? eg : 0f,
-            EyeColourB = float.TryParse(array[8], out float eb) ? eb : 1f,
+            eyeColourR = float.TryParse(array[6], out float er) ? er : 0f,
+            eyeColourG = float.TryParse(array[7], out float eg) ? eg : 0f,
+            eyeColourB = float.TryParse(array[8], out float eb) ? eb : 1f,
 
-            LizBreed = string.IsNullOrEmpty(array[9]) ? "GreenLizard" : array[9]
+            breed = string.IsNullOrEmpty(array[9]) ? "GreenLizard" : array[9]
         };
     }
 

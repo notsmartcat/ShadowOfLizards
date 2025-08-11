@@ -10,22 +10,22 @@ internal sealed class LizCutLegAbstract : AbstractPhysicalObject
     public float scaleX;
     public float scaleY;
 
-    public string LizBreed;
+    public string breed;
 
-    public float LizBodyColourR;
-    public float LizBodyColourG;
-    public float LizBodyColourB;
+    public float bodyColourR;
+    public float bodyColourG;
+    public float bodyColourB;
 
-    public float LizEffectColourR;
-    public float LizEffectColourG;
-    public float LizEffectColourB;
+    public float effectColourR;
+    public float effectColourG;
+    public float effectColourB;
 
-    public float LizBloodColourR;
-    public float LizBloodColourG;
-    public float LizBloodColourB;
+    public float bloodColourR;
+    public float bloodColourG;
+    public float bloodColourB;
 
-    public string LizSpriteName;
-    public string LizColourSpriteName;
+    public string spriteName;
+    public string colourSpriteName;
 
     public bool blackSalamander;
 
@@ -43,6 +43,6 @@ internal sealed class LizCutLegAbstract : AbstractPhysicalObject
 
     public override string ToString()
     {
-        return this.SaveToString($"{hue};{saturation};{scaleX};{scaleY};{LizBreed};{LizBodyColourR};{LizBodyColourG};{LizBodyColourB};{LizEffectColourR};{LizEffectColourG};{LizEffectColourB};{LizBloodColourR};{LizBloodColourG};{LizBloodColourB};{LizSpriteName};{LizColourSpriteName};{blackSalamander};{canCamo}");
+        return this.SaveToString($"{hue};{saturation};{scaleX};{scaleY};{breed};{bodyColourR};{bodyColourG};{bodyColourB};{effectColourR};{effectColourG};{effectColourB};{bloodColourR};{bloodColourG};{bloodColourB};{spriteName};{colourSpriteName};{blackSalamander};{canCamo}");
     }
 }

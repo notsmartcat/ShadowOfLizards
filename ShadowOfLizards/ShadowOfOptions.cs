@@ -368,8 +368,9 @@ public class ShadowOfOptions : OptionInterface
         AddNewLine();
         AddBox();
         AddCheckBox(camo_ability, (string)camo_ability.info.Tags[0]);
-        AddSlider(camo_ability_chance, (string)camo_ability_chance.info.Tags[0], "0%", "100%");
-        DrawCheckBoxAndSliderCombo(ref Tabs[3]);
+        DrawCheckBoxes(ref Tabs[3]);
+        //AddSlider(camo_ability_chance, (string)camo_ability_chance.info.Tags[0], "0%", "100%");
+        //DrawCheckBoxAndSliderCombo(ref Tabs[3]);
         DrawBox(ref Tabs[3]);
         #endregion
 

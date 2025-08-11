@@ -10,35 +10,35 @@ sealed class LizCutHeadAbstract : AbstractPhysicalObject
     public float scaleX;
     public float scaleY;
 
-    public string LizBreed;
+    public string breed;
 
-    public float LizBodyColourR;
-    public float LizBodyColourG;
-    public float LizBodyColourB;
+    public float bodyColourR;
+    public float bodyColourG;
+    public float bodyColourB;
 
-    public float LizEffectColourR;
-    public float LizEffectColourG;
-    public float LizEffectColourB;
+    public float effectColourR;
+    public float effectColourG;
+    public float effectColourB;
 
-    public float LizBloodColourR;
-    public float LizBloodColourG;
-    public float LizBloodColourB;
+    public float bloodColourR;
+    public float bloodColourG;
+    public float bloodColourB;
 
-    public float EyeRightColourR;
-    public float EyeRightColourG;
-    public float EyeRightColourB;
+    public float eyeRightColourR;
+    public float eyeRightColourG;
+    public float eyeRightColourB;
 
-    public float EyeLeftColourR;
-    public float EyeLeftColourG;
-    public float EyeLeftColourB;
+    public float eyeLeftColourR;
+    public float eyeLeftColourG;
+    public float eyeLeftColourB;
 
-    public string HeadSprite0;
-    public string HeadSprite1;
-    public string HeadSprite2;
-    public string HeadSprite3;
-    public string HeadSprite4;
-    public string HeadSprite5;
-    public string HeadSprite6;
+    public string headSprite0;
+    public string headSprite1;
+    public string headSprite2;
+    public string headSprite3;
+    public string headSprite4;
+    public string headSprite5;
+    public string headSprite6;
 
     public bool blackSalamander;
 
@@ -62,6 +62,6 @@ sealed class LizCutHeadAbstract : AbstractPhysicalObject
 
     public override string ToString()
     {
-        return this.SaveToString($"{hue};{saturation};{scaleX};{scaleY};{LizBreed};{LizBodyColourR};{LizBodyColourG};{LizBodyColourB};{LizEffectColourR};{LizEffectColourG};{LizEffectColourB};{EyeRightColourR};{EyeRightColourG};{EyeRightColourB};{EyeLeftColourR};{EyeLeftColourG};{EyeLeftColourB};{HeadSprite0};{HeadSprite1};{HeadSprite2};{HeadSprite3};{HeadSprite4};{HeadSprite5};{HeadSprite6};{blackSalamander};{rad};{mass};{LizBloodColourR};{LizBloodColourG};{LizBloodColourB};{canCamo};{jawOpenAngle};{jawOpenMoveJawsApart}");
+        return this.SaveToString($"{hue};{saturation};{scaleX};{scaleY};{breed};{bodyColourR};{bodyColourG};{bodyColourB};{effectColourR};{effectColourG};{effectColourB};{eyeRightColourR};{eyeRightColourG};{eyeRightColourB};{eyeLeftColourR};{eyeLeftColourG};{eyeLeftColourB};{headSprite0};{headSprite1};{headSprite2};{headSprite3};{headSprite4};{headSprite5};{headSprite6};{blackSalamander};{rad};{mass};{bloodColourR};{bloodColourG};{bloodColourB};{canCamo};{jawOpenAngle};{jawOpenMoveJawsApart}");
     }
 }

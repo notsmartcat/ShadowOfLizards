@@ -27,8 +27,8 @@ sealed class ShadowOfBloodEmitter : BloodEmitter
             }
             else if (this.chunk.owner is LizCutHead cut)
             {
-                creatureColor = cut.LizBloodColour;
-                splatterColor = cut.Abstr.LizBreed;
+                creatureColor = cut.bloodColour;
+                splatterColor = cut.Abstr.breed;
 
                 emitPos = chunk.pos;
                 emitAngle = cut.rotation;

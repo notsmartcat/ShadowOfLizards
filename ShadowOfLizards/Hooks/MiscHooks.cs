@@ -146,10 +146,10 @@ internal class MiscHooks
 
         try
         {
-            if (!singleuse.TryGetValue(self, out OneTimeUseData data2))
+            if (!singleUse.TryGetValue(self, out OneTimeUseData data2))
             {
-                singleuse.Add(self, new OneTimeUseData());
-                singleuse.TryGetValue(self, out OneTimeUseData dat);
+                singleUse.Add(self, new OneTimeUseData());
+                singleUse.TryGetValue(self, out OneTimeUseData dat);
                 data2 = dat;
             }
 
@@ -221,10 +221,10 @@ internal class MiscHooks
 
         try
         {
-            if (!singleuse.TryGetValue(self.sourceObject, out OneTimeUseData data2))
+            if (!singleUse.TryGetValue(self.sourceObject, out OneTimeUseData data2))
             {
-                singleuse.Add(self.sourceObject, new OneTimeUseData());
-                singleuse.TryGetValue(self.sourceObject, out OneTimeUseData dat);
+                singleUse.Add(self.sourceObject, new OneTimeUseData());
+                singleUse.TryGetValue(self.sourceObject, out OneTimeUseData dat);
                 data2 = dat;
             }
 

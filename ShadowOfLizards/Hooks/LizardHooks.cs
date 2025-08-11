@@ -52,7 +52,7 @@ internal class LizardHooks
             if (ShadowOfOptions.debug_logs.Value)
                 Debug.Log(all + "First time creating Abstract " + self);
 
-            data.Beheaded = false;
+            data.beheaded = false;
 
             if (ShadowOfOptions.dynamic_cheat_death.Value)
             {
@@ -71,7 +71,7 @@ internal class LizardHooks
 
             for (int i = 0; i < (ModManager.DLCShared && creatureTemplate.type == DLCSharedEnums.CreatureTemplateType.SpitLizard ? 6 : 4); i++)
             {
-                data.ArmState.Add("Normal");
+                data.armState.Add("Normal");
             }
 
             LizardBreedParams breedParameters = creatureTemplate.breedParameters as LizardBreedParams;
@@ -177,14 +177,14 @@ internal class LizardHooks
 
             Dictionary<string, string> savedData = self.unrecognizedSaveStrings;
 
-            if (savedData.TryGetValue("ShadowOfBeheaded", out string beheaded)) //Loads info from the Lizard
+            if (savedData.TryGetValue("ShadowOfbeheaded", out string beheaded)) //Loads info from the Lizard
             {
                 if (ShadowOfOptions.debug_logs.Value)
                     Debug.Log(all + "Not the first time creating Abstract " + self.creature + " Loading values for Abstract");
 
                 if (beheaded == "Gore")
                 {
-                    savedData.Remove("ShadowOfBeheaded");
+                    savedData.Remove("ShadowOfbeheaded");
 
                     if (savedData.ContainsKey("ShadowOfLiz"))
                     {
@@ -215,27 +215,27 @@ internal class LizardHooks
                         savedData.Remove("ShadowOfLiz");
                     }
 
-                    if (savedData.ContainsKey("ShadowOfArmState"))
+                    if (savedData.ContainsKey("ShadowOfarmState"))
                     {
-                        data.ArmState.Clear();
+                        data.armState.Clear();
 
-                        string ArmStateTemp = "";
-                        for (int i = 0; i < savedData["ShadowOfArmState"].Length; i++)
+                        string armStateTemp = "";
+                        for (int i = 0; i < savedData["ShadowOfarmState"].Length; i++)
                         {
-                            char letter = savedData["ShadowOfArmState"][i];
+                            char letter = savedData["ShadowOfarmState"][i];
 
                             if (letter.ToString() == ";")
                             {
-                                data.ArmState.Add(ArmStateTemp);
+                                data.armState.Add(armStateTemp);
 
-                                ArmStateTemp = "";
+                                armStateTemp = "";
                             }
                             else
                             {
-                                ArmStateTemp += letter;
+                                armStateTemp += letter;
                             }
                         }
-                        savedData.Remove("ShadowOfArmState");
+                        savedData.Remove("ShadowOfarmState");
                     }
 
                     if (savedData.ContainsKey("ShadowOfTransformation"))
@@ -270,17 +270,17 @@ internal class LizardHooks
 
                     if (ShadowOfOptions.debug_logs.Value)
                     {
-                        Debug.Log(all + self.creature + " beheaded = " + data.Beheaded);
+                        Debug.Log(all + self.creature + " beheaded = " + data.beheaded);
                         Debug.Log(all + self.creature + " bodyChunks = " + data.availableBodychunks);
                         Debug.Log(all + self.creature + " transformation = " + data.transformation);
-                        Debug.Log(all + self.creature + " armState = " + data.ArmState);
+                        Debug.Log(all + self.creature + " armState = " + data.armState);
                     }
 
                     return;
                 }
 
-                data.Beheaded = beheaded == "True";
-                savedData.Remove("ShadowOfBeheaded");
+                data.beheaded = beheaded == "True";
+                savedData.Remove("ShadowOfbeheaded");
 
                 if (savedData.ContainsKey("ShadowOfLiz"))
                 {
@@ -311,27 +311,27 @@ internal class LizardHooks
                     savedData.Remove("ShadowOfLiz");
                 }
 
-                if (savedData.ContainsKey("ShadowOfArmState"))
+                if (savedData.ContainsKey("ShadowOfarmState"))
                 {
-                    data.ArmState.Clear();
+                    data.armState.Clear();
 
-                    string ArmStateTemp = "";
-                    for (int i = 0; i < savedData["ShadowOfArmState"].Length; i++)
+                    string armStateTemp = "";
+                    for (int i = 0; i < savedData["ShadowOfarmState"].Length; i++)
                     {
-                        char letter = savedData["ShadowOfArmState"][i];
+                        char letter = savedData["ShadowOfarmState"][i];
 
                         if (letter.ToString() == ";")
                         {
-                            data.ArmState.Add(ArmStateTemp);
+                            data.armState.Add(armStateTemp);
 
-                            ArmStateTemp = "";
+                            armStateTemp = "";
                         }
                         else
                         {
-                            ArmStateTemp += letter;
+                            armStateTemp += letter;
                         }
                     }
-                    savedData.Remove("ShadowOfArmState");
+                    savedData.Remove("ShadowOfarmState");
                 }
 
                 if (savedData.ContainsKey("ShadowOfTransformation"))
@@ -500,18 +500,20 @@ internal class LizardHooks
 
                 if (ShadowOfOptions.debug_logs.Value)
                 {
-                    Debug.Log(all + self.creature + " beheaded = " + data.Beheaded);
+                    Debug.Log(all + self.creature + " beheaded = " + data.beheaded);
                     Debug.Log(all + self.creature + " lizDictionary = " + data.liz);
                     Debug.Log(all + self.creature + " bodyChunks = " + data.availableBodychunks);
                     Debug.Log(all + self.creature + " transformation = " + data.transformation);
                     Debug.Log(all + self.creature + " transformationTimer = " + data.transformationTimer);
-                    Debug.Log(all + self.creature + " armState = " + data.ArmState);
+                    Debug.Log(all + self.creature + " armState = " + data.armState);
                     Debug.Log(all + self.creature + " updatedCycle = " + data.lizardUpdatedCycle);
                     Debug.Log(all + self.creature + " cheatDeathChance = " + data.cheatDeathChance);
                     if (ModManager.Watcher)
                     {
-                        Debug.Log(all + self.creature + " cutAppendage = " + data.cutAppendage);
-                        Debug.Log(all + self.creature + " cutAppendageCycle = " + data.cutAppendageCycle);
+                        if(data.cutAppendage.Count > 0)
+                            Debug.Log(all + self.creature + " cutAppendage = " + data.cutAppendage);
+                        if (data.cutAppendageCycle.Count > 0)
+                            Debug.Log(all + self.creature + " cutAppendageCycle = " + data.cutAppendageCycle);
                     }
                 }
 
@@ -538,29 +540,29 @@ internal class LizardHooks
 
                 if (ShadowOfOptions.dismemberment.Value && !TempavailableBodychunks.Contains(2) && (!ModManager.DLCShared || creatureTemplate.type != DLCSharedEnums.CreatureTemplateType.EelLizard) && !data.actuallyDead)
                 {
-                    data.ArmState[2] = "Normal";
-                    data.ArmState[3] = "Normal";
+                    data.armState[2] = "Normal";
+                    data.armState[3] = "Normal";
                 }
                 
-                if (ShadowOfOptions.decapitation.Value && data.Beheaded == true && !data.actuallyDead)
+                if (ShadowOfOptions.decapitation.Value && data.beheaded == true && !data.actuallyDead)
                 {
-                    if (!data.liz.TryGetValue("BeheadedCycle", out string beheadedCycle))
+                    if (!data.liz.TryGetValue("beheadedCycle", out string beheadedCycle))
                     {
-                        data.liz["BeheadedCycle"] = cycleNumber.ToString();
+                        data.liz["beheadedCycle"] = cycleNumber.ToString();
                     }
                     else if (beheadedCycle != cycleNumber.ToString())
                     {
-                        data.Beheaded = false;
+                        data.beheaded = false;
 
-                        data.liz.Remove("BeheadedCycle");
+                        data.liz.Remove("beheadedCycle");
 
                         if (ShadowOfOptions.debug_logs.Value)
                             Debug.Log(all + self.creature + " gained back it's head");
                     }
                 } //Add Head Back if next cycle
-                else if (data.liz.ContainsKey("BeheadedCycle"))
+                else if (data.liz.ContainsKey("beheadedCycle"))
                 {
-                    data.liz.Remove("BeheadedCycle");
+                    data.liz.Remove("beheadedCycle");
                 }
             }
 
@@ -828,9 +830,9 @@ internal class LizardHooks
                 {
                     for (int i = 0; i < 6; i++)
                     {
-                        if (data.ArmState[i] == "Cut1" || data.ArmState[i] == "Cut2")
+                        if (data.armState[i] == "Cut1" || data.armState[i] == "Cut2")
                         {
-                            data.ArmState[i] = "Spider";
+                            data.armState[i] = "Spider";
                         }
                     }
 
@@ -1567,7 +1569,7 @@ internal class LizardHooks
 
     static void LizardViolence(On.Lizard.orig_Violence orig, Lizard self, BodyChunk source, Vector2? directionAndMomentum, BodyChunk hitChunk, PhysicalObject.Appendage.Pos onAppendagePos, Creature.DamageType type, float damage, float stunBonus)
     {
-        if (!lizardstorage.TryGetValue(self.abstractCreature, out LizardData data))
+        if (!lizardstorage.TryGetValue(self.abstractCreature, out LizardData data) || type == null)
         {
             orig(self, source, directionAndMomentum, hitChunk, onAppendagePos, type, damage, stunBonus);
             return;
@@ -1605,7 +1607,7 @@ internal class LizardHooks
 
             float multiplier = ShadowOfOptions.damage_based_chance.Value ? damage : 1;
 
-            if (onAppendagePos != null && sourceValidTypeFlag && (type == Creature.DamageType.Stab || type == Creature.DamageType.Bite) && (true || ShadowOfOptions.dismemberment.Value && HealthBasedChance(self, ShadowOfOptions.dismemberment_chance.Value * multiplier, "Dismembernment")))
+            if (ShadowOfOptions.dismemberment.Value && onAppendagePos != null && sourceValidTypeFlag && (type == Creature.DamageType.Stab || type == Creature.DamageType.Bite) && HealthBasedChance(self, ShadowOfOptions.dismemberment_chance.Value * multiplier, "Dismembernment"))
             {
                 if (!TransformationRot.InnactiveTentacleCheck(data, onAppendagePos.appendage.appIndex, CycleNum(self.abstractCreature)))
                 {
@@ -1619,10 +1621,12 @@ internal class LizardHooks
                     if (ShadowOfOptions.debug_logs.Value)
                         Debug.Log(onAppendagePos.appendage.appIndex + " appendage was cut down to size " + data.cutAppendage[onAppendagePos.appendage.appIndex]);
 
-                    if (source.owner is Spear spear)
+                    if (sourceOwnerFlag && source.owner is Spear spear)
                     {
                         data.spearList.Add(spear);
                     }
+
+                    return;
                 }
             }
 
@@ -1633,7 +1637,7 @@ internal class LizardHooks
 
             if (hitChunk.index == 0)
             {
-                if (data.Beheaded != true && hitChunk.index == 0)
+                if (data.beheaded != true && hitChunk.index == 0)
                 {
                     if (LizHitHeadShield(directionAndMomentum.Value))
                     {
@@ -1826,7 +1830,7 @@ internal class LizardHooks
 
                                         if (self.Template.type == CreatureTemplate.Type.CyanLizard && graphicstorage.TryGetValue(self.graphicsModule as LizardGraphics, out GraphicsData data3))
                                         {
-                                            brokenTooth.ElectricColorTimer = data3.ElectricColorTimer;
+                                            brokenTooth.electricColorTimer = data3.electricColorTimer;
                                         }
                                     }
                                 }
@@ -1841,7 +1845,7 @@ internal class LizardHooks
                             if (ShadowOfOptions.debug_logs.Value)
                                 Debug.Log(all + self.ToString() + " had it's Head cut by an explosion");
 
-                            data.Beheaded = true;
+                            data.beheaded = true;
                             Decapitation(self);
                             self.Die();
                         }
@@ -1866,28 +1870,28 @@ internal class LizardHooks
                                 if (ShadowOfOptions.dynamic_cheat_death.Value)
                                     data.cheatDeathChance -= 5;
 
-                                if (source.owner is Spear spear)
+                                if (sourceOwnerFlag && source.owner is Spear spear)
                                 {
                                     data.spearList.Add(spear);
                                 }
                             }
                         }
                     }
-                    else if (ShadowOfOptions.decapitation.Value && data.Beheaded == false && data.lastDamageType != "Melted" && type != Creature.DamageType.Blunt)
+                    else if (ShadowOfOptions.decapitation.Value && data.beheaded == false && data.lastDamageType != "Melted" && type != Creature.DamageType.Blunt)
                     {
                         if (ShadowOfOptions.debug_logs.Value)
                             Debug.Log(all + self.ToString() + " was hit it's Neck");
 
                         if (HealthBasedChance(self, ShadowOfOptions.decapitation_chance.Value * multiplier, "Decapitation"))
                         {
-                            data.Beheaded = true;
+                            data.beheaded = true;
                             Decapitation(self);
 
                             PreViolenceCheck(self, data);
                             self.Die();
                             PostViolenceCheck(self, data, type.ToString(), sourceOwnerFlag && source.owner is Creature crit2 ? crit2 : null);
 
-                            if (source.owner is Spear spear)
+                            if (sourceOwnerFlag && source.owner is Spear spear)
                             {
                                 data.spearList.Add(spear);
                             }
@@ -1895,19 +1899,19 @@ internal class LizardHooks
                     }
                 }
             } //Hitting Head
-            else if (hitChunk.index == 1 && ShadowOfOptions.decapitation.Value && data.Beheaded == false && sourceOwnerFlag && source.owner is Spear && Vector2.Dot(source.pos - self.bodyChunks[1].pos, self.bodyChunks[0].pos - self.bodyChunks[1].pos) > 0f && HealthBasedChance(self, ShadowOfOptions.decapitation_chance.Value * multiplier, "Decapitation"))
+            else if (hitChunk.index == 1 && ShadowOfOptions.decapitation.Value && data.beheaded == false && sourceOwnerFlag && source.owner is Spear && Vector2.Dot(source.pos - self.bodyChunks[1].pos, self.bodyChunks[0].pos - self.bodyChunks[1].pos) > 0f && HealthBasedChance(self, ShadowOfOptions.decapitation_chance.Value * multiplier, "Decapitation"))
             {
                 if (ShadowOfOptions.debug_logs.Value)
                     Debug.Log(all + self.ToString() + " was hit it's Neck through bodychunk 1");
 
-                data.Beheaded = true;
+                data.beheaded = true;
                 Decapitation(self);
 
                 PreViolenceCheck(self, data);
                 self.Die();
                 PostViolenceCheck(self, data, type.ToString(), sourceOwnerFlag && source.owner is Creature crit2 ? crit2 : null);
 
-                if (source.owner is Spear spear)
+                if (sourceOwnerFlag && source.owner is Spear spear)
                 {
                     data.spearList.Add(spear);
                 }
@@ -1924,7 +1928,7 @@ internal class LizardHooks
                         num8 = (num5 < 0f) ? 0 : 1;
                         int num9 = (num5 < 0f) ? 2 : 3;
 
-                        if (data.ArmState[num8] == "Normal")
+                        if (data.armState[num8] == "Normal")
                         {
                             EllLegCut(num8, num9, num8);
                         }
@@ -1937,11 +1941,11 @@ internal class LizardHooks
                         num8 = (num5 < 0f) ? 4 : 5;
                         int num9 = (num5 < 0f) ? 2 : 3;
 
-                        if (UnityEngine.Random.value < 0.75 && data.ArmState[num8] == "Normal")
+                        if (UnityEngine.Random.value < 0.75 && data.armState[num8] == "Normal")
                         {
                             LegCut(num8, num8);
                         }
-                        else if (data.ArmState[num9] == "Normal")
+                        else if (data.armState[num9] == "Normal")
                         {
                             LegCut(num9, num9);
                         }
@@ -1951,11 +1955,11 @@ internal class LizardHooks
                         num8 = (num5 < 0f) ? 0 : 1;
                         int num10 = (num5 < 0f) ? 2 : 3;
 
-                        if (!data.isGoreHalf && UnityEngine.Random.value < 0.75 && data.ArmState[num8] == "Normal")
+                        if (!data.isGoreHalf && UnityEngine.Random.value < 0.75 && data.armState[num8] == "Normal")
                         {
                             LegCut(num8, num8);
                         }
-                        else if (data.ArmState[num10] == "Normal")
+                        else if (data.armState[num10] == "Normal")
                         {
                             LegCut(num10, num10);
                         }
@@ -1967,7 +1971,7 @@ internal class LizardHooks
                     {
                         num8 = (num5 < 0f) ? 0 : 1;
 
-                        if (data.ArmState[num8] == "Normal")
+                        if (data.armState[num8] == "Normal")
                         {
                             LegCut(num8, num8);
                         }
@@ -1976,7 +1980,7 @@ internal class LizardHooks
                     {
                         num8 = (num5 < 0f) ? 2 : 3;
 
-                        if (data.ArmState[num8] == "Normal")
+                        if (data.armState[num8] == "Normal")
                         {
                             LegCut(num8, num8);
                         }
@@ -1991,7 +1995,7 @@ internal class LizardHooks
                 self.Die();
                 PostViolenceCheck(self, data, type.ToString(), sourceOwnerFlag && source.owner is Creature crit2 ? crit2 : null);
 
-                if (source.owner is Spear spear)
+                if (sourceOwnerFlag && source.owner is Spear spear)
                 {
                     data.spearList.Add(spear);
                 }
@@ -2010,13 +2014,13 @@ internal class LizardHooks
         {
             bool a = UnityEngine.Random.Range(0, 2) == 0;
 
-            data.ArmState[FirstLeg] = a ? "Cut1" : "Cut2";
-            data.ArmState[SecondLeg] = a ? "Cut1" : "Cut2";
+            data.armState[FirstLeg] = a ? "Cut1" : "Cut2";
+            data.armState[SecondLeg] = a ? "Cut1" : "Cut2";
 
             if (ShadowOfOptions.debug_logs.Value)
                 Debug.Log(all + self.ToString() + " limb cut " + int1);
 
-            if (source.owner is Spear spear)
+            if (source != null && source.owner != null && source.owner is Spear spear)
             {
                 data.spearList.Add(spear);
             }
@@ -2024,17 +2028,17 @@ internal class LizardHooks
             if (ShadowOfOptions.climb_ability.Value)
                 ClimbLoss();
 
-            LimbCut(self, data, hitChunk, int1, data.ArmState[FirstLeg]);
+            LimbCut(self, data, hitChunk, int1, data.armState[FirstLeg]);
         }
 
         void LegCut(int Leg, int int1)
         {
-            data.ArmState[Leg] = UnityEngine.Random.Range(0, 2) == 0 ? "Cut1" : "Cut2";
+            data.armState[Leg] = UnityEngine.Random.Range(0, 2) == 0 ? "Cut1" : "Cut2";
 
             if (ShadowOfOptions.debug_logs.Value)
                 Debug.Log(all + self.ToString() + " limb cut " + int1);
 
-            if (source.owner is Spear spear)
+            if (source != null && source.owner != null && source.owner is Spear spear)
             {
                 data.spearList.Add(spear);
             }
@@ -2042,7 +2046,7 @@ internal class LizardHooks
             if (ShadowOfOptions.climb_ability.Value)
                 ClimbLoss();
 
-            LimbCut(self, data, hitChunk, int1, data.ArmState[Leg]);
+            LimbCut(self, data, hitChunk, int1, data.armState[Leg]);
         }
 
         void ClimbLoss()
@@ -2284,9 +2288,9 @@ internal class LizardHooks
             //Limb Health
             if (ShadowOfOptions.dismemberment.Value && self.LizardState != null && self.LizardState.limbHealth != null)
             {
-                for (int i = 0; i < data.ArmState.Count; i++)
+                for (int i = 0; i < data.armState.Count; i++)
                 {
-                    if (data.ArmState[i] != "Normal" && data.ArmState[i] != "Spider")
+                    if (data.armState[i] != "Normal" && data.armState[i] != "Spider")
                     {
                         self.LizardState.limbHealth[i] = 0f;
                     }
@@ -2595,7 +2599,7 @@ internal class LizardHooks
 
     static bool LizardHitHeadShield(On.Lizard.orig_HitHeadShield orig, Lizard self, Vector2 direction)
     {
-        if (lizardstorage.TryGetValue(self.abstractCreature, out LizardData data) && data.Beheaded == true)
+        if (lizardstorage.TryGetValue(self.abstractCreature, out LizardData data) && data.beheaded == true)
         {
             return false;
         }
@@ -2674,7 +2678,7 @@ internal class LizardHooks
 
             if (data.isGoreHalf)
             {
-                savedData["ShadowOfBeheaded"] = "Gore";
+                savedData["ShadowOfbeheaded"] = "Gore";
 
                 string liz = "";
                 for (int i = 0; i < data.liz.Count; i++)
@@ -2693,16 +2697,16 @@ internal class LizardHooks
 
                 savedData["ShadowOfTransformation"] = data.transformation;
 
-                string ArmState = "";
-                for (int i = 0; i < data.ArmState.Count; i++)
+                string armState = "";
+                for (int i = 0; i < data.armState.Count; i++)
                 {
-                    ArmState += data.ArmState[i] + ";";
+                    armState += data.armState[i] + ";";
                 }
-                savedData["ShadowOfArmState"] = ArmState;
+                savedData["ShadowOfarmState"] = armState;
 
                 if (ShadowOfOptions.debug_logs.Value)
                 {
-                    Debug.Log(all + self + " beheaded = " + savedData["ShadowOfBeheaded"]);
+                    Debug.Log(all + self + " beheaded = " + savedData["ShadowOfbeheaded"]);
 
                     Debug.Log(all + self + " lizDictionary = " + savedData["ShadowOfLiz"]);
 
@@ -2710,12 +2714,12 @@ internal class LizardHooks
 
                     Debug.Log(all + self + " transformation = " + savedData["ShadowOfTransformation"]);
 
-                    Debug.Log(all + self + " armState = " + savedData["ShadowOfArmState"]);
+                    Debug.Log(all + self + " armState = " + savedData["ShadowOfarmState"]);
                 } 
             }
             else
             {
-                savedData["ShadowOfBeheaded"] = data.Beheaded ? "True" : "False";
+                savedData["ShadowOfbeheaded"] = data.beheaded ? "True" : "False";
 
                 string liz = "";
                 for (int i = 0; i < data.liz.Count; i++)
@@ -2751,12 +2755,12 @@ internal class LizardHooks
                 savedData["ShadowOfTransformation"] = data.transformation;
                 savedData["ShadowOfTransformationTimer"] = data.transformationTimer.ToString();
 
-                string ArmState = "";
-                for (int i = 0; i < data.ArmState.Count; i++)
+                string armState = "";
+                for (int i = 0; i < data.armState.Count; i++)
                 {
-                    ArmState += data.ArmState[i] + ";";
+                    armState += data.armState[i] + ";";
                 }
-                savedData["ShadowOfArmState"] = ArmState;
+                savedData["ShadowOfarmState"] = armState;
 
                 savedData["ShadowOfLizardUpdatedCycle"] = data.lizardUpdatedCycle.ToString();
 
@@ -2789,7 +2793,7 @@ internal class LizardHooks
 
                 if (ShadowOfOptions.debug_logs.Value)
                 {
-                    Debug.Log(all + self + " beheaded = " + savedData["ShadowOfBeheaded"]);
+                    Debug.Log(all + self + " beheaded = " + savedData["ShadowOfbeheaded"]);
                     Debug.Log(all + self + " lizDictionary = " + savedData["ShadowOfLiz"]);
 
                     Debug.Log(all + self + " cosmeticBodyChunks = " + savedData["ShadowOfCosmeticBodychunks"]);
@@ -2799,7 +2803,7 @@ internal class LizardHooks
                     Debug.Log(all + self + " transformation = " + savedData["ShadowOfTransformation"]);
                     Debug.Log(all + self + " transformationTimer = " + savedData["ShadowOfTransformationTimer"]);
 
-                    Debug.Log(all + self + " armState = " + savedData["ShadowOfArmState"]);
+                    Debug.Log(all + self + " armState = " + savedData["ShadowOfarmState"]);
 
                     Debug.Log(all + self + " updatedCycle = " + savedData["ShadowOfLizardUpdatedCycle"]);
 

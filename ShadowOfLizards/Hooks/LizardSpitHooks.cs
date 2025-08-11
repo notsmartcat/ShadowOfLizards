@@ -31,7 +31,7 @@ internal class LizardSpitHooks
             TransformationMelted.MeltedSpitDraw(self, sLeaser, data);
             return;
         }
-        else if (ShadowOfOptions.electric_transformation.Value && ShadowOfOptions.electric_spit.Value && ShockSpit.TryGetValue(self, out ElectricSpit electricData) && data.transformation == "ElectricTransformation")
+        else if (ShadowOfOptions.electric_transformation.Value && ShadowOfOptions.electric_spit.Value && shockSpit.TryGetValue(self, out ElectricSpit electricData) && data.transformation == "ElectricTransformation")
         {
             TransformationElectric.ElectricSpitDraw(self, sLeaser, electricData);
             return;
@@ -58,7 +58,7 @@ internal class LizardSpitHooks
             TransformationMelted.MeltedSpitUpdate(self);
             return;
         }
-        else if (ShadowOfOptions.electric_transformation.Value && ShadowOfOptions.electric_spit.Value && ShockSpit.TryGetValue(self, out ElectricSpit electricData) && data.transformation == "ElectricTransformation")
+        else if (ShadowOfOptions.electric_transformation.Value && ShadowOfOptions.electric_spit.Value && shockSpit.TryGetValue(self, out ElectricSpit electricData) && data.transformation == "ElectricTransformation")
         {
             TransformationElectric.ElectricSpitUpdate(self, electricData);
             return;

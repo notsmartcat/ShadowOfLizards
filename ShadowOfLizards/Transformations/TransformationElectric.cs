@@ -23,14 +23,14 @@ internal class TransformationElectric
 
     public static void ElectricBubbleDraw( LizardBubble self, RoomCamera.SpriteLeaser sLeaser, float timeStacker, GraphicsData data2, bool camo)
     {
-        if (data2.ElectricColorTimer <= 0)
+        if (data2.electricColorTimer <= 0)
         {
             return;
         }
 
         try
         {
-            Color color = Color.Lerp(self.lizardGraphics.effectColor, new Color(0.7f, 0.7f, 1f), (float)data2.ElectricColorTimer / 50f);
+            Color color = Color.Lerp(self.lizardGraphics.effectColor, new Color(0.7f, 0.7f, 1f), (float)data2.electricColorTimer / 50f);
 
             float num = 1f - Mathf.Pow(0.5f + 0.5f * Mathf.Sin(Mathf.Lerp(self.lizardGraphics.lastBlink, self.lizardGraphics.blink, timeStacker) * 2f * 3.1415927f), 1.5f + self.lizardGraphics.lizard.AI.excitement * 1.5f);
             if (self.lizardGraphics.headColorSetter != 0f)
@@ -111,7 +111,7 @@ internal class TransformationElectric
                 self.room.AddObject(new CreatureSpasmer(self, false, self.stun));
                 self.LoseAllGrasps();
 
-                data2.ElectricColorTimer = Mathf.Min(data2.ElectricColorTimer + 50, 250);;
+                data2.electricColorTimer = Mathf.Min(data2.electricColorTimer + 50, 250);;
             }
 
             if (self.Submersion > 0f)
@@ -147,23 +147,23 @@ internal class TransformationElectric
             return;
         }
 
-        if (!ShockSpit.TryGetValue(self, out ElectricSpit data2))
+        if (!shockSpit.TryGetValue(self, out ElectricSpit data2))
         {
-            ShockSpit.Add(self, new ElectricSpit());
-            ShockSpit.TryGetValue(self, out ElectricSpit dat2);
+            shockSpit.Add(self, new ElectricSpit());
+            shockSpit.TryGetValue(self, out ElectricSpit dat2);
             data2 = dat2;
         }
 
-        data2.ElectricColorTimer = (lizard.graphicsModule != null && graphicstorage.TryGetValue(lizard.graphicsModule as LizardGraphics, out GraphicsData data3)) ? data3.ElectricColorTimer : 0;
+        data2.electricColorTimer = (lizard.graphicsModule != null && graphicstorage.TryGetValue(lizard.graphicsModule as LizardGraphics, out GraphicsData data3)) ? data3.electricColorTimer : 0;
     }
 
     public static void ElectricSpitUpdate(LizardSpit self, ElectricSpit data)
     {
         try
         {
-            if (self.stickChunk != null && self.stickChunk.owner.room == self.room && Custom.DistLess(self.stickChunk.pos, self.pos, self.stickChunk.rad + 40f) && self.fallOff > 0 && !data.Shocked)
+            if (self.stickChunk != null && self.stickChunk.owner.room == self.room && Custom.DistLess(self.stickChunk.pos, self.pos, self.stickChunk.rad + 40f) && self.fallOff > 0 && !data.shocked)
             {
-                data.Shocked = true;
+                data.shocked = true;
 
                 PhysicalObject owner = self.stickChunk.owner;
                 self.room.PlaySound(SoundID.Centipede_Shock, self.pos);
@@ -192,7 +192,7 @@ internal class TransformationElectric
                     self.room.AddObject(new UnderwaterShock(self.room, self.lizard, self.pos, 14, Mathf.Lerp(ModManager.MMF ? 0f : 200f, 1200f, 1400f), 2.1f, self.lizard, new Color(0.7f, 0.7f, 1f)));
                 }
             }
-            if (!data.Shocked)
+            if (!data.shocked)
             {
                 SpitSpark(data, UnityEngine.Random.Range(0, 11), false);
             }
@@ -246,7 +246,7 @@ internal class TransformationElectric
 
                 for (int i = 0; i < number; i++)
                 {
-                    if (UnityEngine.Random.value < (data.ElectricColorTimer == 0 ? 0.025f : 0.025f * (float)data.ElectricColorTimer))
+                    if (UnityEngine.Random.value < (data.electricColorTimer == 0 ? 0.025f : 0.025f * (float)data.electricColorTimer))
                     {
                         Spark();
                     }
@@ -270,12 +270,12 @@ internal class TransformationElectric
                 data.origColor = sLeaser.sprites[self.DotSprite].color;
             }
 
-            if (data.ElectricColorTimer > 0)
+            if (data.electricColorTimer > 0)
             {
                 data.once = true;
-                data.ElectricColorTimer--;
+                data.electricColorTimer--;
 
-                Color color = Color.Lerp(data.origColor, new Color(0.7f, 0.7f, 1f), (float)data.ElectricColorTimer / 50f);
+                Color color = Color.Lerp(data.origColor, new Color(0.7f, 0.7f, 1f), (float)data.electricColorTimer / 50f);
 
                 sLeaser.sprites[self.DotSprite].color = color;
             }
@@ -347,7 +347,7 @@ internal class TransformationElectric
 
             if (self.graphicsModule != null)
             {
-                data.ElectricColorTimer = Mathf.Min(data.ElectricColorTimer + 50, 250);
+                data.electricColorTimer = Mathf.Min(data.electricColorTimer + 50, 250);
                 LizardSpark(self, self.mainBodyChunk, data, 1, true);
             }
 
@@ -389,7 +389,7 @@ internal class TransformationElectric
 
                 if (self.graphicsModule != null)
                 {
-                    data2.ElectricColorTimer = Mathf.Min(data2.ElectricColorTimer + 50, 250);
+                    data2.electricColorTimer = Mathf.Min(data2.electricColorTimer + 50, 250);
                     LizardSpark(self, self.mainBodyChunk, data2, 1, true);
                 }
             }
@@ -449,7 +449,7 @@ internal class TransformationElectric
 
             for (int i = 0; i < number; i++)
             {
-                if (UnityEngine.Random.value < (data.ElectricColorTimer == 0 ? 0.025f : 0.025f * ((float)data.ElectricColorTimer / 1f)))
+                if (UnityEngine.Random.value < (data.electricColorTimer == 0 ? 0.025f : 0.025f * ((float)data.electricColorTimer / 1f)))
                 {
                     Spark();
                 }
@@ -521,7 +521,7 @@ internal class TransformationElectric
 
         if (self.graphicsModule != null)
         {
-            graphicData.ElectricColorTimer = Mathf.Min(graphicData.ElectricColorTimer + 100, 250);
+            graphicData.electricColorTimer = Mathf.Min(graphicData.electricColorTimer + 100, 250);
             LizardSpark(self, self.mainBodyChunk, graphicData, 1, true);
         }
 
