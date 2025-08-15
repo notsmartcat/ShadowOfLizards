@@ -13,6 +13,8 @@ internal class TransformationSpider
         On.Spider.ConsiderPrey += SpiderConsiderPrey;
         On.Spider.Move_Vector2 += spiderLegMove;
         On.Spider.FormCentipede += spiderLegStopCentipede;
+
+        On.BigSpider.Violence += BigSpiderViolence;
     }
 
     #region Spit
@@ -148,7 +150,25 @@ internal class TransformationSpider
     #region Small Spider
     static bool SpiderConsiderPrey(On.Spider.orig_ConsiderPrey orig, Spider self, Creature crit)
     {
-        return (!ShadowOfOptions.spider_transformation.Value || crit == null || crit is not Lizard || !lizardstorage.TryGetValue(crit.abstractCreature, out LizardData data) || (data.transformation != "Spider" && data.transformation != "SpiderTransformation")) && orig.Invoke(self, crit);
+        if (ShadowOfOptions.spider_transformation.Value && crit != null)
+        {
+            if (crit is Lizard && lizardstorage.TryGetValue(crit.abstractCreature, out LizardData data) && (data.transformation == "Spider" || data.transformation == "SpiderTransformation") && data.spiderLikness > 0)
+            {
+                return false;
+            }
+            else if (crit is Player)
+            {
+                for (int i = 0; i < self.room.abstractRoom.creatures.Count; i++)
+                {
+                    if (self.room.abstractRoom.creatures[i].realizedCreature != null && self.room.abstractRoom.creatures[i].realizedCreature is Lizard liz && lizardstorage.TryGetValue(liz.abstractCreature, out LizardData data2) && data2.spiderLikness > 0 && liz.AI != null && liz.AI.friendTracker.friend == crit && (self.room.abstractRoom.creatures[i].rippleLayer == self.abstractPhysicalObject.rippleLayer || self.room.abstractRoom.creatures[i].rippleBothSides || self.abstractPhysicalObject.rippleBothSides))
+                    {
+                        return false;
+                    }
+                }
+            }
+        }
+
+        return orig.Invoke(self, crit);
     }
 
     static void spiderLegMove(On.Spider.orig_Move_Vector2 orig, Spider self, Vector2 dest)
@@ -340,4 +360,29 @@ internal class TransformationSpider
         }
     }
     #endregion
+
+    static void BigSpiderViolence(On.BigSpider.orig_Violence orig, BigSpider self, BodyChunk source, Vector2? directionAndMomentum, BodyChunk hitChunk, PhysicalObject.Appendage.Pos hitAppendage, Creature.DamageType type, float damage, float stunBonus)
+    {
+        if (source != null && source.owner != null && source.owner is Lizard liz && lizardstorage.TryGetValue(liz.abstractCreature, out LizardData data) && (data.transformation == "SpiderTransformation" || data.transformation == "Spider"))
+        {
+            data.spiderLikness--;
+
+            if (data.transformation == "SpiderTransformation")
+            {
+                damage /= 2f;
+            }
+        }
+        else if (source != null && source.owner != null && source.owner is Player)
+        {
+            for (int i = 0; i < self.room.abstractRoom.creatures.Count; i++)
+            {
+                if (self.room.abstractRoom.creatures[i].realizedCreature != null && self.room.abstractRoom.creatures[i].realizedCreature is Lizard liz2 && lizardstorage.TryGetValue(liz2.abstractCreature, out LizardData lizdata2) && lizdata2.spiderLikness > 0 && liz2.AI != null && liz2.AI.friendTracker.friend == source.owner && (self.room.abstractRoom.creatures[i].rippleLayer == self.abstractPhysicalObject.rippleLayer || self.room.abstractRoom.creatures[i].rippleBothSides || self.abstractPhysicalObject.rippleBothSides))
+                {
+                    lizdata2.spiderLikness--;
+                }
+            }
+        }
+
+        orig(self, source, directionAndMomentum, hitChunk, hitAppendage, type, damage, stunBonus);
+    }
 }

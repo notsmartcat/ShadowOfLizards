@@ -39,8 +39,7 @@ internal class LizardHooks
         if (!lizardstorage.TryGetValue(self, out LizardData data))
         {
             lizardstorage.Add(self, new LizardData());
-            lizardstorage.TryGetValue(self, out LizardData dat);
-            data = dat;
+            lizardstorage.TryGetValue(self, out data);
         }
 
         try
@@ -73,8 +72,6 @@ internal class LizardHooks
             {
                 data.armState.Add("Normal");
             }
-
-            LizardBreedParams breedParameters = creatureTemplate.breedParameters as LizardBreedParams;
 
             Abilities();
 
@@ -112,6 +109,7 @@ internal class LizardHooks
                 if (ShadowOfOptions.spider_transformation.Value && UnityEngine.Random.Range(0, 100) < ShadowOfOptions.spawn_spider_transformation_chance.Value)
                 {
                     data.transformation = "SpiderTransformation";
+                    data.spiderLikness = 2;
 
                     data.liz["SpiderNumber"] = UnityEngine.Random.Range(30, 55).ToString();
 
@@ -173,7 +171,7 @@ internal class LizardHooks
 
         try
         {
-            creatureTemplate = self.creature.creatureTemplate = new CreatureTemplate(self.creature.creatureTemplate);
+            creatureTemplate = self.creature.creatureTemplate;
 
             Dictionary<string, string> savedData = self.unrecognizedSaveStrings;
 
@@ -188,28 +186,28 @@ internal class LizardHooks
 
                     if (savedData.ContainsKey("ShadowOfLiz"))
                     {
-                        string lizKeyTemp = "";
-                        string lizTemp = "";
+                        string KeyTemp = "";
+                        string Temp = "";
                         for (int i = 0; i < savedData["ShadowOfLiz"].Length; i++)
                         {
                             char letter = savedData["ShadowOfLiz"][i];
 
                             if (letter.ToString() == "=")
                             {
-                                lizKeyTemp = lizTemp;
-                                lizTemp = "";
+                                KeyTemp = Temp;
+                                Temp = "";
                             }
                             else if (letter.ToString() == ";")
                             {
-                                if (!data.liz.TryGetValue(lizKeyTemp, out _))
-                                    data.liz[lizKeyTemp] = lizTemp;
+                                if (!data.liz.TryGetValue(KeyTemp, out _))
+                                    data.liz[KeyTemp] = Temp;
 
-                                lizKeyTemp = "";
-                                lizTemp = "";
+                                KeyTemp = "";
+                                Temp = "";
                             }
                             else
                             {
-                                lizTemp += letter;
+                                Temp += letter;
                             }
                         }
                         savedData.Remove("ShadowOfLiz");
@@ -810,9 +808,11 @@ internal class LizardHooks
             {
                 if (data.transformation == "Spider")
                 {
+                    data.spiderLikness = 1;
                     if (data.transformationTimer <= cycleNumber - 3 || data.transformationTimer >= cycleNumber + 3 || ShadowOfOptions.spider_transformation_skip.Value)
                     {
                         data.transformation = "SpiderTransformation";
+                        data.spiderLikness = 2;
 
                         data.liz["SpiderNumber"] = UnityEngine.Random.Range(30, 55).ToString();
 
@@ -828,7 +828,8 @@ internal class LizardHooks
                 }
                 else if (data.transformation == "SpiderTransformation")
                 {
-                    for (int i = 0; i < 6; i++)
+                    data.spiderLikness = 2;
+                    for (int i = 0; i < data.armState.Count; i++)
                     {
                         if (data.armState[i] == "Cut1" || data.armState[i] == "Cut2")
                         {
@@ -908,7 +909,6 @@ internal class LizardHooks
 
         string lizardAll = all + self.ToString();
 
-        //TentacleImmune: Set inside AbstractLizard
         if (ModManager.Watcher && self.LizardState.rotType == LizardState.RotType.None && (data.transformation.Contains("Rot") || ShadowOfOptions.tentacle_immune.Value && data.liz.TryGetValue("TentacleImmune", out string TentacleImmune) && TentacleImmune == "True"))
         {
             self.LizardState.SetRotType(new LizardState.RotType("Slight", false));
@@ -943,8 +943,6 @@ internal class LizardHooks
             Physical();
 
             Transformations();
-
-            LizardCustomRelationsSet.Apply(self.Template.type, self);
 
             if (ShadowOfOptions.debug_logs.Value)
                 Debug.Log(all + "Finished creating " + self);
@@ -1579,7 +1577,7 @@ internal class LizardHooks
         {
             bool sourceOwnerFlag = source != null && source.owner != null;
 
-            bool sourceValidTypeFlag = (source == null && type == Creature.DamageType.Explosion) || (source != null && (source.owner == null || (source.owner != null && source.owner is not JellyFish && source.owner is not Leech)));
+            bool sourceValidTypeFlag = (source == null && type == Creature.DamageType.Explosion && damage > 0.5f) || (source != null && (source.owner == null || (source.owner != null && source.owner is not JellyFish && source.owner is not Leech && source.owner is not DartMaggot)));
 
             #region Electric Damage Reduction
             if (type == Creature.DamageType.Electric && (data.transformation == "Electric" || data.transformation == "ElectricTransformation"))
@@ -1591,6 +1589,31 @@ internal class LizardHooks
                     data.transformationTimer++;
 
                 damage /= 2f;
+            }
+            #endregion
+
+            #region
+            if (data.transformation == "SpiderTransformation" && sourceOwnerFlag)
+            {
+                if (source.owner is Lizard liz && lizardstorage.TryGetValue(liz.abstractCreature, out LizardData lizdata) && (lizdata.transformation == "SpiderTransformation" || lizdata.transformation == "Spider"))
+                {
+                    lizdata.spiderLikness--;
+
+                    if (lizdata.transformation == "SpiderTransformation")
+                    {
+                        damage /= 2f;
+                    }
+                }
+                else if (source.owner is Player && self.AI.friendTracker.friend != source.owner)
+                {
+                    for (int i = 0; i < self.room.abstractRoom.creatures.Count; i++)
+                    {
+                        if (self.room.abstractRoom.creatures[i].realizedCreature != null && self.room.abstractRoom.creatures[i].realizedCreature is Lizard liz2 && lizardstorage.TryGetValue(liz2.abstractCreature, out LizardData lizdata2) && lizdata2.spiderLikness > 0 && liz2.AI != null && liz2.AI.friendTracker.friend == source.owner && (self.room.abstractRoom.creatures[i].rippleLayer == self.abstractPhysicalObject.rippleLayer || self.room.abstractRoom.creatures[i].rippleBothSides || self.abstractPhysicalObject.rippleBothSides))
+                        {
+                            lizdata2.spiderLikness--;
+                        }
+                    }
+                }
             }
             #endregion
 
@@ -1637,7 +1660,7 @@ internal class LizardHooks
 
             if (hitChunk.index == 0)
             {
-                if (data.beheaded != true && hitChunk.index == 0)
+                if (data.beheaded != true)
                 {
                     if (LizHitHeadShield(directionAndMomentum.Value))
                     {
@@ -2179,6 +2202,14 @@ internal class LizardHooks
                 {
                     if (UnityEngine.Random.value < 0.4f)
                     {
+                        if (ModManager.MSC && self.Template.type == MoreSlugcatsEnums.CreatureTemplateType.TrainLizard && self.room != null)
+                        {
+                            for (int i = 0; i < 16; i++)
+                            {
+                                Vector2 a = Custom.RNV();
+                                self.room.AddObject(new Spark(self.firstChunk.pos + a * 40f, a * Mathf.Lerp(4f, 30f, UnityEngine.Random.value), Color.white, null, 8, 24));
+                            }
+                        }
                         self.biteControlReset = false;
                         self.JawOpen = 0f;
                         self.lastJawOpen = 0f;
@@ -2264,7 +2295,7 @@ internal class LizardHooks
                 }
             }
 
-            if (data.isGoreHalf)
+            if (data.isGoreHalf || self.dead)
             {
                 return;
             }

@@ -55,7 +55,7 @@ internal class LizardAIHooks
 
                 if (ShadowOfOptions.debug_logs.Value)
                     Debug.Log(all + self.ToString() + " removed Spit ability");
-            }         
+            }
         }
         catch (Exception e) { ShadowOfLizards.Logger.LogError(e); }
     }

@@ -62,6 +62,8 @@ public class ShadowOfLizards : BaseUnityPlugin
         /// </summary>
         public int transformationTimer = -1;
 
+        public int spiderLikness = 0;
+
         //Used to make sure AbstractCreature only makes changes once a cycle, set to the current cycle number after the AbstractCreature is finished making changes. AbstractCreature will only makes changes once in the Arena.
         public int lizardUpdatedCycle = -1;
 
@@ -162,8 +164,6 @@ public class ShadowOfLizards : BaseUnityPlugin
     #endregion
 
     #region Misc Values
-    public static bool storedCreatureWasDead = false;
-
     public static Dictionary<string, Color> bloodcolours;
 
     public static string all = "ShadowOf: ";
@@ -171,8 +171,6 @@ public class ShadowOfLizards : BaseUnityPlugin
     private bool init = false;
 
     public static bool bloodModCheck = false;
-
-    public static List<AbstractCreature> goreLizardList;
 
     public static List<string> validTongues = new() { "WhiteLizard", "Salamander", "BlueLizard", "CyanLizard", "RedLizard"};
 
@@ -201,6 +199,8 @@ public class ShadowOfLizards : BaseUnityPlugin
             LizardAIHooks.Apply();
             LizardSpitHooks.Apply();
             LizardTongueHooks.Apply();
+
+            CustomRelationsHooks.Apply();
 
             MiscHooks.Apply();
 
