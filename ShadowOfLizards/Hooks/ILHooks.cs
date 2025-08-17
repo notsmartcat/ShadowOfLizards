@@ -930,7 +930,7 @@ internal class ILHooks
 
     public static bool ShadowOfLizardGraphicsDrawSprites(Creature self)
     {
-        if (ShadowOfOptions.camo_ability.Value && lizardstorage.TryGetValue(self.abstractCreature, out LizardData data) && data.liz.TryGetValue("CanCamo", out string CanCamo) && CanCamo == "True")
+        if (ShadowOfOptions.camo_ability.Value && lizardstorage.TryGetValue(self.abstractCreature, out LizardData data) && CanCamoCheck(data, self.Template.type.ToString()))
         {
             return true;
         }
