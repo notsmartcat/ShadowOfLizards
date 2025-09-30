@@ -424,7 +424,7 @@ sealed class LizCutHead : PlayerCarryableItem, IDrawable
                 Abstr.headSprite2,
                 Abstr.headSprite3,
                 Abstr.headSprite4,
-                Abstr.headSprite3 + "Cut2",
+                Abstr.headSprite3 + "Cut",
                 Abstr.headSprite5,
                 Abstr.headSprite6
             } : new List<string>
@@ -434,7 +434,7 @@ sealed class LizCutHead : PlayerCarryableItem, IDrawable
                 Abstr.headSprite2,
                 Abstr.headSprite3,
                 Abstr.headSprite4,
-                Abstr.headSprite3 + "Cut2"
+                Abstr.headSprite3 + "Cut"
             };
 
         if (flag)
@@ -452,20 +452,6 @@ sealed class LizCutHead : PlayerCarryableItem, IDrawable
             sLeaser.sprites[i] = new FSprite(headSprites[i], true);
             sLeaser.sprites[i].scaleX = Abstr.scaleX;
             sLeaser.sprites[i].scaleY = Abstr.scaleY;
-        }
-
-        int headLength3 = Abstr.headSprite3.Length;
-        char head3 = Abstr.headSprite3[headLength3 - 3];
-
-        if (head3 == 3)
-        {
-            sLeaser.sprites[4].anchorY = 0.55f;
-
-            if (flag)
-            {
-                sLeaser.sprites[6].anchorY = 0.75f;
-                sLeaser.sprites[7].anchorY = 0.75f;
-            }
         }
 
         if (flag)
@@ -568,6 +554,12 @@ sealed class LizCutHead : PlayerCarryableItem, IDrawable
 
             sLeaser.sprites[i].scaleX = flipX ? Abstr.scaleX * -1 : Abstr.scaleX;
             sLeaser.sprites[i].scaleY = Abstr.scaleY;
+
+            if (Abstr.breed == "WhiteLizard" && (i == 6 || i == 7 || Abstr.headSprite5 == null && i == 4))
+            {
+                sLeaser.sprites[i].x = pos.x - camPos.x - (7f * rotation.x);
+                sLeaser.sprites[i].y = pos.y - camPos.y - (7f * rotation.y);
+            }
         }
 
         if (Abstr.breed == "CyanLizard")

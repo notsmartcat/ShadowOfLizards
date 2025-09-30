@@ -12,24 +12,26 @@ internal class ILHooks
 {
     public static void Apply()
     {
-        IL.Creature.Update += Creature_Update;
+        IL.Creature.Update += ILCreatureUpdate;
 
         IL.DaddyTentacle.Update += ILDaddyTentacleUpdate;
 
         IL.Watcher.LizardRotModule.ctor += ILNewLizardRotModule;
 
-        IL.Lizard.ctor += ILLizard; //Tongue
+        IL.Lizard.ctor += ILNewLizard; //Tongue
 
         IL.Lizard.SpearStick += ILSpearStick; //Jump
 
-        IL.LizardAI.Update += ILLizardAI; //Spit
+        /*
+        IL.LizardAI.ctor += NewLizardAI; //Spit
+
+        IL.LizardAI.Update += ILLizardAIUpdate; //Spit
+        */
 
         IL.WormGrass.WormGrassPatch.InteractWithCreature += ILInteractWithCreature; //WormGrass
 
         IL.DaddyCorruption.EatenCreature.Update += ILDaddyCorruptionEatenCreature; //Rot
         IL.DaddyLongLegs.Eat += ILLDaddyLongLegsEat; //Rot
-
-        IL.Lizard.SwimBehavior += ILLizardSwimBehavior; //Swim
 
         IL.Lizard.Update += ILLizardUpdate; //Breathing
 
@@ -49,8 +51,11 @@ internal class ILHooks
         new Hook( //TotalMass
             typeof(PhysicalObject).GetProperty(nameof(PhysicalObject.TotalMass)).GetGetMethod(),
             typeof(ILHooks).GetMethod(nameof(ShadowOfTotalMass)));
-    }
 
+        new Hook( //Swimmer
+            typeof(Lizard).GetProperty(nameof(Lizard.Swimmer)).GetGetMethod(),
+            typeof(ILHooks).GetMethod(nameof(ShadowOfLizardSwimmer)));
+    }
 
     static void ILNewLizardRotModule(ILContext il)
     {
@@ -61,8 +66,6 @@ internal class ILHooks
             x => x.MatchCallvirt(typeof(List<float>).GetMethod("Add")),
         }))
         {
-            //val.MoveAfterLabels();
-
             val.Emit(OpCodes.Ldarg_0);
             val.Emit(OpCodes.Ldloc_1);
             val.Emit(OpCodes.Ldloc_2);
@@ -91,8 +94,6 @@ internal class ILHooks
                 }
 
                 float percentage = (float)data.cutAppendage[num] / (float)listNum;
-
-                //Debug.Log(percentage);
 
                 list[num] *= percentage;
             }
@@ -126,7 +127,7 @@ internal class ILHooks
     }
 
     #region Creature_Update
-    public static void Creature_Update(ILContext il)
+    public static void ILCreatureUpdate(ILContext il)
     {
         ILCursor c = new(il);
         try
@@ -292,7 +293,7 @@ internal class ILHooks
     #endregion
 
     #region Tongue
-    static void ILLizard(ILContext il)
+    static void ILNewLizard(ILContext il)
     {
         try
         {
@@ -326,10 +327,9 @@ internal class ILHooks
 
         return true;
     }
-
     #endregion
 
-    #region Jump
+    #region Jump Module
     static void ILSpearStick(ILContext il)
     {
         try
@@ -358,31 +358,182 @@ internal class ILHooks
     }
     #endregion
 
+    /*
     #region Spit
-    static void ILLizardAI(ILContext il)
+    static void NewLizardAI(ILContext il)
     {
-        ILCursor val = new(il);
-        ILLabel target = null;
-        if (val.TryGotoNext(new Func<Instruction, bool>[4]
+        try
         {
+            ILCursor val = new(il);
+            ILLabel target = null;
+            ILLabel target2 = null;
+
+            #region Lurk
+            if (val.TryGotoNext(new Func<Instruction, bool>[6]
+            {
+            x => x.MatchLdarg(1),
+            x => x.MatchLdfld<AbstractCreature>("creatureTemplate"),
+            x => x.MatchLdfld<CreatureTemplate>("type"),
+            x => x.MatchLdsfld<DLCSharedEnums.CreatureTemplateType>("PeachLizard"),
+            x => x.MatchCall("ExtEnum`1<CreatureTemplate/Type>", "op_Equality"),
+            x => x.MatchBrfalse(out target)
+            }))
+            {
+            }
+            else
+            {
+                ShadowOfLizards.Logger.LogInfo(all + "Could not find target match for ILLizardAI!");
+            }
+
+            if (val.TryGotoPrev(MoveType.Before, new Func<Instruction, bool>[6]
+            {
+            x => x.MatchLdarg(1),
+            x => x.MatchLdfld<AbstractCreature>("creatureTemplate"),
+            x => x.MatchLdfld<CreatureTemplate>("type"),
+            x => x.MatchLdsfld<DLCSharedEnums.CreatureTemplateType>("Salamander"),
+            x => x.MatchCall("ExtEnum`1<CreatureTemplate/Type>", "op_Equality"),
+            x => x.MatchBrtrue(out _)
+            }))
+            {
+                val.MoveAfterLabels();
+
+                val.Emit(OpCodes.Ldarg_0);
+                val.Emit<LizardAI>(OpCodes.Call, "get_lizard");
+                val.EmitDelegate(ShadowOfNewLizardAILurk);
+                val.Emit(OpCodes.Brfalse, target);
+            }
+            else
+            {
+                ShadowOfLizards.Logger.LogInfo(all + "Could not find match for ILLizardAI!");
+            }
+            #endregion
+
+            #region Spit
+            if (val.TryGotoNext(new Func<Instruction, bool>[2]
+            {
+            x => x.MatchCall<ModManager>("get_DLCShared"),
+            x => x.MatchBrfalse(out target)
+            }))
+            {
+            }
+            else
+            {
+                ShadowOfLizards.Logger.LogInfo(all + "Could not find target match for ILLizardAI!");
+            }
+
+            if (val.TryGotoPrev(MoveType.Before, new Func<Instruction, bool>[6]
+            {
+            x => x.MatchLdarg(1),
+            x => x.MatchLdfld<AbstractCreature>("creatureTemplate"),
+            x => x.MatchLdfld<CreatureTemplate>("type"),
+            x => x.MatchLdsfld<DLCSharedEnums.CreatureTemplateType>("RedLizard"),
+            x => x.MatchCall("ExtEnum`1<CreatureTemplate/Type>", "op_Equality"),
+            x => x.MatchBrtrue(out target2)
+            }))
+            {
+                val.MoveAfterLabels();
+
+                val.Emit(OpCodes.Ldarg_0);
+                val.Emit<LizardAI>(OpCodes.Call, "get_lizard");
+                val.EmitDelegate(ShadowOfNewLizardAISpit);
+                val.Emit(OpCodes.Brfalse, target);
+
+                val.Emit(OpCodes.Ldarg_0);
+                val.Emit<LizardAI>(OpCodes.Call, "get_lizard");
+                val.EmitDelegate(ShadowOfNewLizardAISpitValid);
+                val.Emit(OpCodes.Brtrue, target2);
+            }
+            else
+            {
+                ShadowOfLizards.Logger.LogInfo(all + "Could not find match for ILLizardAI!");
+            }
+            #endregion
+        }
+        catch (Exception e) { ShadowOfLizards.Logger.LogError(e); }
+    }
+    public static bool ShadowOfNewLizardAILurk(Lizard self)
+    {
+        if ((ShadowOfOptions.swim_ability.Value || ShadowOfOptions.water_breather.Value) && lizardstorage.TryGetValue(self.abstractCreature, out LizardData data) && (data.liz.TryGetValue("CanSwim", out string CanSwim) && CanSwim != "True" || data.liz.TryGetValue("WaterBreather", out string WaterBreather) && WaterBreather != "True"))
+        {
+            if (ShadowOfOptions.debug_logs.Value)
+                Debug.Log(all + self.ToString() + " did not get it's Lurk ability because it cannot either swim or breathe underwater");
+
+            return false;
+        }
+        return true;
+    }
+    public static bool ShadowOfNewLizardAISpit(Lizard self)
+    {
+        if (lizardstorage.TryGetValue(self.abstractCreature, out LizardData data) && (data.liz.TryGetValue("CanSpit", out string canSpit) && canSpit != "True" || data.isGoreHalf))
+        {
+            if (ShadowOfOptions.debug_logs.Value)
+                Debug.Log(all + self.ToString() + " did not get it's Spit ability");
+
+            return false;
+        }
+        return true;
+    }
+    public static bool ShadowOfNewLizardAISpitValid(Lizard self)
+    {
+        if (lizardstorage.TryGetValue(self.abstractCreature, out LizardData data) && data.liz.TryGetValue("CanSpit", out string canSpit) && canSpit == "True")
+        {
+            return true;
+        }
+        return false;
+    }
+
+    static void ILLizardAIUpdate(ILContext il)
+    {
+        try
+        {
+            ILCursor val = new(il);
+            ILLabel target = null;
+            ILLabel target2 = null;
+
+            if (val.TryGotoNext(new Func<Instruction, bool>[4]
+            {
             x => x.MatchLdarg(0),
             x => x.MatchLdfld<LizardAI>("redSpitAI"),
             x => x.MatchLdfld<LizardAI.LizardSpitTracker>("spitting"),
-            x => x.MatchBrfalse(out target)
-        }))
-        {
-            int index = val.Index;
-            val.Index = index + 1;
-            val.Emit<LizardAI>(OpCodes.Ldfld, "redSpitAI");
-            val.Emit(OpCodes.Brfalse_S, target);
-            val.Emit(OpCodes.Ldarg_0);
+            x => x.MatchBrfalse(out target2)
+            }))
+            {
+            }
+            else
+            {
+                ShadowOfLizards.Logger.LogInfo(all + "Could not find target match for ILLizardAI!");
+            }
+
+            if (val.TryGotoPrev(MoveType.Before, new Func<Instruction, bool>[7]
+            {
+            x => x.MatchLdarg(0),
+            x => x.MatchCall<LizardAI>("get_lizard"),
+            x => x.MatchCallvirt<Creature>("get_Template"),
+            x => x.MatchLdfld<CreatureTemplate>("type"),
+            x => x.MatchLdsfld<CreatureTemplate.Type>("RedLizard"),
+            x => x.MatchCall("ExtEnum`1<CreatureTemplate/Type>", "op_Equality"),
+            x => x.MatchBrtrue(out target)
+            }))
+            {
+                val.MoveAfterLabels();
+
+                val.Emit(OpCodes.Ldarg_0);
+                val.Emit<LizardAI>(OpCodes.Ldfld, "redSpitAI");
+                val.Emit(OpCodes.Brtrue_S, target);
+
+                val.Emit(OpCodes.Ldarg_0);
+                val.Emit<LizardAI>(OpCodes.Ldfld, "redSpitAI");
+                val.Emit(OpCodes.Brfalse_S, target2);
+            }
+            else
+            {
+                ShadowOfLizards.Logger.LogInfo(all + "Could not find match for ILLizardAI!");
+            }
         }
-        else
-        {
-            ShadowOfLizards.Logger.LogInfo(all + "Could not find match for ILLizardAI!");
-        }
+        catch (Exception e) { ShadowOfLizards.Logger.LogError(e); }
     }
     #endregion
+    */
 
     #region WormGrass
     static void ILInteractWithCreature(ILContext il)
@@ -390,7 +541,8 @@ internal class ILHooks
         try
         {
             ILCursor val = new(il);
-            if (val.TryGotoNext(0, new Func<Instruction, bool>[4]
+
+            if (val.TryGotoNext(MoveType.Before, new Func<Instruction, bool>[4]
             {
             x => x.MatchLdarg(1),
             x => x.MatchLdfld<WormGrass.WormGrassPatch.CreatureAndPull>("creature"),
@@ -403,7 +555,7 @@ internal class ILHooks
             }
             else
             {
-                ShadowOfLizards.Logger.LogInfo(all + "Could not find match for ILILInteractWithCreature!");
+                ShadowOfLizards.Logger.LogInfo(all + "Could not find match for ILInteractWithCreature!");
             }
         }
         catch (Exception e) { ShadowOfLizards.Logger.LogError(e); }
@@ -510,68 +662,17 @@ internal class ILHooks
 
     #region WaterRelated
     #region Swim
-    static void ILLizardSwimBehavior(ILContext il)
+    public static bool ShadowOfLizardSwimmer(Func<Lizard, bool> orig, Lizard self)
     {
         try
         {
-            ILCursor val = new(il);
-            ILLabel target = null;
-            
-            if (val.TryGotoNext(MoveType.Before, new Func<Instruction, bool>[6]
+            if (ShadowOfOptions.swim_ability.Value && self.Template.canSwim && (self.abstractCreature.creatureTemplate.waterRelationship == CreatureTemplate.WaterRelationship.Amphibious || self.abstractCreature.creatureTemplate.waterRelationship == CreatureTemplate.WaterRelationship.WaterOnly))
             {
-            x => x.MatchLdarg(0),
-            x => x.MatchCall<Creature>("get_Template"),
-            x => x.MatchLdfld<CreatureTemplate>("type"),
-            x => x.MatchLdsfld<CreatureTemplate.Type>("Salamander"),
-            x => x.MatchCall("ExtEnum`1<CreatureTemplate/Type>", "op_Inequality"),
-            x => x.MatchBrfalse(out target)
-            }))
-            {
-                val.Emit(OpCodes.Ldarg_0);
-                val.EmitDelegate(ShadowOfLizardSwimBehavior);
-                val.Emit(OpCodes.Brfalse, target);
-
-                val.Emit(OpCodes.Ldarg_0);
-                val.EmitDelegate(ShadowOfLizardSwimBehavior);
-                val.Emit(OpCodes.Brtrue, target);
-            }
-            else
-            {
-                ShadowOfLizards.Logger.LogInfo(all + "Could not find match for ILLizardSwimBehavior flag!");
-            }
-            
-            if (val.TryGotoNext(MoveType.Before, new Func<Instruction, bool>[6]
-            {
-                x => x.MatchLdarg(0),
-                x => x.MatchCall<Creature>("get_Template"),
-                x => x.MatchLdfld<CreatureTemplate>("type"),
-                x => x.MatchLdsfld<CreatureTemplate.Type>("Salamander"),
-                x => x.MatchCall("ExtEnum`1<CreatureTemplate/Type>", "op_Equality"),
-                x => x.MatchBrtrue(out target)
-            }))
-            {
-                val.Emit(OpCodes.Ldarg_0);
-                val.EmitDelegate(ShadowOfLizardSwimBehavior);
-                val.Emit(OpCodes.Brtrue, target);
-
-                val.Emit(OpCodes.Ldarg_0);
-                val.EmitDelegate(ShadowOfLizardSwimBehavior);
-                val.Emit(OpCodes.Brfalse, target);
-            }
-            else
-            {
-                ShadowOfLizards.Logger.LogInfo(all + "Could not find match for ILLizardSwimBehavior!");
+                return true;
             }
         }
         catch (Exception e) { ShadowOfLizards.Logger.LogError(e); }
-    }
-    public static bool ShadowOfLizardSwimBehavior(Creature self)
-    {
-        if (self.Template.canSwim && (self.abstractCreature.creatureTemplate.waterRelationship == CreatureTemplate.WaterRelationship.Amphibious || self.abstractCreature.creatureTemplate.waterRelationship == CreatureTemplate.WaterRelationship.WaterOnly))
-        {
-            return true;
-        }
-        return false;
+        return orig(self);
     }
     #endregion
 
@@ -582,59 +683,49 @@ internal class ILHooks
         {
             ILCursor val = new(il);
             ILLabel target = null;
-            ILLabel target2 = null;
 
-            if (val.TryGotoNext(MoveType.After, new Func<Instruction, bool>[2]
+            if (val.TryGotoNext(MoveType.Before, new Func<Instruction, bool>[3]
             {
-            x => x.MatchCall<ModManager>("get_DLCShared"),
+            x => x.MatchLdarg(0),
+            x => x.MatchCall<Lizard>("get_Burrower"),
             x => x.MatchBrfalse(out target)
             }))
+            {            
+            }       
+            else
             {
-                if (val.TryGotoPrev(MoveType.Before, new Func<Instruction, bool>[6]
-                {
-                x => x.MatchLdarg(0),
-                x => x.MatchCall<Creature>("get_Template"),
-                x => x.MatchLdfld<CreatureTemplate>("type"),
-                x => x.MatchLdsfld<CreatureTemplate.Type>("Salamander"),
-                x => x.MatchCall("ExtEnum`1<CreatureTemplate/Type>", "op_Equality"),
-                x => x.MatchBrtrue(out target2)
-                }))
-                {
-                    val.MoveAfterLabels();
+                ShadowOfLizards.Logger.LogInfo(all + "Could not find target match for ILLizardUpdate!");
+            }
 
-                    val.Emit(OpCodes.Ldarg_0);
-                    val.EmitDelegate(ShadowOfLizardUpdate);
-                    val.Emit(OpCodes.Brtrue, target2);
+            if (val.TryGotoPrev(MoveType.Before, new Func<Instruction, bool>[3]
+            {
+            x => x.MatchLdarg(0),
+            x => x.MatchCall<Lizard>("get_Swimmer"),
+            x => x.MatchBrtrue(out _)
+            }))
+            {
+                val.MoveAfterLabels();
 
-                    val.Emit(OpCodes.Ldarg_0);
-                    val.EmitDelegate(ShadowOfLizardSalamanderUpdate);
-                    val.Emit(OpCodes.Brfalse, target);
-                }
-                else
-                {
-                    ShadowOfLizards.Logger.LogInfo(all + "Could not find match for ILLizardUpdate!");
-                }
+                val.Emit(OpCodes.Ldarg_0);
+                val.EmitDelegate(ShadowOfLizardUpdate);
+                val.Emit(OpCodes.Brfalse_S, target);
             }
             else
             {
-                ShadowOfLizards.Logger.LogInfo(all + "Could not find match for ILLizardUpdate Eel!");
+                ShadowOfLizards.Logger.LogInfo(all + "Could not find match for ILLizardUpdate!");
             }
         }
         catch (Exception e) { ShadowOfLizards.Logger.LogError(e); }
     }
-    public static bool ShadowOfLizardUpdate(Creature self)
+    public static bool ShadowOfLizardUpdate(Lizard self)
     {
-        if (ShadowOfOptions.water_breather.Value && lizardstorage.TryGetValue(self.abstractCreature, out LizardData data) && data.liz.TryGetValue("WaterBreather", out string WaterBreather) && WaterBreather == "True")
+        if (ShadowOfOptions.water_breather.Value && lizardstorage.TryGetValue(self.abstractCreature, out LizardData data) && data.liz.TryGetValue("WaterBreather", out string WaterBreather))
         {
-            return true;
-        }
-        return false;
-    }
-    public static bool ShadowOfLizardSalamanderUpdate(Creature self)
-    {
-        if (ShadowOfOptions.water_breather.Value && lizardstorage.TryGetValue(self.abstractCreature, out LizardData data) && data.liz.TryGetValue("WaterBreather", out string WaterBreather) && WaterBreather != "True")
-        {
-            return false;
+            if (self.Burrower && self.firstChunk.buried)
+            {
+                return true;
+            }
+            return WaterBreather == "True";         
         }
         return true;
     }
@@ -693,7 +784,7 @@ internal class ILHooks
     {
         if (lizardstorage.TryGetValue(self.lizard.abstractCreature, out LizardData data))
         {
-            if (ShadowOfOptions.swim_ability.Value && data.liz.TryGetValue("CanSwim", out _) || ShadowOfOptions.water_breather.Value && data.liz.TryGetValue("WaterBreather", out _))
+            if (ShadowOfOptions.swim_ability.Value && data.liz.ContainsKey("CanSwim") || ShadowOfOptions.water_breather.Value && data.liz.ContainsKey("WaterBreather"))
             {
                 bool canLurk = data.liz.TryGetValue("CanSwim", out string CanSwim) && CanSwim != "True" || data.liz.TryGetValue("WaterBreather", out string WaterBreather) && WaterBreather != "True";
 
@@ -728,7 +819,6 @@ internal class ILHooks
         {
             ILCursor val = new(il);
             ILLabel target = null;
-            ILLabel target2 = null;
 
             if (val.TryGotoNext(MoveType.Before, new Func<Instruction, bool>[7]
             {
@@ -758,26 +848,12 @@ internal class ILHooks
                 ShadowOfLizards.Logger.LogInfo(all + "Could not find match for ILLurkTrackerLurkPosScore White!");
             }
 
-            if (val.TryGotoNext(MoveType.Before, new Func<Instruction, bool>[2]
-            {
-                x => x.MatchCall<ModManager>("get_DLCShared"),
-                x => x.MatchBrfalse(out target2)
-            }))
-            {}
-            else
-            {
-                ShadowOfLizards.Logger.LogInfo(all + "Could not find match for ILLurkTrackerLurkPosScore Eel!");
-            }
-
-            if (val.TryGotoPrev(MoveType.Before, new Func<Instruction, bool>[7]
+            if (val.TryGotoNext(MoveType.Before, new Func<Instruction, bool>[4]
             {
                 x => x.MatchLdarg(0),
                 x => x.MatchLdfld<LizardAI.LurkTracker>("lizard"),
-                x => x.MatchCallvirt<Creature>("get_Template"),
-                x => x.MatchLdfld<CreatureTemplate>("type"),
-                x => x.MatchLdsfld<CreatureTemplate.Type>("Salamander"),
-                x => x.MatchCall("ExtEnum`1<CreatureTemplate/Type>", "op_Equality"),
-                x => x.MatchBrtrue(out target)
+                x => x.MatchCallvirt<Lizard>("get_Swimmer"),
+                x => x.MatchBrfalse(out target)
             }))
             {
                 val.MoveAfterLabels();
@@ -785,12 +861,7 @@ internal class ILHooks
                 val.Emit(OpCodes.Ldarg_0);
                 val.Emit<LizardAI.LurkTracker>(OpCodes.Ldfld, "lizard");
                 val.EmitDelegate(ShadowOfLizardSwimLurkPosScore);
-                val.Emit(OpCodes.Brtrue_S, target);
-
-                val.Emit(OpCodes.Ldarg_0);
-                val.Emit<LizardAI.LurkTracker>(OpCodes.Ldfld, "lizard");
-                val.EmitDelegate(ShadowOfLizardSwimLurkPosScore);
-                val.Emit(OpCodes.Brfalse, target2);
+                val.Emit(OpCodes.Brfalse, target);
             }
             else
             {
@@ -799,7 +870,7 @@ internal class ILHooks
         }
         catch (Exception e) { ShadowOfLizards.Logger.LogError(e); }
     }
-    public static bool ShadowOfLizardSwimLurkPosScore(Creature self)
+    public static bool ShadowOfLizardSwimLurkPosScore(Lizard self)
     {
         if (self.Template.canSwim && (self.abstractCreature.creatureTemplate.waterRelationship == CreatureTemplate.WaterRelationship.Amphibious || self.abstractCreature.creatureTemplate.waterRelationship == CreatureTemplate.WaterRelationship.WaterOnly))
         {
@@ -816,14 +887,7 @@ internal class ILHooks
     }
     public static bool ShadowOfLizardCamoLurkPosScore(Creature self)
     {
-        if (ShadowOfOptions.camo_ability.Value && lizardstorage.TryGetValue(self.abstractCreature, out LizardData data))
-        {
-            if (CanCamoCheck(data, self.Template.type.ToString()))
-            {
-                return true;
-            }
-        }
-        return false;
+        return ShadowOfOptions.camo_ability.Value && lizardstorage.TryGetValue(self.abstractCreature, out LizardData data) && CanCamoCheck(data, self.Template.type.ToString());
     }
     #endregion
 
@@ -930,30 +994,9 @@ internal class ILHooks
 
     public static bool ShadowOfLizardGraphicsDrawSprites(Creature self)
     {
-        if (ShadowOfOptions.camo_ability.Value && lizardstorage.TryGetValue(self.abstractCreature, out LizardData data) && CanCamoCheck(data, self.Template.type.ToString()))
-        {
-            return true;
-        }
-        return false;
+        return ShadowOfOptions.camo_ability.Value && lizardstorage.TryGetValue(self.abstractCreature, out LizardData data) && CanCamoCheck(data, self.Template.type.ToString());
     }
-    /* Unused Code
-    public static bool ShadowOfLizardWhiteGraphicsDrawSprites(Creature self)
-    {
-        if (ShadowOfOptions.camo_ability.Value && lizardstorage.TryGetValue(self.abstractCreature, out LizardData data) && data.liz.TryGetValue("CanCamo", out string CanCamo) && CanCamo != "True")
-        {
-            return false;
-        }
-        return true;
-    }
-    public static bool ShadowOfLizardZoopGraphicsDrawSprites(Creature self)
-    {
-        if (ShadowOfOptions.camo_ability.Value && lizardstorage.TryGetValue(self.abstractCreature, out LizardData data) && data.liz.TryGetValue("CanCamo", out string CanCamo) && CanCamo != "True" && (!ModManager.DLCShared || self.Template.type != DLCSharedEnums.CreatureTemplateType.ZoopLizard))
-        {
-            return false;
-        }
-        return true;
-    }
-    */
+
     public static float ShadowOfLizardVisibilityBonus(Func<Lizard, float> orig, Lizard self)
     {
         try
@@ -989,11 +1032,7 @@ internal class ILHooks
 /*
 class ILHooks
 {
-	public static bool ShadowOfLizardUpdate(Creature self)
-    {
-        return true;
-    }
-	public static bool ShadowOfLizardSalamanderUpdate(Creature self)
+	public static bool ShadowOfLizardUpdate(Lizard self)
     {
         return true;
     }

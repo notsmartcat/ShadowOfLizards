@@ -299,6 +299,6 @@ internal class TransformationRot
 
     public static bool InnactiveTentacleCheck(LizardData data, int tentacleNum, int cycleNumber)
     {
-        return data.cutAppendage.TryGetValue(tentacleNum, out _) && data.cutAppendageCycle.TryGetValue(tentacleNum, out int cycle) && cycle == cycleNumber;
+        return data.cutAppendage.ContainsKey(tentacleNum) && data.cutAppendageCycle.TryGetValue(tentacleNum, out int cycle) && cycle == cycleNumber;
     }
 }

@@ -26,7 +26,7 @@ internal class LizardSpitHooks
             TransformationSpider.SpiderSpitDraw(sLeaser);
             return;
         }
-        else if (ShadowOfOptions.melted_transformation.Value && ShadowOfOptions.melted_spit.Value && data.liz.TryGetValue("MeltedR", out _) && (data.transformation == "Melted" || data.transformation == "MeltedTransformation"))
+        else if (ShadowOfOptions.melted_transformation.Value && ShadowOfOptions.melted_spit.Value && data.liz.ContainsKey("MeltedR") && (data.transformation == "Melted" || data.transformation == "MeltedTransformation"))
         {
             TransformationMelted.MeltedSpitDraw(self, sLeaser, data);
             return;
@@ -45,7 +45,7 @@ internal class LizardSpitHooks
             orig.Invoke(self, eu);
             return;
         }
-        else if (ShadowOfOptions.spider_transformation.Value && ShadowOfOptions.spider_spit.Value && data.transformation == "SpiderTransformation" && data.liz.TryGetValue("SpiderNumber", out _))
+        else if (ShadowOfOptions.spider_transformation.Value && ShadowOfOptions.spider_spit.Value && data.transformation == "SpiderTransformation" && data.liz.ContainsKey("SpiderNumber"))
         {
             TransformationSpider.SpiderSpitUpdate(self, data);
             return;

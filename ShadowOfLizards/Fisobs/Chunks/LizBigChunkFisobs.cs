@@ -6,15 +6,15 @@ using UnityEngine;
 
 namespace ShadowOfLizards;
 
-sealed class LizCutLegFisobs : Fisob
+sealed class LizBigChunkFisobs : Fisob
 {
-    public static readonly AbstractPhysicalObject.AbstractObjectType AbstrLizardCutLeg = new("LizCutLeg", true);
+    public static readonly AbstractPhysicalObject.AbstractObjectType AbstrLizBigChunk = new("LizBigChunk", true);
 
-    static readonly LizCutLegProperties properties = new();
+    static readonly LizBigChunkProperties properties = new();
 
-    public LizCutLegFisobs() : base(AbstrLizardCutLeg)
+    public LizBigChunkFisobs() : base(AbstrLizBigChunk)
     {
-        Icon = new LizCutLegIcon();
+        Icon = new LizBigChunkIcon();
     }
 
     public override AbstractPhysicalObject Parse(World world, EntitySaveData saveData, SandboxUnlock unlock)
@@ -26,13 +26,12 @@ sealed class LizCutLegFisobs : Fisob
             array = new string[17];
         }
 
-        return new LizCutLegAbstract(world, saveData.Pos, saveData.ID)
+        return new LizBigChunkAbstract(world, saveData.Pos, saveData.ID)
         {
             hue = float.TryParse(array[0], out float hue) ? hue : 0f,
             saturation = float.TryParse(array[1], out float sat) ? sat : 1f,
 
-            scaleX = float.TryParse(array[2], out float sX) ? sX : 1f,
-            scaleY = float.TryParse(array[3], out float sY) ? sY : 1f,
+            rad = float.TryParse(array[2], out float sX) ? sX : 1f,
 
             breed = (string.IsNullOrEmpty(array[4]) ? "GreenLizard" : array[4]),
 
@@ -48,8 +47,7 @@ sealed class LizCutLegFisobs : Fisob
             bloodColourG = float.TryParse(array[12], out float bg) ? bg : -1f,
             bloodColourB = float.TryParse(array[13], out float bb) ? bb : -1f,
 
-            spriteName = string.IsNullOrEmpty(array[14]) ? "LizardArm_14" : array[14],
-            colourSpriteName = string.IsNullOrEmpty(array[15]) ? "LizardArmColor_14" : array[15],
+            spriteVariant = int.TryParse(array[14], out int sv) ? sv : 0,
 
             blackSalamander = bool.TryParse(array[16], out bool bs) && bs,
 
@@ -63,11 +61,11 @@ sealed class LizCutLegFisobs : Fisob
     }
 }
 
-sealed class LizCutLegIcon : Icon
+sealed class LizBigChunkIcon : Icon
 {
     public override int Data(AbstractPhysicalObject apo)
     {
-        return apo is LizCutLegAbstract ? 1 : 0;
+        return apo is LizBigChunkAbstract ? 1 : 0;
     }
 
     public override Color SpriteColor(int data)

@@ -4,7 +4,7 @@ using static RoomCamera;
 
 namespace ShadowOfLizards;
 
-internal sealed class LizCutLeg : PlayerCarryableItem, IDrawable, IPlayerEdible
+internal sealed class LizSmallChunk : PlayerCarryableItem, IDrawable, IPlayerEdible
 {
     #region Public
     public AbstractConsumable AbstrConsumable
@@ -59,9 +59,9 @@ internal sealed class LizCutLeg : PlayerCarryableItem, IDrawable, IPlayerEdible
     private bool everySecondDraw;
     #endregion
 
-    private LizCutLegAbstract Abstr { get; }
+    private LizSmallChunkAbstract Abstr { get; }
 
-    public LizCutLeg(LizCutLegAbstract abstr) : base(abstr)
+    public LizSmallChunk(LizSmallChunkAbstract abstr) : base(abstr)
     {
         Abstr = abstr;
 

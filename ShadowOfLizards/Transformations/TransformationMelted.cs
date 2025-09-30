@@ -331,9 +331,9 @@ internal class TransformationMelted
         data.transformation = "Melted";
         data.transformationTimer = self.abstractCreature.world.game.IsStorySession ? self.abstractCreature.world.game.GetStorySession.saveState.cycleNumber : 1;
 
-        bool data2Melted = data2.liz.TryGetValue("MeltedR", out string _);
+        bool data2Melted = data2.liz.ContainsKey("MeltedR");
 
-        if (!data.liz.TryGetValue("MeltedR", out string _))
+        if (!data.liz.ContainsKey("MeltedR"))
         {
             data.liz.Add("MeltedR", data2Melted ? data2.liz["MeltedR"] : "0.4078431");
             data.liz.Add("MeltedG", data2Melted ? data2.liz["MeltedG"] : "0.5843138");

@@ -2,18 +2,19 @@ using Fisobs.Core;
 using Fisobs.Items;
 using Fisobs.Properties;
 using Fisobs.Sandbox;
-using static AbstractPhysicalObject;
+using UnityEngine;
 
 namespace ShadowOfLizards;
 
 sealed class LizCutEyeFisobs : Fisob
 {
-    public static readonly AbstractObjectType AbstrLizCutEye = new("LizCutEye", true);
+    public static readonly AbstractPhysicalObject.AbstractObjectType AbstrLizCutEye = new("LizCutEye", true);
 
     static readonly LizCutEyeProperties properties = new();
 
     public LizCutEyeFisobs() : base(AbstrLizCutEye)
     {
+        Icon = new LizCutEyeIcon();
     }
 
     public override AbstractPhysicalObject Parse(World world, EntitySaveData saveData, SandboxUnlock unlock)
@@ -46,5 +47,23 @@ sealed class LizCutEyeFisobs : Fisob
     public override ItemProperties Properties(PhysicalObject forObject)
     {
         return properties;
+    }
+}
+
+sealed class LizCutEyeIcon : Icon
+{
+    public override int Data(AbstractPhysicalObject apo)
+    {
+        return apo is LizCutEyeAbstract ? 1 : 0;
+    }
+
+    public override Color SpriteColor(int data)
+    {
+        return RWCustom.Custom.HSL2RGB(data / 1000f, 0.65f, 0.4f);
+    }
+
+    public override string SpriteName(int data)
+    {
+        return "Symbol_EggBugEgg";
     }
 }

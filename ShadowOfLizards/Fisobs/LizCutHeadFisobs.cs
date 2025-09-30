@@ -2,18 +2,19 @@ using Fisobs.Core;
 using Fisobs.Items;
 using Fisobs.Properties;
 using Fisobs.Sandbox;
-using static AbstractPhysicalObject;
+using UnityEngine;
 
 namespace ShadowOfLizards;
 
 sealed class LizCutHeadFisobs : Fisob
 {
-    public static readonly AbstractObjectType AbstrLizCutHead = new("LizCutHead", true);
+    public static readonly AbstractPhysicalObject.AbstractObjectType AbstrLizCutHead = new("LizCutHead", true);
 
     static readonly LizCutHeadProperties properties = new();
 
     public LizCutHeadFisobs() : base(AbstrLizCutHead)
     {
+        Icon = new LizCutHeadIcon();
     }
 
     public override AbstractPhysicalObject Parse(World world, EntitySaveData saveData, SandboxUnlock unlock)
@@ -78,5 +79,23 @@ sealed class LizCutHeadFisobs : Fisob
     public override ItemProperties Properties(PhysicalObject forObject)
     {
         return properties;
+    }
+}
+
+sealed class LizCutHeadIcon : Icon
+{
+    public override int Data(AbstractPhysicalObject apo)
+    {
+        return apo is LizCutHeadAbstract ? 1 : 0;
+    }
+
+    public override Color SpriteColor(int data)
+    {
+        return RWCustom.Custom.HSL2RGB(data / 1000f, 0.65f, 0.4f);
+    }
+
+    public override string SpriteName(int data)
+    {
+        return "Kill_Standard_Lizard";
     }
 }

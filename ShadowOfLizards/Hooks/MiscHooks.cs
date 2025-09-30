@@ -4,6 +4,8 @@ using RWCustom;
 using Menu;
 using MoreSlugcats;
 using static ShadowOfLizards.ShadowOfLizards;
+using Mono.Cecil;
+using System.Collections.Generic;
 
 namespace ShadowOfLizards;
 
@@ -41,6 +43,18 @@ internal class MiscHooks
         On.Player.HeavyCarry += PlayerHeavyCarry;
 
         On.SlugcatHand.EngageInMovement += SlugcatHandEngageInMovement;
+
+        On.KingTusks.Tusk.HitThisChunk += Tusk_HitThisChunk;
+    }
+
+    static bool Tusk_HitThisChunk(On.KingTusks.Tusk.orig_HitThisChunk orig, KingTusks.Tusk self, BodyChunk chunk)
+    {
+        if (ShadowOfOptions.cut_in_half.Value && chunk != null && chunk.owner != null && chunk.owner is Lizard liz && lizardstorage.TryGetValue(liz.abstractCreature, out LizardData data) && !data.availableBodychunks.Contains(chunk.index))
+        {
+            return false;
+        }
+
+        return orig(self, chunk);
     }
 
     static bool SlugcatHandEngageInMovement(On.SlugcatHand.orig_EngageInMovement orig, SlugcatHand self)
@@ -149,8 +163,7 @@ internal class MiscHooks
             if (!singleUse.TryGetValue(self, out OneTimeUseData data2))
             {
                 singleUse.Add(self, new OneTimeUseData());
-                singleUse.TryGetValue(self, out OneTimeUseData dat);
-                data2 = dat;
+                singleUse.TryGetValue(self, out data2);
             }
 
             for (int i = 0; i < self.room.abstractRoom.creatures.Count; i++)
@@ -224,8 +237,7 @@ internal class MiscHooks
             if (!singleUse.TryGetValue(self.sourceObject, out OneTimeUseData data2))
             {
                 singleUse.Add(self.sourceObject, new OneTimeUseData());
-                singleUse.TryGetValue(self.sourceObject, out OneTimeUseData dat);
-                data2 = dat;
+                singleUse.TryGetValue(self.sourceObject, out data2);
             }
 
             float num = self.rad * (0.25f + 0.75f * Mathf.Sin(Mathf.InverseLerp(0f, (float)self.lifeTime, (float)self.frame) * 3.1415927f));
@@ -328,8 +340,7 @@ internal class MiscHooks
             if (!denCheck.TryGetValue(self.abstractCreature, out CreatureDenCheck data))
             {
                 denCheck.Add(self.abstractCreature, new CreatureDenCheck());
-                denCheck.TryGetValue(self.abstractCreature, out CreatureDenCheck dat);
-                data = dat;
+                denCheck.TryGetValue(self.abstractCreature, out  data);
             }
 
             if (self.enteringShortCut.HasValue && self.room != null && self.room.shortcutData(self.enteringShortCut.Value).shortCutType != null && self.room.shortcutData(self.enteringShortCut.Value).shortCutType == ShortcutData.Type.CreatureHole)

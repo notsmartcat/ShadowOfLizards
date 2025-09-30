@@ -21,6 +21,7 @@ internal class LizardGraphicsHooks
         On.LizardGraphics.AddCosmetic += LizardGraphicsAddCosmetic;
 
         On.LizardCosmetics.Antennae.ctor += NewAntennae;
+        On.Watcher.PeachHeadStripes.ctor += NewPeachHeadStripes;
     }
 
     static void NewLizardGraphics(On.LizardGraphics.orig_ctor orig, LizardGraphics self, PhysicalObject ow)
@@ -94,30 +95,36 @@ internal class LizardGraphicsHooks
 
             if (data.beheaded == true)
             {
-                if (Futile.atlasManager.DoesContainElementWithName(sLeaser.sprites[self.SpriteHeadStart + 3].element.name + "Cut"))
+                float num = Mathf.Lerp(self.lastHeadDepthRotation, self.headDepthRotation, timeStacker);
+                int num13 = 3 - (int)(Mathf.Abs(num) * 3.9f);
+
+                sLeaser.sprites[self.SpriteHeadStart + 3].element = Futile.atlasManager.GetElementWithName("LizardHeadStump" + num13 + "." + (data.liz.TryGetValue("BeheadedSprite", out string sprite) ? sprite : "0") + "Cut");
+                if (self.lizard.Template.type != WatcherEnums.CreatureTemplateType.IndigoLizard || self.lizard.Template.type == WatcherEnums.CreatureTemplateType.IndigoLizard && bloodcolours == null)
                 {
-                    sLeaser.sprites[self.SpriteHeadStart + 3].element = Futile.atlasManager.GetElementWithName(sLeaser.sprites[self.SpriteHeadStart + 3].element.name + "Cut");
-                    if (self.lizard.Template.type != WatcherEnums.CreatureTemplateType.IndigoLizard || self.lizard.Template.type == WatcherEnums.CreatureTemplateType.IndigoLizard && bloodcolours == null)
-                    {
-                        sLeaser.sprites[self.SpriteHeadStart + 3].color = BloodColoursCheck(self.lizard.Template.type.ToString()) ? bloodcolours[self.lizard.Template.type.ToString()] : self.effectColor;
-                    }
-                    if (ModManager.Watcher && self.lizard.Template.type == WatcherEnums.CreatureTemplateType.BlizzardLizard || ModManager.DLCShared && self.lizard.Template.type == DLCSharedEnums.CreatureTemplateType.SpitLizard)
-                    {
-                        sLeaser.sprites[self.SpriteHeadStart + 3].anchorY = 0.5f;
-                    }
-                }
-                else
-                {
-                    sLeaser.sprites[self.SpriteHeadStart + 3].isVisible = false;
+                    sLeaser.sprites[self.SpriteHeadStart + 3].color = BloodColoursCheck(self.lizard.Template.type.ToString()) ? bloodcolours[self.lizard.Template.type.ToString()] : self.effectColor;
                 }
 
-                sLeaser.sprites[self.SpriteHeadStart].isVisible = false;
-                sLeaser.sprites[self.SpriteHeadStart + 1].isVisible = false;
-                sLeaser.sprites[self.SpriteHeadStart + 2].isVisible = false;
-                sLeaser.sprites[self.SpriteHeadStart + 4].isVisible = false;
+                sLeaser.sprites[self.SpriteHeadStart + 3].anchorY = 0.0f;
+
+                Vector2 pos = ((Vector2.Lerp(self.lizard.bodyChunks[1].lastPos, self.lizard.bodyChunks[1].pos, timeStacker) + Vector2.Lerp(self.lizard.bodyChunks[0].lastPos, self.lizard.bodyChunks[0].pos, timeStacker)) / 2) - camPos;
+
+                sLeaser.sprites[self.SpriteHeadStart + 3].isVisible = true;
+                sLeaser.sprites[self.SpriteHeadStart + 3].x = pos.x;
+                sLeaser.sprites[self.SpriteHeadStart + 3].y = pos.y;
+                sLeaser.sprites[self.SpriteHeadStart + 3].rotation = Custom.AimFromOneVectorToAnother(self.lizard.bodyChunks[1].pos, self.lizard.bodyChunks[0].pos);
+
+                for (int i = self.SpriteHeadStart; i < self.SpriteHeadEnd; i++)
+                {
+                    if (i == self.SpriteHeadStart + 3)
+                    {
+                        continue;
+                    }
+                    sLeaser.sprites[i].isVisible = false;
+                }
+
                 self.lizard.bodyChunks[0].collideWithObjects = false;
 
-                if (ShadowOfOptions.blind.Value && data.liz.TryGetValue("EyeRight", out _))
+                if (ShadowOfOptions.blind.Value && data.liz.ContainsKey("EyeRight"))
                 {
                     sLeaser.sprites[data2.eyeSprites].isVisible = false;
                     sLeaser.sprites[data2.eyeSprites + 1].isVisible = false;
@@ -125,7 +132,7 @@ internal class LizardGraphicsHooks
 
                 for (int j = 0; j < self.cosmetics.Count; j++)
                 {
-                    if (self.cosmetics[j] is Whiskers || self.cosmetics[j] is AxolotlGills || self.cosmetics[j] is Antennae)
+                    if (self.cosmetics[j] is Whiskers || self.cosmetics[j] is AxolotlGills || self.cosmetics[j] is Antennae || self.cosmetics[j] is Antennae || ModManager.Watcher && self.cosmetics[j] is PeachHeadStripes)
                     {
                         for (int k = self.cosmetics[j].startSprite; k < self.cosmetics[j].startSprite + self.cosmetics[j].numberOfSprites; k++)
                         {
@@ -404,7 +411,7 @@ internal class LizardGraphicsHooks
                     {
                         self.lizard.bodyChunks[i].collideWithObjects = false;
                         //self.lizard.bodyChunks[i].mass = 0f;
-                        self.lizard.bodyChunks[i].rad = 0f;
+                        //self.lizard.bodyChunks[i].rad = 0f;
                     }
                 }
 
@@ -417,7 +424,7 @@ internal class LizardGraphicsHooks
 
                     for (int j = 0; j < self.cosmetics.Count; j++)
                     {
-                        if (self.cosmetics[j] is Whiskers || self.cosmetics[j] is AxolotlGills || self.cosmetics[j] is Antennae)
+                        if (self.cosmetics[j] is Whiskers || self.cosmetics[j] is AxolotlGills || self.cosmetics[j] is Antennae || ModManager.Watcher && self.cosmetics[j] is PeachHeadStripes)
                         {
                             for (int k = self.cosmetics[j].startSprite; k < self.cosmetics[j].startSprite + self.cosmetics[j].numberOfSprites; k++)
                             {
@@ -1023,6 +1030,29 @@ internal class LizardGraphicsHooks
                             sLeaser.sprites[skinkSpeckles.startSprite + i].color = Camo(self, self.BodyColor(skinkSpeckles.spotInfo[i].x));
                         }
                     }
+
+                    else if (self.cosmetics[c] is PeachBackFin peachBackFin)
+                    {
+                        for (int i = peachBackFin.startSprite; i < peachBackFin.startSprite + peachBackFin.bumps; i++)
+                        {
+                            sLeaser.sprites[i].color = Camo(self, peachBackFin.palette.blackColor);
+                            if (peachBackFin.colored)
+                            {
+                                sLeaser.sprites[i + peachBackFin.bumps].color = CamoElectric(self, data2, effectColour);
+                            }
+                        }
+                    }
+                    else if (self.cosmetics[c] is PeachHeadStripes peachHeadStripes)
+                    {
+                        float num = Mathf.Pow(UnityEngine.Random.value, 1f - 0.5f * self.lizard.AI.yellowAI.commFlicker) * self.lizard.AI.yellowAI.commFlicker;
+                        if (!self.lizard.Consious)
+                        {
+                            num = 0f;
+                        }
+
+                        Color color = peachHeadStripes.EffectColor(num);
+                        sLeaser.sprites[peachHeadStripes.startSprite].color = CamoElectric(self, data2, color);
+                    }
                 }
                 #endregion
             }
@@ -1196,6 +1226,7 @@ internal class LizardGraphicsHooks
                     {
                         continue;
                     }
+
                     else if (self.cosmetics[c] is SkinkStripes skinkStripes)
                     {
                         if (self.iVars.tailColor > 0f)
@@ -1216,6 +1247,18 @@ internal class LizardGraphicsHooks
                         for (int i = 0; i < skinkSpeckles.spots; i++)
                         {
                             sLeaser.sprites[skinkSpeckles.startSprite + i].color = self.BodyColor(skinkSpeckles.spotInfo[i].x);
+                        }
+                    }
+
+                    else if (self.cosmetics[c] is PeachBackFin peachBackFin)
+                    {
+                        for (int i = peachBackFin.startSprite; i < peachBackFin.startSprite + peachBackFin.bumps; i++)
+                        {
+                            sLeaser.sprites[i].color = peachBackFin.palette.blackColor;
+                            if (peachBackFin.colored)
+                            {
+                                sLeaser.sprites[i + peachBackFin.bumps].color = self.effectColor;
+                            }
                         }
                     }
                 }
@@ -1287,7 +1330,7 @@ internal class LizardGraphicsHooks
 
             if (ShadowOfOptions.teeth.Value && data.liz.TryGetValue("UpperTeeth", out _) && data.liz["UpperTeeth"] != "Incompatible")
             {
-                if (self.lizard.lizardParams.headGraphics[2] != 0 && self.lizard.lizardParams.headGraphics[2] != 1 && self.lizard.lizardParams.headGraphics[2] != 2 && self.lizard.lizardParams.headGraphics[2] != 3 && self.lizard.lizardParams.headGraphics[2] != 8 && self.lizard.lizardParams.headGraphics[2] != 9)
+                if (self.lizard.lizardParams.headGraphics[2] != 0 && self.lizard.lizardParams.headGraphics[2] != 1 && self.lizard.lizardParams.headGraphics[2] != 2 && self.lizard.lizardParams.headGraphics[2] != 3 && self.lizard.lizardParams.headGraphics[2] != 8 && self.lizard.lizardParams.headGraphics[2] != 9 && self.lizard.lizardParams.headGraphics[2] != 10 && self.lizard.lizardParams.headGraphics[2] != 11)
                 {
                     data.liz["UpperTeeth"] = "Incompatible";
                     data.liz["LowerTeeth"] = "Incompatible";
@@ -1299,7 +1342,7 @@ internal class LizardGraphicsHooks
 
             if (ShadowOfOptions.blind.Value && data.liz.TryGetValue("EyeRight", out _) && data.liz["EyeRight"] != "Incompatible")
             {
-                if (self.lizard.lizardParams.headGraphics[4] != 0 && self.lizard.lizardParams.headGraphics[4] != 1 && self.lizard.lizardParams.headGraphics[4] != 2 && self.lizard.lizardParams.headGraphics[4] != 3 && self.lizard.lizardParams.headGraphics[4] != 8 && self.lizard.lizardParams.headGraphics[4] != 9)
+                if (self.lizard.lizardParams.headGraphics[4] != 0 && self.lizard.lizardParams.headGraphics[4] != 1 && self.lizard.lizardParams.headGraphics[4] != 2 && self.lizard.lizardParams.headGraphics[4] != 3 && self.lizard.lizardParams.headGraphics[4] != 8 && self.lizard.lizardParams.headGraphics[4] != 9 && self.lizard.lizardParams.headGraphics[4] != 10 && self.lizard.lizardParams.headGraphics[4] != 11)
                 {
                     data.liz["EyeRight"] = "Incompatible";
                     data.liz["EyeLeft"] = "Incompatible";
@@ -1358,7 +1401,7 @@ internal class LizardGraphicsHooks
             goto Line1;
         }
 
-        if (ShadowOfOptions.blind.Value && data.liz.TryGetValue("EyeRight", out _) && data.liz["EyeRight"] != "Incompatible" && sLeaser.sprites.Length > data2.eyeSprites && data2.eyeSprites != 0)
+        if (ShadowOfOptions.blind.Value && data.liz.TryGetValue("EyeRight", out string eye) && eye != "Incompatible" && sLeaser.sprites.Length > data2.eyeSprites && data2.eyeSprites != 0)
         {
             newContatiner ??= rCam.ReturnFContainer("Midground");
             newContatiner.AddChild(sLeaser.sprites[data2.eyeSprites]);
@@ -1391,6 +1434,15 @@ internal class LizardGraphicsHooks
     }
 
     static void NewAntennae(On.LizardCosmetics.Antennae.orig_ctor orig, Antennae self, LizardGraphics lGraphics, int startSprite)
+    {
+        orig(self, lGraphics, startSprite);
+
+        if (ShadowOfOptions.melted_transformation.Value && lizardstorage.TryGetValue(self.lGraphics.lizard.abstractCreature, out LizardData data) && (data.transformation == "Melted" || data.transformation == "MeltedTransformation"))
+        {
+            self.redderTint = new Color(float.Parse(data.liz["MeltedR"]), float.Parse(data.liz["MeltedG"]), float.Parse(data.liz["MeltedB"]));
+        }
+    }
+    static void NewPeachHeadStripes(On.Watcher.PeachHeadStripes.orig_ctor orig, PeachHeadStripes self, LizardGraphics lGraphics, int startSprite)
     {
         orig(self, lGraphics, startSprite);
 

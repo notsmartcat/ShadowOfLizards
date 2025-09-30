@@ -6,15 +6,15 @@ using UnityEngine;
 
 namespace ShadowOfLizards;
 
-sealed class LizCutLegFisobs : Fisob
+sealed class LizSmallChunkFisobs : Fisob
 {
-    public static readonly AbstractPhysicalObject.AbstractObjectType AbstrLizardCutLeg = new("LizCutLeg", true);
+    public static readonly AbstractPhysicalObject.AbstractObjectType AbstrLizSmallChunk = new("LizSmallChunk", true);
 
-    static readonly LizCutLegProperties properties = new();
+    static readonly LizSmallChunkProperties properties = new();
 
-    public LizCutLegFisobs() : base(AbstrLizardCutLeg)
+    public LizSmallChunkFisobs() : base(AbstrLizSmallChunk)
     {
-        Icon = new LizCutLegIcon();
+        Icon = new LizSmallChunkIcon();
     }
 
     public override AbstractPhysicalObject Parse(World world, EntitySaveData saveData, SandboxUnlock unlock)
@@ -26,7 +26,7 @@ sealed class LizCutLegFisobs : Fisob
             array = new string[17];
         }
 
-        return new LizCutLegAbstract(world, saveData.Pos, saveData.ID)
+        return new LizSmallChunkAbstract(world, saveData.Pos, saveData.ID)
         {
             hue = float.TryParse(array[0], out float hue) ? hue : 0f,
             saturation = float.TryParse(array[1], out float sat) ? sat : 1f,
@@ -63,11 +63,11 @@ sealed class LizCutLegFisobs : Fisob
     }
 }
 
-sealed class LizCutLegIcon : Icon
+sealed class LizSmallChunkIcon : Icon
 {
     public override int Data(AbstractPhysicalObject apo)
     {
-        return apo is LizCutLegAbstract ? 1 : 0;
+        return apo is LizSmallChunkAbstract ? 1 : 0;
     }
 
     public override Color SpriteColor(int data)

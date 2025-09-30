@@ -59,7 +59,7 @@ internal class TransformationSpider
 
         try
         {
-            if (!data.liz.TryGetValue("SpiderNumber", out _))
+            if (!data.liz.ContainsKey("SpiderNumber"))
             {
                 Debug.Log(all + "SpiderNumber Value was not present on " + self + " If able please report to the mod author of Shadow Of Lizards");
                 ShadowOfLizards.Logger.LogError(all + "SpiderNumber Value was not present on " + self + " If able please report to the mod author of Shadow Of Lizards");
@@ -191,7 +191,7 @@ internal class TransformationSpider
 
     public static void SpiderLizardGraphicsDraw(LizardGraphics self, RoomCamera.SpriteLeaser sLeaser, LizardData data)
     {
-        if (!data.liz.TryGetValue("SpiderNumber", out _))
+        if (!data.liz.ContainsKey("SpiderNumber"))
         {
             Debug.Log(all + "SpiderNumber Value was not present on " + self + " If able please report to the mod author of Shadow Of Lizards");
             ShadowOfLizards.Logger.LogError(all + "SpiderNumber Value was not present on " + self + " If able please report to the mod author of Shadow Of Lizards");
@@ -293,7 +293,7 @@ internal class TransformationSpider
                     spid.RealizeInRoom();
                     ((Spider)spid.realizedCreature).bloodLust = 0f;
 
-                    spidLeg.Add((Spider)spid.realizedCreature, new ShadowOfLizards.SpiderAsLeg());
+                    spidLeg.Add((Spider)spid.realizedCreature, new SpiderAsLeg());
                     spidLeg.TryGetValue((Spider)spid.realizedCreature, out SpiderAsLeg spidData);
 
                     spidData.liz = self.lizard;

@@ -174,7 +174,7 @@ public class ShadowOfLizards : BaseUnityPlugin
 
     public static List<string> validTongues = new() { "WhiteLizard", "Salamander", "BlueLizard", "CyanLizard", "RedLizard"};
 
-    public static List<string> defaultWaterBreather = new() { "Salamander", "EelLizard" };
+    public static List<string> defaultWaterBreather = new() { "Salamander", "EelLizard", "PeachLizard" };
 
     internal static new ManualLogSource Logger;
 
@@ -191,12 +191,13 @@ public class ShadowOfLizards : BaseUnityPlugin
             Content.Register(new IContent[1] { new LizCutLegFisobs() });
             Content.Register(new IContent[1] { new LizCutHeadFisobs() });
             Content.Register(new IContent[1] { new LizCutEyeFisobs() });
+
+            Content.Register(new IContent[1] { new LizBigChunkFisobs() });
             #endregion
 
             #region Applying other hooks
             LizardHooks.Apply();
             LizardGraphicsHooks.Apply();
-            LizardAIHooks.Apply();
             LizardSpitHooks.Apply();
             LizardTongueHooks.Apply();
 
@@ -235,7 +236,10 @@ public class ShadowOfLizards : BaseUnityPlugin
                     validTongues.Add("ZoopLizard");
 
                 if (ModManager.Watcher)
+                {
                     validTongues.Add("IndigoLizard");
+                    validTongues.Add("PeachLizard");
+                }
             }
             optionsMenuInstance = new ShadowOfOptions(this);
             MachineConnector.SetRegisteredOI("notsmartcat.shadowoflizards", optionsMenuInstance);
@@ -325,7 +329,7 @@ public class ShadowOfLizards : BaseUnityPlugin
                 {
                     if (creature.realizedCreature != null && creature.realizedCreature is Lizard liz && lizardstorage.TryGetValue(liz.abstractCreature, out LizardData data))
                     {
-                        if (ShadowOfOptions.tongue_ability.Value && data.liz.TryGetValue("Tongue", out _) && liz.lizardParams.tongue)
+                        if (ShadowOfOptions.tongue_ability.Value && data.liz.ContainsKey("Tongue") && liz.lizardParams.tongue)
                         {
                             if (ShadowOfOptions.debug_logs.Value)
                                 Debug.Log(all + liz.ToString() + "'s Mouth Hit by Debug");
@@ -335,16 +339,18 @@ public class ShadowOfLizards : BaseUnityPlugin
                             liz.tongue.Retract();
                         }
 
-                        if (data.liz.TryGetValue("CanSpit", out _) && liz.AI.redSpitAI != null)
+                        if (false && liz.AI.redSpitAI != null)
                         {
                             liz.animation = Lizard.Animation.Standard;
                             liz.AI.behavior = LizardAI.Behavior.Frustrated;
+                            liz.AI.redSpitAI.spitting = false;
+                            liz.AI.redSpitAI.wantToSpit = false;
                             liz.AI.modules.Remove(liz.AI.redSpitAI);
                             liz.AI.redSpitAI = null;
                             data.liz["CanSpit"] = "False";
                         }
 
-                        if (ShadowOfOptions.blind.Value && data.liz.TryGetValue("EyeLeft", out _) && data.liz["EyeLeft"] == "Normal")
+                        if (ShadowOfOptions.blind.Value && data.liz.TryGetValue("EyeLeft", out string eye) && eye == "Normal")
                         {
                             data.liz["EyeLeft"] = "Cut";
                             self.Blind(5);
@@ -429,7 +435,7 @@ public class ShadowOfLizards : BaseUnityPlugin
                 data.transformation = "Melted";
                 data.transformationTimer = receiver.abstractCreature.world.game.IsStorySession ? receiver.abstractCreature.world.game.GetStorySession.saveState.cycleNumber : 1;
 
-                if (!data.liz.TryGetValue("MeltedR", out string _))
+                if (!data.liz.ContainsKey("MeltedR"))
                 {
                     if (sender != null && sender is Lizard liz && lizardstorage.TryGetValue(liz.abstractCreature, out LizardData data2))
                     {
@@ -879,8 +885,7 @@ public class ShadowOfLizards : BaseUnityPlugin
             if (!lizardstorage.TryGetValue(abstractLizard, out LizardData data2))
             {
                 lizardstorage.Add(abstractLizard, new LizardData());
-                lizardstorage.TryGetValue(abstractLizard, out LizardData dat);
-                data2 = dat;
+                lizardstorage.TryGetValue(abstractLizard, out data2);
             }
 
             if (ShadowOfOptions.dynamic_cheat_death.Value)
@@ -895,6 +900,25 @@ public class ShadowOfLizards : BaseUnityPlugin
             data2.availableBodychunks = new();
             data2.armState = new(data.armState);
             data2.actuallyDead = true;
+
+            if (data.armState.Count == 4 || data.armState.Count == 6)
+            {
+                data.armState[2] = "Cut";
+                data.armState[3] = "Cut";
+            }
+
+            if (data2.armState.Count == 4)
+            {
+                data.armState[0] = "Cut";
+                data.armState[1] = "Cut";
+            }
+            else if (data2.armState.Count == 6)
+            {
+                data.armState[0] = "Cut";
+                data.armState[1] = "Cut";
+                data.armState[2] = "Cut";
+                data.armState[3] = "Cut";
+            }
 
             for (int i = index; i < self.bodyChunks.Count() && data.availableBodychunks.Contains(i); i++)
             {
@@ -1206,6 +1230,24 @@ public class ShadowOfLizards : BaseUnityPlugin
                         }
                     }
                 }
+
+                else if (graphics.cosmetics[c] is Watcher.PeachBackFin peachBackFin)
+                {
+                    for (int i = peachBackFin.startSprite + peachBackFin.numberOfSprites - 1; i >= peachBackFin.startSprite; i--)
+                    {
+                        float num = Mathf.InverseLerp((float)peachBackFin.startSprite, (float)(peachBackFin.startSprite + peachBackFin.numberOfSprites - 1), (float)i);
+                        float num2 = Mathf.Lerp(0.05f, peachBackFin.spineLength, num);
+
+                        if (!availableBodychunks.Contains(1) && num2 <= num3)
+                        {
+                            sLeaser.sprites[i].isVisible = false;
+                        }
+                        if (!availableBodychunks.Contains(2) && num2 > num3)
+                        {
+                            sLeaser.sprites[i].isVisible = false;
+                        }
+                    }
+                }
             }
         }
         catch (Exception e) { Logger.LogError(e); }
@@ -1220,6 +1262,13 @@ public class ShadowOfLizards : BaseUnityPlugin
 
             LizardGraphics graphicsModule = (LizardGraphics)self.graphicsModule;
 
+            if (self.LizardState.limbHealth.Length < limbNum)
+            {
+                Debug.Log(all + "LizCutLeg object could not be properily created due to the: " + limbNum + " Limb number being greater then the actual legs");
+                Logger.LogError(all + "LizCutLeg object could not be properily created due to the: " + limbNum + " Limb number being greater then the actual legs");
+                return;
+            }
+            
             self.LizardState.limbHealth[limbNum] = 0f;
 
             graphicsModule.limbs[limbNum].currentlyDisabled = true;
@@ -1315,6 +1364,8 @@ public class ShadowOfLizards : BaseUnityPlugin
             if (ShadowOfOptions.dynamic_cheat_death.Value)
                 data.cheatDeathChance -= 50;
 
+            data.liz["BeheadedSprite"] = UnityEngine.Random.Range(0, 4).ToString();
+
             data.availableBodychunks.Remove(0);
 
             SpriteLeaser sLeaser = data.sLeaser;
@@ -1332,7 +1383,7 @@ public class ShadowOfLizards : BaseUnityPlugin
             FSprite[] sprites = data.sLeaser.sprites;
 
             bool validHead = true;
-            if (!Futile.atlasManager.DoesContainElementWithName(sprites[graphicsModule.SpriteHeadStart + 3].element.name + "Cut2"))
+            if (!Futile.atlasManager.DoesContainElementWithName(sprites[graphicsModule.SpriteHeadStart + 3].element.name + "Cut"))
             {
                 validHead = false;
 
@@ -1468,17 +1519,77 @@ public class ShadowOfLizards : BaseUnityPlugin
 
     public static void Eviscerate(Lizard self)
     {
+        if (!lizardstorage.TryGetValue(self.abstractCreature, out LizardData data))
+        {
+            return;
+        }
+
         if (ShadowOfOptions.blood.Value && ShadowOfOptions.blood_emitter.Value && BloodColoursCheck(self.Template.type.ToString()))
-            BloodEmitter(lizardstorage.TryGetValue(self.abstractCreature, out LizardData data) ? data : null, bloodcolours[self.Template.type.ToString()]);
+            BloodEmitter(bloodcolours[self.Template.type.ToString()]);
+
+        if (false && self.LizardState.meatLeft > 0)
+        {
+            IntVector2 tilePosition = self.room.GetTilePosition(self.bodyChunks[1].pos);
+            WorldCoordinate pos = new(self.room.abstractRoom.index, tilePosition.x, tilePosition.y, 0);
+
+            for (int i = self.LizardState.meatLeft; i > 0; i--)
+            {
+                if (i >= 4)
+                {
+                    BigChunk(pos);
+                    i -= 3;
+                    continue;
+                }
+                BigChunk(pos);
+            }
+        }
 
         self.Destroy();
 
-        void BloodEmitter(LizardData data, Color colour)
+        void BloodEmitter(Color colour)
         {
             for(int i = 0; i < (data != null ? data.availableBodychunks.Count * 100 : 300); i++)
             {
                 self.room.AddObject(new BloodParticle(self.bodyChunks[0].pos, new Vector2(UnityEngine.Random.Range(-100f, 100f), UnityEngine.Random.Range(-100f, 100f)), colour, self.Template.type.value, null, UnityEngine.Random.Range(100f, 700f)));
             }
+        }
+
+        void BigChunk(WorldCoordinate pos)
+        {
+            LizardGraphics graphicsModule = (LizardGraphics)self.graphicsModule;
+
+            string template = self.Template.type.ToString();
+
+            LizBigChunkAbstract LizBigChunkAbstract = new(self.room.world, pos, self.room.game.GetNewID())
+            {
+                hue = 1f,
+                saturation = 0.5f,
+
+                rad = self.bodyChunks[1].rad,
+
+                breed = template,
+
+                bodyColourR = graphicsModule.ivarBodyColor.r,
+                bodyColourG = graphicsModule.ivarBodyColor.g,
+                bodyColourB = graphicsModule.ivarBodyColor.b,
+
+                bloodColourR = BloodColoursCheck(template) ? bloodcolours[template].r : -1f,
+                bloodColourG = BloodColoursCheck(template) ? bloodcolours[template].g : -1f,
+                bloodColourB = BloodColoursCheck(template) ? bloodcolours[template].b : -1f,
+
+                effectColourR = self.effectColor.r,
+                effectColourG = self.effectColor.g,
+                effectColourB = self.effectColor.b,
+
+                spriteVariant = 0,
+
+                blackSalamander = graphicsModule.blackSalamander,
+
+                canCamo = CanCamoCheck(data, template)
+            };
+
+            self.room.abstractRoom.AddEntity(LizBigChunkAbstract);
+            LizBigChunkAbstract.RealizeInRoom();
         }
     }
     #endregion

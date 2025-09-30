@@ -150,8 +150,7 @@ internal class TransformationElectric
         if (!shockSpit.TryGetValue(self, out ElectricSpit data2))
         {
             shockSpit.Add(self, new ElectricSpit());
-            shockSpit.TryGetValue(self, out ElectricSpit dat2);
-            data2 = dat2;
+            shockSpit.TryGetValue(self, out data2);
         }
 
         data2.electricColorTimer = (lizard.graphicsModule != null && graphicstorage.TryGetValue(lizard.graphicsModule as LizardGraphics, out GraphicsData data3)) ? data3.electricColorTimer : 0;
