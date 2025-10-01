@@ -8,6 +8,7 @@ internal sealed class LizBigChunkAbstract : AbstractPhysicalObject
     public float saturation;
 
     public float rad;
+    public float mass;
 
     public string breed;
 
@@ -23,11 +24,15 @@ internal sealed class LizBigChunkAbstract : AbstractPhysicalObject
     public float bloodColourG;
     public float bloodColourB;
 
-    public int spriteVariant;
-
     public bool blackSalamander;
 
     public bool canCamo;
+
+    public int insideVariant;
+    public int outsideVariant;
+
+    public int insideRotation;
+    public int outsideRotation;
 
     public LizBigChunkAbstract(World world, WorldCoordinate pos, EntityID ID) : base(world, LizBigChunkFisobs.AbstrLizBigChunk, null, pos, ID)
     {
@@ -41,6 +46,6 @@ internal sealed class LizBigChunkAbstract : AbstractPhysicalObject
 
     public override string ToString()
     {
-        return this.SaveToString($"{hue};{saturation};{rad};{breed};{bodyColourR};{bodyColourG};{bodyColourB};{effectColourR};{effectColourG};{effectColourB};{bloodColourR};{bloodColourG};{bloodColourB};{spriteVariant};{blackSalamander};{canCamo}");
+        return this.SaveToString($"{hue};{saturation};{rad};{mass};{breed};{bodyColourR};{bodyColourG};{bodyColourB};{effectColourR};{effectColourG};{effectColourB};{bloodColourR};{bloodColourG};{bloodColourB};{blackSalamander};{canCamo};{insideVariant};{outsideVariant};{insideRotation};{outsideRotation}");
     }
 }

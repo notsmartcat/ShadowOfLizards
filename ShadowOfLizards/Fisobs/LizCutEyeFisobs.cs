@@ -21,9 +21,9 @@ sealed class LizCutEyeFisobs : Fisob
     {
         string[] array = saveData.CustomData.Split(';');
 
-        if (array.Length < 9)
+        if (array.Length < 10)
         {
-            array = new string[9];
+            array = new string[10];
         }
 
         return new LizCutEyeAbstract(world, saveData.Pos, saveData.ID)

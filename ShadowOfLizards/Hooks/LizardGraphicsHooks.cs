@@ -99,10 +99,8 @@ internal class LizardGraphicsHooks
                 int num13 = 3 - (int)(Mathf.Abs(num) * 3.9f);
 
                 sLeaser.sprites[self.SpriteHeadStart + 3].element = Futile.atlasManager.GetElementWithName("LizardHeadStump" + num13 + "." + (data.liz.TryGetValue("BeheadedSprite", out string sprite) ? sprite : "0") + "Cut");
-                if (self.lizard.Template.type != WatcherEnums.CreatureTemplateType.IndigoLizard || self.lizard.Template.type == WatcherEnums.CreatureTemplateType.IndigoLizard && bloodcolours == null)
-                {
-                    sLeaser.sprites[self.SpriteHeadStart + 3].color = BloodColoursCheck(self.lizard.Template.type.ToString()) ? bloodcolours[self.lizard.Template.type.ToString()] : self.effectColor;
-                }
+
+                sLeaser.sprites[self.SpriteHeadStart + 3].color = BloodColoursCheck(self.lizard.Template.type.ToString()) ? bloodcolours[self.lizard.Template.type.ToString()] : (ModManager.Watcher && self.lizard.Template.type == WatcherEnums.CreatureTemplateType.IndigoLizard) ? Color.Lerp(self.effectColor, self.palette.blackColor, 0.5f) : self.effectColor;
 
                 sLeaser.sprites[self.SpriteHeadStart + 3].anchorY = 0.0f;
 
@@ -112,6 +110,9 @@ internal class LizardGraphicsHooks
                 sLeaser.sprites[self.SpriteHeadStart + 3].x = pos.x;
                 sLeaser.sprites[self.SpriteHeadStart + 3].y = pos.y;
                 sLeaser.sprites[self.SpriteHeadStart + 3].rotation = Custom.AimFromOneVectorToAnother(self.lizard.bodyChunks[1].pos, self.lizard.bodyChunks[0].pos);
+
+                sLeaser.sprites[self.SpriteHeadStart + 3].scaleX = 1f;
+                sLeaser.sprites[self.SpriteHeadStart + 3].scaleY = 1f;
 
                 for (int i = self.SpriteHeadStart; i < self.SpriteHeadEnd; i++)
                 {
@@ -472,7 +473,7 @@ internal class LizardGraphicsHooks
                         sLeaser.sprites[data2.cutHalfSprites].element = Futile.atlasManager.GetElementWithName("LizardCutHalf1");
                         sLeaser.sprites[data2.cutHalfSprites + 1].element = Futile.atlasManager.GetElementWithName("LizardCutHalf12");
 
-                        sLeaser.sprites[data2.cutHalfSprites].color = BloodColoursCheck(self.lizard.Template.type.ToString()) ? bloodcolours[self.lizard.Template.type.ToString()] : self.effectColor;
+                        sLeaser.sprites[data2.cutHalfSprites].color = BloodColoursCheck(self.lizard.Template.type.ToString()) ? bloodcolours[self.lizard.Template.type.ToString()] : (ModManager.Watcher && self.lizard.Template.type == WatcherEnums.CreatureTemplateType.IndigoLizard) ? Color.Lerp(self.effectColor, self.palette.blackColor, 0.5f) : self.effectColor;
                         sLeaser.sprites[data2.cutHalfSprites + 1].color = Color.white;
 
                         CutInHalfGraphics(self, sLeaser, availableBodychunks, camPos, timeStacker);
@@ -511,7 +512,7 @@ internal class LizardGraphicsHooks
                         sLeaser.sprites[data2.cutHalfSprites].element = Futile.atlasManager.GetElementWithName("LizardCutHalf1");
                         sLeaser.sprites[data2.cutHalfSprites + 1].element = Futile.atlasManager.GetElementWithName("LizardCutHalf12");
 
-                        sLeaser.sprites[data2.cutHalfSprites].color = BloodColoursCheck(self.lizard.Template.type.ToString()) ? bloodcolours[self.lizard.Template.type.ToString()] : self.effectColor;
+                        sLeaser.sprites[data2.cutHalfSprites].color = BloodColoursCheck(self.lizard.Template.type.ToString()) ? bloodcolours[self.lizard.Template.type.ToString()] : (ModManager.Watcher && self.lizard.Template.type == WatcherEnums.CreatureTemplateType.IndigoLizard) ? Color.Lerp(self.effectColor, self.palette.blackColor, 0.5f) : self.effectColor;
                         sLeaser.sprites[data2.cutHalfSprites + 1].color = Color.white;
 
                         CutInHalfGraphics(self, sLeaser, availableBodychunks, camPos, timeStacker);

@@ -193,6 +193,7 @@ public class ShadowOfLizards : BaseUnityPlugin
             Content.Register(new IContent[1] { new LizCutEyeFisobs() });
 
             Content.Register(new IContent[1] { new LizBigChunkFisobs() });
+            Content.Register(new IContent[1] { new LizSmallChunkFisobs() });
             #endregion
 
             #region Applying other hooks
@@ -1527,7 +1528,7 @@ public class ShadowOfLizards : BaseUnityPlugin
         if (ShadowOfOptions.blood.Value && ShadowOfOptions.blood_emitter.Value && BloodColoursCheck(self.Template.type.ToString()))
             BloodEmitter(bloodcolours[self.Template.type.ToString()]);
 
-        if (false && self.LizardState.meatLeft > 0)
+        if (self.LizardState.meatLeft > 0)
         {
             IntVector2 tilePosition = self.room.GetTilePosition(self.bodyChunks[1].pos);
             WorldCoordinate pos = new(self.room.abstractRoom.index, tilePosition.x, tilePosition.y, 0);
@@ -1540,7 +1541,7 @@ public class ShadowOfLizards : BaseUnityPlugin
                     i -= 3;
                     continue;
                 }
-                BigChunk(pos);
+                SmallChunk(pos);
             }
         }
 
@@ -1566,6 +1567,7 @@ public class ShadowOfLizards : BaseUnityPlugin
                 saturation = 0.5f,
 
                 rad = self.bodyChunks[1].rad,
+                mass = self.bodyChunks[1].mass,
 
                 breed = template,
 
@@ -1581,15 +1583,59 @@ public class ShadowOfLizards : BaseUnityPlugin
                 effectColourG = self.effectColor.g,
                 effectColourB = self.effectColor.b,
 
-                spriteVariant = 0,
-
                 blackSalamander = graphicsModule.blackSalamander,
 
-                canCamo = CanCamoCheck(data, template)
+                canCamo = CanCamoCheck(data, template),
+
+                insideVariant = UnityEngine.Random.Range(0, 6),
+                outsideVariant = UnityEngine.Random.Range(0, 6),
+
+                insideRotation = UnityEngine.Random.Range(0, 360),
+                outsideRotation = UnityEngine.Random.Range(0, 360)
             };
 
             self.room.abstractRoom.AddEntity(LizBigChunkAbstract);
             LizBigChunkAbstract.RealizeInRoom();
+        }
+
+        void SmallChunk(WorldCoordinate pos)
+        {
+            LizardGraphics graphicsModule = (LizardGraphics)self.graphicsModule;
+
+            string template = self.Template.type.ToString();
+
+            LizSmallChunkAbstract LizSmallChunkAbstract = new(self.room.world, pos, self.room.game.GetNewID())
+            {
+                hue = 1f,
+                saturation = 0.5f,
+
+                breed = template,
+
+                bodyColourR = graphicsModule.ivarBodyColor.r,
+                bodyColourG = graphicsModule.ivarBodyColor.g,
+                bodyColourB = graphicsModule.ivarBodyColor.b,
+
+                bloodColourR = BloodColoursCheck(template) ? bloodcolours[template].r : -1f,
+                bloodColourG = BloodColoursCheck(template) ? bloodcolours[template].g : -1f,
+                bloodColourB = BloodColoursCheck(template) ? bloodcolours[template].b : -1f,
+
+                effectColourR = self.effectColor.r,
+                effectColourG = self.effectColor.g,
+                effectColourB = self.effectColor.b,
+
+                blackSalamander = graphicsModule.blackSalamander,
+
+                canCamo = CanCamoCheck(data, template),
+
+                insideVariant = UnityEngine.Random.Range(0, 6),
+                outsideVariant = UnityEngine.Random.Range(0, 6),
+
+                insideRotation = UnityEngine.Random.Range(0, 360),
+                outsideRotation = UnityEngine.Random.Range(0, 360)
+            };
+
+            self.room.abstractRoom.AddEntity(LizSmallChunkAbstract);
+            LizSmallChunkAbstract.RealizeInRoom();
         }
     }
     #endregion

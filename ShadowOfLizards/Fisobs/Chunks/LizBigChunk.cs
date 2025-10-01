@@ -1,10 +1,11 @@
 using RWCustom;
+using System.Security.Policy;
 using UnityEngine;
 using static RoomCamera;
 
 namespace ShadowOfLizards;
 
-internal sealed class LizBigChunk : PlayerCarryableItem, IDrawable, IPlayerEdible
+internal sealed class LizBigChunk : PlayerCarryableItem, IDrawable
 {
     #region Public
     public AbstractConsumable AbstrConsumable
@@ -17,13 +18,8 @@ internal sealed class LizBigChunk : PlayerCarryableItem, IDrawable, IPlayerEdibl
 
     public override float ThrowPowerFactor => 1f;
 
-    public int bites = 6;
-    public int BitesLeft => bites;
-    public int FoodPoints => 4;
-
-    public bool Edible => true;
-
-    public bool AutomaticPickUp => false;
+    public int meatLeft = 4;
+    public int eatMeat = 0;
     #endregion
 
     #region Private
@@ -63,9 +59,8 @@ internal sealed class LizBigChunk : PlayerCarryableItem, IDrawable, IPlayerEdibl
     {
         Abstr = abstr;
 
-        float num = 0.2f;
         bodyChunks = new BodyChunk[1];
-        bodyChunks[0] = new BodyChunk(this, 0, Vector2.zero, Abstr.rad, num);
+        bodyChunks[0] = new BodyChunk(this, 0, Vector2.zero, Abstr.rad, Abstr.mass);
         bodyChunkConnections = new BodyChunkConnection[0];
         airFriction = 0.999f;
         gravity = 0.9f;
@@ -95,11 +90,11 @@ internal sealed class LizBigChunk : PlayerCarryableItem, IDrawable, IPlayerEdibl
             room.PlaySound(SoundID.Lizard_Light_Terrain_Impact, firstChunk.pos, 0.35f, 2f);
 
             if (ShadowOfLizards.bloodModCheck && ShadowOfOptions.blood_emitter.Value && ShadowOfOptions.blood_emitter_impact.Value)
-                LizCutLegBloodEmitter();
+                BloodEmitter();
         }
     }
 
-    private void LizCutLegBloodEmitter()
+    private void BloodEmitter()
     {
         room.AddObject(new BloodParticle(bodyChunks[0].pos, new Vector2(Random.Range(-3f, 3f), Random.Range(5f, 10f)), bloodColour, Abstr.breed, null, 2.3f));
     }
@@ -117,35 +112,25 @@ internal sealed class LizBigChunk : PlayerCarryableItem, IDrawable, IPlayerEdibl
         }
     }
 
-    private Color BodyColor(float f)
+    private Color BodyColor
     {
-        if (Abstr.breed == "SpitLizard" || Abstr.breed == "ZoopLizard")
+        get
         {
-            return bodyColour;
-        }
-        if (Abstr.breed == "WhiteLizard")
-        {
-            return Abstr.canCamo ? DynamicBodyColor(f) : new Color(1f, 1f, 1f);
-        }
-        if (Abstr.breed == "Salamander")
-        {
-            return SalamanderColor;
-        }
+            if (Abstr.breed == "SpitLizard" || Abstr.breed == "ZoopLizard")
+            {
+                return Abstr.canCamo ? Camo(bodyColour) : bodyColour;
+            }
+            if (Abstr.breed == "WhiteLizard")
+            {
+                return Abstr.canCamo ? Camo(new Color(1f, 1f, 1f)) : new Color(1f, 1f, 1f);
+            }
+            if (Abstr.breed == "Salamander")
+            {
+                return Abstr.canCamo ? Camo(SalamanderColor) : SalamanderColor;
+            }
 
-        return palette.blackColor;
-    }
-
-    private Color DynamicBodyColor(float f)
-    {
-        if (Abstr.breed == "WhiteLizard")
-        {
-            return Color.Lerp(new Color(1f, 1f, 1f), whiteCamoColor, whiteCamoColorAmount);
+            return Abstr.canCamo ? Camo(palette.blackColor) : palette.blackColor;
         }
-        if (Abstr.breed == "Salamander")
-        {
-            return SalamanderColor;
-        }
-        return palette.blackColor;
     }
 
     private Color SalamanderColor
@@ -158,6 +143,12 @@ internal sealed class LizBigChunk : PlayerCarryableItem, IDrawable, IPlayerEdibl
             }
             return Color.Lerp(new Color(0.9f, 0.9f, 0.95f), EffectColor, 0.06f);
         }
+    }
+
+    private void Flicker(int fl)
+    {
+        if (fl > flicker)
+            flicker = fl;
     }
 
     private Color Camo(Color col)
@@ -173,11 +164,19 @@ internal sealed class LizBigChunk : PlayerCarryableItem, IDrawable, IPlayerEdibl
         bloodColour = (Abstr.bloodColourR != -1f) ? new Color(Abstr.bloodColourR, Abstr.bloodColourG, Abstr.bloodColourB) : effectColour;
 
         sLeaser.sprites = new FSprite[2];
-        sLeaser.sprites[0] = new FSprite("mouseEyeA1", true);
-        sLeaser.sprites[1] = new FSprite("mouseEyeA1", true);
+        sLeaser.sprites[0] = new FSprite("BigChunkInside" + Abstr.insideVariant, true);
+        sLeaser.sprites[1] = new FSprite("BigChunkOutside" + Abstr.outsideVariant, true);
 
-        sLeaser.sprites[0].color = bloodColour;
+        sLeaser.sprites[0].color = Abstr.bloodColourR != -1f ? bloodColour : EffectColor;
         sLeaser.sprites[1].color = bodyColour;
+
+        sLeaser.sprites[0].rotation = Abstr.insideRotation;
+        sLeaser.sprites[1].rotation = Abstr.outsideRotation;
+
+        sLeaser.sprites[0].scaleX = bodyChunks[0].rad * 0.1f;
+        sLeaser.sprites[0].scaleY = bodyChunks[0].rad * 0.1f;
+        sLeaser.sprites[1].scaleX = bodyChunks[0].rad * 0.1f;
+        sLeaser.sprites[1].scaleY = bodyChunks[0].rad * 0.1f;
 
         AddToContainer(sLeaser, rCam, null);
     }
@@ -186,7 +185,7 @@ internal sealed class LizBigChunk : PlayerCarryableItem, IDrawable, IPlayerEdibl
     {
         if (Abstr.canCamo || Abstr.breed == "ZoopLizard")
         {
-            sLeaser.sprites[1].color = BodyColor(0f);
+            sLeaser.sprites[1].color = BodyColor;
             whitePickUpColor = rCam.PixelColorAtCoordinate(bodyChunks[0].pos);
 
             whiteCamoColor = whitePickUpColor;
@@ -206,7 +205,6 @@ internal sealed class LizBigChunk : PlayerCarryableItem, IDrawable, IPlayerEdibl
         Vector2 pos = Vector2.Lerp(firstChunk.lastPos, firstChunk.pos, timeStacker);
         float num = Mathf.InverseLerp(305f, 380f, timeStacker);
         pos.y -= 20f * Mathf.Pow(num, 3f);
-        float num2 = Mathf.Pow(1f - num, 0.25f);
 
         lastDarkness = darkness;
         darkness = rCam.room.Darkness(pos);
@@ -216,39 +214,13 @@ internal sealed class LizBigChunk : PlayerCarryableItem, IDrawable, IPlayerEdibl
         {
             sLeaser.sprites[i].x = pos.x - camPos.x;
             sLeaser.sprites[i].y = pos.y - camPos.y;
-            sLeaser.sprites[i].rotation = Custom.VecToDeg(vector2);
         }
 
-        if (Abstr.breed == "WhiteLizard")
-        {
-            sLeaser.sprites[1].color = new Color(1f, 1f, 1f);
-        }
-        else if (Abstr.breed == "SpitLizard" || Abstr.breed == "ZoopLizard")
-        {
-            sLeaser.sprites[1].color = bodyColour;
-        }
-        else if (Abstr.breed == "Salamander")
-        {
-            sLeaser.sprites[1].color = SalamanderColor;
-        }
-        else
-        {
-            sLeaser.sprites[1].color = palette.blackColor;
-        }
+        sLeaser.sprites[0].rotation = Custom.VecToDeg(vector2) + Abstr.insideRotation;
+        sLeaser.sprites[1].rotation = Custom.VecToDeg(vector2) + Abstr.outsideRotation;
 
-        if (Abstr.canCamo)
-        {
-            sLeaser.sprites[1].color = Camo(sLeaser.sprites[1].color);
-        }
-
-        if (Abstr.bloodColourR != -1f)
-        {
-            sLeaser.sprites[0].color = bloodColour;
-        }
-        else
-        {
-            sLeaser.sprites[0].color = EffectColor;
-        }
+        sLeaser.sprites[0].color = Abstr.bloodColourR == -1 ? Abstr.breed == "IndigoLizard" ? Color.Lerp(effectColour, palette.blackColor, 0.5f) : EffectColor : bloodColour;
+        sLeaser.sprites[1].color = BodyColor;
 
         if (flicker > sourceCodeLizardsFlickerThreshold)
         {
@@ -285,22 +257,6 @@ internal sealed class LizBigChunk : PlayerCarryableItem, IDrawable, IPlayerEdibl
             Vector3 vector = Custom.RGB2HSL(EffectColor);
             palette.blackColor = Color.Lerp(new HSLColor(vector.x, vector.y, 0.4f).rgb, palette.blackColor, 0.95f);
             this.palette = palette;
-        }
-        if (Abstr.breed == "WhiteLizard")
-        {
-            sLeaser.sprites[0].color = new Color(1f, 1f, 1f);
-        }
-        else if (Abstr.breed == "SpitLizard" || Abstr.breed == "ZoopLizard")
-        {
-            sLeaser.sprites[0].color = bodyColour;
-        }
-        else if (Abstr.breed == "Salamander")
-        {
-            sLeaser.sprites[0].color = SalamanderColor;
-        }
-        else
-        {
-            sLeaser.sprites[0].color = palette.blackColor;
         }
     }
 
@@ -343,14 +299,21 @@ internal sealed class LizBigChunk : PlayerCarryableItem, IDrawable, IPlayerEdibl
 
         if (grabbedBy.Count > 0)
         {
-            rotation = Custom.PerpendicularVector(Custom.DirVec(firstChunk.pos, grabbedBy[0].grabber.mainBodyChunk.pos));
-            rotation.y = Mathf.Abs(rotation.y);
-        }
+            if (grabbedBy[0].grabber is Player slug && CanEatMeat(slug) && slug.input[0].pckp)
+            {
+                int num11 = 0;
+                if (ModManager.MMF && (slug.grasps[0] == null || !(slug.grasps[0].grabbed is LizBigChunk)) && slug.grasps[1] != null && slug.grasps[1].grabbed is LizBigChunk)
+                {
+                    num11 = 1;
+                }
 
-        if (setRotation.HasValue)
-        {
-            rotation = setRotation.Value;
-            setRotation = null;
+                eatMeat++;
+                EatMeatUpdate(slug, num11, eu);
+            }
+            else
+            {
+                eatMeat = 0;
+            }
         }
 
         if (firstChunk.ContactPoint.y < 0)
@@ -361,29 +324,81 @@ internal sealed class LizBigChunk : PlayerCarryableItem, IDrawable, IPlayerEdibl
 
         if (Abstr.canCamo)
         {
-            whiteCamoColorAmount = Mathf.Clamp(Mathf.Lerp(whiteCamoColorAmount, 1, 0.1f * UnityEngine.Random.value), 0.15f, 1f);
+            whiteCamoColorAmount = Mathf.Clamp(Mathf.Lerp(whiteCamoColorAmount, (0.25f * (float)meatLeft), 0.1f * Random.value), 0.15f, (0.25f * (float)meatLeft));
+        }
+
+        static bool CanEatMeat(Player slug)
+        {
+            if (ModManager.MSC && (slug.SlugCatClass == MoreSlugcats.MoreSlugcatsEnums.SlugcatStatsName.Saint || slug.SlugCatClass == MoreSlugcats.MoreSlugcatsEnums.SlugcatStatsName.Spear))
+            {
+                return false;
+            }
+            return (slug.slugcatStats.name == SlugcatStats.Name.Red || ModManager.MSC && (slug.slugcatStats.name == MoreSlugcats.MoreSlugcatsEnums.SlugcatStatsName.Artificer || slug.slugcatStats.name == MoreSlugcats.MoreSlugcatsEnums.SlugcatStatsName.Gourmand || slug.slugcatStats.name == MoreSlugcats.MoreSlugcatsEnums.SlugcatStatsName.Sofanthiel)) && (!ModManager.MSC || slug.pyroJumpCooldown <= 60f);
         }
     }
 
-    public void BitByPlayer(Creature.Grasp grasp, bool eu)
+    public void EatMeatUpdate(Player slug, int graspIndex, bool eu)
     {
-        bites--;
-        room.PlaySound((bites == 0) ? SoundID.Slugcat_Eat_Meat_A : SoundID.Slugcat_Eat_Meat_B, firstChunk.pos);
-        firstChunk.MoveFromOutsideMyUpdate(eu, grasp.grabber.mainBodyChunk.pos);
-
-        whiteCamoColorAmount = 0f;
-
-        if (ShadowOfLizards.bloodModCheck && ShadowOfOptions.blood_emitter.Value)
-            LizCutLegBloodEmitter();
-
-        if (bites < 1)
+        if (eatMeat > 20)
         {
-            if (ShadowOfLizards.bloodModCheck && ShadowOfOptions.blood_emitter.Value)
-                LizCutLegBloodEmitter();
+            slug.standing = false;
+            slug.Blink(5);
+            if (eatMeat % 5 == 0)
+            {
+                Vector2 b = Custom.RNV() * 3f;
+                slug.mainBodyChunk.pos += b;
+                slug.mainBodyChunk.vel += b;
+            }
+            Vector2 vector = bodyChunks[0].pos * bodyChunks[0].mass;
+            float num = bodyChunks[0].mass;
 
-            ((Player)grasp.grabber).ObjectEaten(this);
+            vector /= num;
+            slug.mainBodyChunk.vel += Custom.DirVec(slug.mainBodyChunk.pos, vector) * 0.5f;
+            slug.bodyChunks[1].vel -= Custom.DirVec(slug.mainBodyChunk.pos, vector) * 0.6f;
+            if (slug.graphicsModule != null && meatLeft > 0 && slug.FoodInStomach < slug.MaxFoodInStomach)
+            {
+                if (!Custom.DistLess(bodyChunks[0].pos, (slug.graphicsModule as PlayerGraphics).head.pos, bodyChunks[0].rad))
+                {
+                    (slug.graphicsModule as PlayerGraphics).head.vel += Custom.DirVec(bodyChunks[0].pos, (slug.graphicsModule as PlayerGraphics).head.pos) * (bodyChunks[0].rad - Vector2.Distance(bodyChunks[0].pos, (slug.graphicsModule as PlayerGraphics).head.pos));
+                }
+                else if (eatMeat % 5 == 3)
+                {
+                    (slug.graphicsModule as PlayerGraphics).head.vel += Custom.RNV() * 4f;
+                }
+                if (eatMeat > 40 && eatMeat % 15 == 3)
+                {
+                    slug.mainBodyChunk.pos += Custom.DegToVec(Mathf.Lerp(-90f, 90f, Random.value)) * 4f;
+                    bodyChunks[0].vel += Custom.DirVec(vector, slug.mainBodyChunk.pos) * 0.9f / bodyChunks[0].mass;
+                    for (int k = Random.Range(0, 3); k >= 0; k--)
+                    {
+                        slug.room.AddObject(new WaterDrip(Vector2.Lerp(bodyChunks[0].pos, slug.mainBodyChunk.pos, Random.value) + bodyChunks[0].rad * Custom.RNV() * Random.value, Custom.RNV() * 6f * Random.value + Custom.DirVec(vector, (slug.mainBodyChunk.pos + (slug.graphicsModule as PlayerGraphics).head.pos) / 2f) * 7f * Random.value + Custom.DegToVec(Mathf.Lerp(-90f, 90f, Random.value)) * Random.value * slug.EffectiveRoomGravity * 7f, false));
+                    }
+                    meatLeft--;
 
-            grasp.Release();
+                    slug.AddFood(1);
+
+                    whiteCamoColorAmount = 0f;
+                    Flicker(20);
+
+                    if (ShadowOfLizards.bloodModCheck && ShadowOfOptions.blood_emitter.Value)
+                        BloodEmitter();
+
+                    slug.room.PlaySound(SoundID.Slugcat_Eat_Meat_B, slug.mainBodyChunk);
+                    return;
+                }
+                if (eatMeat % 15 == 3)
+                {
+                    slug.room.PlaySound(SoundID.Slugcat_Eat_Meat_A, slug.mainBodyChunk);
+                }
+            }
+            else
+            {
+                eatMeat = 0;
+                slug.wantToPickUp = 0;
+                slug.TossObject(graspIndex, eu);
+                slug.ReleaseGrasp(graspIndex);
+                slug.standing = true;
+            }
         }
     }
 

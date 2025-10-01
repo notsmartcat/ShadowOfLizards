@@ -21,9 +21,9 @@ sealed class LizCutHeadFisobs : Fisob
     {
         string[] array = saveData.CustomData.Split(';');
 
-        if (array.Length < 32)
+        if (array.Length < 33)
         {
-            array = new string[32];
+            array = new string[33];
         }
 
         return new LizCutHeadAbstract(world, saveData.Pos, saveData.ID)

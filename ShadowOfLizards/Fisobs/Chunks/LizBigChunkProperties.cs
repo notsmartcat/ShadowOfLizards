@@ -12,6 +12,6 @@ sealed class LizBigChunkProperties : ItemProperties
 
     public override void Grabability(Player player, ref ObjectGrabability grabability)
     {
-        grabability = ObjectGrabability.Drag;
+        grabability = ObjectGrabability.TwoHands;
     }
 }

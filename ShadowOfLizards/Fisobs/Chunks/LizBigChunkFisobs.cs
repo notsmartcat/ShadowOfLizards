@@ -21,9 +21,9 @@ sealed class LizBigChunkFisobs : Fisob
     {
         string[] array = saveData.CustomData.Split(';');
 
-        if (array.Length < 17)
+        if (array.Length < 20)
         {
-            array = new string[17];
+            array = new string[20];
         }
 
         return new LizBigChunkAbstract(world, saveData.Pos, saveData.ID)
@@ -31,7 +31,8 @@ sealed class LizBigChunkFisobs : Fisob
             hue = float.TryParse(array[0], out float hue) ? hue : 0f,
             saturation = float.TryParse(array[1], out float sat) ? sat : 1f,
 
-            rad = float.TryParse(array[2], out float sX) ? sX : 1f,
+            rad = float.TryParse(array[2], out float rad) ? rad : 1f,
+            mass = float.TryParse(array[3], out float mass) ? mass : 1f,
 
             breed = (string.IsNullOrEmpty(array[4]) ? "GreenLizard" : array[4]),
 
@@ -47,11 +48,15 @@ sealed class LizBigChunkFisobs : Fisob
             bloodColourG = float.TryParse(array[12], out float bg) ? bg : -1f,
             bloodColourB = float.TryParse(array[13], out float bb) ? bb : -1f,
 
-            spriteVariant = int.TryParse(array[14], out int sv) ? sv : 0,
+            blackSalamander = bool.TryParse(array[14], out bool bs) && bs,
 
-            blackSalamander = bool.TryParse(array[16], out bool bs) && bs,
+            canCamo = bool.TryParse(array[15], out bool cc) && cc,
 
-            canCamo = bool.TryParse(array[17], out bool cc) && cc
+            insideVariant = int.TryParse(array[16], out int iv) ? iv : 0,
+            outsideVariant = int.TryParse(array[17], out int ov) ? ov : 0,
+
+            insideRotation = int.TryParse(array[18], out int ir) ? ir : 0,
+            outsideRotation = int.TryParse(array[19], out int or) ? or : 0
         };
     }
 

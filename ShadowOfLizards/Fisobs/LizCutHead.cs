@@ -597,14 +597,7 @@ sealed class LizCutHead : PlayerCarryableItem, IDrawable
             sLeaser.sprites[3].color = ElectricColor(Camo(HeadColor(timeStacker)));
         }
 
-        if (Abstr.breed != "IndigoLizard" || (Abstr.breed == "IndigoLizard" && Abstr.bloodColourR == -1f))
-        {
-            sLeaser.sprites[5].color = (Abstr.bloodColourR != -1f) ? bloodColour : ElectricColor(EffectColor);
-        }
-        else
-        {
-            sLeaser.sprites[5].color = ElectricColor(palette.blackColor);
-        }
+        sLeaser.sprites[5].color = Abstr.bloodColourR == -1 ? Abstr.breed == "IndigoLizard" ? ElectricColor(Color.Lerp(effectColour, palette.blackColor, 0.5f)) : ElectricColor(EffectColor) : bloodColour;
 
         if (slatedForDeletetion || room != rCam.room)
         {
@@ -636,9 +629,10 @@ sealed class LizCutHead : PlayerCarryableItem, IDrawable
         }
         else if (Abstr.breed == "IndigoLizard")
         {
-            Color IndigoColour = new Color(Abstr.effectColourR, Abstr.effectColourG, Abstr.effectColourB);
+            Color IndigoColour = new(Abstr.effectColourR, Abstr.effectColourG, Abstr.effectColourB);
 
             Vector3 vector = Custom.RGB2HSL(IndigoColour);
+            
             palette.blackColor = Color.Lerp(new HSLColor(vector.x, vector.y, 0.4f).rgb, palette.blackColor, 0.95f);
             this.palette = palette;
         }
