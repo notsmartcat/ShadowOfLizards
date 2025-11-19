@@ -31,7 +31,7 @@ internal class LizardHooks
     {
         orig(self, world, creatureTemplate, realizedCreature, pos, ID);
 
-        if (self == null || self.state == null || self.state.unrecognizedSaveStrings == null || creatureTemplate.TopAncestor().type != CreatureTemplate.Type.LizardTemplate)
+        if (self == null || self.state == null || self.state.unrecognizedSaveStrings == null || creatureTemplate.TopAncestor().type != CreatureTemplate.Type.LizardTemplate || !IsLizardValid(self.creatureTemplate.type.ToString()))
         {
             return;
         }
@@ -118,7 +118,9 @@ internal class LizardHooks
         {
             if (data.transformation == "Start")
             {
-                if (ShadowOfOptions.spider_transformation.Value && UnityEngine.Random.Range(0, 100) < ShadowOfOptions.spawn_spider_transformation_chance.Value)
+                int chance = UnityEngine.Random.Range(0, 100);
+
+                if (ShadowOfOptions.spider_transformation.Value && chance < ShadowOfOptions.spawn_spider_transformation_chance.Value)
                 {
                     data.transformation = "SpiderTransformation";
                     data.spiderLikness = 2;
@@ -130,7 +132,7 @@ internal class LizardHooks
 
                     return;
                 }
-                else if (ShadowOfOptions.electric_transformation.Value && UnityEngine.Random.Range(0, 100) < ShadowOfOptions.spawn_electric_transformation_chance.Value)
+                else if (ShadowOfOptions.electric_transformation.Value && !electricPorhibited.Contains(self.creatureTemplate.type.ToString()) && chance < ShadowOfOptions.spawn_electric_transformation_chance.Value)
                 {
                     data.transformation = "ElectricTransformation";
 
@@ -139,7 +141,7 @@ internal class LizardHooks
 
                     return;
                 }
-                else if (ShadowOfOptions.melted_transformation.Value && UnityEngine.Random.Range(0, 100) < ShadowOfOptions.spawn_melted_transformation_chance.Value)
+                else if (ShadowOfOptions.melted_transformation.Value && !meltedPorhibited.Contains(self.creatureTemplate.type.ToString()) && chance < ShadowOfOptions.spawn_melted_transformation_chance.Value)
                 {
                     data.transformation = "MeltedTransformation";
 
@@ -161,8 +163,74 @@ internal class LizardHooks
     {
         orig(self, s);
 
-        if (self.creature == null || self.creature.creatureTemplate == null || self.unrecognizedSaveStrings == null || self.creature.creatureTemplate.TopAncestor().type != CreatureTemplate.Type.LizardTemplate)
+        if (self.creature == null || self.creature.creatureTemplate == null || self.unrecognizedSaveStrings == null || self.creature.creatureTemplate.TopAncestor().type != CreatureTemplate.Type.LizardTemplate || !IsLizardValid(self.creature.creatureTemplate.type.ToString()) && !self.unrecognizedSaveStrings.ContainsKey("ShadowOfbeheaded"))
         {
+            return;
+        }
+
+        Dictionary<string, string> savedData = self.unrecognizedSaveStrings;
+
+        if (!IsLizardValid(self.creature.creatureTemplate.type.ToString()))
+        {
+            if (savedData.ContainsKey("ShadowOfbeheaded"))
+            {
+                if (ShadowOfOptions.debug_logs.Value)
+                    Debug.Log(all + "Removing saved info from " + self.creature + " Due to it no longer being valid");
+
+                savedData.Remove("ShadowOfbeheaded");
+
+                if (savedData.ContainsKey("ShadowOfLiz"))
+                {
+                    savedData.Remove("ShadowOfLiz");
+                }
+
+                if (savedData.ContainsKey("ShadowOfarmState"))
+                {
+                    savedData.Remove("ShadowOfarmState");
+                }
+
+                if (savedData.ContainsKey("ShadowOfTransformation"))
+                {
+                    savedData.Remove("ShadowOfTransformation");
+                }
+
+                if (savedData.ContainsKey("ShadowOfTransformationTimer"))
+                {
+                    savedData.Remove("ShadowOfTransformationTimer");
+                }
+
+                if (savedData.ContainsKey("ShadowOfCheatDeathChance"))
+                {
+                    savedData.Remove("ShadowOfCheatDeathChance");
+                }
+
+                if (savedData.ContainsKey("ShadowOfLizardUpdatedCycle"))
+                {
+                    savedData.Remove("ShadowOfLizardUpdatedCycle");
+                }
+
+                List<int> TempavailableBodychunks = new();
+
+                if (savedData.ContainsKey("ShadowOfAvailableBodychunks"))
+                {
+                    savedData.Remove("ShadowOfAvailableBodychunks");
+                }
+
+                if (savedData.ContainsKey("ShadowOfCosmeticBodychunks"))
+                {
+                    savedData.Remove("ShadowOfCosmeticBodychunks");
+                }
+
+                if (savedData.ContainsKey("ShadowOfCutAppendage"))
+                {
+                    savedData.Remove("ShadowOfCutAppendage");
+                }
+                if (savedData.ContainsKey("ShadowOfCutAppendageCycle"))
+                {
+                    savedData.Remove("ShadowOfCutAppendageCycle");
+                }
+            }
+
             return;
         }
 
@@ -184,7 +252,7 @@ internal class LizardHooks
         {
             creatureTemplate = self.creature.creatureTemplate;
 
-            Dictionary<string, string> savedData = self.unrecognizedSaveStrings;
+            savedData = self.unrecognizedSaveStrings;
 
             if (savedData.TryGetValue("ShadowOfbeheaded", out string beheaded)) //Loads info from the Lizard
             {
@@ -988,6 +1056,12 @@ internal class LizardHooks
             
             if (ShadowOfOptions.electric_transformation.Value && (data.transformation == "Electric" || data.transformation == "ElectricTransformation"))
             {
+                if (electricPorhibited.Contains(self.creature.creatureTemplate.type.ToString()))
+                {
+                    data.transformation = "Null";
+                    return;
+                }
+
                 if (data.transformationTimer <= 0)
                 {
                     data.transformation = "Null";
@@ -1011,6 +1085,12 @@ internal class LizardHooks
 
             if (ShadowOfOptions.melted_transformation.Value && (data.transformation == "Melted" || data.transformation == "MeltedTransformation"))
             {
+                if (meltedPorhibited.Contains(self.creature.creatureTemplate.type.ToString()))
+                {
+                    data.transformation = "Null";
+                    return;
+                }
+
                 if (data.transformation == "Melted" && (data.transformationTimer <= cycleNumber - 3 || data.transformationTimer >= cycleNumber + 3 || ShadowOfOptions.melted_transformation_skip.Value))
                 {
                     data.transformation = "MeltedTransformation";
@@ -1028,7 +1108,7 @@ internal class LizardHooks
                     data.liz.Remove("PreMeltedCycle");
                 }
             } //Melted Transformation
-            else if ((!ShadowOfOptions.melted_transformation.Value || data.transformation == "SpiderTransformation" || data.transformation == "ElectricTransformation") && data.liz.ContainsKey("PreMeltedCycle"))
+            else if ((!ShadowOfOptions.melted_transformation.Value || meltedPorhibited.Contains(self.creature.creatureTemplate.type.ToString()) || data.transformation == "SpiderTransformation" || data.transformation == "ElectricTransformation") && data.liz.ContainsKey("PreMeltedCycle"))
             {
                 data.liz.Remove("PreMeltedCycle");
             }
@@ -1058,10 +1138,20 @@ internal class LizardHooks
         {
             self.Die();
 
+            if (ShadowOfOptions.tongue_ability.Value && data.liz.ContainsKey("Tongue"))
+            {
+                self.lizardParams.tongue = self.tongue != null;
+            } //Tongue: Set Here
+
             Transformations();
 
             return;
         }
+
+        Debug.Log(self + " tongueAttackRange = " + self.lizardParams.tongueAttackRange);
+        Debug.Log(self + " tongueWarmUp = " + self.lizardParams.tongueWarmUp);
+        Debug.Log(self + " tongueSegments = " + self.lizardParams.tongueSegments);
+        Debug.Log(self + " tongueChance = " + self.lizardParams.tongueChance);
 
         try
         {
@@ -1543,6 +1633,30 @@ internal class LizardHooks
                     self.lizardParams.tongueSegments = 7;
                     self.lizardParams.tongueChance = 0.33333334f;
                     break;
+                case "NoodleEater":
+                    self.lizardParams.tongueAttackRange = 350f;
+                    self.lizardParams.tongueWarmUp = 2;
+                    self.lizardParams.tongueSegments = 7;
+                    self.lizardParams.tongueChance = 0.6f;
+                    break;
+                case "Polliwog":
+                    self.lizardParams.tongueAttackRange = 150f;
+                    self.lizardParams.tongueWarmUp = 8;
+                    self.lizardParams.tongueSegments = 7;
+                    self.lizardParams.tongueChance = 0.3333333f;
+                    break;
+                case "HunterSeeker":
+                    self.lizardParams.tongueAttackRange = 440f;
+                    self.lizardParams.tongueWarmUp = 80;
+                    self.lizardParams.tongueSegments = 10;
+                    self.lizardParams.tongueChance = 0.1f;
+                    break;
+                case "MoleSalamander":
+                    self.lizardParams.tongueAttackRange = 150f;
+                    self.lizardParams.tongueWarmUp = 8;
+                    self.lizardParams.tongueSegments = 7;
+                    self.lizardParams.tongueChance = 0.3333333f;
+                    break;
                 default:
                     Debug.Log(all + "Failed Getting the " + Tongue + " Tongue for " + self);
                     ShadowOfLizards.Logger.LogError(all + "Failed Getting the " + Tongue + " Tongue for " + self);
@@ -1617,6 +1731,14 @@ internal class LizardHooks
             bool sourceValidTypeFlag = (source == null && type == Creature.DamageType.Explosion && damage > 0.5f) || (source != null && (source.owner == null || (source.owner != null && source.owner is not JellyFish && source.owner is not Leech && source.owner is not DartMaggot)));
 
             #region Electric Damage Reduction
+            if (type == Creature.DamageType.Bite && sourceOwnerFlag && source.owner is Lizard sourceLiz && lizardstorage.TryGetValue(sourceLiz.abstractCreature, out LizardData sourceData) && (sourceData.transformation == "Electric" || sourceData.transformation == "ElectricTransformation"))
+            {
+                self.Violence(source, directionAndMomentum, hitChunk, onAppendagePos, Creature.DamageType.Electric, damage / 2, stunBonus / 2);
+
+                if (ShadowOfOptions.debug_logs.Value)
+                    Debug.Log(all + source.owner.ToString() + "'s Bite dealt additional Electric damage to " + self.ToString());
+            }
+
             if (type == Creature.DamageType.Electric && (data.transformation == "Electric" || data.transformation == "ElectricTransformation"))
             {
                 if (ShadowOfOptions.debug_logs.Value)
@@ -2428,7 +2550,7 @@ internal class LizardHooks
                         data.cheatDeathChance += 5;
                 }
 
-                if (ShadowOfOptions.melted_transformation.Value && data.transformation != "SpiderTransformation" && data.transformation != "ElectricTransformation" && data.transformation != "Melted" && data.transformation != "MeltedTransformation" && CWTCycleCheck(data, "PreMeltedCycle", cycleNumber))
+                if (ShadowOfOptions.melted_transformation.Value && !meltedPorhibited.Contains(self.Template.type.ToString()) && data.transformation != "SpiderTransformation" && data.transformation != "ElectricTransformation" && data.transformation != "Melted" && data.transformation != "MeltedTransformation" && CWTCycleCheck(data, "PreMeltedCycle", cycleNumber))
                 {
                     data.liz["PreMeltedCycle"] = cycleNumber.ToString();
                     TransformationMelted.MeltedLizardUpdate(self, data);
@@ -2631,14 +2753,13 @@ internal class LizardHooks
             #endregion
 
             #region Transformations
-            if (ShadowOfOptions.melted_transformation.Value && ShadowOfOptions.melted_regrowth.Value && ShadowOfOptions.eat_lizard.Value && liz != null && data.transformation != "SpiderTransformation" && data.transformation != "ElectricTransformation" &&
-                ((data2.transformation == "MeltedTransformation" && Chance(self, ShadowOfOptions.melted_regrowth_chance.Value, "Melted Regrowth by eating " + (Creature)self.grasps[0].grabbed)) || (data2.transformation == "Melted" && Chance(self, ShadowOfOptions.melted_regrowth_chance.Value * 0.5f, "Melted Regrowth by eating " + (Creature)self.grasps[0].grabbed))))
+            if (ShadowOfOptions.melted_transformation.Value && ShadowOfOptions.melted_regrowth.Value && ShadowOfOptions.eat_lizard.Value && !meltedPorhibited.Contains(self.Template.type.ToString()) && liz != null && data.transformation != "SpiderTransformation" && data.transformation != "ElectricTransformation" && ((data2.transformation == "MeltedTransformation" && Chance(self, ShadowOfOptions.melted_regrowth_chance.Value, "Melted Regrowth by eating " + (Creature)self.grasps[0].grabbed)) || (data2.transformation == "Melted" && Chance(self, ShadowOfOptions.melted_regrowth_chance.Value * 0.5f, "Melted Regrowth by eating " + (Creature)self.grasps[0].grabbed))))
             {
                 TransformationMelted.MeltedEatRegrowth(self, liz, data, data2);
                 return;
             }
 
-            if (ShadowOfOptions.electric_transformation.Value && ShadowOfOptions.electric_regrowth.Value && (data.transformation == "Null" || data.transformation == "Electric" || data.transformation == "Spider"))
+            if (ShadowOfOptions.electric_transformation.Value && ShadowOfOptions.electric_regrowth.Value && !electricPorhibited.Contains(self.Template.type.ToString()) && (data.transformation == "Null" || data.transformation == "Electric" || data.transformation == "Spider"))
             {
                 TransformationElectric.ElectricEatRegrowth(self, liz, data, data2);
                 return;

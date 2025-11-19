@@ -125,7 +125,7 @@ internal class TransformationMelted
             data.liz["MeltedB"] = waterColour.b.ToString();
         }
 
-        if (abstractCreature.creatureTemplate.type != CreatureTemplate.Type.WhiteLizard)
+        if (false && abstractCreature.creatureTemplate.type != CreatureTemplate.Type.WhiteLizard)
         {
             self.effectColor = new Color(float.Parse(data.liz["MeltedR"]), float.Parse(data.liz["MeltedG"]), float.Parse(data.liz["MeltedB"]));
         }

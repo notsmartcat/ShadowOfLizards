@@ -111,11 +111,15 @@ internal sealed class LizCutLeg : PlayerCarryableItem, IDrawable, IPlayerEdible
     {
         get
         {
-            if (Abstr.breed == "BlackLizard")
+            if (Abstr.breed == "BlackLizard" || Abstr.breed == "MoleSalamander" && Abstr.blackSalamander)
             {
-                return ElectricColor(palette.blackColor);
+                return palette.blackColor;
             }
-            return ElectricColor(effectColour);
+            else if(Abstr.breed == "WaterSpitter")
+            {
+                return Color.Lerp(palette.waterSurfaceColor1, Color.white, 0.1f);
+            }
+            return effectColour;
         }
     }
 
@@ -125,18 +129,18 @@ internal sealed class LizCutLeg : PlayerCarryableItem, IDrawable, IPlayerEdible
         {
             if (Abstr.breed == "SpitLizard" || Abstr.breed == "ZoopLizard")
             {
-                return Abstr.canCamo ? Camo(bodyColour) : bodyColour;
+                return bodyColour;
             }
-            if (Abstr.breed == "WhiteLizard")
+            if (Abstr.breed == "WhiteLizard" || Abstr.breed == "HunterSeeker")
             {
-                return Abstr.canCamo ? Camo(new Color(1f, 1f, 1f)) : new Color(1f, 1f, 1f);
+                return new Color(1f, 1f, 1f);
             }
-            if (Abstr.breed == "Salamander")
+            if (Abstr.breed == "Salamander" || Abstr.breed == "MoleSalamander" && !Abstr.blackSalamander)
             {
-                return Abstr.canCamo ? Camo(SalamanderColor) : SalamanderColor;
+                return SalamanderColor;
             }
 
-            return Abstr.canCamo ? Camo(palette.blackColor) : palette.blackColor;
+            return palette.blackColor;
         }
     }
 
@@ -159,11 +163,11 @@ internal sealed class LizCutLeg : PlayerCarryableItem, IDrawable, IPlayerEdible
         {
             num = flickerColor;
         }
-        return Abstr.canCamo ? Camo(Color.Lerp(HeadColor1(), HeadColor2(), num)) : Color.Lerp(HeadColor1(), HeadColor2(), num);
+        return Color.Lerp(HeadColor1(), HeadColor2(), num);
 
         Color HeadColor1()
         {
-            if (Abstr.breed == "WhiteLizard")
+            if (Abstr.breed == "WhiteLizard" || Abstr.breed == "HunterSeeker")
             {
                 return new Color(1f, 1f, 1f);
             }
@@ -171,7 +175,7 @@ internal sealed class LizCutLeg : PlayerCarryableItem, IDrawable, IPlayerEdible
             {
                 return palette.blackColor;
             }
-            if (Abstr.breed == "Salamander")
+            if (Abstr.breed == "Salamander" || Abstr.breed == "MoleSalamander")
             {
                 return SalamanderColor;
             }
@@ -181,7 +185,7 @@ internal sealed class LizCutLeg : PlayerCarryableItem, IDrawable, IPlayerEdible
 
         Color HeadColor2()
         {
-            if (Abstr.breed == "WhiteLizard")
+            if (Abstr.breed == "WhiteLizard" || Abstr.breed == "HunterSeeker")
             {
                 return palette.blackColor;
             }
@@ -189,19 +193,13 @@ internal sealed class LizCutLeg : PlayerCarryableItem, IDrawable, IPlayerEdible
             {
                 return palette.blackColor;
             }
-            if (Abstr.breed == "Salamander")
+            if (Abstr.breed == "Salamander" || Abstr.breed == "MoleSalamander")
             {
                 return SalamanderColor;
             }
 
             return EffectColor;
         }
-    }
-
-    private void Flicker(int fl)
-    {
-        if (fl > flicker)
-            flicker = fl;
     }
 
     private Color Camo(Color col)
@@ -212,6 +210,12 @@ internal sealed class LizCutLeg : PlayerCarryableItem, IDrawable, IPlayerEdible
     private Color ElectricColor(Color col)
     {
         return Color.Lerp(col, new Color(0.7f, 0.7f, 1f), (float)electricColorTimer / 50f);
+    }
+
+    private void Flicker(int fl)
+    {
+        if (fl > flicker)
+            flicker = fl;
     }
     #endregion
 
@@ -238,21 +242,19 @@ internal sealed class LizCutLeg : PlayerCarryableItem, IDrawable, IPlayerEdible
         #region Colour
         if (Abstr.canCamo)
         {
-            whitePickUpColor = rCam.PixelColorAtCoordinate(bodyChunks[0].pos);
-
-            whiteCamoColor = whitePickUpColor;
+            whiteCamoColor = whitePickUpColor = rCam.PixelColorAtCoordinate(bodyChunks[0].pos);
         }
 
         if (Abstr.breed == "BasiliskLizard")
         {
-            sLeaser.sprites[0].color = HeadColor(timeStacker);
+            sLeaser.sprites[0].color = Camo(HeadColor(timeStacker));
         }
         else
         {
-            sLeaser.sprites[0].color = BodyColor;
+            sLeaser.sprites[0].color = Camo(BodyColor);
         }
 
-        sLeaser.sprites[1].color = ElectricColor(Abstr.canCamo ? Camo(EffectColor) : EffectColor);
+        sLeaser.sprites[1].color = ElectricColor(Camo(EffectColor));
         sLeaser.sprites[2].color = Abstr.bloodColourR == -1 ? Abstr.breed == "IndigoLizard" ? ElectricColor(Color.Lerp(effectColour, palette.blackColor, 0.5f)) : ElectricColor(EffectColor) : bloodColour;
 
         if (Abstr.breed == "WhiteLizard" || Abstr.breed == "CyanLizard" || Abstr.breed == "IndigoLizard")
@@ -269,11 +271,11 @@ internal sealed class LizCutLeg : PlayerCarryableItem, IDrawable, IPlayerEdible
         }
         #endregion
 
-        Vector2 vector = Vector2.Lerp(firstChunk.lastPos, firstChunk.pos, timeStacker);
-        Vector2 vector2 = Vector3.Slerp(lastRotation, rotation, timeStacker);
+        Vector2 pos = Vector2.Lerp(firstChunk.lastPos, firstChunk.pos, timeStacker);
+        Vector2 rot = Vector3.Slerp(lastRotation, rotation, timeStacker);
 
         lastDarkness = darkness;
-        darkness = rCam.room.Darkness(vector) * (1f - rCam.room.LightSourceExposure(vector));
+        darkness = rCam.room.Darkness(pos) * (1f - rCam.room.LightSourceExposure(pos));
 
         if (darkness != lastDarkness)
         {
@@ -283,7 +285,6 @@ internal sealed class LizCutLeg : PlayerCarryableItem, IDrawable, IPlayerEdible
         if (electricColorTimer > 0)
             electricColorTimer--;
 
-        Vector2 pos = Vector2.Lerp(firstChunk.lastPos, firstChunk.pos, timeStacker);
         float num = Mathf.InverseLerp(305f, 380f, timeStacker);
         pos.y -= 20f * Mathf.Pow(num, 3f);
         float num2 = Mathf.Pow(1f - num, 0.25f);
@@ -296,7 +297,7 @@ internal sealed class LizCutLeg : PlayerCarryableItem, IDrawable, IPlayerEdible
         {
             sLeaser.sprites[i].x = pos.x - camPos.x;
             sLeaser.sprites[i].y = pos.y - camPos.y;
-            sLeaser.sprites[i].rotation = Custom.VecToDeg(vector2);
+            sLeaser.sprites[i].rotation = Custom.VecToDeg(rot);
             sLeaser.sprites[i].scaleY = num2 * Abstr.scaleY;
             sLeaser.sprites[i].scaleX = num2 * Abstr.scaleX;
         }

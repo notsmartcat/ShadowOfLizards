@@ -32,14 +32,11 @@ internal sealed class LizBigChunk : PlayerCarryableItem, IDrawable
 
     private Vector2 rotation;
     private Vector2 lastRotation;
-    private Vector2? setRotation;
 
     private int whiteFlicker = 0;
     private int flicker;
-    private float flickerColor = 0;
 
     private const int sourceCodeLizardsFlickerThreshold = 10;
-    private const int sourceCodeLizardsWhiteFlickerThreshold = 15;
 
     private RoomPalette palette;
 
@@ -48,7 +45,6 @@ internal sealed class LizBigChunk : PlayerCarryableItem, IDrawable
     private float whiteCamoColorAmount = -1f;
 
     private float baseBlink;
-    private float baseLastBlink;
 
     private bool everySecondDraw;
     #endregion
@@ -222,10 +218,6 @@ internal sealed class LizBigChunk : PlayerCarryableItem, IDrawable
         sLeaser.sprites[0].color = Abstr.bloodColourR == -1 ? Abstr.breed == "IndigoLizard" ? Color.Lerp(effectColour, palette.blackColor, 0.5f) : EffectColor : bloodColour;
         sLeaser.sprites[1].color = BodyColor;
 
-        if (flicker > sourceCodeLizardsFlickerThreshold)
-        {
-            flickerColor = Random.value;
-        }
 
         if (blink > 0 && Random.value < 0.5f)
         {
@@ -286,12 +278,9 @@ internal sealed class LizBigChunk : PlayerCarryableItem, IDrawable
         {
             flicker--;
             baseBlink = Random.value;
-            baseLastBlink = Random.value;
         }
         else
         {
-            baseLastBlink = baseBlink;
-
             baseBlink = Mathf.Lerp(baseBlink - Mathf.Floor(baseBlink), 0.25f, 0.02f);
         }
         if (whiteFlicker > 0)

@@ -145,6 +145,56 @@ internal class LizardTongueHooks
                     self.involuntaryReleaseChance = 0.005f;
                     self.voluntaryReleaseChance = 0.02f;
                     break;
+                case "NoodleEater":
+                    self.range = 400f;
+                    self.elasticRange = 0f;
+                    self.lashOutSpeed = 30f;
+                    self.reelInSpeed = 0f;
+                    self.chunkDrag = 0f;
+                    self.terrainDrag = 0f;
+                    self.dragElasticity = 0f;
+                    self.emptyElasticity = 0.07f;
+                    self.involuntaryReleaseChance = 1f / 30f;
+                    self.voluntaryReleaseChance = 1f;
+                    self.baseDragOnly = true;
+                    break;
+                case "Polliwog":
+                    self.range = 140f;
+                    self.elasticRange = 0.55f;
+                    self.lashOutSpeed = 16f;
+                    self.reelInSpeed = 0.000625f;
+                    self.chunkDrag = 0.01f;
+                    self.terrainDrag = 0.01f;
+                    self.dragElasticity = 0.1f;
+                    self.emptyElasticity = 0.8f;
+                    self.involuntaryReleaseChance = 0.0025f;
+                    self.voluntaryReleaseChance = 0.0125f;
+                    self.baseDragOnly = true;
+                    break;
+                case "HunterSeeker":
+                    self.range = 140f;
+                    self.elasticRange = 0.55f;
+                    self.lashOutSpeed = 16f;
+                    self.reelInSpeed = 0.002f;
+                    self.chunkDrag = 0.01f;
+                    self.terrainDrag = 0.01f;
+                    self.dragElasticity = 0.1f;
+                    self.emptyElasticity = 0.8f;
+                    self.involuntaryReleaseChance = 0.005f;
+                    self.voluntaryReleaseChance = 0.02f;
+                    break;
+                case "MoleSalamander":
+                    self.range = 140f;
+                    self.elasticRange = 0.55f;
+                    self.lashOutSpeed = 16f;
+                    self.reelInSpeed = 0.000625f;
+                    self.chunkDrag = 0.01f;
+                    self.terrainDrag = 0.01f;
+                    self.dragElasticity = 0.1f;
+                    self.emptyElasticity = 0.8f;
+                    self.involuntaryReleaseChance = 0.0025f;
+                    self.voluntaryReleaseChance = 0.0125f;
+                    break;
                 default:
                     Debug.Log(all + "Failed Getting the " + Tongue + " Tongue for " + lizard);
                     ShadowOfLizards.Logger.LogError(all + "Failed Getting the " + Tongue + " Tongue for " + lizard);

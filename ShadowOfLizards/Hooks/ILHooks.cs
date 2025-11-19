@@ -55,6 +55,10 @@ internal class ILHooks
         new Hook( //Swimmer
             typeof(Lizard).GetProperty(nameof(Lizard.Swimmer)).GetGetMethod(),
             typeof(ILHooks).GetMethod(nameof(ShadowOfLizardSwimmer)));
+
+        new Hook(
+            typeof(Lizard).GetProperty(nameof(Lizard.IsWallClimber)).GetGetMethod(),
+            typeof(ILHooks).GetMethod(nameof(ShadowOfIsWallClimber)));
     }
 
     static void ILNewLizardRotModule(ILContext il)
@@ -819,8 +823,28 @@ internal class ILHooks
         {
             ILCursor val = new(il);
             ILLabel target = null;
+            ILLabel target2 = null;
 
-            if (val.TryGotoNext(MoveType.Before, new Func<Instruction, bool>[7]
+            if (val.TryGotoNext(MoveType.Before, new Func<Instruction, bool>[5]
+            {
+                x => x.MatchLdarg(0),
+                x => x.MatchLdfld<LizardAI.LurkTracker>("lizard"),
+                x => x.MatchLdfld<UpdatableAndDeletable>("room"),
+                x => x.MatchLdfld<Room>("aimap"),
+                x => x.MatchLdarg(1)
+
+            }))
+            {
+                val.MoveAfterLabels();
+
+                target2 = val.MarkLabel();
+            }
+            else
+            {
+                ShadowOfLizards.Logger.LogInfo(all + "Could not find match for ILLurkTrackerLurkPosScore White target!");
+            }
+
+            if (val.TryGotoPrev(MoveType.Before, new Func<Instruction, bool>[7]
             {
                 x => x.MatchLdarg(0),
                 x => x.MatchLdfld<LizardAI.LurkTracker>("lizard"),
@@ -836,19 +860,19 @@ internal class ILHooks
                 val.Emit(OpCodes.Ldarg_0);
                 val.Emit<LizardAI.LurkTracker>(OpCodes.Ldfld, "lizard");
                 val.EmitDelegate(ShadowOfLizardCamoLurkPosScore);
-                val.Emit(OpCodes.Brtrue_S, target);
+                val.Emit(OpCodes.Brtrue_S, target2);
 
                 val.Emit(OpCodes.Ldarg_0);
                 val.Emit<LizardAI.LurkTracker>(OpCodes.Ldfld, "lizard");
                 val.EmitDelegate(ShadowOfLizardCamoLurkPosScore);
-                val.Emit(OpCodes.Brfalse_S, target);
+                val.Emit(OpCodes.Brtrue_S, target);
             }
             else
             {
                 ShadowOfLizards.Logger.LogInfo(all + "Could not find match for ILLurkTrackerLurkPosScore White!");
             }
 
-            if (val.TryGotoNext(MoveType.Before, new Func<Instruction, bool>[4]
+            if (val.TryGotoNext(MoveType.After, new Func<Instruction, bool>[4]
             {
                 x => x.MatchLdarg(0),
                 x => x.MatchLdfld<LizardAI.LurkTracker>("lizard"),
@@ -878,7 +902,7 @@ internal class ILHooks
             {
                 return WaterBreather == "True";
             }
-            else if (self.Template.type == CreatureTemplate.Type.Salamander || (ModManager.DLCShared && self.Template.type == DLCSharedEnums.CreatureTemplateType.EelLizard))
+            else if (defaultWaterBreather.Contains(self.Template.type.ToString()))
             {
                 return true;
             }
@@ -1023,6 +1047,19 @@ internal class ILHooks
                     num += self.bodyChunks[data.availableBodychunks[i]].mass;
                 }
                 return num;
+            }
+        }
+        catch (Exception e) { ShadowOfLizards.Logger.LogError(e); }
+        return orig(self);
+    }
+
+    public static bool ShadowOfIsWallClimber(Func<Lizard, bool> orig, Lizard self)
+    {
+        try
+        {
+            if (ShadowOfOptions.climb_ability.Value && lizardstorage.TryGetValue(self.abstractCreature, out LizardData data))
+            {
+                return ModManager.MMF && self.room != null && self.room.gravity <= Lizard.zeroGravityMovementThreshold || !data.liz.TryGetValue("CanClimbWall", out string CanClimbWall) && self.abstractCreature.creatureTemplate.pathingPreferencesTiles[(int)AItile.Accessibility.Wall].legality == PathCost.Legality.Allowed || CanClimbWall == "True";
             }
         }
         catch (Exception e) { ShadowOfLizards.Logger.LogError(e); }

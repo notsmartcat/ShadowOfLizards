@@ -19,14 +19,14 @@ public class ShadowOfOptions : OptionInterface
         damage_based_chance = config.Bind("damage_based_chance", true, new ConfigurableInfo("If On all Physical Chances will be multiplied by the Damage value. (Default = true)", null, "", new object[1] { "Damage Based Chance" }));
         cosmetic_sprite_despawn = config.Bind("cosmetic_sprite_despawn", true, new ConfigurableInfo("If On Cosmetic Sprites from this mod such as Broken Teeth Despawn after a short amount of time the same way Centipede Shells Despawn. (Default = true)", null, "", new object[1] { "Cosmetic Sprite Despawn" }));
 
+        valid_lizards_only = config.Bind("valid_lizards_only", true, new ConfigurableInfo("Applies the mod only to Lizards that are confirmed to work with the mod. (Default = true)", null, "", new object[1] { "Valid Lizards Only" }));
+
         #region Transformations
         #region Spider Transformation
         spider_transformation = config.Bind("spider_transformation", true, new ConfigurableInfo("Enables the Spider Transformation for Lizards. (Default = true)", null, "", new object[1] { "Spider Transformation" }));
         spider_transformation_chance = config.Bind("spider_transformation_chance", 30, new ConfigurableInfo("This is the Chance for Lizards who die by any type of Spider or Spider-Lizard to become Spider Mothers. Depending on what killed the Lizard this value will be multiplied in ranges from 25% to 150% (Default = 30%)", null, "", new object[1] { "Chance for Lizards to become Spider Mothers" }));
         spider_transformation_skip = config.Bind("spider_transformation_skip", false, new ConfigurableInfo("If this is On Lizards who become Spider Mothers will gain the Spider Transformation instantly next cycle. (Default = False)", null, "", new object[1] { "Skip Transformation" }));
-        spawn_spider_transformation_chance = config.Bind("spawn_spider_transformation_chance", 1, new ConfigurableInfo("If the slider is at 0% new lizards will not spawn with the Transformation. " +
-        "This will not stop them from getting the Transformattion by normal means as long as the Transformation is not turned off. \nLizards can only have one Transformation. When the Lizards are created the Transformations are picked from the top, " +
-        "meaning if Spider Transformation is set to 100% ALL Lizards will spawn with it no matter the % of the other Transformations. (Default = 1%)", null, "", new object[1] { "Chance for new Lizards to spawn with Spider Transformation" }));
+        spawn_spider_transformation_chance = config.Bind("spawn_spider_transformation_chance", 3, new ConfigurableInfo("", null, "", new object[1] { "Chance for new Lizards to spawn with Spider Transformation" }));
         spider_spit = config.Bind("spider_spit", true, new ConfigurableInfo("If On Lizards will spit Dart Maggots instead of the regular spit. (Default = true)", null, "", new object[1] { "Spider Spit" }));
         #endregion
 
@@ -34,9 +34,7 @@ public class ShadowOfOptions : OptionInterface
         electric_transformation = config.Bind("electric_transformation", true, new ConfigurableInfo("Enables the Electric Transformation for Lizards. (Default = true)", null, "", new object[1] { "Electric Transformation" }));
         electric_transformation_chance = config.Bind("electric_transformation_chance", 30, new ConfigurableInfo("This is the Chance for Lizards who die by Electricity to become Electric. (Default = 30%)", null, "", new object[1] { "Chance for Lizards to become Electric" }));
         electric_transformation_skip = config.Bind("electric_transformation_skip", false, new ConfigurableInfo("If this if On Lizards who become Electric will instantly gain the Electric Transformation instantly next cycle. (Default = false)", null, "", new object[1] { "Skip Transformation" }));
-        spawn_electric_transformation_chance = config.Bind("spawn_electric_transformation_chance", 1, new ConfigurableInfo("If the slider is at 0% new lizards will not spawn with the Transformation. " +
-        "This will not stop them from getting the Transformattion by normal means as long as the Transformation is not turned off. \nLizards can only have one Transformation. When the Lizards are created the Transformations are picked from the top, " +
-        "meaning if Spider Transformation is set to 100% ALL Lizards will spawn with it no matter the % of the other Transformations. (Default = 1%)", null, "", new object[1] { "Chance for new Lizards to spawn with Electric Transformation" }));
+        spawn_electric_transformation_chance = config.Bind("spawn_electric_transformation_chance", 2, new ConfigurableInfo("", null, "", new object[1] { "Chance for new Lizards to spawn with Electric Transformation" }));
         electric_spit = config.Bind("electric_spit", true, new ConfigurableInfo("If On Lizards will spit Electric spit instead of the regular spit. Electric Spit stuns whatever it touches. (Default = true)", null, "", new object[1] { "Electric Spit" }));
         #endregion
 
@@ -44,9 +42,7 @@ public class ShadowOfOptions : OptionInterface
         melted_transformation = config.Bind("melted_transformation", true, new ConfigurableInfo("Enables the Melted Transformation for Lizards. (Default = true)", null, "", new object[1] { "Melted Transformation" }));
         melted_transformation_chance = config.Bind("melted_transformation_chance", 30, new ConfigurableInfo("This is the Chance for Lizards who die by Acid/Lava to become Melted. (Default = 30%)", null, "", new object[1] { "Chance for Lizards to become Melted" }));
         melted_transformation_skip = config.Bind("melted_transformation_skip", false, new ConfigurableInfo("If this if On Lizards who become Melted will instantly gain the Melted Transformation instantly next cycle. (Default = false)", null, "", new object[1] { "Skip Transformation" }));
-        spawn_melted_transformation_chance = config.Bind("spawn_melted_transformation_chance", 1, new ConfigurableInfo("If the slider is at 0% new lizards will not spawn with the Transformation. " +
-        "This will not stop them from getting the Transformattion by normal means as long as the Transformation is not turned off. \nLizards can only have one Transformation. When the Lizards are created the Transformations are picked from the top, " +
-        "meaning if Spider Transformation is set to 100% ALL Lizards will spawn with it no matter the % of the other Transformations. (Default = 1%)", null, "", new object[1] { "Chance for new Lizards to spawn with Melted Transformation" }));
+        spawn_melted_transformation_chance = config.Bind("spawn_melted_transformation_chance", 1, new ConfigurableInfo("", null, "", new object[1] { "Chance for new Lizards to spawn with Melted Transformation" }));
         melted_spit = config.Bind("melted_spit", true, new ConfigurableInfo("If On Lizards will spit Melted spit (It works the same as Lethal Water and will kill very easily) instead of the regular spit. (Default = true)", null, "", new object[1] { "Melted Spit" }));
         #endregion
         #endregion
@@ -190,6 +186,7 @@ public class ShadowOfOptions : OptionInterface
         AddCheckBox(dynamic_cheat_death, (string)dynamic_cheat_death.info.Tags[0]);
         AddSlider(cheat_death_chance, (string)cheat_death_chance.info.Tags[0], "0%", "100%");
         DrawCheckBoxAndSliderCombo(ref Tabs[0]);
+        AddNewLine();
         AddCheckBox(dynamic_cheat_death_kill, (string)dynamic_cheat_death_kill.info.Tags[0]);
         DrawCheckBoxes(ref Tabs[0]);
         DrawBox(ref Tabs[0]);
@@ -215,6 +212,7 @@ public class ShadowOfOptions : OptionInterface
         AddNewLine();
         AddBox();
         AddCheckBox(damage_based_chance, (string)damage_based_chance.info.Tags[0]);
+        AddCheckBox(valid_lizards_only, (string)valid_lizards_only.info.Tags[0]);
         AddCheckBox(cosmetic_sprite_despawn, (string)cosmetic_sprite_despawn.info.Tags[0]);
         DrawCheckBoxes(ref Tabs[0]);
         DrawBox(ref Tabs[0]);
@@ -226,13 +224,9 @@ public class ShadowOfOptions : OptionInterface
         AddCheckBox(chance_logs, (string)chance_logs.info.Tags[0]);
         DrawCheckBoxes(ref Tabs[0]);
         DrawBox(ref Tabs[0]);
-
-
         #endregion
 
         #region Physical
-        spacing = 12;
-
         Tabs[1] = new OpTab(this, "Physical");
         InitializeMarginAndPos();
 
@@ -241,17 +235,13 @@ public class ShadowOfOptions : OptionInterface
         AddCheckBox(decapitation, (string)decapitation.info.Tags[0]);
         AddSlider(decapitation_chance, (string)decapitation_chance.info.Tags[0], "0%", "100%");
         DrawCheckBoxAndSliderCombo(ref Tabs[1]);
-        DrawBox(ref Tabs[1]);
 
         AddNewLine();
-        AddBox();
         AddCheckBox(dismemberment, (string)dismemberment.info.Tags[0]);
         AddSlider(dismemberment_chance, (string)dismemberment_chance.info.Tags[0], "0%", "100%");
         DrawCheckBoxAndSliderCombo(ref Tabs[1]);
-        DrawBox(ref Tabs[1]);
 
         AddNewLine();
-        AddBox();
         AddCheckBox(cut_in_half, (string)cut_in_half.info.Tags[0]);
         AddSlider(cut_in_half_chance, (string)cut_in_half_chance.info.Tags[0], "0%", "100%");
         DrawCheckBoxAndSliderCombo(ref Tabs[1]);
@@ -262,9 +252,9 @@ public class ShadowOfOptions : OptionInterface
         AddCheckBox(blind, (string)blind.info.Tags[0]);
         AddSlider(blind_chance, (string)blind_chance.info.Tags[0], "0%", "100%");
         DrawCheckBoxAndSliderCombo(ref Tabs[1]);
+        AddNewLine();
         AddCheckBox(distance_based_blind, (string)distance_based_blind.info.Tags[0]);
         DrawCheckBoxes(ref Tabs[1]);
-        AddNewLine();
         AddSlider(blind_cut_chance, (string)blind_cut_chance.info.Tags[0], "0%", "100%");
         DrawSliders(ref Tabs[1]);
         DrawBox(ref Tabs[1]);
@@ -274,6 +264,7 @@ public class ShadowOfOptions : OptionInterface
         AddCheckBox(deafen, (string)deafen.info.Tags[0]);
         AddSlider(deafen_chance, (string)deafen_chance.info.Tags[0], "0%", "100%");
         DrawCheckBoxAndSliderCombo(ref Tabs[1]);
+        AddNewLine();
         AddCheckBox(distance_based_deafen, (string)distance_based_deafen.info.Tags[0]);
         DrawCheckBoxes(ref Tabs[1]);
         DrawBox(ref Tabs[1]);
@@ -287,8 +278,6 @@ public class ShadowOfOptions : OptionInterface
         #endregion
 
         #region Immunities
-        spacing = 20;
-
         Tabs[2] = new OpTab(this, "Immunities");
         InitializeMarginAndPos();
 
@@ -332,8 +321,6 @@ public class ShadowOfOptions : OptionInterface
         #endregion
 
         #region Abilities
-        spacing = 20;
-
         Tabs[3] = new OpTab(this, "Abilities");
         InitializeMarginAndPos();
 
@@ -375,8 +362,6 @@ public class ShadowOfOptions : OptionInterface
         #endregion
 
         #region Transformations
-        spacing = 20;
-
         Tabs[4] = new OpTab(this, "Transformations");
         InitializeMarginAndPos();
 
@@ -385,11 +370,11 @@ public class ShadowOfOptions : OptionInterface
         AddCheckBox(spider_transformation, (string)spider_transformation.info.Tags[0]);
         AddSlider(spider_transformation_chance, (string)spider_transformation_chance.info.Tags[0], "0%", "100%");
         DrawCheckBoxAndSliderCombo(ref Tabs[4]);
+        AddNewLine();
         AddCheckBox(spider_transformation_skip, (string)spider_transformation_skip.info.Tags[0]);
         AddCheckBox(spider_spit, (string)spider_spit.info.Tags[0]);
         DrawCheckBoxes(ref Tabs[4]);
-        AddSlider(spawn_spider_transformation_chance, (string)spawn_spider_transformation_chance.info.Tags[0], "0%", "100%");
-        DrawSliders(ref Tabs[4]);
+        DrawSpiderSliders(ref Tabs[4]);
         DrawBox(ref Tabs[4]);
 
         AddNewLine();
@@ -397,11 +382,11 @@ public class ShadowOfOptions : OptionInterface
         AddCheckBox(electric_transformation, (string)electric_transformation.info.Tags[0]);
         AddSlider(electric_transformation_chance, (string)electric_transformation_chance.info.Tags[0], "0%", "100%");
         DrawCheckBoxAndSliderCombo(ref Tabs[4]);
+        AddNewLine();
         AddCheckBox(electric_transformation_skip, (string)electric_transformation_skip.info.Tags[0]);
         AddCheckBox(electric_spit, (string)electric_spit.info.Tags[0]);
         DrawCheckBoxes(ref Tabs[4]);
-        AddSlider(spawn_electric_transformation_chance, (string)spawn_electric_transformation_chance.info.Tags[0], "0%", "100%");
-        DrawSliders(ref Tabs[4]);
+        DrawElectricSliders(ref Tabs[4]);
         DrawBox(ref Tabs[4]);
 
         AddNewLine();
@@ -409,17 +394,19 @@ public class ShadowOfOptions : OptionInterface
         AddCheckBox(melted_transformation, (string)melted_transformation.info.Tags[0]);
         AddSlider(melted_transformation_chance, (string)melted_transformation_chance.info.Tags[0], "0%", "100%");
         DrawCheckBoxAndSliderCombo(ref Tabs[4]);
+        AddNewLine();
         AddCheckBox(melted_transformation_skip, (string)melted_transformation_skip.info.Tags[0]);
         AddCheckBox(melted_spit, (string)melted_spit.info.Tags[0]);
         DrawCheckBoxes(ref Tabs[4]);
-        AddSlider(spawn_melted_transformation_chance, (string)spawn_melted_transformation_chance.info.Tags[0], "0%", "100%");
-        DrawSliders(ref Tabs[4]);
+        DrawMeltedSliders(ref Tabs[4]);
         DrawBox(ref Tabs[4]);
+
+        AddNewLine();
+        AddTransformationLabel();
+        DrawTextLabels(ref Tabs[4]);
         #endregion
 
         #region Regrowth
-        spacing = 11;
-
         Tabs[5] = new OpTab(this, "Regrowth");
         InitializeMarginAndPos();
 
@@ -435,50 +422,84 @@ public class ShadowOfOptions : OptionInterface
         AddCheckBox(tongue_regrowth, (string)tongue_regrowth.info.Tags[0]);
         AddSlider(tongue_regrowth_chance, (string)tongue_regrowth_chance.info.Tags[0], "0%", "100%");
         DrawCheckBoxAndSliderCombo(ref Tabs[5]);
-        DrawBox(ref Tabs[5]);
 
         AddNewLine();
-        AddBox();
         AddCheckBox(jump_regrowth, (string)jump_regrowth.info.Tags[0]);
         AddSlider(jump_regrowth_chance, (string)jump_regrowth_chance.info.Tags[0], "0%", "100%");
         DrawCheckBoxAndSliderCombo(ref Tabs[5]);
-        DrawBox(ref Tabs[5]);
 
         AddNewLine();
-        AddBox();
         AddCheckBox(camo_regrowth, (string)camo_regrowth.info.Tags[0]);
         AddSlider(camo_regrowth_chance, (string)camo_regrowth_chance.info.Tags[0], "0%", "100%");
         DrawCheckBoxAndSliderCombo(ref Tabs[5]);
-        DrawBox(ref Tabs[5]);
 
         AddNewLine();
-        AddBox();
         AddCheckBox(tentacle_regrowth, (string)tentacle_regrowth.info.Tags[0]);
         AddSlider(tentacle_regrowth_chance, (string)tentacle_regrowth_chance.info.Tags[0], "0%", "100%");
         DrawCheckBoxAndSliderCombo(ref Tabs[5]);
-        DrawBox(ref Tabs[5]);
 
         AddNewLine();
-        AddBox();
         AddCheckBox(spider_regrowth, (string)spider_regrowth.info.Tags[0]);
         AddSlider(spider_regrowth_chance, (string)spider_regrowth_chance.info.Tags[0], "0%", "100%");
         DrawCheckBoxAndSliderCombo(ref Tabs[5]);
-        DrawBox(ref Tabs[5]);
 
         AddNewLine();
-        AddBox();
         AddCheckBox(electric_regrowth, (string)electric_regrowth.info.Tags[0]);
         AddSlider(electric_regrowth_chance, (string)electric_regrowth_chance.info.Tags[0], "0%", "100%");
         DrawCheckBoxAndSliderCombo(ref Tabs[5]);
-        DrawBox(ref Tabs[5]);
 
         AddNewLine();
-        AddBox();
         AddCheckBox(melted_regrowth, (string)melted_regrowth.info.Tags[0]);
         AddSlider(melted_regrowth_chance, (string)melted_regrowth_chance.info.Tags[0], "0%", "100%");
         DrawCheckBoxAndSliderCombo(ref Tabs[5]);
         DrawBox(ref Tabs[5]);
         #endregion
+    }
+
+    public override void Update()
+    {
+        int num = int.Parse(((UIconfig)OPspiderSlider).value);
+
+        int num2 = int.Parse(((UIconfig)OPelectricSlider).value);
+
+        int num3 = int.Parse(((UIconfig)OPmeltedSlider).value);
+
+        int num4 = Mathf.Clamp(100 - num3, 0, 100);
+
+        int num5 = Mathf.Clamp(100 - num2, 0, 100);
+
+        if (num2 - num3 <= 0 && electric_transformation.BoundUIconfig.value == "true" && melted_transformation.BoundUIconfig.value == "true")
+        {
+            ((UIconfig)OPelectricSlider).value = num3.ToString();
+        }
+
+        if (num - num2 <= 0 && spider_transformation.BoundUIconfig.value == "true" && electric_transformation.BoundUIconfig.value == "true")
+        {
+            ((UIconfig)OPspiderSlider).value = num2.ToString();
+        }
+        else if(num - num3 <= 0 && spider_transformation.BoundUIconfig.value == "true" && melted_transformation.BoundUIconfig.value == "true")
+        {
+            ((UIconfig)OPspiderSlider).value = num3.ToString();
+        }
+
+        OPmeltedSlider._label.text = num3 + "%";
+
+        OPelectricSlider._label.text = (electric_transformation.BoundUIconfig.value == "true" ? melted_transformation.BoundUIconfig.value == "true" ? Mathf.Clamp(num2 - num3, 0, num4) : num2 : num2) + "%";
+
+        OPspiderSlider._label.text = (spider_transformation.BoundUIconfig.value == "true" ? electric_transformation.BoundUIconfig.value == "true" ? Mathf.Clamp(num - num2, 0, num5) : melted_transformation.BoundUIconfig.value == "true" ? Mathf.Clamp(num - num3, 0, num4) : num : num) + "%";
+
+        OPelectricMax.text = (electric_transformation.BoundUIconfig.value == "true" && melted_transformation.BoundUIconfig.value == "true" ? num4 : "100") + "%";
+        OPspiderMax.text = (spider_transformation.BoundUIconfig.value == "true" ? electric_transformation.BoundUIconfig.value == "true" ? num5 : melted_transformation.BoundUIconfig.value == "true" ? num4 : "100" : "100") + "%";
+
+        int spiderChance = spider_transformation.BoundUIconfig.value == "true" ? electric_transformation.BoundUIconfig.value == "true" ? Mathf.Clamp(num - num2, 0, num5) : melted_transformation.BoundUIconfig.value == "true" ? Mathf.Clamp(num - num3, 0, num4) : num : 0;
+
+        int electricChance = electric_transformation.BoundUIconfig.value == "true" ? melted_transformation.BoundUIconfig.value == "true" ? Mathf.Clamp(num2 - num3, 0, num5) : num2 : 0;
+
+        int meltedChance = melted_transformation.BoundUIconfig.value == "true" ? num3 : 0;
+
+        int nullChance = 100 - spiderChance - electricChance - meltedChance;
+
+        OPtransformationChance.text = "Chance for new Lizards to spawn with Transformations; \nSpider = " + spiderChance + "%; Electric = " + electricChance + "%; Melted = " + meltedChance + "%; None = " + nullChance + "%";
     }
 
     void InitializeMarginAndPos()
@@ -580,19 +601,6 @@ public class ShadowOfOptions : OptionInterface
             ((UIelement)val3).pos = new Vector2(num3, position.y + 2f);
             val3.size = new Vector2(num2 - Check_Box_With_Spacing, font_height);
             tab.AddItems((UIelement[])(object)new UIelement[1] { val3 });
-            if (i < check_box_configurables.Count - 1)
-            {
-                if ((i + 1) % number_of_check_boxes == 0)
-                {
-                    AddNewLine();
-                    position.y -= check_box_size;
-                    num3 = position.x;
-                }
-                else
-                {
-                    num3 += num2 - Check_Box_With_Spacing + 0.5f * spacing;
-                }
-            }
         }
         check_box_configurables.Clear();
         check_boxes_text_labels.Clear();
@@ -623,35 +631,11 @@ public class ShadowOfOptions : OptionInterface
             ((UIelement)val).pos = new Vector2(num2 + 0.5f * num4 + 0.5f * 20, position.y);
             val.size = new Vector2(num3, font_height);
             tab.AddItems((UIelement[])(object)new UIelement[1] { val });
-            AddTextLabel(slider_main_text_labels[i], 0);
-            DrawTextLabel(ref tab);
-            if (i < slider_configurables.Count - 1)
-            {
-                AddNewLine();
-            }
         }
         slider_configurables.Clear();
         slider_main_text_labels.Clear();
         slider_text_labels_left.Clear();
         slider_text_labels_right.Clear();
-
-        void DrawTextLabel(ref OpTab tab)
-        {
-            if (text_labels.Count == 0)
-            {
-                return;
-            }
-            float num = (margin_x.y - margin_x.x) / text_labels.Count;
-            foreach (OpLabel text_label in text_labels)
-            {
-                text_label.pos = new Vector2(num2 - 0.5f * num4, position.y);
-                text_label.size = new Vector2(num4, font_height);
-                tab.AddItems((UIelement[])(object)new UIelement[1] { text_label });
-                position.x += num;
-            }
-            position.x = margin_x.x;
-            text_labels.Clear();
-        }
     }
 
     void AddSlider(Configurable<int> configurable, string text, string sliderTextLeft = "", string sliderTextRight = "")
@@ -703,6 +687,85 @@ public class ShadowOfOptions : OptionInterface
         slider_text_labels_right.Clear();
     }
 
+    void DrawSpiderSliders(ref OpTab tab)
+    {
+        float num = margin_x.y - margin_x.x;
+        float num2 = margin_x.x + 0.5f * num;
+        float num3 = 0.2f * num;
+        float num4 = num - 2f * num3 - spacing;
+
+        AddNewLine(2f);
+        OpLabel val = new(default, default, "0%", (FLabelAlignment)2, false, null);
+        ((UIelement)val).pos = new Vector2(margin_x.x, position.y + 5f);
+        val.size = new Vector2(num3, font_height);
+        tab.AddItems((UIelement[])(object)new UIelement[1] { val });
+
+        OPspiderSlider = new(spawn_spider_transformation_chance, new Vector2(num2 - 0.5f * num4, position.y), (int)num4, false)
+        {
+            size = new Vector2(num4, font_height),
+        };
+
+        tab.AddItems((UIelement[])(object)new UIelement[1] { OPspiderSlider });
+        OPspiderMax = new(default, default, "100%", (FLabelAlignment)1, false, null);
+        ((UIelement)OPspiderMax).pos = new Vector2(num2 + 0.5f * num4 + 0.5f * spacing, position.y + 5f);
+        OPspiderMax.size = new Vector2(num3, font_height);
+        tab.AddItems((UIelement[])(object)new UIelement[1] { OPspiderMax });
+        AddTextLabel("Chance for new Lizards to spawn with Spider Transformation", 0);
+        DrawTextLabels(ref tab);
+    }
+    void DrawElectricSliders(ref OpTab tab)
+    {
+        float num = margin_x.y - margin_x.x;
+        float num2 = margin_x.x + 0.5f * num;
+        float num3 = 0.2f * num;
+        float num4 = num - 2f * num3 - spacing;
+
+        AddNewLine(2f);
+        OpLabel val = new(default, default, "0%", (FLabelAlignment)2, false, null);
+        ((UIelement)val).pos = new Vector2(margin_x.x, position.y + 5f);
+        val.size = new Vector2(num3, font_height);
+        tab.AddItems((UIelement[])(object)new UIelement[1] { val });
+
+        OPelectricSlider = new(spawn_electric_transformation_chance, new Vector2(num2 - 0.5f * num4, position.y), (int)num4, false)
+        {
+            size = new Vector2(num4, font_height),
+        };
+
+        tab.AddItems((UIelement[])(object)new UIelement[1] { OPelectricSlider });
+        OPelectricMax = new(default, default, "100%", (FLabelAlignment)1, false, null);
+        ((UIelement)OPelectricMax).pos = new Vector2(num2 + 0.5f * num4 + 0.5f * spacing, position.y + 5f);
+        OPelectricMax.size = new Vector2(num3, font_height);
+        tab.AddItems((UIelement[])(object)new UIelement[1] { OPelectricMax });
+        AddTextLabel("Chance for new Lizards to spawn with Electric Transformation", 0);
+        DrawTextLabels(ref tab);
+    }
+    void DrawMeltedSliders(ref OpTab tab)
+    {
+        float num = margin_x.y - margin_x.x;
+        float num2 = margin_x.x + 0.5f * num;
+        float num3 = 0.2f * num;
+        float num4 = num - 2f * num3 - spacing;
+
+        AddNewLine(2f);
+        OpLabel val = new(default, default, "0%", (FLabelAlignment)2, false, null);
+        ((UIelement)val).pos = new Vector2(margin_x.x, position.y + 5f);
+        val.size = new Vector2(num3, font_height);
+        tab.AddItems((UIelement[])(object)new UIelement[1] { val });
+
+        OPmeltedSlider = new(spawn_melted_transformation_chance, new Vector2(num2 - 0.5f * num4, position.y), (int)num4, false)
+        {
+            size = new Vector2(num4, font_height),
+        };
+
+        tab.AddItems((UIelement[])(object)new UIelement[1] { OPmeltedSlider });
+        val = new(default, default, "100%", (FLabelAlignment)1, false, null);
+        ((UIelement)val).pos = new Vector2(num2 + 0.5f * num4 + 0.5f * spacing, position.y + 5f);
+        val.size = new Vector2(num3, font_height);
+        tab.AddItems((UIelement[])(object)new UIelement[1] { val });
+        AddTextLabel("Chance for new Lizards to spawn with Melted Transformation", 0);
+        DrawTextLabels(ref tab);
+    }
+
     void AddTextLabel(string text, FLabelAlignment alignment = 0, bool bigText = false)
     {
         float num = (bigText ? 2f : 1f) * font_height;
@@ -715,6 +778,19 @@ public class ShadowOfOptions : OptionInterface
             autoWrap = true
         };
         text_labels.Add(item);
+    }
+
+    void AddTransformationLabel()
+    {
+        float num = font_height;
+
+        position.y -= num;
+
+        OPtransformationChance = new(default, new Vector2(20f, num), "", 0, false, null)
+        {
+            autoWrap = true
+        };
+        text_labels.Add(OPtransformationChance);
     }
 
     void DrawTextLabels(ref OpTab tab)
@@ -735,7 +811,6 @@ public class ShadowOfOptions : OptionInterface
         text_labels.Clear();
     }
 
-
     public static Configurable<bool> dynamic_cheat_death;
 
     public static Configurable<int> cheat_death_chance;
@@ -748,6 +823,8 @@ public class ShadowOfOptions : OptionInterface
     public static Configurable<bool> damage_based_chance;
     public static Configurable<bool> cosmetic_sprite_despawn;
 
+    public static Configurable<bool> valid_lizards_only;
+
     #region Transformations
     #region Spider Transformation
     public static Configurable<bool> spider_transformation;
@@ -755,6 +832,9 @@ public class ShadowOfOptions : OptionInterface
     public static Configurable<bool> spider_transformation_skip;
     public static Configurable<int> spawn_spider_transformation_chance;
     public static Configurable<bool> spider_spit;
+
+    public OpSlider OPspiderSlider;
+    public OpLabel OPspiderMax;
     #endregion
 
     #region Electric Transformation
@@ -763,6 +843,9 @@ public class ShadowOfOptions : OptionInterface
     public static Configurable<bool> electric_transformation_skip;
     public static Configurable<int> spawn_electric_transformation_chance;
     public static Configurable<bool> electric_spit;
+
+    public OpSlider OPelectricSlider;
+    public OpLabel OPelectricMax;
     #endregion
 
     #region Melted Transformation
@@ -771,7 +854,11 @@ public class ShadowOfOptions : OptionInterface
     public static Configurable<bool> melted_transformation_skip;
     public static Configurable<int> spawn_melted_transformation_chance;
     public static Configurable<bool> melted_spit;
+
+    public OpSlider OPmeltedSlider;
     #endregion
+
+    public OpLabel OPtransformationChance;
     #endregion
 
     #region Eat Regrowth

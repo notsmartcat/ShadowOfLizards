@@ -51,7 +51,7 @@ public class ShadowOfLizards : BaseUnityPlugin
 
         //Transformation Related Values
 
-        //This Ranges from the first stage oka "Melted" to the last stage aka "MeltedTransformation"
+        //This Ranges from the first stage aka "Melted" to the last stage aka "MeltedTransformation"
         public string transformation = "Start";
 
         /// <summary>
@@ -83,25 +83,6 @@ public class ShadowOfLizards : BaseUnityPlugin
 
         public Dictionary<int, int> cutAppendage = new();
         public Dictionary<int, int> cutAppendageCycle = new();
-    }
-    public class EliteLizardData
-    {
-        public string name;
-        public string region;
-
-        public int level;
-
-        public string breedBonus;
-        public string transformationBonus;
-        public string miscBonus;
-
-        public string trait1;
-
-        public string trait2;
-
-        public string trait3;
-
-        public string gang;
     }
     public class GraphicsData
     {
@@ -170,11 +151,25 @@ public class ShadowOfLizards : BaseUnityPlugin
 
     private bool init = false;
 
+    #region Different Mod Checks
     public static bool bloodModCheck = false;
+    #endregion
 
-    public static List<string> validTongues = new() { "WhiteLizard", "Salamander", "BlueLizard", "CyanLizard", "RedLizard"};
+    public static bool extraTongueCheck = false;
+
+    public static List<string> validTongues = new() { "WhiteLizard", "Salamander", "BlueLizard", "CyanLizard"};
 
     public static List<string> defaultWaterBreather = new() { "Salamander", "EelLizard", "PeachLizard" };
+    public static List<string> defaultCamo = new() { "WhiteLizard", "HunterSeeker" };
+
+    public static List<string> validLizards = new() { "EelLizard", "PinkLizard", "GreenLizard", "BlueLizard", "YellowLizard", "WhiteLizard", "RedLizard", "BlackLizard", "Salamander", "CyanLizard", "SpitLizard", "ZoopLizard", "TrainLizard", "BlizzardLizard", "BasiliskLizard", 
+        "IndigoLizard", "PeachLizard", "AlphaOrange", "WaterSpitter", "SilverLizard", "Polliwog", "NoodleEater", "HunterSeeker" };
+
+    public static List<string> invalidLizards = new() { "CommonEel" };
+
+    public static List<string> meltedPorhibited = new() { "WaterSpitter" };
+
+    public static List<string> electricPorhibited = new() { "NoodleEater" };
 
     internal static new ManualLogSource Logger;
 
@@ -216,7 +211,7 @@ public class ShadowOfLizards : BaseUnityPlugin
             #endregion
 
             On.RainWorld.OnModsInit += ModInit;
-            On.RainWorldGame.ctor += BloodModCheck;
+            On.RainWorldGame.ctor += OptionalModsCheck;
 
             On.Player.Update += DebugKeys;
         }
@@ -248,7 +243,7 @@ public class ShadowOfLizards : BaseUnityPlugin
         catch (Exception e) { Logger.LogError(e); }
     }
 
-    void BloodModCheck(On.RainWorldGame.orig_ctor orig, RainWorldGame self, ProcessManager manager)
+    void OptionalModsCheck(On.RainWorldGame.orig_ctor orig, RainWorldGame self, ProcessManager manager)
     {
         orig.Invoke(self, manager);
         try
@@ -261,6 +256,36 @@ public class ShadowOfLizards : BaseUnityPlugin
             else
             {
                 bloodcolours = null;
+            }
+            if (ModManager.ActiveMods.Any(mod => mod.id == "lb-fgf-m4r-ik.modpack"))
+            {
+                if(!validTongues.Contains("NoodleEater"))
+                {
+                    validTongues.Add("NoodleEater");
+                    validTongues.Add("Polliwog");
+                    validTongues.Add("HunterSeeker");
+                    validTongues.Add("MoleSalamander");
+                }
+
+            }
+            else if (validTongues.Contains("NoodleEater"))
+            {
+                validTongues.Remove("NoodleEater");
+                validTongues.Remove("Polliwog");
+                validTongues.Remove("HunterSeeker");
+                validTongues.Remove("MoleSalamander");
+            }
+
+            if (ModManager.MMF && MoreSlugcats.MMF.cfgAlphaRedLizards.Value)
+            {
+                if (!validTongues.Contains("RedLizard"))
+                {
+                    validTongues.Add("RedLizard");
+                }
+            }
+            else if (validTongues.Contains("RedLizard"))
+            {
+                validTongues.Remove("RedLizard");
             }
         }
         catch (Exception e) { Logger.LogError(e); }
@@ -281,7 +306,7 @@ public class ShadowOfLizards : BaseUnityPlugin
 
     public static bool CanCamoCheck(LizardData data, string Template)
     {
-        return !data.liz.TryGetValue("CanCamo", out string CanCamo) && Template == "WhiteLizard" || CanCamo == "True";
+        return !data.liz.TryGetValue("CanCamo", out string CanCamo) && defaultCamo.Contains(Template) || CanCamo == "True";
     }
 
     public static bool RotModuleCheck(Lizard liz)
@@ -428,7 +453,7 @@ public class ShadowOfLizards : BaseUnityPlugin
                 }
             }
 
-            if (ShadowOfOptions.melted_transformation.Value && killType == "Melted" && CWTCycleCheck(data, "PreMeltedCycle", CycleNum(receiver.abstractCreature)) && Chance(receiver, ShadowOfOptions.melted_transformation_chance.Value, "Melted Transformation after Dying to Acid"))
+            if (ShadowOfOptions.melted_transformation.Value && killType == "Melted" && !meltedPorhibited.Contains(receiver.Template.type.ToString()) && CWTCycleCheck(data, "PreMeltedCycle", CycleNum(receiver.abstractCreature)) && Chance(receiver, ShadowOfOptions.melted_transformation_chance.Value, "Melted Transformation after Dying to Acid"))
             {
                 if (ShadowOfOptions.debug_logs.Value)
                     Debug.Log(all + receiver.ToString() + " was made Melted due to dying to Acid");
@@ -480,12 +505,12 @@ public class ShadowOfLizards : BaseUnityPlugin
                 }
                 return;
             }
-            else if (ShadowOfOptions.melted_transformation.Value && killType == "Melted")
+            else if (ShadowOfOptions.melted_transformation.Value && !meltedPorhibited.Contains(receiver.Template.type.ToString()) && killType == "Melted")
             {
                 data.liz["PreMeltedCycle"] = CycleNum(receiver.abstractCreature).ToString();
             }
 
-            if (ShadowOfOptions.electric_transformation.Value && killType == "Electric" && Chance(receiver, ShadowOfOptions.electric_transformation_chance.Value, "Electric Transformation after Dying to Electricity"))
+            if (ShadowOfOptions.electric_transformation.Value && killType == "Electric" && !electricPorhibited.Contains(receiver.Template.type.ToString()) && Chance(receiver, ShadowOfOptions.electric_transformation_chance.Value, "Electric Transformation after Dying to Electricity"))
             {
                 if (data.transformation == "Electric")
                 {
@@ -604,11 +629,6 @@ public class ShadowOfLizards : BaseUnityPlugin
     #endregion
 
     #region Misc
-    void EliteLizard(Lizard self)
-    {
-
-    }
-
     public static bool Chance(Lizard self, float chance, string whatFor)
     {
         int roll = UnityEngine.Random.Range(0, 100);
@@ -869,6 +889,10 @@ public class ShadowOfLizards : BaseUnityPlugin
         return Color.Lerp(Color.Lerp(col, new Color(0.7f, 0.7f, 1f), (float)(data.electricColorTimer / 50f)), self.whiteCamoColor, self.whiteCamoColorAmount);
     }
 
+    public static bool IsLizardValid(string type)
+    {
+        return ShadowOfOptions.valid_lizards_only.Value && validLizards.Contains(type) || !ShadowOfOptions.valid_lizards_only.Value && !invalidLizards.Contains(type);
+    }
     #endregion
 
     #region Gore

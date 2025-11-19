@@ -17,7 +17,7 @@ internal class CustomRelationsHooks
 
     static Relationship BigSpiderAIUpdateDynamicRelationship(On.BigSpiderAI.orig_IUseARelationshipTracker_UpdateDynamicRelationship orig, BigSpiderAI self, DynamicRelationship dRelation)
     {
-        if ((!ShadowOfOptions.spider_transformation.Value && !ShadowOfOptions.electric_transformation.Value && !ShadowOfOptions.melted_transformation.Value) || dRelation.trackerRep.representedCreature.realizedCreature == null)
+        if (!ShadowOfOptions.spider_transformation.Value || dRelation.trackerRep.representedCreature.realizedCreature == null)
         {
             return orig(self, dRelation);
         }

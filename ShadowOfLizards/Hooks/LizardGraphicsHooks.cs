@@ -66,7 +66,7 @@ internal class LizardGraphicsHooks
             }
 
         Line1:
-            if (ShadowOfOptions.melted_transformation.Value && (data.transformation == "Melted" || data.transformation == "MeltedTransformation") && ModManager.DLCShared && self.lizard.lizardParams.template == DLCSharedEnums.CreatureTemplateType.SpitLizard)
+            if (ShadowOfOptions.melted_transformation.Value && (data.transformation == "Melted" || data.transformation == "MeltedTransformation"))
             {
                 self.lizard.effectColor = new Color(float.Parse(data.liz["MeltedR"]), float.Parse(data.liz["MeltedG"]), float.Parse(data.liz["MeltedB"]));
             }
@@ -573,8 +573,10 @@ internal class LizardGraphicsHooks
 
             Color bodyColour = self.BodyColor(timeStacker);
 
+            bool isSalamander = self.lizard.Template.type == CreatureTemplate.Type.Salamander || self.lizard.Template.type.ToString() == "MoleSalamander";
+
             bool head = true;
-            if (self.lizard.Template.type == CreatureTemplate.Type.BlackLizard || self.lizard.Template.type == CreatureTemplate.Type.Salamander || ModManager.Watcher && (self.lizard.Template.type == WatcherEnums.CreatureTemplateType.BasiliskLizard || self.lizard.Template.type == WatcherEnums.CreatureTemplateType.IndigoLizard))
+            if (self.lizard.Template.type == CreatureTemplate.Type.BlackLizard || isSalamander || self.lizard.Template.type.ToString() == "NoodleEater" || ModManager.Watcher && (self.lizard.Template.type == WatcherEnums.CreatureTemplateType.BasiliskLizard || self.lizard.Template.type == WatcherEnums.CreatureTemplateType.IndigoLizard))
             {
                 head = false;
             }
@@ -603,7 +605,7 @@ internal class LizardGraphicsHooks
                     num = Mathf.Lerp(num, Mathf.Pow(Mathf.Max(0f, Mathf.Lerp(self.lastVoiceVisualization, self.voiceVisualization, timeStacker)), 0.75f), Mathf.Lerp(self.lastVoiceVisualizationIntensity, self.voiceVisualizationIntensity, timeStacker));
                     headColour = Color.Lerp(CamoElectric(self, data2, self.HeadColor1), effectColour, num);
                 }
-                else if (self.lizard.Template.type == CreatureTemplate.Type.Salamander)
+                else if (isSalamander)
                 {
                     headColour = Camo(self, self.SalamanderColor);
                 }
@@ -1065,7 +1067,7 @@ internal class LizardGraphicsHooks
                 {
                     self.ColorBody(sLeaser, self.ivarBodyColor);
                 }
-                else if (self.lizard.Template.type == CreatureTemplate.Type.Salamander)
+                else if (isSalamander)
                 {
                     self.ColorBody(sLeaser, self.SalamanderColor);
                 }
@@ -1079,7 +1081,7 @@ internal class LizardGraphicsHooks
                     sLeaser.sprites[self.SpriteHeadStart].color = self.palette.blackColor;
                     sLeaser.sprites[self.SpriteHeadStart + 3].color = self.palette.blackColor;
                 }
-                else if (self.lizard.Template.type == CreatureTemplate.Type.Salamander)
+                else if (isSalamander)
                 {
                     sLeaser.sprites[self.SpriteHeadStart].color = self.SalamanderColor;
                     sLeaser.sprites[self.SpriteHeadStart + 3].color = self.SalamanderColor;
@@ -1329,7 +1331,7 @@ internal class LizardGraphicsHooks
                 goto Line1;
             }
 
-            if (ShadowOfOptions.teeth.Value && data.liz.TryGetValue("UpperTeeth", out _) && data.liz["UpperTeeth"] != "Incompatible")
+            if (ShadowOfOptions.teeth.Value && data.liz.TryGetValue("UpperTeeth", out string teeth) && teeth != "Incompatible")
             {
                 if (self.lizard.lizardParams.headGraphics[2] != 0 && self.lizard.lizardParams.headGraphics[2] != 1 && self.lizard.lizardParams.headGraphics[2] != 2 && self.lizard.lizardParams.headGraphics[2] != 3 && self.lizard.lizardParams.headGraphics[2] != 8 && self.lizard.lizardParams.headGraphics[2] != 9 && self.lizard.lizardParams.headGraphics[2] != 10 && self.lizard.lizardParams.headGraphics[2] != 11)
                 {
@@ -1341,9 +1343,9 @@ internal class LizardGraphicsHooks
                 }
             }
 
-            if (ShadowOfOptions.blind.Value && data.liz.TryGetValue("EyeRight", out _) && data.liz["EyeRight"] != "Incompatible")
+            if (ShadowOfOptions.blind.Value && data.liz.TryGetValue("EyeRight", out string eye) && eye != "Incompatible")
             {
-                if (self.lizard.lizardParams.headGraphics[4] != 0 && self.lizard.lizardParams.headGraphics[4] != 1 && self.lizard.lizardParams.headGraphics[4] != 2 && self.lizard.lizardParams.headGraphics[4] != 3 && self.lizard.lizardParams.headGraphics[4] != 8 && self.lizard.lizardParams.headGraphics[4] != 9 && self.lizard.lizardParams.headGraphics[4] != 10 && self.lizard.lizardParams.headGraphics[4] != 11)
+                if (self.lizard.Template.type.ToString() == "NoodleEater" || self.lizard.lizardParams.headGraphics[4] != 0 && self.lizard.lizardParams.headGraphics[4] != 1 && self.lizard.lizardParams.headGraphics[4] != 2 && self.lizard.lizardParams.headGraphics[4] != 3 && self.lizard.lizardParams.headGraphics[4] != 8 && self.lizard.lizardParams.headGraphics[4] != 9 && self.lizard.lizardParams.headGraphics[4] != 10 && self.lizard.lizardParams.headGraphics[4] != 11)
                 {
                     data.liz["EyeRight"] = "Incompatible";
                     data.liz["EyeLeft"] = "Incompatible";
