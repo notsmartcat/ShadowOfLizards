@@ -63,6 +63,10 @@
     <Reference Include="mscorlib">
       <HintPath>libs\mscorlib.dll</HintPath>
     </Reference>
+    <Reference Include="ShadowOfIncapacitation">
+      <HintPath>libs\ShadowOfIncapacitation.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="Unity.Mathematics">
       <HintPath>libs\Unity.Mathematics.dll</HintPath>
     </Reference>

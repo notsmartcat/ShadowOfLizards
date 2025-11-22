@@ -86,9 +86,9 @@ public class ShadowOfLizards : BaseUnityPlugin
     }
     public class GraphicsData
     {
-        public int eyeSprites;
+        public int eyeSprites = 0;
 
-        public int cutHalfSprites;
+        public int cutHalfSprites = 0;
 
         public List<int> spiderLeg = new() { 0, 0, 0, 0, 0, 0 };
 
@@ -153,6 +153,8 @@ public class ShadowOfLizards : BaseUnityPlugin
 
     #region Different Mod Checks
     public static bool bloodModCheck = false;
+
+    public static bool shadowOfIncapacitationCheck = false;
     #endregion
 
     public static bool extraTongueCheck = false;
@@ -162,8 +164,8 @@ public class ShadowOfLizards : BaseUnityPlugin
     public static List<string> defaultWaterBreather = new() { "Salamander", "EelLizard", "PeachLizard" };
     public static List<string> defaultCamo = new() { "WhiteLizard", "HunterSeeker" };
 
-    public static List<string> validLizards = new() { "EelLizard", "PinkLizard", "GreenLizard", "BlueLizard", "YellowLizard", "WhiteLizard", "RedLizard", "BlackLizard", "Salamander", "CyanLizard", "SpitLizard", "ZoopLizard", "TrainLizard", "BlizzardLizard", "BasiliskLizard", 
-        "IndigoLizard", "PeachLizard", "AlphaOrange", "WaterSpitter", "SilverLizard", "Polliwog", "NoodleEater", "HunterSeeker" };
+    public static List<string> validLizards = new() { "EelLizard", "PinkLizard", "GreenLizard", "BlueLizard", "YellowLizard", "WhiteLizard", "RedLizard", "BlackLizard", "Salamander", "CyanLizard", "SpitLizard", "ZoopLizard", "TrainLizard", "BlizzardLizard", 
+        "BasiliskLizard", "IndigoLizard", "PeachLizard", "AlphaOrange", "WaterSpitter", "SilverLizard", "Polliwog", "NoodleEater", "HunterSeeker" };
 
     public static List<string> invalidLizards = new() { "CommonEel" };
 
@@ -266,7 +268,6 @@ public class ShadowOfLizards : BaseUnityPlugin
                     validTongues.Add("HunterSeeker");
                     validTongues.Add("MoleSalamander");
                 }
-
             }
             else if (validTongues.Contains("NoodleEater"))
             {
@@ -286,6 +287,11 @@ public class ShadowOfLizards : BaseUnityPlugin
             else if (validTongues.Contains("RedLizard"))
             {
                 validTongues.Remove("RedLizard");
+            }
+
+            if (ModManager.ActiveMods.Any(mod => mod.id == "notsmartcat.incapacitation"))
+            {
+                shadowOfIncapacitationCheck = true;
             }
         }
         catch (Exception e) { Logger.LogError(e); }
@@ -387,7 +393,9 @@ public class ShadowOfLizards : BaseUnityPlugin
                         if (ShadowOfOptions.cut_in_half.Value && RotModuleCheck(liz) && data.availableBodychunks.Contains(1) && data.availableBodychunks.Contains(2))
                         {
                             CutInHalf(liz, data, liz.bodyChunks[1]);
-                            liz.Die();
+
+                            data.lastDamageType = "Stab";
+                            liz.LizardState.health = Mathf.Min(liz.LizardState.health, -0.5f);
                         }
                     }
                 }
@@ -891,7 +899,7 @@ public class ShadowOfLizards : BaseUnityPlugin
 
     public static bool IsLizardValid(string type)
     {
-        return ShadowOfOptions.valid_lizards_only.Value && validLizards.Contains(type) || !ShadowOfOptions.valid_lizards_only.Value && !invalidLizards.Contains(type);
+        return !invalidLizards.Contains(type);
     }
     #endregion
 
@@ -958,21 +966,11 @@ public class ShadowOfLizards : BaseUnityPlugin
             if (ShadowOfOptions.blood_emitter.Value && BloodColoursCheck(self.Template.type.ToString()))
                 BloodEmitter();
 
-            if (false && ShadowOfOptions.blood_emitter.Value && abstractLizard.realizedCreature != null && BloodColoursCheck(self.Template.type.ToString()))
-                OtherBloodEmitter();
-
             void BloodEmitter()
             {
                 self.room.AddObject(new BloodEmitter(null, self.bodyChunks[index], UnityEngine.Random.Range(25f, 20f), UnityEngine.Random.Range(3f, 6f)));
                 self.room.AddObject(new BloodEmitter(null, self.bodyChunks[index], UnityEngine.Random.Range(15f, 20f), UnityEngine.Random.Range(7f, 16f)));
                 self.room.AddObject(new BloodEmitter(null, self.bodyChunks[index], UnityEngine.Random.Range(5f, 8f), UnityEngine.Random.Range(11f, 26f)));
-            }
-
-            void OtherBloodEmitter()
-            {
-                abstractLizard.realizedCreature.room.AddObject(new BloodEmitter(null, abstractLizard.realizedCreature.bodyChunks[index + 1], UnityEngine.Random.Range(25f, 20f), UnityEngine.Random.Range(3f, 6f)));
-                abstractLizard.realizedCreature.room.AddObject(new BloodEmitter(null, abstractLizard.realizedCreature.bodyChunks[index + 1], UnityEngine.Random.Range(15f, 20f), UnityEngine.Random.Range(7f, 16f)));
-                abstractLizard.realizedCreature.room.AddObject(new BloodEmitter(null, abstractLizard.realizedCreature.bodyChunks[index + 1], UnityEngine.Random.Range(5f, 8f), UnityEngine.Random.Range(11f, 26f)));
             }
         }
         catch (Exception e) { Logger.LogError(e); }
@@ -1360,7 +1358,7 @@ public class ShadowOfLizards : BaseUnityPlugin
                 LimbCutBloodEmitter();
 
             if (graphicstorage.TryGetValue(graphicsModule, out GraphicsData data2))
-                (lizCutLegAbstract.realizedObject as LizCutLeg).electricColorTimer = data2.electricColorTimer;
+                (lizCutLegAbstract.realizedObject as LizCutLeg).electricColorTimer = data2.electricColorTimer + 50;
 
             if (ShadowOfOptions.debug_logs.Value)
                 Debug.Log(all + "LizCutLeg Created");
@@ -1384,6 +1382,11 @@ public class ShadowOfLizards : BaseUnityPlugin
             if (!lizardstorage.TryGetValue(self.abstractCreature, out LizardData data) || data.sLeaser == null)
             {
                 return;
+            }
+
+            if (shadowOfIncapacitationCheck)
+            {
+                InconKill();
             }
 
             if (ShadowOfOptions.dynamic_cheat_death.Value)
@@ -1474,19 +1477,31 @@ public class ShadowOfLizards : BaseUnityPlugin
                 BloodEmitter();
 
             if (graphicstorage.TryGetValue(graphicsModule, out GraphicsData data3))
-                (lizCutHeadAbstract.realizedObject as LizCutHead).electricColorTimer = data3.electricColorTimer;
+                (lizCutHeadAbstract.realizedObject as LizCutHead).electricColorTimer = data3.electricColorTimer + 50;
 
             if (ShadowOfOptions.debug_logs.Value)
                 Debug.Log(all + self.ToString() + "'s Cut Head Object was Created");
-
-            void BloodEmitter()
-            {
-                self.room.AddObject(new BloodEmitter(null, self.firstChunk, UnityEngine.Random.Range(25f, 20f), UnityEngine.Random.Range(3f, 6f)));
-                self.room.AddObject(new BloodEmitter(null, self.firstChunk, UnityEngine.Random.Range(15f, 20f), UnityEngine.Random.Range(7f, 16f)));
-                self.room.AddObject(new BloodEmitter(null, self.firstChunk, UnityEngine.Random.Range(5f, 8f), UnityEngine.Random.Range(11f, 26f)));
-            }
         }
         catch (Exception e) { Logger.LogError(e); }
+
+        void BloodEmitter()
+        {
+            self.room.AddObject(new BloodEmitter(null, self.firstChunk, UnityEngine.Random.Range(25f, 20f), UnityEngine.Random.Range(3f, 6f)));
+            self.room.AddObject(new BloodEmitter(null, self.firstChunk, UnityEngine.Random.Range(15f, 20f), UnityEngine.Random.Range(7f, 16f)));
+            self.room.AddObject(new BloodEmitter(null, self.firstChunk, UnityEngine.Random.Range(5f, 8f), UnityEngine.Random.Range(11f, 26f)));
+        }
+
+        void InconKill()
+        {
+            if (!Incapacitation.Incapacitation.inconstorage.TryGetValue(self.abstractCreature, out Incapacitation.Incapacitation.InconData data))
+            {
+                return;
+            }
+
+            data.isAlive = false;
+
+            Debug.Log(all + self + "has been forcefully killed in the Incapacitation Mod due to Beheading");
+        }
     }
 
     public static void EyeCut(Lizard self, string Eye)

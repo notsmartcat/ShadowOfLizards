@@ -18,6 +18,7 @@ public class ShadowOfOptions : OptionInterface
 
         damage_based_chance = config.Bind("damage_based_chance", true, new ConfigurableInfo("If On all Physical Chances will be multiplied by the Damage value. (Default = true)", null, "", new object[1] { "Damage Based Chance" }));
         cosmetic_sprite_despawn = config.Bind("cosmetic_sprite_despawn", true, new ConfigurableInfo("If On Cosmetic Sprites from this mod such as Broken Teeth Despawn after a short amount of time the same way Centipede Shells Despawn. (Default = true)", null, "", new object[1] { "Cosmetic Sprite Despawn" }));
+        cosmetic_body_chunks = config.Bind("cosmetic_body_chunks", true, new ConfigurableInfo("If On and a Lizard survives a Beheading or being Cut in Half their cosmetics for the Head and back BodyChunk will not show up. (Default = true)", null, "", new object[1] { "Cosmetic Body Chunks" }));
 
         valid_lizards_only = config.Bind("valid_lizards_only", true, new ConfigurableInfo("Applies the mod only to Lizards that are confirmed to work with the mod. (Default = true)", null, "", new object[1] { "Valid Lizards Only" }));
 
@@ -109,24 +110,23 @@ public class ShadowOfOptions : OptionInterface
         #region Physical
         decapitation = config.Bind("decapitation", true, new ConfigurableInfo("If On Lizards can be Decapitated (Insta-killed with a -50% chance to Cheat Death if Dynamic Cheat Death is turned on) when hit in the neck. (Default = true)", null, "", new object[1] { "Decapitation" }));
         decapitation_chance = config.Bind("decapitation_chance", 5, new ConfigurableInfo("Chance for Lizard to be Decapitated when hit in the Neck. (Default = 5%)", null, "", new object[1] { "Chance to Decapitate Lizards" }));
+        decapitation_survivable = config.Bind("decapitation_survivable", true, new ConfigurableInfo("If On Lizards can Cheat Death after being Beheaded and upon respawning they will get their head back. (Default = true)", null, "", new object[1] { "Decapitation Cheat Death" }));
 
         dismemberment = config.Bind("dismemberment", true, new ConfigurableInfo("If On Lizards can be Dismembered (All limbs can be cut off, slowing down the Lizard) when hit in the body. (Default = true)", null, "", new object[1] { "Dismemberment" }));
         dismemberment_chance = config.Bind("dismemberment_chance", 15, new ConfigurableInfo("Chance for Lizard to be Dismembered. (Default = 15%)", null, "", new object[1] { "Chance to Dismember Lizards" }));
 
-        cut_in_half = config.Bind("cut_in_half", true, new ConfigurableInfo("If On Lizards can be Cut in Half this will kill all but the stringest Lizards when hit in the body. (Default = true)", null, "", new object[1] { "Cut in Half" }));
+        cut_in_half = config.Bind("cut_in_half", true, new ConfigurableInfo("If On Lizards can be Cut in Half, this will kill all but the stringest Lizards when hit in the body. (Default = true)", null, "", new object[1] { "Cut in Half" }));
         cut_in_half_chance = config.Bind("cut_in_half_chance", 5, new ConfigurableInfo("Chance for Lizard to be Cut in Half. (Default = 5%)", null, "", new object[1] { "Chance to Cut Lizards in Half" }));
+        cut_in_half_survivable = config.Bind("cut_in_half_survivable", true, new ConfigurableInfo("If On Lizards can Cheat Death after being Cut in Half. (Default = true)", null, "", new object[1] { "Cut in Half Cheat Death" }));
+        cut_in_half_regrowth = config.Bind("cut_in_half_regrowth", true, new ConfigurableInfo("If On Lizards who Cheat Death after being Cut in Half will, upon respawning, get their Missing Half back. If Off they will always be a Half. (Default = true)", null, "", new object[1] { "Cut in Half Regrowth" }));
 
         blind = config.Bind("blind", true, new ConfigurableInfo("If On Lizards can become permanently Blind, have their eyes scarred or Cut out. This changes Lizard eye sprites and might not work with modded lizards. (Default = true)", null, "", new object[1] { "Blinding" }));
-        distance_based_blind = config.Bind("distance_based_blind", true, new ConfigurableInfo("If On the Chance to Blind will be multiplied in a Range from 0 to 2 depending on how far from the Lizard is from the Blinding Source. " +
-        "If Off the chance will not be multiplied by anything however it will only trigger if the Fkash is close enough to the Lizard. (Default = true)", null, "", new object[1] { "Distance Based Blinding Chance" }));
-        blind_chance = config.Bind("blind_chance", 20, new ConfigurableInfo("Chance for Lizard's eyes to be permanently Blinded when a FlareBomb goes off too close to it. (Default = 20%)",
-        null, "", new object[1] { "Chance to Blind" }));
-        blind_cut_chance = config.Bind("blind_cut_chance", 10, new ConfigurableInfo("Chance for Lizard's eyes to be hit with weapons, leading to them being Cut out or scarred. (Default = 10%)",
-        null, "", new object[1] { "Chance to hit Eyes" }));
+        distance_based_blind = config.Bind("distance_based_blind", true, new ConfigurableInfo("If On the Chance to Blind will be multiplied in a Range from 0 to 2 depending on how far from the Lizard is from the Blinding Source. If Off the chance will not be multiplied by anything however it will only trigger if the Fkash is close enough to the Lizard. (Default = true)", null, "", new object[1] { "Distance Based Blinding" }));
+        blind_chance = config.Bind("blind_chance", 20, new ConfigurableInfo("Chance for Lizard's eyes to be permanently Blinded when a FlareBomb goes off too close to it. (Default = 20%)", null, "", new object[1] { "Chance to Blind" }));
+        blind_cut_chance = config.Bind("blind_cut_chance", 10, new ConfigurableInfo("Chance for Lizard's eyes to be hit with weapons, leading to them being Cut out or scarred. (Default = 10%)", null, "", new object[1] { "Chance to hit Eyes" }));
 
         deafen = config.Bind("deafen", true, new ConfigurableInfo("If On Lizards can become permanently Deaf when a Explosion goes off too close to it. (Default = true)", null, "", new object[1] { "Defening" }));
-        distance_based_deafen = config.Bind("distance_based_deafen", true, new ConfigurableInfo("If On the Chance to Deafen will be multiplied in a Range from 0 to 2 depending on how far from the Lizard is from the Explosion. " +
-        "If Off the chance will not be multiplied by anything however it will only trigger if the Explosion is close enough to the Lizard. (Default = true)", null, "", new object[1] { "Distance Based Deafening Chance" }));
+        distance_based_deafen = config.Bind("distance_based_deafen", true, new ConfigurableInfo("If On the Chance to Deafen will be multiplied in a Range from 0 to 2 depending on how far from the Lizard is from the Explosion. If Off the chance will not be multiplied by anything however it will only trigger if the Explosion is close enough to the Lizard. (Default = true)", null, "", new object[1] { "Distance Based Deafening" }));
         deafen_chance = config.Bind("deafen_chance", 20, new ConfigurableInfo("Chance for Lizard's ears to be permanently Deafeaned. (Default = 20%)", null, "", new object[1] { "Chance to Deafen" }));
 
         teeth = config.Bind("teeth", true, new ConfigurableInfo("If On Lizards can have some of their Teeth knocked out making their bites worse. (Default = true)", null, "", new object[1] { "Teeth" }));
@@ -202,6 +202,7 @@ public class ShadowOfOptions : OptionInterface
         AddNewLine();
         AddBox();
         AddCheckBox(health_based_chance, (string)health_based_chance.info.Tags[0]);
+        AddCheckBox(damage_based_chance, (string)damage_based_chance.info.Tags[0]);
         AddCheckBox(health_based_chance_dead, (string)health_based_chance_dead.info.Tags[0]);
         DrawCheckBoxes(ref Tabs[0]);
         AddSlider(health_based_chance_min, (string)health_based_chance_min.info.Tags[0], "0%", "100%");
@@ -211,8 +212,8 @@ public class ShadowOfOptions : OptionInterface
 
         AddNewLine();
         AddBox();
-        AddCheckBox(damage_based_chance, (string)damage_based_chance.info.Tags[0]);
-        AddCheckBox(valid_lizards_only, (string)valid_lizards_only.info.Tags[0]);
+        //AddCheckBox(valid_lizards_only, (string)valid_lizards_only.info.Tags[0]);
+        AddCheckBox(cosmetic_body_chunks, (string)cosmetic_body_chunks.info.Tags[0]);
         AddCheckBox(cosmetic_sprite_despawn, (string)cosmetic_sprite_despawn.info.Tags[0]);
         DrawCheckBoxes(ref Tabs[0]);
         DrawBox(ref Tabs[0]);
@@ -237,6 +238,10 @@ public class ShadowOfOptions : OptionInterface
         DrawCheckBoxAndSliderCombo(ref Tabs[1]);
 
         AddNewLine();
+        AddCheckBox(decapitation_survivable, (string)decapitation_survivable.info.Tags[0]);
+        DrawCheckBoxes(ref Tabs[1]);
+
+        AddNewLine();
         AddCheckBox(dismemberment, (string)dismemberment.info.Tags[0]);
         AddSlider(dismemberment_chance, (string)dismemberment_chance.info.Tags[0], "0%", "100%");
         DrawCheckBoxAndSliderCombo(ref Tabs[1]);
@@ -245,18 +250,11 @@ public class ShadowOfOptions : OptionInterface
         AddCheckBox(cut_in_half, (string)cut_in_half.info.Tags[0]);
         AddSlider(cut_in_half_chance, (string)cut_in_half_chance.info.Tags[0], "0%", "100%");
         DrawCheckBoxAndSliderCombo(ref Tabs[1]);
-        DrawBox(ref Tabs[1]);
 
         AddNewLine();
-        AddBox();
-        AddCheckBox(blind, (string)blind.info.Tags[0]);
-        AddSlider(blind_chance, (string)blind_chance.info.Tags[0], "0%", "100%");
-        DrawCheckBoxAndSliderCombo(ref Tabs[1]);
-        AddNewLine();
-        AddCheckBox(distance_based_blind, (string)distance_based_blind.info.Tags[0]);
+        AddCheckBox(cut_in_half_survivable, (string)cut_in_half_survivable.info.Tags[0]);
+        AddCheckBox(cut_in_half_regrowth, (string)cut_in_half_regrowth.info.Tags[0]);
         DrawCheckBoxes(ref Tabs[1]);
-        AddSlider(blind_cut_chance, (string)blind_cut_chance.info.Tags[0], "0%", "100%");
-        DrawSliders(ref Tabs[1]);
         DrawBox(ref Tabs[1]);
 
         AddNewLine();
@@ -265,12 +263,19 @@ public class ShadowOfOptions : OptionInterface
         AddSlider(deafen_chance, (string)deafen_chance.info.Tags[0], "0%", "100%");
         DrawCheckBoxAndSliderCombo(ref Tabs[1]);
         AddNewLine();
+        AddCheckBox(distance_based_blind, (string)distance_based_blind.info.Tags[0]);
         AddCheckBox(distance_based_deafen, (string)distance_based_deafen.info.Tags[0]);
         DrawCheckBoxes(ref Tabs[1]);
-        DrawBox(ref Tabs[1]);
 
         AddNewLine();
-        AddBox();
+        AddCheckBox(blind, (string)blind.info.Tags[0]);
+        AddSlider(blind_chance, (string)blind_chance.info.Tags[0], "0%", "100%");
+        DrawCheckBoxAndSliderCombo(ref Tabs[1]);
+        AddNewLine();
+        AddSlider(blind_cut_chance, (string)blind_cut_chance.info.Tags[0], "0%", "100%");
+        DrawSliders(ref Tabs[1]);
+
+        AddNewLine();
         AddCheckBox(teeth, (string)teeth.info.Tags[0]);
         AddSlider(teeth_chance, (string)teeth_chance.info.Tags[0], "0%", "100%");
         DrawCheckBoxAndSliderCombo(ref Tabs[1]);
@@ -822,6 +827,7 @@ public class ShadowOfOptions : OptionInterface
     
     public static Configurable<bool> damage_based_chance;
     public static Configurable<bool> cosmetic_sprite_despawn;
+    public static Configurable<bool> cosmetic_body_chunks;
 
     public static Configurable<bool> valid_lizards_only;
 
@@ -923,12 +929,15 @@ public class ShadowOfOptions : OptionInterface
     #region Physical
     public static Configurable<bool> decapitation;
     public static Configurable<int> decapitation_chance;
+    public static Configurable<bool> decapitation_survivable;
 
     public static Configurable<bool> dismemberment;
     public static Configurable<int> dismemberment_chance;
 
     public static Configurable<bool> cut_in_half;
     public static Configurable<int> cut_in_half_chance;
+    public static Configurable<bool> cut_in_half_survivable;
+    public static Configurable<bool> cut_in_half_regrowth;
 
     public static Configurable<bool> blind;
     public static Configurable<bool> distance_based_blind;

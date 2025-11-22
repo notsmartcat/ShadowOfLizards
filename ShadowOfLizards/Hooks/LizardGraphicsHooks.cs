@@ -78,7 +78,7 @@ internal class LizardGraphicsHooks
     {
         orig.Invoke(self, sLeaser, rCam, timeStacker, camPos);
 
-        if (!graphicstorage.TryGetValue(self, out GraphicsData data2) || !lizardstorage.TryGetValue(self.lizard.abstractCreature, out LizardData data))
+        if (self.culled || self.debugVisualization || !graphicstorage.TryGetValue(self, out GraphicsData data2) || !lizardstorage.TryGetValue(self.lizard.abstractCreature, out LizardData data))
         {
             return;
         }
@@ -165,6 +165,159 @@ internal class LizardGraphicsHooks
                     num10 = 0;
                 }
 
+                if (ShadowOfOptions.teeth.Value && data.liz.TryGetValue("UpperTeeth", out string teeth) && (teeth != "Incompatible" || data.liz["LowerTeeth"] != "Incompatible"))
+                {
+                    if (data.liz["UpperTeeth"] != "Incompatible" && data.liz["UpperTeeth"] != "Normal")
+                    {
+                        if (!Futile.atlasManager.DoesContainElementWithName(sLeaser.sprites[self.SpriteHeadStart + 2].element.name + data.liz["UpperTeeth"]))
+                        {
+                            data.liz["UpperTeeth"] = "Incompatible";
+
+                            Debug.Log(all + "Upper Teeth " + sLeaser.sprites[self.SpriteHeadStart + 2].element.name + " of " + self.lizard + " are Incompatible, if able please report to the mod author of Shadow Of Lizards");
+                            ShadowOfLizards.Logger.LogError(all + "Upper Teeth " + sLeaser.sprites[self.SpriteHeadStart + 2].element.name + " of " + self.lizard + " are Incompatible, if able please report to the mod author of Shadow Of Lizards");
+                        }
+                        else
+                        {
+                            sLeaser.sprites[self.SpriteHeadStart + 2].element = Futile.atlasManager.GetElementWithName(sLeaser.sprites[self.SpriteHeadStart + 2].element.name + data.liz["UpperTeeth"]);
+                        }
+                    }
+
+                    if (data.liz["LowerTeeth"] != "Incompatible" && data.liz["LowerTeeth"] != "Normal")
+                    {
+                        if (!Futile.atlasManager.DoesContainElementWithName(sLeaser.sprites[self.SpriteHeadStart + 1].element.name + data.liz["UpperTeeth"]))
+                        {
+                            data.liz["LowerTeeth"] = "Incompatible";
+
+                            Debug.Log(all + "Lower Teeth " + sLeaser.sprites[self.SpriteHeadStart + 1].element.name + " of " + self.lizard + " are Incompatible, if able please report to the mod author of Shadow Of Lizards");
+                            ShadowOfLizards.Logger.LogError(all + "Lower Teeth " + sLeaser.sprites[self.SpriteHeadStart + 1].element.name + " of " + self.lizard + " are Incompatible, if able please report to the mod author of Shadow Of Lizards");
+                        }
+                        else
+                        {
+                            sLeaser.sprites[self.SpriteHeadStart + 1].element = Futile.atlasManager.GetElementWithName(sLeaser.sprites[self.SpriteHeadStart + 1].element.name + data.liz["LowerTeeth"]);
+                        }
+                    }
+                }
+
+                if (ShadowOfOptions.blind.Value && data.liz.TryGetValue("EyeRight", out string eye) && graphicstorage.TryGetValue(self, out GraphicsData graphData) && eye != "Incompatible")
+                {
+                    if (Futile.atlasManager.DoesContainElementWithName("Right" + sLeaser.sprites[self.SpriteHeadStart + 4].element.name + "Normal"))
+                    {
+                        string spriteName = sLeaser.sprites[self.SpriteHeadStart + 4].element.name;
+
+                        string spriteNameR = sLeaser.sprites[self.SpriteHeadStart + 4].scaleX > 0f ? "Right" + spriteName : "Left" + spriteName;
+                        string spriteNameL = sLeaser.sprites[self.SpriteHeadStart + 4].scaleX > 0f ? "Left" + spriteName : "Right" + spriteName;
+
+                        for (int l = graphData.eyeSprites; l < graphData.eyeSprites + 2; l++)
+                        {
+                            sLeaser.sprites[l].scaleX = Mathf.Sign(num7) * self.lizard.lizardParams.headSize * self.iVars.headSize;
+                            sLeaser.sprites[l].scaleY = self.lizard.lizardParams.headSize * self.iVars.headSize;
+                            sLeaser.sprites[l].x = val3.x + normalized.x * num8 * num7 * self.lizard.lizardParams.jawOpenMoveJawsApart * (1f - self.lizard.lizardParams.jawOpenLowerJawFac) - camPos.x;
+                            sLeaser.sprites[l].y = val3.y + normalized.y * num8 * num7 * self.lizard.lizardParams.jawOpenMoveJawsApart * (1f - self.lizard.lizardParams.jawOpenLowerJawFac) - camPos.y;
+                            sLeaser.sprites[l].rotation = num9 + self.lizard.lizardParams.jawOpenAngle * (1f - self.lizard.lizardParams.jawOpenLowerJawFac) * num8 * num7;
+                            sLeaser.sprites[l].SetAnchor(sLeaser.sprites[self.SpriteHeadStart + 4].anchorX, sLeaser.sprites[self.SpriteHeadStart + 4].anchorY);
+                        }
+
+                        switch (data.liz["EyeRight"])
+                        {
+                            case "Blind":
+                                sLeaser.sprites[graphData.eyeSprites].color = Color.white;
+                                sLeaser.sprites[graphData.eyeSprites].element = Futile.atlasManager.GetElementWithName(spriteNameR + "Normal");
+                                break;
+                            case "Scar":
+                                sLeaser.sprites[graphData.eyeSprites].color = sLeaser.sprites[self.SpriteHeadStart + 4].color;
+                                sLeaser.sprites[graphData.eyeSprites].element = Futile.atlasManager.GetElementWithName(spriteNameR + "Scar");
+                                break;
+                            case "BlindScar":
+                                sLeaser.sprites[graphData.eyeSprites].color = Color.white;
+                                sLeaser.sprites[graphData.eyeSprites].element = Futile.atlasManager.GetElementWithName(spriteNameR + "Scar");
+                                break;
+                            case "Scar2":
+                                sLeaser.sprites[graphData.eyeSprites].color = sLeaser.sprites[self.SpriteHeadStart + 4].color;
+                                sLeaser.sprites[graphData.eyeSprites].element = Futile.atlasManager.GetElementWithName(spriteNameR + "Scar2");
+                                break;
+                            case "BlindScar2":
+                                sLeaser.sprites[graphData.eyeSprites].color = Color.white;
+                                sLeaser.sprites[graphData.eyeSprites].element = Futile.atlasManager.GetElementWithName(spriteNameR + "Scar2");
+                                break;
+                            case "Cut":
+                                sLeaser.sprites[graphData.eyeSprites].color = BloodColoursCheck(self.lizard.Template.type.ToString()) ? bloodcolours[self.lizard.Template.type.ToString()] : self.effectColor;
+                                sLeaser.sprites[graphData.eyeSprites].element = Futile.atlasManager.GetElementWithName(spriteNameR + "Cut");
+                                break;
+                            default:
+                                sLeaser.sprites[graphData.eyeSprites].color = sLeaser.sprites[self.SpriteHeadStart + 4].color;
+                                sLeaser.sprites[graphData.eyeSprites].element = Futile.atlasManager.GetElementWithName(spriteNameR + "Normal");
+                                break;
+                        }
+
+                        switch (data.liz["EyeLeft"])
+                        {
+                            case "Blind":
+                                sLeaser.sprites[graphData.eyeSprites + 1].color = Color.white;
+                                sLeaser.sprites[graphData.eyeSprites + 1].element = Futile.atlasManager.GetElementWithName(spriteNameL + "Normal");
+                                break;
+                            case "Scar":
+                                sLeaser.sprites[graphData.eyeSprites + 1].color = sLeaser.sprites[self.SpriteHeadStart + 4].color;
+                                sLeaser.sprites[graphData.eyeSprites + 1].element = Futile.atlasManager.GetElementWithName(spriteNameL + "Scar");
+                                break;
+                            case "BlindScar":
+                                sLeaser.sprites[graphData.eyeSprites + 1].color = Color.white;
+                                sLeaser.sprites[graphData.eyeSprites + 1].element = Futile.atlasManager.GetElementWithName(spriteNameL + "Scar");
+                                break;
+                            case "Scar2":
+                                sLeaser.sprites[graphData.eyeSprites + 1].color = sLeaser.sprites[self.SpriteHeadStart + 4].color;
+                                sLeaser.sprites[graphData.eyeSprites + 1].element = Futile.atlasManager.GetElementWithName(spriteNameL + "Scar2");
+                                break;
+                            case "BlindScar2":
+                                sLeaser.sprites[graphData.eyeSprites + 1].color = Color.white;
+                                sLeaser.sprites[graphData.eyeSprites + 1].element = Futile.atlasManager.GetElementWithName(spriteNameL + "Scar2");
+                                break;
+                            case "Cut":
+                                sLeaser.sprites[graphData.eyeSprites + 1].color = BloodColoursCheck(self.lizard.Template.type.ToString()) ? bloodcolours[self.lizard.Template.type.ToString()] : self.effectColor;
+                                sLeaser.sprites[graphData.eyeSprites + 1].element = Futile.atlasManager.GetElementWithName(spriteNameL + "Cut");
+                                break;
+                            default:
+                                sLeaser.sprites[graphData.eyeSprites + 1].color = sLeaser.sprites[self.SpriteHeadStart + 4].color;
+                                sLeaser.sprites[graphData.eyeSprites + 1].element = Futile.atlasManager.GetElementWithName(spriteNameL + "Normal");
+                                break;
+                        }
+
+                        if (Futile.atlasManager.DoesContainElementWithName(sLeaser.sprites[self.SpriteHeadStart + 4].element.name + "Nose"))
+                        {
+                            sLeaser.sprites[self.SpriteHeadStart + 4].element = Futile.atlasManager.GetElementWithName(sLeaser.sprites[self.SpriteHeadStart + 4].element.name + "Nose");
+                        }
+                        else
+                        {
+                            data.liz["EyeRight"] = "Incompatible";
+                            data.liz["EyeLeft"] = "Incompatible";
+
+                            if (graphData.eyeSprites != 0)
+                            {
+                                sLeaser.sprites[graphData.eyeSprites].isVisible = false;
+                                sLeaser.sprites[graphData.eyeSprites + 1].isVisible = false;
+                            }
+
+                            Debug.Log(all + "Eyes " + sLeaser.sprites[self.SpriteHeadStart + 4].element.name + " of " + self.lizard + " are Incompatible, if able please report to the mod author of Shadow Of Lizards");
+                            ShadowOfLizards.Logger.LogError(all + "Eyes " + sLeaser.sprites[self.SpriteHeadStart + 4].element.name + " of " + self.lizard + " are Incompatible, if able please report to the mod author of Shadow Of Lizards");
+                        }
+                    }
+                    else
+                    {
+                        data.liz["EyeRight"] = "Incompatible";
+                        data.liz["EyeLeft"] = "Incompatible";
+
+                        if (graphData.eyeSprites != 0)
+                        {
+                            sLeaser.sprites[graphData.eyeSprites].isVisible = false;
+                            sLeaser.sprites[graphData.eyeSprites + 1].isVisible = false;
+                        }
+
+
+                        Debug.Log(all + "Eyes " + sLeaser.sprites[self.SpriteHeadStart + 4].element.name + " of " + self.lizard + " are Incompatible, if able please report to the mod author of Shadow Of Lizards");
+                        ShadowOfLizards.Logger.LogError(all + "Eyes " + sLeaser.sprites[self.SpriteHeadStart + 4].element.name + " of " + self.lizard + " are Incompatible, if able please report to the mod author of Shadow Of Lizards");
+                    }
+                }
+
+                /*
                 if (ShadowOfOptions.teeth.Value && data.liz.TryGetValue("UpperTeeth", out string teeth) && teeth != "Incompatible")
                 {
                     if (data.liz["UpperTeeth"] != "Normal")
@@ -178,89 +331,118 @@ internal class LizardGraphicsHooks
                     }
                 }
 
-                if (ShadowOfOptions.blind.Value && data.liz.TryGetValue("EyeRight", out string eye) && eye != "Incompatible" && graphicstorage.TryGetValue(self, out GraphicsData graphData))
+                if (ShadowOfOptions.blind.Value && data.liz.TryGetValue("EyeRight", out string eye) && graphicstorage.TryGetValue(self, out GraphicsData graphData) && (eye != "Incompatible" || graphData.eyeSprites != 0))
                 {
-                    sLeaser.sprites[self.SpriteHeadStart + 4].element = Futile.atlasManager.GetElementWithName("LizardEyes" + num10 + "." + self.lizard.lizardParams.headGraphics[4] + "Nose");
-
-                    for (int l = graphData.eyeSprites; l < graphData.eyeSprites + 2; l++)
+                    if(Futile.atlasManager.DoesContainElementWithName("LizardEyes" + num10 + "." + self.lizard.lizardParams.headGraphics[4] + "Nose"))
                     {
-                        sLeaser.sprites[l].scaleX = Mathf.Sign(num7) * self.lizard.lizardParams.headSize * self.iVars.headSize;
-                        sLeaser.sprites[l].scaleY = self.lizard.lizardParams.headSize * self.iVars.headSize;
-                        sLeaser.sprites[l].x = val3.x + normalized.x * num8 * num7 * self.lizard.lizardParams.jawOpenMoveJawsApart * (1f - self.lizard.lizardParams.jawOpenLowerJawFac) - camPos.x;
-                        sLeaser.sprites[l].y = val3.y + normalized.y * num8 * num7 * self.lizard.lizardParams.jawOpenMoveJawsApart * (1f - self.lizard.lizardParams.jawOpenLowerJawFac) - camPos.y;
-                        sLeaser.sprites[l].rotation = num9 + self.lizard.lizardParams.jawOpenAngle * (1f - self.lizard.lizardParams.jawOpenLowerJawFac) * num8 * num7;
-                        sLeaser.sprites[l].SetAnchor(sLeaser.sprites[self.SpriteHeadStart + 4].anchorX, sLeaser.sprites[self.SpriteHeadStart + 4].anchorY);
+                        sLeaser.sprites[self.SpriteHeadStart + 4].element = Futile.atlasManager.GetElementWithName("LizardEyes" + num10 + "." + self.lizard.lizardParams.headGraphics[4] + "Nose");
+
+                        string spriteName = "LizardEyes" + num10 + "." + self.lizard.lizardParams.headGraphics[4];
+
+                        string spriteNameR = sLeaser.sprites[self.SpriteHeadStart + 4].scaleX > 0f ? "Right" + spriteName : "Left" + spriteName;
+                        string spriteNameL = sLeaser.sprites[self.SpriteHeadStart + 4].scaleX > 0f ? "Left" + spriteName : "Right" + spriteName;
+
+                        if (Futile.atlasManager.DoesContainElementWithName(spriteNameR + "Normal"))
+                        {
+                            for (int l = graphData.eyeSprites; l < graphData.eyeSprites + 2; l++)
+                            {
+                                sLeaser.sprites[l].scaleX = Mathf.Sign(num7) * self.lizard.lizardParams.headSize * self.iVars.headSize;
+                                sLeaser.sprites[l].scaleY = self.lizard.lizardParams.headSize * self.iVars.headSize;
+                                sLeaser.sprites[l].x = val3.x + normalized.x * num8 * num7 * self.lizard.lizardParams.jawOpenMoveJawsApart * (1f - self.lizard.lizardParams.jawOpenLowerJawFac) - camPos.x;
+                                sLeaser.sprites[l].y = val3.y + normalized.y * num8 * num7 * self.lizard.lizardParams.jawOpenMoveJawsApart * (1f - self.lizard.lizardParams.jawOpenLowerJawFac) - camPos.y;
+                                sLeaser.sprites[l].rotation = num9 + self.lizard.lizardParams.jawOpenAngle * (1f - self.lizard.lizardParams.jawOpenLowerJawFac) * num8 * num7;
+                                sLeaser.sprites[l].SetAnchor(sLeaser.sprites[self.SpriteHeadStart + 4].anchorX, sLeaser.sprites[self.SpriteHeadStart + 4].anchorY);
+                            }
+
+                            switch (data.liz["EyeRight"])
+                            {
+                                case "Blind":
+                                    sLeaser.sprites[graphData.eyeSprites].color = Color.white;
+                                    sLeaser.sprites[graphData.eyeSprites].element = Futile.atlasManager.GetElementWithName(spriteNameR + "Normal");
+                                    break;
+                                case "Scar":
+                                    sLeaser.sprites[graphData.eyeSprites].color = sLeaser.sprites[self.SpriteHeadStart + 4].color;
+                                    sLeaser.sprites[graphData.eyeSprites].element = Futile.atlasManager.GetElementWithName(spriteNameR + "Scar");
+                                    break;
+                                case "BlindScar":
+                                    sLeaser.sprites[graphData.eyeSprites].color = Color.white;
+                                    sLeaser.sprites[graphData.eyeSprites].element = Futile.atlasManager.GetElementWithName(spriteNameR + "Scar");
+                                    break;
+                                case "Scar2":
+                                    sLeaser.sprites[graphData.eyeSprites].color = sLeaser.sprites[self.SpriteHeadStart + 4].color;
+                                    sLeaser.sprites[graphData.eyeSprites].element = Futile.atlasManager.GetElementWithName(spriteNameR + "Scar2");
+                                    break;
+                                case "BlindScar2":
+                                    sLeaser.sprites[graphData.eyeSprites].color = Color.white;
+                                    sLeaser.sprites[graphData.eyeSprites].element = Futile.atlasManager.GetElementWithName(spriteNameR + "Scar2");
+                                    break;
+                                case "Cut":
+                                    sLeaser.sprites[graphData.eyeSprites].color = BloodColoursCheck(self.lizard.Template.type.ToString()) ? bloodcolours[self.lizard.Template.type.ToString()] : self.effectColor;
+                                    sLeaser.sprites[graphData.eyeSprites].element = Futile.atlasManager.GetElementWithName(spriteNameR + "Cut");
+                                    break;
+                                default:
+                                    sLeaser.sprites[graphData.eyeSprites].color = sLeaser.sprites[self.SpriteHeadStart + 4].color;
+                                    sLeaser.sprites[graphData.eyeSprites].element = Futile.atlasManager.GetElementWithName(spriteNameR + "Normal");
+                                    break;
+                            }
+
+                            switch (data.liz["EyeLeft"])
+                            {
+                                case "Blind":
+                                    sLeaser.sprites[graphData.eyeSprites + 1].color = Color.white;
+                                    sLeaser.sprites[graphData.eyeSprites + 1].element = Futile.atlasManager.GetElementWithName(spriteNameL + "Normal");
+                                    break;
+                                case "Scar":
+                                    sLeaser.sprites[graphData.eyeSprites + 1].color = sLeaser.sprites[self.SpriteHeadStart + 4].color;
+                                    sLeaser.sprites[graphData.eyeSprites + 1].element = Futile.atlasManager.GetElementWithName(spriteNameL + "Scar");
+                                    break;
+                                case "BlindScar":
+                                    sLeaser.sprites[graphData.eyeSprites + 1].color = Color.white;
+                                    sLeaser.sprites[graphData.eyeSprites + 1].element = Futile.atlasManager.GetElementWithName(spriteNameL + "Scar");
+                                    break;
+                                case "Scar2":
+                                    sLeaser.sprites[graphData.eyeSprites + 1].color = sLeaser.sprites[self.SpriteHeadStart + 4].color;
+                                    sLeaser.sprites[graphData.eyeSprites + 1].element = Futile.atlasManager.GetElementWithName(spriteNameL + "Scar2");
+                                    break;
+                                case "BlindScar2":
+                                    sLeaser.sprites[graphData.eyeSprites + 1].color = Color.white;
+                                    sLeaser.sprites[graphData.eyeSprites + 1].element = Futile.atlasManager.GetElementWithName(spriteNameL + "Scar2");
+                                    break;
+                                case "Cut":
+                                    sLeaser.sprites[graphData.eyeSprites + 1].color = BloodColoursCheck(self.lizard.Template.type.ToString()) ? bloodcolours[self.lizard.Template.type.ToString()] : self.effectColor;
+                                    sLeaser.sprites[graphData.eyeSprites + 1].element = Futile.atlasManager.GetElementWithName(spriteNameL + "Cut");
+                                    break;
+                                default:
+                                    sLeaser.sprites[graphData.eyeSprites + 1].color = sLeaser.sprites[self.SpriteHeadStart + 4].color;
+                                    sLeaser.sprites[graphData.eyeSprites + 1].element = Futile.atlasManager.GetElementWithName(spriteNameL + "Normal");
+                                    break;
+                            }
+                        }
+                        else
+                        {
+                            data.liz["EyeRight"] = "Incompatible";
+                            data.liz["EyeLeft"] = "Incompatible";
+
+                            if (graphData.eyeSprites != 0)
+                            {
+                                sLeaser.sprites[graphData.eyeSprites].isVisible = false;
+                                sLeaser.sprites[graphData.eyeSprites + 1].isVisible = false;
+                            }
+                        }
                     }
-
-                    string spriteName = "LizardEyes" + num10 + "." + self.lizard.lizardParams.headGraphics[4];
-
-                    string spriteNameR = sLeaser.sprites[self.SpriteHeadStart + 4].scaleX > 0f ? "Right" + spriteName : "Left" + spriteName;
-                    string spriteNameL = sLeaser.sprites[self.SpriteHeadStart + 4].scaleX > 0f ? "Left" + spriteName : "Right" + spriteName;
-
-                    switch (data.liz["EyeRight"])
+                    else
                     {
-                        case "Blind":
-                            sLeaser.sprites[graphData.eyeSprites].color = Color.white;
-                            sLeaser.sprites[graphData.eyeSprites].element = Futile.atlasManager.GetElementWithName(spriteNameR + "Normal");
-                            break;
-                        case "Scar":
-                            sLeaser.sprites[graphData.eyeSprites].color = sLeaser.sprites[self.SpriteHeadStart + 4].color;
-                            sLeaser.sprites[graphData.eyeSprites].element = Futile.atlasManager.GetElementWithName(spriteNameR + "Scar");
-                            break;
-                        case "BlindScar":
-                            sLeaser.sprites[graphData.eyeSprites].color = Color.white;
-                            sLeaser.sprites[graphData.eyeSprites].element = Futile.atlasManager.GetElementWithName(spriteNameR + "Scar");
-                            break;
-                        case "Scar2":
-                            sLeaser.sprites[graphData.eyeSprites].color = sLeaser.sprites[self.SpriteHeadStart + 4].color;
-                            sLeaser.sprites[graphData.eyeSprites].element = Futile.atlasManager.GetElementWithName(spriteNameR + "Scar2");
-                            break;
-                        case "BlindScar2":
-                            sLeaser.sprites[graphData.eyeSprites].color = Color.white;
-                            sLeaser.sprites[graphData.eyeSprites].element = Futile.atlasManager.GetElementWithName(spriteNameR + "Scar2");
-                            break;
-                        case "Cut":
-                            sLeaser.sprites[graphData.eyeSprites].color = BloodColoursCheck(self.lizard.Template.type.ToString()) ? bloodcolours[self.lizard.Template.type.ToString()] : self.effectColor;
-                            sLeaser.sprites[graphData.eyeSprites].element = Futile.atlasManager.GetElementWithName(spriteNameR + "Cut");
-                            break;
-                        default:
-                            sLeaser.sprites[graphData.eyeSprites].color = sLeaser.sprites[self.SpriteHeadStart + 4].color;
-                            sLeaser.sprites[graphData.eyeSprites].element = Futile.atlasManager.GetElementWithName(spriteNameR + "Normal");
-                            break;
-                    }
+                        data.liz["EyeRight"] = "Incompatible";
+                        data.liz["EyeLeft"] = "Incompatible";
 
-                    switch (data.liz["EyeLeft"])
-                    {
-                        case "Blind":
-                            sLeaser.sprites[graphData.eyeSprites + 1].color = Color.white;
-                            sLeaser.sprites[graphData.eyeSprites + 1].element = Futile.atlasManager.GetElementWithName(spriteNameL + "Normal");
-                            break;
-                        case "Scar":
-                            sLeaser.sprites[graphData.eyeSprites + 1].color = sLeaser.sprites[self.SpriteHeadStart + 4].color;
-                            sLeaser.sprites[graphData.eyeSprites + 1].element = Futile.atlasManager.GetElementWithName(spriteNameL + "Scar");
-                            break;
-                        case "BlindScar":
-                            sLeaser.sprites[graphData.eyeSprites + 1].color = Color.white;
-                            sLeaser.sprites[graphData.eyeSprites + 1].element = Futile.atlasManager.GetElementWithName(spriteNameL + "Scar");
-                            break;
-                        case "Scar2":
-                            sLeaser.sprites[graphData.eyeSprites + 1].color = sLeaser.sprites[self.SpriteHeadStart + 4].color;
-                            sLeaser.sprites[graphData.eyeSprites + 1].element = Futile.atlasManager.GetElementWithName(spriteNameL + "Scar2");
-                            break;
-                        case "BlindScar2":
-                            sLeaser.sprites[graphData.eyeSprites + 1].color = Color.white;
-                            sLeaser.sprites[graphData.eyeSprites + 1].element = Futile.atlasManager.GetElementWithName(spriteNameL + "Scar2");
-                            break;
-                        case "Cut":
-                            sLeaser.sprites[graphData.eyeSprites + 1].color = BloodColoursCheck(self.lizard.Template.type.ToString()) ? bloodcolours[self.lizard.Template.type.ToString()] : self.effectColor;
-                            sLeaser.sprites[graphData.eyeSprites + 1].element = Futile.atlasManager.GetElementWithName(spriteNameL + "Cut");
-                            break;
-                        default:
-                            sLeaser.sprites[graphData.eyeSprites + 1].color = sLeaser.sprites[self.SpriteHeadStart + 4].color;
-                            sLeaser.sprites[graphData.eyeSprites + 1].element = Futile.atlasManager.GetElementWithName(spriteNameL + "Normal");
-                            break;
+                        if (graphData.eyeSprites != 0)
+                        {
+                            sLeaser.sprites[graphData.eyeSprites].isVisible = false;
+                            sLeaser.sprites[graphData.eyeSprites + 1].isVisible = false;
+                        }
                     }
                 }
+                */
 
                 if (data.liz.TryGetValue("Tongue", out string tongue) && tongue == "Tube" && self.lizard.tongue != null && self.lizard.tongue.Out)
                 {
@@ -293,7 +475,7 @@ internal class LizardGraphicsHooks
             }
 
         Line1:
-            if(ShadowOfOptions.camo_ability.Value && CanCamoCheck(data, self.lizard.Template.type.ToString()) || ShadowOfOptions.electric_transformation.Value && (data.transformation == "Electric" || data.transformation == "ElectricTransformation"))
+            if (ShadowOfOptions.camo_ability.Value && CanCamoCheck(data, self.lizard.Template.type.ToString()) || ShadowOfOptions.electric_transformation.Value && (data.transformation == "Electric" || data.transformation == "ElectricTransformation"))
             {
                 CamoLizardGraphicsDraw(self, sLeaser, timeStacker, data, data2);
             }
@@ -344,19 +526,33 @@ internal class LizardGraphicsHooks
             if (ShadowOfOptions.cut_in_half.Value)
                 GoreLimbSprites(data.availableBodychunks);
 
-            bool cosmeticValid = false;
-            for (int i = 0; i < data.availableBodychunks.Count; i++)
+            if (ShadowOfOptions.cut_in_half.Value || ShadowOfOptions.decapitation.Value && ShadowOfOptions.cosmetic_body_chunks.Value)
             {
-                if (!data.cosmeticBodychunks.Contains(data.availableBodychunks[i]))
-                {
-                    cosmeticValid = true;
-                    break;
-                }
-            }
+                List<int> bodyChunks = new();
 
-            if (cosmeticValid)
-            {         
-                CutInHalfGraphics(self, sLeaser, data.cosmeticBodychunks, camPos, timeStacker);
+                if (ShadowOfOptions.cut_in_half.Value && !ShadowOfOptions.cosmetic_body_chunks.Value)
+                {
+                    bodyChunks = data.availableBodychunks;
+                }
+                else if(!ShadowOfOptions.cut_in_half.Value && ShadowOfOptions.cosmetic_body_chunks.Value)
+                {
+                    bodyChunks = data.cosmeticBodychunks;
+                }
+                else
+                {
+                    for (int i = 0; i < data.availableBodychunks.Count; i++)
+                    {
+                        if (data.availableBodychunks.Contains(data.cosmeticBodychunks[i]))
+                        {
+                            bodyChunks.Add(data.cosmeticBodychunks[i]);
+                        }
+                    }
+                }
+
+                if (bodyChunks.Count != 0 && bodyChunks.Count != self.lizard.bodyChunks.Length)
+                {
+                    CutInHalfGraphics(self, sLeaser, bodyChunks, camPos, timeStacker);
+                }
             }
 
             if (ShadowOfOptions.dismemberment.Value)
@@ -411,8 +607,6 @@ internal class LizardGraphicsHooks
                     if (!availableBodychunks.Contains(i))
                     {
                         self.lizard.bodyChunks[i].collideWithObjects = false;
-                        //self.lizard.bodyChunks[i].mass = 0f;
-                        //self.lizard.bodyChunks[i].rad = 0f;
                     }
                 }
 
@@ -476,7 +670,7 @@ internal class LizardGraphicsHooks
                         sLeaser.sprites[data2.cutHalfSprites].color = BloodColoursCheck(self.lizard.Template.type.ToString()) ? bloodcolours[self.lizard.Template.type.ToString()] : (ModManager.Watcher && self.lizard.Template.type == WatcherEnums.CreatureTemplateType.IndigoLizard) ? Color.Lerp(self.effectColor, self.palette.blackColor, 0.5f) : self.effectColor;
                         sLeaser.sprites[data2.cutHalfSprites + 1].color = Color.white;
 
-                        CutInHalfGraphics(self, sLeaser, availableBodychunks, camPos, timeStacker);
+                        //CutInHalfGraphics(self, sLeaser, availableBodychunks, camPos, timeStacker);
                     }
                 }
                 if (!availableBodychunks.Contains(2))
@@ -515,7 +709,7 @@ internal class LizardGraphicsHooks
                         sLeaser.sprites[data2.cutHalfSprites].color = BloodColoursCheck(self.lizard.Template.type.ToString()) ? bloodcolours[self.lizard.Template.type.ToString()] : (ModManager.Watcher && self.lizard.Template.type == WatcherEnums.CreatureTemplateType.IndigoLizard) ? Color.Lerp(self.effectColor, self.palette.blackColor, 0.5f) : self.effectColor;
                         sLeaser.sprites[data2.cutHalfSprites + 1].color = Color.white;
 
-                        CutInHalfGraphics(self, sLeaser, availableBodychunks, camPos, timeStacker);
+                        //CutInHalfGraphics(self, sLeaser, availableBodychunks, camPos, timeStacker);
                     }
                 }
 
@@ -571,7 +765,7 @@ internal class LizardGraphicsHooks
             Color effectColour = self.effectColor;
             Color headColour = self.effectColor;
 
-            Color bodyColour = self.BodyColor(timeStacker);
+            Color bodyColour = self.DynamicBodyColor(0f);
 
             bool isSalamander = self.lizard.Template.type == CreatureTemplate.Type.Salamander || self.lizard.Template.type.ToString() == "MoleSalamander";
 
@@ -585,8 +779,8 @@ internal class LizardGraphicsHooks
             {
                 data2.camoOnce = true;
 
-                effectColour = CamoElectric(self, data2, self.effectColor);
-                bodyColour = Camo(self, self.BodyColor(timeStacker));
+                effectColour = CamoElectric(self, data2, effectColour);
+                bodyColour = Camo(self, bodyColour);
 
                 if(data2.electricColorTimer > 0)
                     data2.electricColorTimer--;
@@ -635,6 +829,10 @@ internal class LizardGraphicsHooks
                     {
                         sLeaser.sprites[s].color = effectColour;
                     }
+                    else if (ShadowOfOptions.dismemberment.Value && data.armState[s - self.SpriteLimbsColorStart] == "Cut" && BloodColoursCheck(self.lizard.Template.type.ToString()))
+                    {
+                        sLeaser.sprites[s].color = bloodcolours[self.lizard.Template.type.ToString()];
+                    }
                 }
                 #endregion
 
@@ -682,7 +880,7 @@ internal class LizardGraphicsHooks
                     for (int j = 0; j < (sLeaser.sprites[self.SpriteTail] as TriangleMesh).verticeColors.Length; j++)
                     {
                         float t = (float)(j / 2) * 2f / (float)((sLeaser.sprites[self.SpriteTail] as TriangleMesh).verticeColors.Length - 1);
-                        (sLeaser.sprites[self.SpriteTail] as TriangleMesh).verticeColors[j] = bodyColour;
+                        (sLeaser.sprites[self.SpriteTail] as TriangleMesh).verticeColors[j] = TailColor(Mathf.Lerp(self.bodyLength / self.BodyAndTailLength, 1f, t));
                     }
                 }
                 #endregion
@@ -1076,6 +1274,18 @@ internal class LizardGraphicsHooks
                     self.ColorBody(sLeaser, self.palette.blackColor);
                 }
 
+                for (int j = self.SpriteLimbsStart; j < self.SpriteLimbsEnd; j++)
+                {
+                    if (!ShadowOfOptions.dismemberment.Value || data.armState[j - self.SpriteLimbsColorStart] != "Cut")
+                    {
+                        sLeaser.sprites[j].color = effectColour;
+                    }
+                    else if (ShadowOfOptions.dismemberment.Value && data.armState[j - self.SpriteLimbsColorStart] == "Cut" && BloodColoursCheck(self.lizard.Template.type.ToString()))
+                    {
+                        sLeaser.sprites[j].color = bloodcolours[self.lizard.Template.type.ToString()];
+                    }
+                }
+
                 if (self.lizard.Template.type == CreatureTemplate.Type.CyanLizard || self.lizard.Template.type == WatcherEnums.CreatureTemplateType.IndigoLizard)
                 {
                     sLeaser.sprites[self.SpriteHeadStart].color = self.palette.blackColor;
@@ -1266,13 +1476,41 @@ internal class LizardGraphicsHooks
                     }
                 }
             }
-
-            Color Electrify(Color col)
-            {
-                return Color.Lerp(col, new Color(0.7f, 0.7f, 1f), (float)(data2.electricColorTimer / 50f));
-            }
         }
         catch (Exception e) { ShadowOfLizards.Logger.LogError(e); }
+
+        Color Electrify(Color col)
+        {
+            return Color.Lerp(col, new Color(0.7f, 0.7f, 1f), (float)(data2.electricColorTimer / 50f));
+        }
+
+        Color TailColor(float f)
+        {
+            if (ModManager.DLCShared && (self.Caramel || self.lizard.Template.type == DLCSharedEnums.CreatureTemplateType.ZoopLizard) && (f < self.bodyLength / self.BodyAndTailLength || self.iVars.tailColor == 0f))
+            {
+                return Camo(self, self.ivarBodyColor);
+            }
+            if (self.lizard.Template.type == CreatureTemplate.Type.WhiteLizard)
+            {
+                return Camo(self, new Color(1f, 1f, 1f));
+            }
+            if (self.lizard.Template.type == CreatureTemplate.Type.Salamander)
+            {
+                return Camo(self, self.SalamanderColor);
+            }
+            if (f < self.bodyLength / self.BodyAndTailLength || self.iVars.tailColor == 0f)
+            {
+                return Camo(self, self.palette.blackColor);
+            }
+            float value = Mathf.InverseLerp(self.bodyLength / self.BodyAndTailLength, 1f, f);
+            float num = Mathf.Clamp(Mathf.InverseLerp(self.lizard.lizardParams.tailColorationStart, 0.95f, value), 0f, 1f);
+            num = Mathf.Pow(num, self.lizard.lizardParams.tailColorationExponent) * self.iVars.tailColor;
+            if (ModManager.DLCShared && (self.Caramel || self.lizard.Template.type == DLCSharedEnums.CreatureTemplateType.ZoopLizard))
+            {
+                return Color.Lerp(Camo(self, self.ivarBodyColor), CamoElectric(self, data2, self.effectColor), num);
+            }
+            return Color.Lerp(Camo(self, self.palette.blackColor), CamoElectric(self, data2, self.effectColor), num);
+        }
     }
 
     public static Color WhiteNoCamoHeadColor(LizardGraphics self, float timeStacker)
@@ -1298,23 +1536,6 @@ internal class LizardGraphicsHooks
     {
         return Color.Lerp(col, self.whiteCamoColor, self.whiteCamoColorAmount);
     }
-
-    /*
-    static void LizardGraphicsUpdate(On.LizardGraphics.orig_Update orig, LizardGraphics self)
-    {
-        orig.Invoke(self);
-        try
-        {
-            if (!lizardstorage.TryGetValue(self.lizard.abstractCreature, out LizardData data))
-            {
-                return;
-            }
-
-            Debug.Log(self.whiteGlitchFit);
-        }
-        catch (Exception e) { ShadowOfLizards.Logger.LogError(e); }
-    }
-    */
 
     static void LizardGraphicsInitiateSprites(On.LizardGraphics.orig_InitiateSprites orig, LizardGraphics self, SpriteLeaser sLeaser, RoomCamera rCam)
     {
@@ -1428,7 +1649,7 @@ internal class LizardGraphicsHooks
         {
             return orig.Invoke(self, spriteIndex, cosmetic);
         }
-        else if (ShadowOfOptions.water_breather.Value && cosmetic is AxolotlGills && (!ModManager.Watcher || self.lizard.Template.type != WatcherEnums.CreatureTemplateType.BlizzardLizard) && data.liz.TryGetValue("WaterBreather", out string WaterBreather) && WaterBreather != "True" || !data.cosmeticBodychunks.Contains(0) && cosmetic is Whiskers && self.lizard.Template.type != CreatureTemplate.Type.BlackLizard || !data.cosmeticBodychunks.Contains(2) && (cosmetic is TailFin || cosmetic is TailGeckoScales || cosmetic is TailTuft))
+        else if (ShadowOfOptions.water_breather.Value && cosmetic is AxolotlGills && (!ModManager.Watcher || self.lizard.Template.type != WatcherEnums.CreatureTemplateType.BlizzardLizard) && data.liz.TryGetValue("WaterBreather", out string WaterBreather) && WaterBreather != "True" || ShadowOfOptions.cosmetic_body_chunks.Value && (data.cosmeticBodychunks.Count == 0 || !data.cosmeticBodychunks.Contains(0) && cosmetic is Whiskers && self.lizard.Template.type != CreatureTemplate.Type.BlackLizard || !data.cosmeticBodychunks.Contains(2) && (cosmetic is TailFin || cosmetic is TailGeckoScales || cosmetic is TailTuft)))
         {
             return spriteIndex;
         }

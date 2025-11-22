@@ -45,20 +45,15 @@ internal class ILHooks
         IL.LizardGraphics.Update += ILLizardGraphicsUpdate; //camo
 
         new Hook( //Camo
-            typeof(Lizard).GetProperty(nameof(Lizard.VisibilityBonus)).GetGetMethod(),
-            typeof(ILHooks).GetMethod(nameof(ShadowOfLizardVisibilityBonus)));
+            typeof(Lizard).GetProperty(nameof(Lizard.VisibilityBonus)).GetGetMethod(), ShadowOfLizardVisibilityBonus);
 
         new Hook( //TotalMass
-            typeof(PhysicalObject).GetProperty(nameof(PhysicalObject.TotalMass)).GetGetMethod(),
-            typeof(ILHooks).GetMethod(nameof(ShadowOfTotalMass)));
+            typeof(PhysicalObject).GetProperty(nameof(PhysicalObject.TotalMass)).GetGetMethod(), ShadowOfTotalMass);
 
         new Hook( //Swimmer
-            typeof(Lizard).GetProperty(nameof(Lizard.Swimmer)).GetGetMethod(),
-            typeof(ILHooks).GetMethod(nameof(ShadowOfLizardSwimmer)));
+            typeof(Lizard).GetProperty(nameof(Lizard.Swimmer)).GetGetMethod(), ShadowOfLizardSwimmer);
 
-        new Hook(
-            typeof(Lizard).GetProperty(nameof(Lizard.IsWallClimber)).GetGetMethod(),
-            typeof(ILHooks).GetMethod(nameof(ShadowOfIsWallClimber)));
+        new Hook(typeof(Lizard).GetProperty(nameof(Lizard.IsWallClimber)).GetGetMethod(), ShadowOfIsWallClimber);
     }
 
     static void ILNewLizardRotModule(ILContext il)
