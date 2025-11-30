@@ -69,6 +69,11 @@ internal class LizardGraphicsHooks
             if (ShadowOfOptions.melted_transformation.Value && (data.transformation == "Melted" || data.transformation == "MeltedTransformation"))
             {
                 self.lizard.effectColor = new Color(float.Parse(data.liz["MeltedR"]), float.Parse(data.liz["MeltedG"]), float.Parse(data.liz["MeltedB"]));
+
+                if (self.lizard.rotModule != null && self.lizard.LizardState.rotType != LizardState.RotType.Slight)
+                {
+                    self.lizard.effectColor = Color.Lerp(self.effectColor, self.lizard.rotModule.RotEyeColor, (self.lizard.LizardState.rotType == LizardState.RotType.Opossum) ? 0.2f : 0.8f);
+                }
             }
         }
         catch (Exception e) { ShadowOfLizards.Logger.LogError(e); }

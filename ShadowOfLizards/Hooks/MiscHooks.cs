@@ -25,7 +25,6 @@ internal class MiscHooks
 
         On.LizardBubble.DrawSprites += BubbleDraw;
 
-        On.Creature.Update += CreatureUpdate;
         On.Creature.Grab += CreatureGrab;
 
         On.BigEel.Swallow += BigEelSwallow;
@@ -98,7 +97,7 @@ internal class MiscHooks
     {
         orig.Invoke(self);
 
-        if (!ShadowOfOptions.jump_ability.Value || self.lizard == null || self.gasLeakSpear == null || !lizardstorage.TryGetValue(self.lizard.abstractCreature, out LizardData data) || !Chance(self.lizard, ShadowOfOptions.jump_ability_chance.Value, "Removing Jump Ability due to Gas Leak"))
+        if (!ShadowOfOptions.jump_ability.Value || self.lizard == null || self.gasLeakSpear == null || !lizardstorage.TryGetValue(self.lizard.abstractCreature, out LizardData data) || !Chance(self.lizard.abstractCreature, ShadowOfOptions.jump_ability_chance.Value, "Removing Jump Ability due to Gas Leak"))
         {
             return;
         }
@@ -176,9 +175,9 @@ internal class MiscHooks
 
                         float multiplier = ShadowOfOptions.distance_based_blind.Value ? Custom.LerpMap(Custom.LerpMap(Vector2.Distance(self.firstChunk.pos, self.room.abstractRoom.creatures[i].realizedCreature.VisionPoint), 60f, 600f, 400f, 20f), 20, 400, 0, 2) : 1;
 
-                        bool flag = eye == "Blind" || eye == "BlindScar" || eye == "Cut";
-                        bool flag2 = data.liz["EyeLeft"] == "Blind" || data.liz["EyeLeft"] == "BlindScar" || data.liz["EyeLeft"] == "Cut";
-                        if (!flag && Chance(liz, ShadowOfOptions.blind_chance.Value * multiplier, "FlareBomb Blinding Right Eye"))
+                        bool flag = eye == "Blind" || eye == "BlindScar" || eye == "BlindScar2" || eye == "Cut";
+                        bool flag2 = data.liz["EyeLeft"] == "Blind" || data.liz["EyeLeft"] == "BlindScar" || data.liz["EyeLeft"] == "BlindScar2" || data.liz["EyeLeft"] == "Cut";
+                        if (!flag && Chance(liz.abstractCreature, ShadowOfOptions.blind_chance.Value * multiplier, "FlareBomb Blinding Right Eye"))
                         {
                             if (eye == "Normal")
                             {
@@ -194,10 +193,17 @@ internal class MiscHooks
                                 liz.Template.waterVision -= data.visualRadius * 0.5f;
                                 liz.Template.throughSurfaceVision -= data.visualRadius * 0.5f;
                             }
+                            else if (eye == "Scar2")
+                            {
+                                data.liz["EyeRight"] = "BlindScar2";
+                                liz.Template.visualRadius -= data.visualRadius * 0.5f;
+                                liz.Template.waterVision -= data.visualRadius * 0.5f;
+                                liz.Template.throughSurfaceVision -= data.visualRadius * 0.5f;
+                            }
                             if (ShadowOfOptions.debug_logs.Value)
                                 Debug.Log(all + self.ToString() + " Right Eye was Blinded");
                         }
-                        if (!flag2 && Chance(liz, ShadowOfOptions.blind_chance.Value * multiplier, "FlareBomb Blinding Left Eye"))
+                        if (!flag2 && Chance(liz.abstractCreature, ShadowOfOptions.blind_chance.Value * multiplier, "FlareBomb Blinding Left Eye"))
                         {
                             if (data.liz["EyeLeft"] == "Normal")
                             {
@@ -213,8 +219,47 @@ internal class MiscHooks
                                 liz.Template.waterVision -= data.visualRadius * 0.5f;
                                 liz.Template.throughSurfaceVision -= data.visualRadius * 0.5f;
                             }
+                            else if (data.liz["EyeLeft"] == "Scar2")
+                            {
+                                data.liz["EyeLeft"] = "BlindScar2";
+                                liz.Template.visualRadius -= data.visualRadius * 0.5f;
+                                liz.Template.waterVision -= data.visualRadius * 0.5f;
+                                liz.Template.throughSurfaceVision -= data.visualRadius * 0.5f;
+                            }
                             if (ShadowOfOptions.debug_logs.Value)
                                 Debug.Log(all + self.ToString() + " Left Eye was Blinded");
+                        }
+
+                        bool flag3 = data.liz["EyeRight"] == "Blind" || data.liz["EyeRight"] == "BlindScar" || data.liz["EyeRight"] == "BlindScar2" || data.liz["EyeRight"] == "Cut";
+                        bool flag4 = data.liz["EyeLeft"] == "Blind" || data.liz["EyeLeft"] == "BlindScar" || data.liz["EyeLeft"] == "BlindScar2" || data.liz["EyeLeft"] == "Cut";
+
+                        if (ShadowOfOptions.deafen.Value && data.liz.ContainsKey("EarRight") && flag3 && flag4)
+                        {
+                            List<AIModule> modules = liz.AI.modules;
+
+                            bool superHearing = false;
+
+                            bool flag5 = data.liz["EarRight"] == "Deaf";
+                            bool flag6 = data.liz["EarLeft"] == "Deaf";
+
+                            float multiplier2 = (flag5 ? 1 : 0) + (flag6 ? 1 : 0);
+
+                            for (int j = 0; j < modules.Count; j++)
+                            {
+                                if (modules[j] is SuperHearing)
+                                {
+                                    superHearing = true;
+
+                                    (modules[j] as SuperHearing).superHearingSkill = multiplier2 * 175f;
+
+                                    break;
+                                }
+                            }
+
+                            if (!superHearing)
+                            {
+                                liz.AI.modules.Add(new SuperHearing(liz.AI, liz.AI.tracker, multiplier2 * 175f));
+                            }
                         }
                     }
                 }
@@ -259,19 +304,75 @@ internal class MiscHooks
 
                             float multiplier = ShadowOfOptions.distance_based_deafen.Value ? Custom.LerpMap(Custom.LerpMap(num3, num * 1.5f * self.deafen, num * Mathf.Lerp(1f, 4f, self.deafen), 650f * self.deafen, 0f), 20, 160, 0, 2) : 1;
 
-                            if (ear == "Normal" && Chance(liz, ShadowOfOptions.deafen_chance.Value * multiplier, "Explosion Defening Right Ear"))
+                            if (ear == "Normal" && Chance(liz.abstractCreature, ShadowOfOptions.deafen_chance.Value * multiplier, "Explosion Defening Right Ear"))
                             {
                                 data.liz["EarRight"] = "Deaf";
 
-                                if (ShadowOfOptions.debug_logs.Value)
-                                    Debug.Log(all + self.ToString() + " Right Ear was Deafened");
+                                if (data.liz["EarLeft"] == "Deaf")
+                                {
+                                    for (int i = 0; i < liz.AI.modules.Count; i++)
+                                    {
+                                        if (liz.AI.modules[i] is SuperHearing)
+                                        {
+                                            (liz.AI.modules[i] as SuperHearing).superHearingSkill = 0f;
+
+                                            break;
+                                        }
+                                    }
+
+                                    if (ShadowOfOptions.debug_logs.Value)
+                                        Debug.Log(all + liz + " was fully Deafened");
+                                }
+                                else
+                                {
+                                    for (int i = 0; i < liz.AI.modules.Count; i++)
+                                    {
+                                        if (liz.AI.modules[i] is SuperHearing)
+                                        {
+                                            (liz.AI.modules[i] as SuperHearing).superHearingSkill = (liz.AI.modules[i] as SuperHearing).superHearingSkill / 2;
+
+                                            break;
+                                        }
+                                    }
+
+                                    if (ShadowOfOptions.debug_logs.Value)
+                                        Debug.Log(all + liz + " Right Ear was Deafened");
+                                }
                             }
-                            if (data.liz["EarLeft"] == "Normal" && Chance(liz, ShadowOfOptions.deafen_chance.Value * multiplier, "Explosion Defening Left Ear"))
+                            if (data.liz["EarLeft"] == "Normal" && Chance(liz.abstractCreature, ShadowOfOptions.deafen_chance.Value * multiplier, "Explosion Defening Left Ear"))
                             {
                                 data.liz["EarLeft"] = "Deaf";
 
-                                if (ShadowOfOptions.debug_logs.Value)
-                                    Debug.Log(all + self.ToString() + " Left Ear was Deafened");
+                                if (data.liz["EarRight"] == "Deaf")
+                                {
+                                    for (int i = 0; i < liz.AI.modules.Count; i++)
+                                    {
+                                        if (liz.AI.modules[i] is SuperHearing)
+                                        {
+                                            (liz.AI.modules[i] as SuperHearing).superHearingSkill = 0f;
+
+                                            break;
+                                        }
+                                    }
+
+                                    if (ShadowOfOptions.debug_logs.Value)
+                                        Debug.Log(all + liz + " was fully Deafened");
+                                }
+                                else
+                                {
+                                    for (int i = 0; i < liz.AI.modules.Count; i++)
+                                    {
+                                        if (liz.AI.modules[i] is SuperHearing)
+                                        {
+                                            (liz.AI.modules[i] as SuperHearing).superHearingSkill = (liz.AI.modules[i] as SuperHearing).superHearingSkill / 2;
+
+                                            break;
+                                        }
+                                    }
+
+                                    if (ShadowOfOptions.debug_logs.Value)
+                                        Debug.Log(all + liz + " Left Ear was Deafened");
+                                }
                             }
                         }
                     }
@@ -322,57 +423,13 @@ internal class MiscHooks
         catch (Exception e) { ShadowOfLizards.Logger.LogError(e); }
     }
 
-    static void CreatureUpdate(On.Creature.orig_Update orig, Creature self, bool eu)
-    {
-        if (self == null || self is Lizard || self.grasps == null || self.grasps[0] == null || self.grasps[0].grabbed == null || self.grasps[0].grabbed is not Lizard liz || !lizardstorage.TryGetValue(liz.abstractCreature, out LizardData data2))
-        {
-            orig(self, eu);
-            return;
-        }
-
-        if(liz.dead)
-            PreViolenceCheck(liz, data2);
-
-        orig(self, eu);
-
-        try
-        {
-            if (!denCheck.TryGetValue(self.abstractCreature, out CreatureDenCheck data))
-            {
-                denCheck.Add(self.abstractCreature, new CreatureDenCheck());
-                denCheck.TryGetValue(self.abstractCreature, out  data);
-            }
-
-            if (self.enteringShortCut.HasValue && self.room != null && self.room.shortcutData(self.enteringShortCut.Value).shortCutType != null && self.room.shortcutData(self.enteringShortCut.Value).shortCutType == ShortcutData.Type.CreatureHole)
-            {
-                if (data.denCheck == false)
-                {
-                    data.denCheck = true;
-
-                    if (self.Submersion > 0.1f || self is TentaclePlant)
-                    {
-                        UnderwaterDen(data2, liz);
-                    }
-
-                    if (liz.dead)
-                        PostViolenceCheck(liz, data2, "Den", self);
-                }
-            }
-            else
-            {
-                data.denCheck = false;
-            }
-        }
-        catch (Exception e) { ShadowOfLizards.Logger.LogError(e); }
-    }
-
     static void BigEelSwallow(On.BigEel.orig_Swallow orig, BigEel self)
     {
         for (int i = 0; i < self.clampedObjects.Count; i++)
         {
             if (self.clampedObjects[i].chunk.owner is Lizard liz && lizardstorage.TryGetValue(liz.abstractCreature, out LizardData data))
             {
-                UnderwaterDen(data, liz);
+                UnderwaterDen(data, liz.abstractCreature);
             }
         }
 

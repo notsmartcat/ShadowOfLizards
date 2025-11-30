@@ -1154,7 +1154,7 @@ internal class LizardHooks
 
     static void NewLizard(On.Lizard.orig_ctor orig, Lizard self, AbstractCreature abstractCreature, World world)
     {
-        orig.Invoke(self, abstractCreature, world);
+        orig(self, abstractCreature, world);
 
         if (abstractCreature.state == null || abstractCreature.state.unrecognizedSaveStrings == null || !lizardstorage.TryGetValue(abstractCreature, out LizardData data))
         {
@@ -1759,7 +1759,7 @@ internal class LizardHooks
         {
             bool sourceOwnerFlag = source != null && source.owner != null;
 
-            bool sourceValidTypeFlag = (source == null && type == Creature.DamageType.Explosion && damage > 0.5f) || (source != null && (source.owner == null || (source.owner != null && source.owner is not JellyFish && source.owner is not Leech && source.owner is not DartMaggot)));
+            bool sourceValidTypeFlag = source != null && (source.owner == null || (source.owner != null && source.owner is not JellyFish && source.owner is not Leech && source.owner is not DartMaggot));
 
             #region Electric Damage Reduction
             if (type == Creature.DamageType.Bite && sourceOwnerFlag && source.owner is Lizard sourceLiz && lizardstorage.TryGetValue(sourceLiz.abstractCreature, out LizardData sourceData) && (sourceData.transformation == "Electric" || sourceData.transformation == "ElectricTransformation"))
@@ -1814,7 +1814,7 @@ internal class LizardHooks
 
             PreViolenceCheck(self, data);
 
-            orig.Invoke(self, source, directionAndMomentum, hitChunk, onAppendagePos, type, damage, stunBonus);
+            orig(self, source, directionAndMomentum, hitChunk, onAppendagePos, type, damage, stunBonus);
 
             PostViolenceCheck(self, data, type.ToString(), sourceOwnerFlag && source.owner is Creature crit ? crit : null);
 
@@ -1854,7 +1854,7 @@ internal class LizardHooks
                 {
                     if (LizHitHeadShield(directionAndMomentum.Value))
                     {
-                        if (ShadowOfOptions.blind.Value && data.liz.ContainsKey("EyeRight") && Chance(self, ShadowOfOptions.blind_cut_chance.Value * multiplier, "Eye being Hit"))
+                        if (ShadowOfOptions.blind.Value && data.liz.ContainsKey("EyeRight") && Chance(self.abstractCreature, ShadowOfOptions.blind_cut_chance.Value * multiplier, "Eye being Hit"))
                         {
                             string eye = (UnityEngine.Random.Range(0, 2) == 0) ? "EyeRight" : "EyeLeft";
 
@@ -1891,7 +1891,7 @@ internal class LizardHooks
                                 }
                             }
                         }
-                        else if (ShadowOfOptions.teeth.Value && data.liz.ContainsKey("UpperTeeth") && type != Creature.DamageType.Bite && Chance(self, ShadowOfOptions.teeth_chance.Value * multiplier, "Teeth being Hit"))
+                        else if (ShadowOfOptions.teeth.Value && data.liz.ContainsKey("UpperTeeth") && type != Creature.DamageType.Bite && Chance(self.abstractCreature, ShadowOfOptions.teeth_chance.Value * multiplier, "Teeth being Hit"))
                         {
                             string teeth = UnityEngine.Random.Range(0, 2) == 0 ? "UpperTeeth" : "LowerTeeth";
                             int teethNum = UnityEngine.Random.Range(1, 5);
@@ -2086,7 +2086,7 @@ internal class LizardHooks
                             if (ShadowOfOptions.debug_logs.Value)
                                 Debug.Log(all + self.ToString() + " was hit in it's Mouth");
 
-                            if (Chance(self, ShadowOfOptions.tongue_ability_chance.Value * multiplier, "Tongue being Cut"))
+                            if (Chance(self.abstractCreature, ShadowOfOptions.tongue_ability_chance.Value * multiplier, "Tongue being Cut"))
                             {
                                 self.tongue.Retract();
 
@@ -2128,109 +2128,112 @@ internal class LizardHooks
                     }
                 }
             } //Hitting Head
-            else if (hitChunk.index == 1 && ShadowOfOptions.decapitation.Value && data.beheaded == false && sourceOwnerFlag && source.owner is Spear && Vector2.Dot(source.pos - self.bodyChunks[1].pos, self.bodyChunks[0].pos - self.bodyChunks[1].pos) > 0f && HealthBasedChance(self, ShadowOfOptions.decapitation_chance.Value * multiplier, "Decapitation"))
+            else if (type != Creature.DamageType.Blunt)
             {
-                if (ShadowOfOptions.debug_logs.Value)
-                    Debug.Log(all + self.ToString() + " was hit it's Neck through bodychunk 1");
-
-                data.beheaded = true;
-                Decapitation(self);
-
-                PreViolenceCheck(self, data);
-                self.Die();
-                PostViolenceCheck(self, data, type.ToString(), sourceOwnerFlag && source.owner is Creature crit2 ? crit2 : null);
-
-                if (sourceOwnerFlag && source.owner is Spear spear)
+                if (hitChunk.index == 1 && ShadowOfOptions.decapitation.Value && data.beheaded == false && sourceOwnerFlag && source.owner is Spear && Vector2.Dot(source.pos - self.bodyChunks[1].pos, self.bodyChunks[0].pos - self.bodyChunks[1].pos) > 0f && HealthBasedChance(self, ShadowOfOptions.decapitation_chance.Value * multiplier, "Decapitation"))
                 {
-                    data.spearList.Add(spear);
-                }
-            } //Chance to cut Head if hit close enough to the head
-            else if (ShadowOfOptions.dismemberment.Value && (hitChunk.index == 1 || hitChunk.index == 2) && HealthBasedChance(self, ShadowOfOptions.dismemberment_chance.Value * multiplier, "Dismembernment")) //Leg Dismembernment
-            {
-                float num5 = Custom.Angle(new Vector2(directionAndMomentum.Value.x, directionAndMomentum.Value.y), -hitChunk.Rotation) * (hitChunk.index == 2 ? -1f : 1f);
-                int num8;
+                    if (ShadowOfOptions.debug_logs.Value)
+                        Debug.Log(all + self.ToString() + " was hit it's Neck through bodychunk 1");
 
-                if (ModManager.DLCShared && self.Template.type == DLCSharedEnums.CreatureTemplateType.EelLizard)
+                    data.beheaded = true;
+                    Decapitation(self);
+
+                    PreViolenceCheck(self, data);
+                    self.Die();
+                    PostViolenceCheck(self, data, type.ToString(), sourceOwnerFlag && source.owner is Creature crit2 ? crit2 : null);
+
+                    if (sourceOwnerFlag && source.owner is Spear spear)
+                    {
+                        data.spearList.Add(spear);
+                    }
+                } //Chance to cut Head if hit close enough to the head
+                else if (ShadowOfOptions.dismemberment.Value && (hitChunk.index == 1 || hitChunk.index == 2) && HealthBasedChance(self, ShadowOfOptions.dismemberment_chance.Value * multiplier, "Dismembernment")) //Leg Dismembernment
                 {
-                    if (hitChunk.index == 1)
-                    {
-                        num8 = (num5 < 0f) ? 0 : 1;
-                        int num9 = (num5 < 0f) ? 2 : 3;
+                    float num5 = Custom.Angle(new Vector2(directionAndMomentum.Value.x, directionAndMomentum.Value.y), -hitChunk.Rotation) * (hitChunk.index == 2 ? -1f : 1f);
+                    int num8;
 
-                        if (data.armState[num8] == "Normal")
+                    if (ModManager.DLCShared && self.Template.type == DLCSharedEnums.CreatureTemplateType.EelLizard)
+                    {
+                        if (hitChunk.index == 1)
                         {
-                            EllLegCut(num8, num9, num8);
+                            num8 = (num5 < 0f) ? 0 : 1;
+                            int num9 = (num5 < 0f) ? 2 : 3;
+
+                            if (data.armState[num8] == "Normal")
+                            {
+                                EllLegCut(num8, num9, num8);
+                            }
+                        }
+                    }
+                    else if ((ModManager.DLCShared && self.Template.type == DLCSharedEnums.CreatureTemplateType.SpitLizard) || (self.graphicsModule as LizardGraphics).limbs.Length == 6)
+                    {
+                        if (hitChunk.index == 1)
+                        {
+                            num8 = (num5 < 0f) ? 4 : 5;
+                            int num9 = (num5 < 0f) ? 2 : 3;
+
+                            if (UnityEngine.Random.value < 0.75 && data.armState[num8] == "Normal")
+                            {
+                                LegCut(num8, num8);
+                            }
+                            else if (data.armState[num9] == "Normal")
+                            {
+                                LegCut(num9, num9);
+                            }
+                        }
+                        else
+                        {
+                            num8 = (num5 < 0f) ? 0 : 1;
+                            int num10 = (num5 < 0f) ? 2 : 3;
+
+                            if (!data.isGoreHalf && UnityEngine.Random.value < 0.75 && data.armState[num8] == "Normal")
+                            {
+                                LegCut(num8, num8);
+                            }
+                            else if (data.armState[num10] == "Normal")
+                            {
+                                LegCut(num10, num10);
+                            }
+                        }
+                    }
+                    else if ((self.graphicsModule as LizardGraphics).limbs.Length == 4)
+                    {
+                        if (hitChunk.index == 1)
+                        {
+                            num8 = (num5 < 0f) ? 0 : 1;
+
+                            if (data.armState[num8] == "Normal")
+                            {
+                                LegCut(num8, num8);
+                            }
+                        }
+                        else
+                        {
+                            num8 = (num5 < 0f) ? 2 : 3;
+
+                            if (data.armState[num8] == "Normal")
+                            {
+                                LegCut(num8, num8);
+                            }
                         }
                     }
                 }
-                else if ((ModManager.DLCShared && self.Template.type == DLCSharedEnums.CreatureTemplateType.SpitLizard) || (self.graphicsModule as LizardGraphics).limbs.Length == 6)
+                else if (ShadowOfOptions.cut_in_half.Value && RotModuleCheck(self) && data.availableBodychunks.Contains(hitChunk.index) && (hitChunk.index == 1 && data.availableBodychunks.Contains(hitChunk.index + 1) || hitChunk.index != 1 && data.availableBodychunks.Count > 1) && HealthBasedChance(self, ShadowOfOptions.cut_in_half_chance.Value * multiplier, "Cutting in Half")) //Cut in Half
                 {
-                    if (hitChunk.index == 1)
-                    {
-                        num8 = (num5 < 0f) ? 4 : 5;
-                        int num9 = (num5 < 0f) ? 2 : 3;
+                    CutInHalf(self, data, hitChunk);
 
-                        if (UnityEngine.Random.value < 0.75 && data.armState[num8] == "Normal")
-                        {
-                            LegCut(num8, num8);
-                        }
-                        else if (data.armState[num9] == "Normal")
-                        {
-                            LegCut(num9, num9);
-                        }
-                    }
-                    else
-                    {
-                        num8 = (num5 < 0f) ? 0 : 1;
-                        int num10 = (num5 < 0f) ? 2 : 3;
+                    //PreViolenceCheck(self, data);
+                    //self.Die();
+                    //PostViolenceCheck(self, data, type.ToString(), sourceOwnerFlag && source.owner is Creature crit2 ? crit2 : null);
 
-                        if (!data.isGoreHalf && UnityEngine.Random.value < 0.75 && data.armState[num8] == "Normal")
-                        {
-                            LegCut(num8, num8);
-                        }
-                        else if (data.armState[num10] == "Normal")
-                        {
-                            LegCut(num10, num10);
-                        }
-                    }
-                }
-                else if((self.graphicsModule as LizardGraphics).limbs.Length == 4)
-                {                 
-                    if (hitChunk.index == 1)
-                    {
-                        num8 = (num5 < 0f) ? 0 : 1;
+                    self.LizardState.health = Mathf.Min(self.LizardState.health, -0.5f);
 
-                        if (data.armState[num8] == "Normal")
-                        {
-                            LegCut(num8, num8);
-                        }
-                    }
-                    else
+                    if (sourceOwnerFlag && source.owner is Spear spear)
                     {
-                        num8 = (num5 < 0f) ? 2 : 3;
-
-                        if (data.armState[num8] == "Normal")
-                        {
-                            LegCut(num8, num8);
-                        }
+                        data.spearList.Add(spear);
                     }
-                }
+                } //Cut in Half
             }
-            else if (ShadowOfOptions.cut_in_half.Value && RotModuleCheck(self) && data.availableBodychunks.Contains(hitChunk.index) && (hitChunk.index == 1 && data.availableBodychunks.Contains(hitChunk.index + 1) || hitChunk.index != 1 && data.availableBodychunks.Count > 1) && HealthBasedChance(self, ShadowOfOptions.cut_in_half_chance.Value * multiplier, "Cutting in Half")) //Cut in Half
-            {
-                CutInHalf(self, data, hitChunk);
-
-                //PreViolenceCheck(self, data);
-                //self.Die();
-                //PostViolenceCheck(self, data, type.ToString(), sourceOwnerFlag && source.owner is Creature crit2 ? crit2 : null);
-
-                self.LizardState.health = Mathf.Min(self.LizardState.health, -0.5f);
-
-                if (sourceOwnerFlag && source.owner is Spear spear)
-                {
-                    data.spearList.Add(spear);
-                }
-            } //Cut in Half
 
             if (ShadowOfOptions.electric_transformation.Value && self.graphicsModule != null && graphicstorage.TryGetValue(self.graphicsModule as LizardGraphics, out GraphicsData data2) && sourceOwnerFlag && data.transformation == "ElectricTransformation")
             {
@@ -2283,7 +2286,7 @@ internal class LizardHooks
         void ClimbLoss()
         {
             //Climb
-            if ((!data.liz.TryGetValue("CanClimbPole", out string CanClimbPole) && self.abstractCreature.creatureTemplate.pathingPreferencesTiles[(int)AItile.Accessibility.Climb].legality == PathCost.Legality.Allowed || CanClimbPole == "True") && Chance(self, ShadowOfOptions.climb_ability_chance.Value, "Removing Ability to Climb Poles"))
+            if ((!data.liz.TryGetValue("CanClimbPole", out string CanClimbPole) && self.abstractCreature.creatureTemplate.pathingPreferencesTiles[(int)AItile.Accessibility.Climb].legality == PathCost.Legality.Allowed || CanClimbPole == "True") && Chance(self.abstractCreature, ShadowOfOptions.climb_ability_chance.Value, "Removing Ability to Climb Poles"))
             {
                 data.liz["CanClimbPole"] = "False";
 
@@ -2302,7 +2305,7 @@ internal class LizardHooks
             }
 
             //Wall
-            if ((!data.liz.TryGetValue("CanClimbWall", out string CanClimbWall) && self.abstractCreature.creatureTemplate.pathingPreferencesTiles[(int)AItile.Accessibility.Wall].legality == PathCost.Legality.Allowed || CanClimbWall == "True") && Chance(self, ShadowOfOptions.climb_ability_chance.Value, "Removing Ability to Climb Walls"))
+            if ((!data.liz.TryGetValue("CanClimbWall", out string CanClimbWall) && self.abstractCreature.creatureTemplate.pathingPreferencesTiles[(int)AItile.Accessibility.Wall].legality == PathCost.Legality.Allowed || CanClimbWall == "True") && Chance(self.abstractCreature, ShadowOfOptions.climb_ability_chance.Value, "Removing Ability to Climb Walls"))
             {
                 data.liz["CanClimbWall"] = "False";
 
@@ -2321,7 +2324,7 @@ internal class LizardHooks
             }
 
             //Ceiling
-            if ((!data.liz.TryGetValue("CanClimbCeiling", out string CanClimbCeiling) && self.abstractCreature.creatureTemplate.pathingPreferencesTiles[(int)AItile.Accessibility.Ceiling].legality == PathCost.Legality.Allowed || CanClimbCeiling == "True") && Chance(self, ShadowOfOptions.climb_ability_chance.Value, "Removing Ability to Climb Ceilings"))
+            if ((!data.liz.TryGetValue("CanClimbCeiling", out string CanClimbCeiling) && self.abstractCreature.creatureTemplate.pathingPreferencesTiles[(int)AItile.Accessibility.Ceiling].legality == PathCost.Legality.Allowed || CanClimbCeiling == "True") && Chance(self.abstractCreature, ShadowOfOptions.climb_ability_chance.Value, "Removing Ability to Climb Ceilings"))
             {
                 data.liz["CanClimbCeiling"] = "False";
 
@@ -2367,7 +2370,7 @@ internal class LizardHooks
         {
             bool cut = newEye == "Cut";
 
-            data.liz[eye] = (oldEye.StartsWith("Blind") ? "Blind" : "") + newEye + (newEye == "Scar" ? (UnityEngine.Random.Range(0, 2) == 0 ? "" : "2") : "");
+            data.liz[eye] = !cut ? (oldEye.StartsWith("Blind") ? "Blind" : "") + newEye + (newEye == "Scar" ? (UnityEngine.Random.Range(0, 2) == 0 ? "" : "2") : "") : "Cut";
             self.Blind(cut ? 40 : 5);
 
             if (ShadowOfOptions.debug_logs.Value)
@@ -2394,7 +2397,7 @@ internal class LizardHooks
     {
         if (!lizardstorage.TryGetValue(self.abstractCreature, out LizardData data))
         {
-            orig.Invoke(self, chunk);
+            orig(self, chunk);
             return;
         }
 
@@ -2462,7 +2465,7 @@ internal class LizardHooks
                 melt = true;
             }
 
-            orig.Invoke(self, chunk);
+            orig(self, chunk);
 
             if (elec && self.graphicsModule != null && graphicstorage.TryGetValue(self.graphicsModule as LizardGraphics, out GraphicsData graphicData2))
             {
@@ -2478,7 +2481,7 @@ internal class LizardHooks
 
     static void LizardUpdate(On.Lizard.orig_Update orig, Lizard self, bool eu)
     {
-        orig.Invoke(self, eu);
+        orig(self, eu);
 
         if (self.abstractCreature == null || !lizardstorage.TryGetValue(self.abstractCreature, out LizardData data))
         {
@@ -2507,7 +2510,7 @@ internal class LizardHooks
             {
                 return;
             }
-   
+
             if (ShadowOfOptions.deafen.Value && data.liz.ContainsKey("EarRight"))
             {
                 bool flag = data.liz["EarRight"] == "Deaf";
@@ -2522,7 +2525,7 @@ internal class LizardHooks
                     self.deaf = Mathf.Max(self.deaf, 4);
                 }
             } //Deaf
-          
+
             if (ShadowOfOptions.dismemberment.Value && self.LizardState != null && self.LizardState.limbHealth != null)
             {
                 for (int i = 0; i < data.armState.Count; i++)
@@ -2596,235 +2599,8 @@ internal class LizardHooks
                 TransformationElectric.ElectricLizardUpdate(self, data, GraphicsData);
                 return;
             } //ElectricTransformation
-        
-            if (self.enteringShortCut.HasValue && self.room != null && self.room.shortcutData(self.enteringShortCut.Value).shortCutType != null && self.room.shortcutData(self.enteringShortCut.Value).shortCutType == ShortcutData.Type.CreatureHole && self.grasps[0] != null)
-            {
-                if (data.denCheck == false)
-                {
-                    data.denCheck = true;
-
-                    Lizard liz = self.grasps[0].grabbed is Lizard lizard ? lizard : null;
-                    LizardData data2 = (liz != null && lizardstorage.TryGetValue(liz.abstractCreature, out LizardData dat)) ? dat : null;
-
-                    if (data2 != null && self.Submersion > 0.1f)
-                    {
-                        UnderwaterDen(data2, liz);
-                    }
-
-                    if (ShadowOfOptions.eat_regrowth.Value)
-                    {
-                        EatRegrowth(self, data, liz, data2);
-                    }
-                }
-            } //Regrowth
-            else
-            {
-                data.denCheck = false;
-            }
         }
         catch (Exception e) { ShadowOfLizards.Logger.LogError(e); }
-
-        static void EatRegrowth(Lizard self, LizardData data, Lizard liz, LizardData data2)
-        {
-            #region Camo
-            if (ShadowOfOptions.camo_ability.Value && ShadowOfOptions.camo_regrowth.Value && (self.grasps[0].grabbed is Hazer || ShadowOfOptions.eat_lizard.Value && liz != null && CanCamoCheck(data2, liz.Template.type.ToString()) && Chance(self, ShadowOfOptions.tongue_regrowth_chance.Value, "Tongue Regrowth by eating " + (Creature)self.grasps[0].grabbed)))
-            {
-                if (self.grasps[0].grabbed is Hazer)
-                {
-                    if (!CanCamoCheck(data, self.Template.type.ToString()))
-                    {
-                        data.liz["CanCamo"] = "True";
-
-                        if (self.Template.type == CreatureTemplate.Type.WhiteLizard)
-                        {
-                            data.liz.Remove("CanCamo");
-                        }
-
-                        if (ShadowOfOptions.debug_logs.Value)
-                            Debug.Log(all + self.ToString() + " gained the Camo Ability due to eating a " + self.grasps[0].grabbed);
-
-                        if (ShadowOfOptions.dynamic_cheat_death.Value)
-                            data.cheatDeathChance += 5;
-                    }
-                    else if (ShadowOfOptions.debug_logs.Value)
-                        Debug.Log(all + self.ToString() + " did not gain the Camo Ability due to eating a " + self.grasps[0].grabbed + " because it already can Camo");
-                }
-                else if (ShadowOfOptions.eat_lizard.Value && CanCamoCheck(data2, liz.Template.type.ToString()))
-                {
-                    if (!CanCamoCheck(data, self.Template.type.ToString()))
-                    {
-                        data.liz["CanCamo"] = "True";
-
-                        if (self.Template.type == CreatureTemplate.Type.WhiteLizard)
-                        {
-                            data.liz.Remove("CanCamo");
-                        }
-
-                        if (ShadowOfOptions.debug_logs.Value)
-                            Debug.Log(all + self.ToString() + " gained the Camo Ability due to eating " + self.grasps[0].grabbed + " who had a Tongue");
-
-                        if (ShadowOfOptions.dynamic_cheat_death.Value)
-                            data.cheatDeathChance += 5;
-
-                        //OtherLizard
-                        if (data2 != null)
-                        {
-                            data2.liz["CanCamo"] = "False";
-
-                            if (ShadowOfOptions.debug_logs.Value)
-                                Debug.Log(all + liz.ToString() + " lost it's Camo Ability due to being eaten by " + self + " that took it's Ability");
-
-                            if (ShadowOfOptions.dynamic_cheat_death.Value)
-                                data2.cheatDeathChance -= 5;
-                        }
-                    }
-                    else if (ShadowOfOptions.debug_logs.Value)
-                        Debug.Log(all + self.ToString() + " did not gain the Camo Ability due to eating " + self.grasps[0].grabbed + " because it already can Camo");
-                }
-            }
-            #endregion
-
-            #region Tongue
-            if (ShadowOfOptions.tongue_ability.Value && ShadowOfOptions.tongue_regrowth.Value && TongueValid() && Chance(self, ShadowOfOptions.tongue_regrowth_chance.Value, "Tongue Regrowth by eating " + (Creature)self.grasps[0].grabbed))
-            {
-                if (self.grasps[0].grabbed is TubeWorm)
-                {
-                    if (!self.lizardParams.tongue)
-                    {
-                        data.liz["Tongue"] = "Tube";
-
-                        if (ShadowOfOptions.debug_logs.Value)
-                            Debug.Log(all + self.ToString() + " grew a new Tongue due to eating a " + self.grasps[0].grabbed);
-
-                        if (ShadowOfOptions.dynamic_cheat_death.Value)
-                            data.cheatDeathChance += 5;
-                    }
-                    else if (ShadowOfOptions.debug_logs.Value)
-                        Debug.Log(all + self.ToString() + " did not grow a new Tongue due to eating a " + self.grasps[0].grabbed + " because it already has one");
-                }
-                else if (ShadowOfOptions.eat_lizard.Value && liz != null && liz.lizardParams.tongue)
-                {
-                    if (!self.lizardParams.tongue)
-                    {
-                        data.liz["Tongue"] = data2.liz.TryGetValue("Tongue", out string tongue) && tongue != "Null" && tongue != "get" ? tongue : validTongues.Contains(liz.Template.type.ToString()) ? liz.Template.type.ToString() : "get";
-
-                        if (data.liz["Tongue"] == self.Template.type.ToString())
-                        {
-                            data.liz.Remove("Tongue");
-                        }
-
-                        if (ShadowOfOptions.debug_logs.Value)
-                            Debug.Log(all + self.ToString() + " grew a new Tongue due to eating " + self.grasps[0].grabbed + " who had a Tongue");
-
-                        if (ShadowOfOptions.dynamic_cheat_death.Value)
-                            data.cheatDeathChance += 5;
-
-                        //OtherLizard
-                        if (data2 != null)
-                        {
-                            data2.liz["Tongue"] = "Null";
-
-                            if (ShadowOfOptions.debug_logs.Value)
-                                Debug.Log(all + liz.ToString() + " lost it's Tongue due to being eaten by " + self + " that took it's Tongue");
-
-                            if (ShadowOfOptions.dynamic_cheat_death.Value)
-                                data2.cheatDeathChance -= 5;
-                        }
-                    }
-                    else if (ShadowOfOptions.debug_logs.Value)
-                        Debug.Log(all + self.ToString() + " did not grow a new Tongue due to eating " + self.grasps[0].grabbed + " because it already has one");
-                }
-            }
-            #endregion
-
-            #region Jump
-            if (ShadowOfOptions.jump_ability.Value && ShadowOfOptions.jump_regrowth.Value && JumpValid() && Chance(self, ShadowOfOptions.jump_regrowth_chance.Value, "Jump Regrowth by eating " + (Creature)self.grasps[0].grabbed))
-            {
-                if (self.grasps[0].grabbed is Yeek || self.grasps[0].grabbed is Cicada || self.grasps[0].grabbed is JetFish || (self.grasps[0].grabbed is Centipede centi && centi.abstractCreature.creatureTemplate.type == CreatureTemplate.Type.Centiwing))
-                {
-                    if (self.jumpModule == null)
-                    {
-                        data.liz["CanJump"] = "True";
-
-                        if (ShadowOfOptions.debug_logs.Value)
-                            Debug.Log(all + self.ToString() + " gained the ability to Jump due to eating " + self.grasps[0].grabbed + " that had the ability to Jump");
-
-                        if (ShadowOfOptions.dynamic_cheat_death.Value)
-                            data.cheatDeathChance += 5;
-                    }
-                    else if (ShadowOfOptions.debug_logs.Value)
-                        Debug.Log(all + self.ToString() + " did not grow a new ability to Jump due to eating " + self.grasps[0].grabbed + " because it already has one");
-                }
-                else if (ShadowOfOptions.eat_lizard.Value && liz != null && liz.jumpModule != null)
-                {
-                    if (self.jumpModule == null)
-                    {
-                        data.liz["CanJump"] = "True";
-
-                        if (ShadowOfOptions.debug_logs.Value)
-                            Debug.Log(all + self.ToString() + " gained the ability to Jump due to eating " + self.grasps[0].grabbed + " who had the ability to Jump");
-
-                        if (ShadowOfOptions.dynamic_cheat_death.Value)
-                            data.cheatDeathChance += 5;
-
-                        //Other Lizard
-                        if (data2 != null)
-                        {
-                            data2.liz["CanJump"] = "False";
-
-                            if (ShadowOfOptions.debug_logs.Value)
-                                Debug.Log(all + liz.ToString() + " lost it's ability to Jump due to being eaten by " + self + " that took it's ability to Jump");
-
-                            if (ShadowOfOptions.dynamic_cheat_death.Value)
-                                data2.cheatDeathChance -= 5;
-                        }
-                    }
-                    else if (ShadowOfOptions.debug_logs.Value)
-                        Debug.Log(all + self.ToString() + " did not grow a new ability to Jump due to eating " + self.grasps[0].grabbed + " because it already has one");
-                }
-            }
-            #endregion
-
-            #region Transformations
-            if (ShadowOfOptions.melted_transformation.Value && ShadowOfOptions.melted_regrowth.Value && ShadowOfOptions.eat_lizard.Value && !meltedPorhibited.Contains(self.Template.type.ToString()) && liz != null && data.transformation != "SpiderTransformation" && data.transformation != "ElectricTransformation" && ((data2.transformation == "MeltedTransformation" && Chance(self, ShadowOfOptions.melted_regrowth_chance.Value, "Melted Regrowth by eating " + (Creature)self.grasps[0].grabbed)) || (data2.transformation == "Melted" && Chance(self, ShadowOfOptions.melted_regrowth_chance.Value * 0.5f, "Melted Regrowth by eating " + (Creature)self.grasps[0].grabbed))))
-            {
-                TransformationMelted.MeltedEatRegrowth(self, liz, data, data2);
-                return;
-            }
-
-            if (ShadowOfOptions.electric_transformation.Value && ShadowOfOptions.electric_regrowth.Value && !electricPorhibited.Contains(self.Template.type.ToString()) && (data.transformation == "Null" || data.transformation == "Electric" || data.transformation == "Spider"))
-            {
-                TransformationElectric.ElectricEatRegrowth(self, liz, data, data2);
-                return;
-            }
-
-            if (ShadowOfOptions.spider_transformation.Value && ShadowOfOptions.spider_regrowth.Value && data.transformation == "Null")
-            {
-                TransformationSpider.SpiderEatRegrowth(self, liz, data, data2);
-                return;
-            }
-
-            if (ShadowOfOptions.tentacle_regrowth.Value && liz != null && data2 != null && ((data.transformation.Contains("Rot") && (!data2.liz.TryGetValue("TentacleImmune", out string TentacleImmune) || TentacleImmune != "True")) ^ (data2.transformation.Contains("Rot") && (!data.liz.TryGetValue("TentacleImmune", out string TentacleImmune2) || TentacleImmune2 != "True"))) && Chance(self, ShadowOfOptions.tentacle_regrowth_chance.Value, "Tentacle Immune Regrowth by eating " + (Creature)self.grasps[0].grabbed))
-            {
-                LizardData lizardData = data.transformation.Contains("Rot") ? data : data2;
-
-                lizardData.liz["TentacleImmune"] = "True";
-
-                if (ShadowOfOptions.dynamic_cheat_death.Value)
-                    lizardData.cheatDeathChance += 5;
-            }
-            #endregion
-
-            bool TongueValid()
-            {
-                return self.grasps[0].grabbed is TubeWorm || ShadowOfOptions.eat_lizard.Value && liz != null && liz.lizardParams.tongue;
-            }
-
-            bool JumpValid()
-            {
-                return self.grasps[0].grabbed is Yeek || self.grasps[0].grabbed is Cicada || self.grasps[0].grabbed is JetFish || (self.grasps[0].grabbed is Centipede centi && centi.abstractCreature.creatureTemplate.type == CreatureTemplate.Type.Centiwing) || ShadowOfOptions.eat_lizard.Value && liz != null && liz.jumpModule != null;
-            }
-        }
     }
 
     static bool LizardHitHeadShield(On.Lizard.orig_HitHeadShield orig, Lizard self, Vector2 direction)
@@ -2833,7 +2609,7 @@ internal class LizardHooks
         {
             return false;
         }
-        return orig.Invoke(self, direction);
+        return orig(self, direction);
     }
 
     static void CreatureDie(On.Creature.orig_Die orig, Creature self)
@@ -2864,10 +2640,14 @@ internal class LizardHooks
                     if (ShadowOfOptions.debug_logs.Value)
                         Debug.Log(all + self + " was forced to fail cheating death");
 
-                    orig.Invoke(self);
-                }
+                    self.dead = false;
 
-                if (Chance(liz, data.cheatDeathChance, "Cheating Death"))
+                    if (liz.abstractCreature.state != null)
+                        liz.abstractCreature.state.alive = true;
+
+                    orig(self);
+                }
+                else if (Chance(liz.abstractCreature, data.cheatDeathChance, "Cheating Death"))
                 {
                     self.dead = false;
 
@@ -2877,7 +2657,7 @@ internal class LizardHooks
                     if(liz.abstractCreature.state != null)
                         liz.abstractCreature.state.alive = false;
 
-                    orig.Invoke(self);
+                    orig(self);
                 }
                 else
                 {
@@ -2891,12 +2671,12 @@ internal class LizardHooks
                     if (ShadowOfOptions.debug_logs.Value)
                         Debug.Log(all + self + " failed to cheat death");
 
-                    orig.Invoke(self);
+                    orig(self);
                 }
             }
             else
             {
-                orig.Invoke(self);
+                orig(self);
             }
         }
         catch (Exception e) { ShadowOfLizards.Logger.LogError(e); }

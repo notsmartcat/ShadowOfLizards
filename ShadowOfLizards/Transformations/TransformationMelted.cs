@@ -258,47 +258,7 @@ internal class TransformationMelted
 
     public static void MeltedLizardUpdate(Lizard self, LizardData data)
     {
-        /*
-        if (data.transformation == "Melted")
-        {
-            self.AI.redSpitAI ??= new LizardAI.LizardSpitTracker(self.AI);
-
-            int num = 0;
-            LizardGraphics graphicsModule = self.graphicsModule as LizardGraphics;
-            while (true)
-            {   
-                if (num >= graphicsModule.bodyParts.Length)
-                {
-                    break;
-                }
-                if (Random.value < ((!self.dead) ? 0.015f : 0.001f))
-                {
-                    Room val = self.room;
-                    val.AddObject(new LizardSpit(graphicsModule.bodyParts[num].pos, new Vector2(Random.Range(-1, 1), UnityEngine.Random.Range(-1, 1)), self));
-                }
-                num++;
-            }
-        }
-        else if (data.transformation == "MeltedTransformation")
-        {
-            self.AI.redSpitAI ??= new LizardAI.LizardSpitTracker(self.AI);
-
-            if (!self.dead && !self.Stunned)
-            {
-                LizardGraphics graphicsModule = self.graphicsModule as LizardGraphics;
-
-                for (int i = 0; i < 6; i++)
-                {
-                    if (data.armState[i] != "Normal" && Random.value < 0.015f)
-                    {
-                        self.room.AddObject(new LizardSpit(graphicsModule.limbs[0].pos, new Vector2(0f, 0f), self));
-                    }        
-                }
-            }
-        }
-        */
-
-        if (!Chance(self, ShadowOfOptions.melted_transformation_chance.Value, "Melted Transformation due to swimming in Lethal Water"))
+        if (!Chance(self.abstractCreature, ShadowOfOptions.melted_transformation_chance.Value, "Melted Transformation due to swimming in Lethal Water"))
         {
             return;
         }
@@ -306,7 +266,7 @@ internal class TransformationMelted
         try
         {
             if (ShadowOfOptions.debug_logs.Value)
-                Debug.Log(all + self.ToString() + " was made Melted due to swimming in Lethal Water");
+                Debug.Log(all + self + " was made Melted due to swimming in Lethal Water");
 
             bool isStorySession = self.abstractCreature.world.game.IsStorySession;
             int cycleNumber = isStorySession ? self.abstractCreature.world.game.GetStorySession.saveState.cycleNumber : -1;
@@ -321,30 +281,6 @@ internal class TransformationMelted
             data.liz["MeltedB"] = data.rCam != null ? data.rCam.currentPalette.waterColor1.b.ToString() : "0.1843137";
         }
         catch (Exception e) { ShadowOfLizards.Logger.LogError(e); }
-    }
-
-    public static void MeltedEatRegrowth(Lizard self, Lizard liz, LizardData data, LizardData data2)
-    {
-        if (ShadowOfOptions.debug_logs.Value)
-            Debug.Log(all + self.ToString() + " was made Melted due to eating " + self.grasps[0].grabbed);
-
-        data.transformation = "Melted";
-        data.transformationTimer = self.abstractCreature.world.game.IsStorySession ? self.abstractCreature.world.game.GetStorySession.saveState.cycleNumber : 1;
-
-        bool data2Melted = data2.liz.ContainsKey("MeltedR");
-
-        if (!data.liz.ContainsKey("MeltedR"))
-        {
-            data.liz.Add("MeltedR", data2Melted ? data2.liz["MeltedR"] : "0.4078431");
-            data.liz.Add("MeltedG", data2Melted ? data2.liz["MeltedG"] : "0.5843138");
-            data.liz.Add("MeltedB", data2Melted ? data2.liz["MeltedB"] : "0.1843137");
-        }
-        else
-        {
-            data.liz["MeltedR"] = data2Melted ? data2.liz["MeltedR"] : "0.4078431";
-            data.liz["MeltedG"] = data2Melted ? data2.liz["MeltedG"] : "0.5843138";
-            data.liz["MeltedB"] = data2Melted ? data2.liz["MeltedB"] : "0.1843137";
-        }
     }
 
     #region Behavior

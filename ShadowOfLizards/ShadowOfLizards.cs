@@ -41,9 +41,6 @@ public class ShadowOfLizards : BaseUnityPlugin
         public float waterVision;
         public float throughSurfaceVision;
 
-        //Used to make sure regrowth code only triggers once when a lizard brings something back to it's den
-        public bool denCheck = false;
-
         //Used to determine which BodyChunks belong to the Lizard In case the Lizard is Cut in Half
         public List<int> availableBodychunks = new() { 0, 1, 2 };
 
@@ -129,10 +126,6 @@ public class ShadowOfLizards : BaseUnityPlugin
     {
         public List<Lizard> lizStorage = new();
     }
-    public class CreatureDenCheck
-    {
-        public bool denCheck = false;
-    }
     #endregion
 
     #region ConditionalWeakTable
@@ -141,7 +134,6 @@ public class ShadowOfLizards : BaseUnityPlugin
     public static readonly ConditionalWeakTable<Spider, SpiderAsLeg> spidLeg = new();
     public static readonly ConditionalWeakTable<LizardSpit, ElectricSpit> shockSpit = new();
     public static readonly ConditionalWeakTable<PhysicalObject, OneTimeUseData> singleUse = new();
-    public static readonly ConditionalWeakTable<AbstractCreature, CreatureDenCheck> denCheck = new();
     #endregion
 
     #region Misc Values
@@ -161,8 +153,10 @@ public class ShadowOfLizards : BaseUnityPlugin
 
     public static List<string> validTongues = new() { "WhiteLizard", "Salamander", "BlueLizard", "CyanLizard"};
 
-    public static List<string> defaultWaterBreather = new() { "Salamander", "EelLizard", "PeachLizard" };
+    public static List<string> defaultWaterBreather = new() { "Salamander", "EelLizard", "PeachLizard", "MoleSalamander", "WaterSpitter" };
     public static List<string> defaultCamo = new() { "WhiteLizard", "HunterSeeker" };
+    public static List<string> defaultJump = new() { "CyanLizard", "AlphaOrange", "HunterSeeker" };
+    //public static List<string> defaultDeaf = new() { };
 
     public static List<string> validLizards = new() { "EelLizard", "PinkLizard", "GreenLizard", "BlueLizard", "YellowLizard", "WhiteLizard", "RedLizard", "BlackLizard", "Salamander", "CyanLizard", "SpitLizard", "ZoopLizard", "TrainLizard", "BlizzardLizard", 
         "BasiliskLizard", "IndigoLizard", "PeachLizard", "AlphaOrange", "WaterSpitter", "SilverLizard", "Polliwog", "NoodleEater", "HunterSeeker" };
@@ -198,6 +192,7 @@ public class ShadowOfLizards : BaseUnityPlugin
             LizardGraphicsHooks.Apply();
             LizardSpitHooks.Apply();
             LizardTongueHooks.Apply();
+            LizardAIHooks.Apply();
 
             CustomRelationsHooks.Apply();
 
@@ -313,6 +308,16 @@ public class ShadowOfLizards : BaseUnityPlugin
     public static bool CanCamoCheck(LizardData data, string Template)
     {
         return !data.liz.TryGetValue("CanCamo", out string CanCamo) && defaultCamo.Contains(Template) || CanCamo == "True";
+    }
+
+    public static bool TongueCheck(LizardData data, string Template)
+    {
+        return !data.liz.TryGetValue("Tongue", out string Tongue) && validTongues.Contains(Template) || Tongue != "Null" && Tongue != "get";
+    }
+
+    public static bool CanJumpCheck(LizardData data, string Template)
+    {
+        return !data.liz.TryGetValue("CanJump", out string CanJump) && defaultJump.Contains(Template) || CanJump == "True";
     }
 
     public static bool RotModuleCheck(Lizard liz)
@@ -449,7 +454,7 @@ public class ShadowOfLizards : BaseUnityPlugin
                 CreatureTemplate.Type type = sender.abstractCreature.creatureTemplate.type;
                 string chanceText = "Spider Transformation after being killed by " + sender;
 
-                if (type == CreatureTemplate.Type.Spider && Chance(receiver, ShadowOfOptions.spider_transformation_chance.Value * 0.25f, chanceText) || type == CreatureTemplate.Type.BigSpider && Chance(receiver, ShadowOfOptions.spider_transformation_chance.Value * 0.5f, chanceText) || type == CreatureTemplate.Type.SpitterSpider && Chance(receiver, ShadowOfOptions.spider_transformation_chance.Value, chanceText) || ModManager.DLCShared && type == DLCSharedEnums.CreatureTemplateType.MotherSpider && Chance(receiver, ShadowOfOptions.spider_transformation_chance.Value * 1.5f, chanceText) || sender is Lizard liz && lizardstorage.TryGetValue(liz.abstractCreature, out LizardData data2) && (data2.transformation == "SpiderTransformation" && Chance(receiver, ShadowOfOptions.spider_transformation_chance.Value, chanceText) || data2.transformation == "Spider" && Chance(receiver, ShadowOfOptions.spider_transformation_chance.Value * 0.5f, chanceText)))
+                if (type == CreatureTemplate.Type.Spider && Chance(receiver.abstractCreature, ShadowOfOptions.spider_transformation_chance.Value * 0.25f, chanceText) || type == CreatureTemplate.Type.BigSpider && Chance(receiver.abstractCreature, ShadowOfOptions.spider_transformation_chance.Value * 0.5f, chanceText) || type == CreatureTemplate.Type.SpitterSpider && Chance(receiver.abstractCreature, ShadowOfOptions.spider_transformation_chance.Value, chanceText) || ModManager.DLCShared && type == DLCSharedEnums.CreatureTemplateType.MotherSpider && Chance(receiver.abstractCreature, ShadowOfOptions.spider_transformation_chance.Value * 1.5f, chanceText) || sender is Lizard liz && lizardstorage.TryGetValue(liz.abstractCreature, out LizardData data2) && (data2.transformation == "SpiderTransformation" && Chance(receiver.abstractCreature, ShadowOfOptions.spider_transformation_chance.Value, chanceText) || data2.transformation == "Spider" && Chance(receiver.abstractCreature, ShadowOfOptions.spider_transformation_chance.Value * 0.5f, chanceText)))
                 {
                     if (ShadowOfOptions.debug_logs.Value)
                         Debug.Log(all + receiver.ToString() + " was made a Spider Mother due to being killed by " + sender);
@@ -461,7 +466,7 @@ public class ShadowOfLizards : BaseUnityPlugin
                 }
             }
 
-            if (ShadowOfOptions.melted_transformation.Value && killType == "Melted" && !meltedPorhibited.Contains(receiver.Template.type.ToString()) && CWTCycleCheck(data, "PreMeltedCycle", CycleNum(receiver.abstractCreature)) && Chance(receiver, ShadowOfOptions.melted_transformation_chance.Value, "Melted Transformation after Dying to Acid"))
+            if (ShadowOfOptions.melted_transformation.Value && killType == "Melted" && !meltedPorhibited.Contains(receiver.Template.type.ToString()) && CWTCycleCheck(data, "PreMeltedCycle", CycleNum(receiver.abstractCreature)) && Chance(receiver.abstractCreature, ShadowOfOptions.melted_transformation_chance.Value, "Melted Transformation after Dying to Acid"))
             {
                 if (ShadowOfOptions.debug_logs.Value)
                     Debug.Log(all + receiver.ToString() + " was made Melted due to dying to Acid");
@@ -518,7 +523,7 @@ public class ShadowOfLizards : BaseUnityPlugin
                 data.liz["PreMeltedCycle"] = CycleNum(receiver.abstractCreature).ToString();
             }
 
-            if (ShadowOfOptions.electric_transformation.Value && killType == "Electric" && !electricPorhibited.Contains(receiver.Template.type.ToString()) && Chance(receiver, ShadowOfOptions.electric_transformation_chance.Value, "Electric Transformation after Dying to Electricity"))
+            if (ShadowOfOptions.electric_transformation.Value && killType == "Electric" && !electricPorhibited.Contains(receiver.Template.type.ToString()) && Chance(receiver.abstractCreature, ShadowOfOptions.electric_transformation_chance.Value, "Electric Transformation after Dying to Electricity"))
             {
                 if (data.transformation == "Electric")
                 {
@@ -630,15 +635,17 @@ public class ShadowOfLizards : BaseUnityPlugin
                 break;
             default:
                 if (ShadowOfOptions.debug_logs.Value)
-                    Debug.Log(all + receiver.ToString() + " did not gain any Ability due to Falling out of map because none if the related Abilities were turned on");
+                    Debug.Log(all + receiver.ToString() + " did not gain any Ability due to Falling out of map because none of the related Abilities were turned On");
                 break;
         }
     }
     #endregion
 
     #region Misc
-    public static bool Chance(Lizard self, float chance, string whatFor)
+    public static bool Chance(AbstractCreature self, float chance, string whatFor)
     {
+        chance = chance < 0.8f ? 0 : chance;
+
         int roll = UnityEngine.Random.Range(0, 100);
 
         if (roll < chance)
@@ -656,6 +663,8 @@ public class ShadowOfLizards : BaseUnityPlugin
 
     public static bool HealthBasedChance(Lizard self, float chance, string whatFor)
     {
+        chance = chance < 0.8f ? 0 : chance;
+
         int roll = UnityEngine.Random.Range(0, 100);
 
         bool apply = ShadowOfOptions.health_based_chance.Value && (!ShadowOfOptions.health_based_chance_dead.Value || !self.dead);
@@ -682,64 +691,6 @@ public class ShadowOfLizards : BaseUnityPlugin
     public static bool CWTCycleCheck(LizardData data, string name, int cycleNumber)
     {
         return !data.liz.TryGetValue(name, out string gotValue) || int.TryParse(gotValue, out int number) && number != cycleNumber;
-    }
-
-    public static void UnderwaterDen(LizardData data, Lizard self)
-    {
-        if (data.denCheck == false)
-        {
-            data.denCheck = true;
-        }
-        else
-        {
-            return;
-        }
-
-        List<string> list = new();
-
-        if (ShadowOfOptions.swim_ability.Value)
-            list.Add("CanSwim");
-        if (ShadowOfOptions.water_breather.Value)
-            list.Add("WaterBreather");
-
-        if (list.Count == 0)
-        {
-            return;
-        }
-
-        switch (list[UnityEngine.Random.Range(0, list.Count)])
-        {
-            case "CanSwim":
-                if (!data.liz.TryGetValue("CanSwim", out string CanSwim) && !defaultWaterBreather.Contains(self.Template.type.ToString()) || CanSwim != "True")
-                {
-                    if (ShadowOfOptions.debug_logs.Value)
-                        Debug.Log(all + self.ToString() + " gained the Swim Ability due to being brought to a Underwater Den");
-
-                    data.liz["CanSwim"] = "True";
-                }
-                else if (ShadowOfOptions.debug_logs.Value)
-                {
-                    Debug.Log(all + self.ToString() + " did gained the Swim Ability due to being brought to a Underwater Den because it already can Swim");
-                }
-                break;
-            case "WaterBreather":
-                if (!data.liz.TryGetValue("WaterBreather", out string WaterBreather) && !defaultWaterBreather.Contains(self.Template.type.ToString()) || WaterBreather != "True")
-                {
-                    if (ShadowOfOptions.debug_logs.Value)
-                        Debug.Log(all + self.ToString() + " gained the Drowning Immunity due to being brought to a Underwater Den");
-
-                    data.liz["WaterBreather"] = "True";
-                }
-                else if (ShadowOfOptions.debug_logs.Value)
-                {
-                    Debug.Log(all + self.ToString() + " did not gain the Drowning Immunity due to being brought to a Underwater Den because it already is Immune to Drowning");
-                }
-                break;
-            default:
-                if (ShadowOfOptions.debug_logs.Value)
-                    Debug.Log(all + self.ToString() + " did not gain either the Climb Ceiling or Climb Poles due to Falling out of map because it already has both");
-                break;
-        }
     }
 
     public static void TemplatePathingUpdate(Lizard self, LizardData data)
@@ -900,6 +851,358 @@ public class ShadowOfLizards : BaseUnityPlugin
     public static bool IsLizardValid(string type)
     {
         return !invalidLizards.Contains(type);
+    }
+
+    public static void EatRegrowth(AbstractCreature self, int i)
+    {
+        if ((self.stuckObjects[i].B is not AbstractCreature dragee) || (self.creatureTemplate.TopAncestor().type != CreatureTemplate.Type.LizardTemplate && dragee.creatureTemplate.TopAncestor().type != CreatureTemplate.Type.LizardTemplate))
+        {
+            return;
+        }
+
+        if (ShadowOfOptions.debug_logs.Value)
+            Debug.Log("self is = " + self + " other is = " + dragee);
+
+        string selfTemplate = self.creatureTemplate.ToString();
+        string drageeTemplate = dragee.creatureTemplate.ToString();
+
+        bool cannibalism;
+        LizardData data2 = null;
+
+        if (dragee.creatureTemplate.TopAncestor().type == CreatureTemplate.Type.LizardTemplate && (self.realizedCreature != null && self.realizedCreature.Submersion > 0.1f || selfTemplate == "TentaclePlant") && lizardstorage.TryGetValue(dragee, out LizardData underwaterData))
+        {
+            UnderwaterDen(underwaterData, dragee);
+        }
+
+        if (self.creatureTemplate.TopAncestor().type == CreatureTemplate.Type.LizardTemplate && lizardstorage.TryGetValue(self, out LizardData data))
+        {
+            cannibalism = ShadowOfOptions.eat_lizard.Value && dragee.creatureTemplate.TopAncestor().type == CreatureTemplate.Type.LizardTemplate && lizardstorage.TryGetValue(dragee, out data2);
+
+            #region Camo
+            if (ShadowOfOptions.camo_ability.Value && ShadowOfOptions.camo_regrowth.Value && (drageeTemplate == "Hazer" || cannibalism && CanCamoCheck(data2, drageeTemplate) && Chance(self, ShadowOfOptions.camo_regrowth_chance.Value, "Camo Regrowth by eating " + dragee)))
+            {
+                if (!CanCamoCheck(data, selfTemplate))
+                {
+                    data.liz["CanCamo"] = "True";
+
+                    if (defaultCamo.Contains(selfTemplate))
+                    {
+                        data.liz.Remove("CanCamo");
+                    }
+
+                    if (ShadowOfOptions.debug_logs.Value)
+                        Debug.Log(all + self + " gained the Camo Ability due to eating " + dragee + " who had a Tongue");
+
+                    if (ShadowOfOptions.dynamic_cheat_death.Value)
+                        data.cheatDeathChance += 5;
+
+                    if (cannibalism && CanCamoCheck(data2, drageeTemplate))
+                    {
+                        data2.liz["CanCamo"] = "False";
+
+                        if (ShadowOfOptions.debug_logs.Value)
+                            Debug.Log(all + dragee + " lost it's Camo Ability due to being eaten by " + self + " that took it's Ability");
+
+                        if (ShadowOfOptions.dynamic_cheat_death.Value)
+                            data2.cheatDeathChance -= 5;
+                    }//OtherLizard
+                }
+                else if (ShadowOfOptions.debug_logs.Value)
+                    Debug.Log(all + self + " did not gain the Camo Ability due to eating " + dragee + " because it already can Camo");
+            }
+            #endregion
+
+            #region Tongue
+            if (ShadowOfOptions.tongue_ability.Value && ShadowOfOptions.tongue_regrowth.Value && TongueValid() && Chance(self, ShadowOfOptions.tongue_regrowth_chance.Value, "Tongue Regrowth by eating " + dragee))
+            {
+                if (!TongueCheck(data, selfTemplate))
+                {
+                    if (cannibalism && !TongueCheck(data2, drageeTemplate))
+                    {
+                        data.liz["Tongue"] = data2.liz.TryGetValue("Tongue", out string tongue) && tongue != "Null" && tongue != "get" ? tongue : validTongues.Contains(drageeTemplate) ? drageeTemplate : "get";
+
+                        if (data.liz["Tongue"] == selfTemplate)
+                        {
+                            data.liz.Remove("Tongue");
+                        }
+                    }
+                    else
+                    {
+                        data.liz["Tongue"] = "Tube";
+                    }
+
+                    if (ShadowOfOptions.debug_logs.Value)
+                        Debug.Log(all + self + " grew a new Tongue due to eating " + dragee + " who had a Tongue");
+
+                    if (ShadowOfOptions.dynamic_cheat_death.Value)
+                        data.cheatDeathChance += 5;
+
+                    if (cannibalism && !TongueCheck(data2, drageeTemplate))
+                    {
+                        data2.liz["Tongue"] = "Null";
+
+                        if (ShadowOfOptions.debug_logs.Value)
+                            Debug.Log(all + dragee + " lost it's Tongue due to being eaten by " + self + " that took it's Tongue");
+
+                        if (ShadowOfOptions.dynamic_cheat_death.Value)
+                            data2.cheatDeathChance -= 5;
+                    }//OtherLizard
+                }
+                else if (ShadowOfOptions.debug_logs.Value)
+                    Debug.Log(all + self + " did not grow a new Tongue due to eating " + dragee + " because it already has one");
+            }
+            #endregion
+
+            #region Jump
+            if (ShadowOfOptions.jump_ability.Value && ShadowOfOptions.jump_regrowth.Value && JumpValid() && Chance(self, ShadowOfOptions.jump_regrowth_chance.Value, "Jump Regrowth by eating " + dragee))
+            {
+                if (!CanJumpCheck(data, selfTemplate))
+                {
+                    data.liz["CanJump"] = "True";
+
+                    if (ShadowOfOptions.debug_logs.Value)
+                        Debug.Log(all + self + " gained the ability to Jump due to eating " + dragee + " who had the ability to Jump");
+
+                    if (ShadowOfOptions.dynamic_cheat_death.Value)
+                        data.cheatDeathChance += 5;
+
+                    if (cannibalism && CanJumpCheck(data2, drageeTemplate))
+                    {
+                        data2.liz["CanJump"] = "False";
+
+                        if (ShadowOfOptions.debug_logs.Value)
+                            Debug.Log(all + dragee + " lost it's ability to Jump due to being eaten by " + self + " that took it's ability to Jump");
+
+                        if (ShadowOfOptions.dynamic_cheat_death.Value)
+                            data2.cheatDeathChance -= 5;
+                    }//Other Lizard
+                }
+                else if (ShadowOfOptions.debug_logs.Value)
+                    Debug.Log(all + self + " did not grow a new ability to Jump due to eating " + dragee + " because it already has one");
+            }
+            #endregion
+
+            #region Transformations
+            if (ShadowOfOptions.melted_transformation.Value && ShadowOfOptions.melted_regrowth.Value && cannibalism && !meltedPorhibited.Contains(selfTemplate) && data.transformation != "SpiderTransformation" && data.transformation != "ElectricTransformation" && ((data2.transformation == "MeltedTransformation" && Chance(self, ShadowOfOptions.melted_regrowth_chance.Value, "Melted Regrowth by eating " + dragee)) || (data2.transformation == "Melted" && Chance(self, ShadowOfOptions.melted_regrowth_chance.Value * 0.5f, "Melted Regrowth by eating " + dragee))))
+            {
+                data.transformation = "Melted";
+                data.transformationTimer = CycleNum(self);
+
+                bool data2Melted = data2.liz.ContainsKey("MeltedR");
+
+                data.liz["MeltedR"] = data2Melted ? data2.liz["MeltedR"] : "0.4078431";
+                data.liz["MeltedG"] = data2Melted ? data2.liz["MeltedG"] : "0.5843138";
+                data.liz["MeltedB"] = data2Melted ? data2.liz["MeltedB"] : "0.1843137";
+
+                if (ShadowOfOptions.debug_logs.Value)
+                    Debug.Log(all + self + " was made Melted due to eating " + dragee);
+            }
+            else if (ShadowOfOptions.electric_transformation.Value && ShadowOfOptions.electric_regrowth.Value && !electricPorhibited.Contains(selfTemplate) && (data.transformation == "Null" || data.transformation == "Electric" || data.transformation == "Spider") && (ElectricChance() || cannibalism && ((data2.transformation == "ElectricTransformation" && Chance(self, ShadowOfOptions.electric_regrowth_chance.Value, "Electric Regrowth by eating " + dragee)) || (data2.transformation == "Electric" && Chance(self, ShadowOfOptions.electric_regrowth_chance.Value * 0.5f, "Electric Regrowth by eating " + dragee)))))
+            {
+                if (data.transformation == "Electric")
+                {
+                    data.transformationTimer++;
+
+                    if (ShadowOfOptions.debug_logs.Value)
+                        Debug.Log(all + self + " added a Charge to the Electric-Timer due to eating " + dragee);
+                }
+                else if (data.transformation == "Null" || data.transformation == "Spider")
+                {
+                    data.transformation = "Electric";
+                    data.transformationTimer = 1;
+
+                    if (ShadowOfOptions.debug_logs.Value)
+                        Debug.Log(all + self + " was made Eletric due to eating " + dragee);
+                }
+            }
+            else if (ShadowOfOptions.spider_transformation.Value && ShadowOfOptions.spider_regrowth.Value && data.transformation == "Null" && (SpiderChance() || cannibalism && ((data2.transformation == "SpiderTransformation" && Chance(self, ShadowOfOptions.spider_regrowth_chance.Value, "Spider Regrowth by eating " + dragee)) || (data2.transformation == "Spider" && Chance(self, ShadowOfOptions.spider_regrowth_chance.Value * 0.5f, "Spider Regrowth by eating " + dragee)))))
+            {
+                data.transformation = "Spider";
+                data.transformationTimer = CycleNum(self);
+
+                if (ShadowOfOptions.debug_logs.Value)
+                    Debug.Log(all + self + " was made a Spider Mother due to eating " + dragee);
+            }
+            else if (ShadowOfOptions.tentacle_regrowth.Value && cannibalism && ((data.transformation.Contains("Rot") && (!data2.liz.TryGetValue("TentacleImmune", out string TentacleImmune) || TentacleImmune != "True")) ^ (data2.transformation.Contains("Rot") && (!data.liz.TryGetValue("TentacleImmune", out string TentacleImmune2) || TentacleImmune2 != "True"))) && Chance(self, ShadowOfOptions.tentacle_regrowth_chance.Value, "Tentacle Immune Regrowth by eating " + dragee))
+            {
+                LizardData lizardData = data.transformation.Contains("Rot") ? data : data2;
+
+                lizardData.liz["TentacleImmune"] = "True";
+
+                if (ShadowOfOptions.dynamic_cheat_death.Value)
+                    lizardData.cheatDeathChance += 5;
+            }
+            #endregion
+        }
+        else if (self.creatureTemplate.TopAncestor().type != CreatureTemplate.Type.LizardTemplate && dragee.creatureTemplate.TopAncestor().type == CreatureTemplate.Type.LizardTemplate && lizardstorage.TryGetValue(dragee, out data2))
+        {
+            if (selfTemplate == "Vulture" || selfTemplate == "KingVulture" || ModManager.DLCShared && selfTemplate == "MirosVulture" || ModManager.Watcher && selfTemplate == "BigMoth")
+            {
+                List<string> fallList = new();
+
+                if (ShadowOfOptions.tongue_ability.Value)
+                    fallList.Add("Tongue");
+
+                if (ShadowOfOptions.jump_ability.Value)
+                    fallList.Add("Jump");
+
+                if (ShadowOfOptions.climb_ability.Value)
+                {
+                    fallList.Add("ClimbWall");
+                    fallList.Add("ClimbCeiling");
+                }
+
+                if (fallList.Count == 0)
+                {
+                    return;
+                }
+
+                switch (fallList[UnityEngine.Random.Range(0, fallList.Count)])
+                {
+                    case "tongue":
+                        if (TongueCheck(data2, drageeTemplate))
+                        {
+                            if (ShadowOfOptions.debug_logs.Value)
+                                Debug.Log(all + dragee + " grew a new Tongue due to being brought into a Air Den");
+
+                            data2.liz["Tongue"] = "get";
+                        }
+                        else if (ShadowOfOptions.debug_logs.Value)
+                        {
+                            Debug.Log(all + dragee + " did not grow a new Tongue due to being brought into a Air Den because it already has one");
+                        }
+                        break;
+                    case "Jump":
+                        if (CanJumpCheck(data2, drageeTemplate))
+                        {
+                            if (ShadowOfOptions.debug_logs.Value)
+                                Debug.Log(all + dragee + " has gained the Jump Ability due to being brought into a Air Den");
+
+                            data2.liz["CanJump"] = "True";
+                        }
+                        else if (ShadowOfOptions.debug_logs.Value)
+                        {
+                            Debug.Log(all + dragee + " did not gain the Jump Ability due to being brought into a Air Den because it already can Jump");
+                        }
+                        break;
+                    case "ClimbWall":
+                        if (dragee.creatureTemplate.pathingPreferencesTiles[(int)AItile.Accessibility.Wall].legality != PathCost.Legality.Allowed)
+                        {
+                            if (ShadowOfOptions.debug_logs.Value)
+                                Debug.Log(all + dragee + " has gained the Climb Walls Ability due to being brought into a Air Den");
+
+                            data2.liz["CanClimbWall"] = "True";
+                        }
+                        else if (dragee.creatureTemplate.pathingPreferencesTiles[(int)AItile.Accessibility.Climb].legality != PathCost.Legality.Allowed)
+                        {
+                            if (ShadowOfOptions.debug_logs.Value)
+                                Debug.Log(all + dragee + " has gained the Climb Poles Ability due to being brought into a Air Den");
+
+                            data2.liz["CanClimbPole"] = "True";
+                        }
+                        else if (ShadowOfOptions.debug_logs.Value)
+                        {
+                            Debug.Log(all + dragee + " did not gain either the Climb Walls or Climb Poles Ability due to being brought into a Air Den because it already has both");
+                        }
+                        break;
+                    case "ClimbCeiling":
+                        if (dragee.creatureTemplate.pathingPreferencesTiles[(int)AItile.Accessibility.Ceiling].legality != PathCost.Legality.Allowed)
+                        {
+                            if (ShadowOfOptions.debug_logs.Value)
+                                Debug.Log(all + dragee + " has gained the Climb Ceiling Ability due to being brought into a Air Den");
+
+                            data2.liz["CanClimbCeiling"] = "True";
+                        }
+                        else if (dragee.creatureTemplate.pathingPreferencesTiles[(int)AItile.Accessibility.Climb].legality != PathCost.Legality.Allowed)
+                        {
+                            if (ShadowOfOptions.debug_logs.Value)
+                                Debug.Log(all + dragee + " has gained the Climb Poles Ability due to being brought into a Air Den");
+
+                            data2.liz["CanClimbPole"] = "True";
+                        }
+                        else if (ShadowOfOptions.debug_logs.Value)
+                        {
+                            Debug.Log(all + dragee + " did not gain either the Climb Ceiling or Climb Poles Ability due to being brought into a Air Den because it already has both");
+                        }
+                        break;
+                    default:
+                        if (ShadowOfOptions.debug_logs.Value)
+                            Debug.Log(all + dragee + " did not gain any Ability due to Falling out of map because none of the related Abilities were turned On");
+                        break;
+                }
+            }
+        }
+
+        #region Local
+        bool TongueValid()
+        {
+            return drageeTemplate == "TubeWorm" || cannibalism && TongueCheck(data2, drageeTemplate);
+        }
+
+        bool JumpValid()
+        {
+            return ModManager.MSC && drageeTemplate == "Yeek" || drageeTemplate == "Cicada" || drageeTemplate == "JetFish" || drageeTemplate == "Centiwing" || cannibalism && CanJumpCheck(data2, drageeTemplate);
+        }
+
+        bool ElectricChance()
+        {
+            return drageeTemplate == "JellyFish" && Chance(self, ShadowOfOptions.electric_regrowth_chance.Value * 0.25f, "Electric Regrowth by eating JellyFish") || drageeTemplate == "SmallCentipede" && Chance(self, ShadowOfOptions.electric_regrowth_chance.Value * 0.5f, "Electric Regrowth by eating " + dragee) || drageeTemplate == "Centipede" && Chance(self, ShadowOfOptions.electric_regrowth_chance.Value, "Electric Regrowth by eating " + dragee) || drageeTemplate == "Centiwing" && Chance(self, ShadowOfOptions.electric_regrowth_chance.Value * 1.5f, "Electric Regrowth by eating " + dragee) || drageeTemplate == "RedCentipede" && Chance(self, ShadowOfOptions.electric_regrowth_chance.Value * 2f, "Electric Regrowth by eating " + dragee) || (ModManager.DLCShared && drageeTemplate == "AquaCenti" && Chance(self, ShadowOfOptions.electric_regrowth_chance.Value * 2f, "Electric Regrowth by eating " + dragee));
+        }
+
+        bool SpiderChance()
+        {
+            return drageeTemplate == "BigSpider" && Chance(self, ShadowOfOptions.spider_regrowth_chance.Value * 0.5f, "Spider Regrowth by eating " + dragee) || drageeTemplate == "SpitterSpider" && Chance(self, ShadowOfOptions.spider_regrowth_chance.Value, "Spider Regrowth by eating " + dragee) || (ModManager.DLCShared && drageeTemplate == "MotherSpider" && Chance(self, ShadowOfOptions.spider_regrowth_chance.Value * 2f, "Spider Regrowth by eating " + dragee));
+        }
+        #endregion
+    }
+
+    public static void UnderwaterDen(LizardData data, AbstractCreature self)
+    {
+        List<string> list = new();
+
+        if (ShadowOfOptions.swim_ability.Value)
+            list.Add("CanSwim");
+        if (ShadowOfOptions.water_breather.Value)
+            list.Add("WaterBreather");
+
+        if (list.Count == 0)
+        {
+            return;
+        }
+
+        switch (list[UnityEngine.Random.Range(0, list.Count)])
+        {
+            case "CanSwim":
+                if (!data.liz.TryGetValue("CanSwim", out string CanSwim) && !defaultWaterBreather.Contains(self.creatureTemplate.type.ToString()) || CanSwim != "True")
+                {
+                    if (ShadowOfOptions.debug_logs.Value)
+                        Debug.Log(all + self + " gained the Swim Ability due to being brought to a Underwater Den");
+
+                    data.liz["CanSwim"] = "True";
+                }
+                else if (ShadowOfOptions.debug_logs.Value)
+                {
+                    Debug.Log(all + self + " did gained the Swim Ability due to being brought to a Underwater Den because it already can Swim");
+                }
+                break;
+            case "WaterBreather":
+                if (!data.liz.TryGetValue("WaterBreather", out string WaterBreather) && !defaultWaterBreather.Contains(self.creatureTemplate.type.ToString()) || WaterBreather != "True")
+                {
+                    if (ShadowOfOptions.debug_logs.Value)
+                        Debug.Log(all + self + " gained the Drowning Immunity due to being brought to a Underwater Den");
+
+                    data.liz["WaterBreather"] = "True";
+                }
+                else if (ShadowOfOptions.debug_logs.Value)
+                {
+                    Debug.Log(all + self + " did not gain the Drowning Immunity due to being brought to a Underwater Den because it already is Immune to Drowning");
+                }
+                break;
+            default:
+                if (ShadowOfOptions.debug_logs.Value)
+                    Debug.Log(all + self + " did not gain either the Climb Ceiling or Climb Poles due to Falling out of map because it already has both");
+                break;
+        }
     }
     #endregion
 
@@ -1357,7 +1660,7 @@ public class ShadowOfLizards : BaseUnityPlugin
             if (bloodModCheck && ShadowOfOptions.blood_emitter.Value)
                 LimbCutBloodEmitter();
 
-            if (graphicstorage.TryGetValue(graphicsModule, out GraphicsData data2))
+            if (graphicstorage.TryGetValue(graphicsModule, out GraphicsData data2) && (data.transformation == "ElectricTransformation" || data.transformation == "Electric"))
                 (lizCutLegAbstract.realizedObject as LizCutLeg).electricColorTimer = data2.electricColorTimer + 50;
 
             if (ShadowOfOptions.debug_logs.Value)
@@ -1377,7 +1680,7 @@ public class ShadowOfLizards : BaseUnityPlugin
         try
         {
             if (ShadowOfOptions.debug_logs.Value)
-                Debug.Log(all + self.ToString() + " was Decapitated");
+                Debug.Log(all + self + " was Decapitated");
 
             if (!lizardstorage.TryGetValue(self.abstractCreature, out LizardData data) || data.sLeaser == null)
             {
@@ -1480,7 +1783,7 @@ public class ShadowOfLizards : BaseUnityPlugin
                 (lizCutHeadAbstract.realizedObject as LizCutHead).electricColorTimer = data3.electricColorTimer + 50;
 
             if (ShadowOfOptions.debug_logs.Value)
-                Debug.Log(all + self.ToString() + "'s Cut Head Object was Created");
+                Debug.Log(all + self + "'s Cut Head Object was Created");
         }
         catch (Exception e) { Logger.LogError(e); }
 
@@ -1498,6 +1801,7 @@ public class ShadowOfLizards : BaseUnityPlugin
                 return;
             }
 
+            data.actuallyDead = true;
             data.isAlive = false;
 
             Debug.Log(all + self + "has been forcefully killed in the Incapacitation Mod due to Beheading");
@@ -1547,7 +1851,7 @@ public class ShadowOfLizards : BaseUnityPlugin
                 EyeCutBloodEmitter(self, new Color(lizCutEyeAbstract.bloodColourR, lizCutEyeAbstract.bloodColourG, lizCutEyeAbstract.bloodColourB));
 
             if (ShadowOfOptions.debug_logs.Value)
-                Debug.Log(all + self.ToString() + "'s Cut Eye Object was Created");
+                Debug.Log(all + self + "'s Cut Eye Object was Created");
         }
         catch (Exception e) { Logger.LogError(e); }
 

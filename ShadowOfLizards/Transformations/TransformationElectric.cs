@@ -465,55 +465,6 @@ internal class TransformationElectric
         }
     }
 
-    public static void ElectricEatRegrowth(Lizard self, Lizard liz, LizardData data, LizardData data2)
-    {
-        try
-        {
-            if (data.transformation == "Electric")
-            {
-                if (ElectricChance())
-                {
-                    data.transformationTimer++;
-                    return;
-                }
-                else if (ShadowOfOptions.eat_lizard.Value && liz != null && ((data2.transformation == "ElectricTransformation" && Chance(self, ShadowOfOptions.electric_regrowth_chance.Value, "Electric Regrowth by eating " + liz)) || (data2.transformation == "Electric" && Chance(self, ShadowOfOptions.electric_regrowth_chance.Value * 0.5f, "Electric Regrowth by eating " + liz))))
-                {
-                    data.transformationTimer++;
-                    return;
-                }
-            }
-            else if (data.transformation == "Null" || data.transformation == "Spider")
-            {
-                if (ElectricChance())
-                {
-                    if (ShadowOfOptions.debug_logs.Value)
-                        Debug.Log(all + self.ToString() + " was made Electric due to eating " + self.grasps[0].grabbed);
-
-                    data.transformation = "Electric";
-                    data.transformationTimer = 1;
-
-                    return;
-                }
-                else if (ShadowOfOptions.eat_lizard.Value && liz != null && ((data2.transformation == "ElectricTransformation" && Chance(self, ShadowOfOptions.electric_regrowth_chance.Value, "Electric Regrowth by eating " + liz)) || (data2.transformation == "Electric" && Chance(self, ShadowOfOptions.electric_regrowth_chance.Value * 0.5f, "Electric Regrowth by eating " + liz))))
-                {
-                    if (ShadowOfOptions.debug_logs.Value)
-                        Debug.Log(all + self.ToString() + " was made Electric due to eating " + self.grasps[0].grabbed);
-
-                    data.transformation = "Electric";
-                    data.transformationTimer = 1;
-
-                    return;
-                }
-            }
-        }
-        catch (Exception e) { ShadowOfLizards.Logger.LogError(e); }
-
-        bool ElectricChance()
-        {
-            return self.grasps[0].grabbed is JellyFish && Chance(self, ShadowOfOptions.electric_regrowth_chance.Value * 0.25f, "Electric Regrowth by eating YellyFish") || self.grasps[0].grabbed is Centipede centi && (centi.abstractCreature.creatureTemplate.type == CreatureTemplate.Type.SmallCentipede && Chance(self, ShadowOfOptions.electric_regrowth_chance.Value * 0.5f, "Electric Regrowth by eating " + centi) || centi.abstractCreature.creatureTemplate.type == CreatureTemplate.Type.Centipede && Chance(self, ShadowOfOptions.electric_regrowth_chance.Value, "Electric Regrowth by eating " + centi) || centi.abstractCreature.creatureTemplate.type == CreatureTemplate.Type.Centiwing && Chance(self, ShadowOfOptions.electric_regrowth_chance.Value * 1.5f, "Electric Regrowth by eating " + centi) || centi.abstractCreature.creatureTemplate.type == CreatureTemplate.Type.RedCentipede && Chance(self, ShadowOfOptions.electric_regrowth_chance.Value * 2f, "Electric Regrowth by eating " + centi) || (ModManager.DLCShared && centi.abstractCreature.creatureTemplate.type == DLCSharedEnums.CreatureTemplateType.AquaCenti && Chance(self, ShadowOfOptions.electric_regrowth_chance.Value * 2f, "Electric Regrowth by eating " + centi)));
-        }
-    }
-
     static void Shock(Lizard self, LizardData data, GraphicsData graphicData, PhysicalObject shockObj)
     {
         self.room.PlaySound(SoundID.Centipede_Shock, self.mainBodyChunk.pos);

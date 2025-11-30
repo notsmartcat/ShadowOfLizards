@@ -119,34 +119,6 @@ internal class TransformationSpider
         catch (Exception e) { ShadowOfLizards.Logger.LogError(e); }
     }
 
-    public static void SpiderEatRegrowth(Lizard self, Lizard liz, LizardData data, LizardData data2)
-    {
-        try
-        {
-            if (self.grasps[0].grabbed is BigSpider spid && (spid.abstractCreature.creatureTemplate.type == CreatureTemplate.Type.BigSpider && Chance(self, ShadowOfOptions.spider_regrowth_chance.Value * 0.5f, "Spider Regrowth by eating " + spid) || spid.abstractCreature.creatureTemplate.type == CreatureTemplate.Type.SpitterSpider && Chance(self, ShadowOfOptions.spider_regrowth_chance.Value, "Spider Regrowth by eating " + spid) || (ModManager.DLCShared && spid.abstractCreature.creatureTemplate.type == DLCSharedEnums.CreatureTemplateType.MotherSpider && Chance(self, ShadowOfOptions.spider_regrowth_chance.Value * 2f, "Spider Regrowth by eating " + spid))))
-            {
-                if (ShadowOfOptions.debug_logs.Value)
-                    Debug.Log(all + self.ToString() + " was made a Spider Mother due to eating " + self.grasps[0].grabbed);
-
-                data.transformation = "Spider";
-                data.transformationTimer = self.abstractCreature.world.game.IsStorySession ? self.abstractCreature.world.game.GetStorySession.saveState.cycleNumber : 1;
-
-                return;
-            }
-            else if (ShadowOfOptions.eat_lizard.Value && liz != null && ((data2.transformation == "SpiderTransformation" && Chance(self, ShadowOfOptions.spider_regrowth_chance.Value * 0.5f, "Spider Regrowth by eating " + liz)) || (data2.transformation == "Spider" && Chance(self, ShadowOfOptions.spider_regrowth_chance.Value * 0.5f, "Spider Regrowth by eating " + liz))))
-            {
-                if (ShadowOfOptions.debug_logs.Value)
-                    Debug.Log(all + self.ToString() + " was made a Spider Mother due to eating " + self.grasps[0].grabbed);
-
-                data.transformation = "Spider";
-                data.transformationTimer = self.abstractCreature.world.game.IsStorySession ? self.abstractCreature.world.game.GetStorySession.saveState.cycleNumber : 1;
-
-                return;
-            }
-        }
-        catch (Exception e) { ShadowOfLizards.Logger.LogError(e); }
-    }
-
     #region Small Spider
     static bool SpiderConsiderPrey(On.Spider.orig_ConsiderPrey orig, Spider self, Creature crit)
     {

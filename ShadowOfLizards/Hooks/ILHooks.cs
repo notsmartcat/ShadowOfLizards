@@ -44,6 +44,8 @@ internal class ILHooks
         IL.LizardGraphics.DrawSprites += ILLizardGraphicsDrawSprites; //camo
         IL.LizardGraphics.Update += ILLizardGraphicsUpdate; //camo
 
+        IL.AbstractCreature.IsEnteringDen += ILAbstractCreatureIsEnteringDen;
+
         new Hook( //Camo
             typeof(Lizard).GetProperty(nameof(Lizard.VisibilityBonus)).GetGetMethod(), ShadowOfLizardVisibilityBonus);
 
@@ -55,6 +57,33 @@ internal class ILHooks
 
         new Hook(typeof(Lizard).GetProperty(nameof(Lizard.IsWallClimber)).GetGetMethod(), ShadowOfIsWallClimber);
     }
+
+    private static void ILAbstractCreatureIsEnteringDen(ILContext il)
+    {
+        ILCursor val = new(il);
+        if (val.TryGotoNext(MoveType.Before, new Func<Instruction, bool>[2]
+        {
+            x => x.MatchIsinst<AbstractCreature>(),
+            x => x.MatchCallvirt<AbstractCreature>("Die")
+        }))
+        {
+            val.MoveAfterLabels();
+
+            val.Emit(OpCodes.Ldarg_0);
+            val.Emit(OpCodes.Ldloc_0);
+            val.EmitDelegate(EatRegrowth);
+        }
+        else
+        {
+            ShadowOfLizards.Logger.LogInfo(all + "Could not find match for ILAbstractCreatureIsEnteringDen!");
+        }
+    }
+
+    public static void AbstractCreatureIsEnteringDen(AbstractCreature self, int i)
+    {
+        Debug.Log("self is = " + self + " other is = " + (self.stuckObjects[i].B as AbstractCreature));
+    }
+
 
     static void ILNewLizardRotModule(ILContext il)
     {
@@ -566,7 +595,7 @@ internal class ILHooks
             return;
         }
 
-        if (Chance(liz, ShadowOfOptions.grass_immune_chance.Value, "WormGrass Immune"))
+        if (Chance(liz.abstractCreature, ShadowOfOptions.grass_immune_chance.Value, "WormGrass Immune"))
         {
             if (ShadowOfOptions.debug_logs.Value)
                 Debug.Log(all + "WormGrass Immune granted to " + liz);
