@@ -2640,7 +2640,7 @@ internal class LizardHooks
                     if (ShadowOfOptions.debug_logs.Value)
                         Debug.Log(all + self + " was forced to fail cheating death");
 
-                    self.dead = false;
+                    //self.dead = false;
 
                     if (liz.abstractCreature.state != null)
                         liz.abstractCreature.state.alive = true;
@@ -2649,7 +2649,7 @@ internal class LizardHooks
                 }
                 else if (Chance(liz.abstractCreature, data.cheatDeathChance, "Cheating Death"))
                 {
-                    self.dead = false;
+                    //self.dead = false;
 
                     if (ShadowOfOptions.debug_logs.Value)
                         Debug.Log(all + self + " Cheated Death");
@@ -2661,7 +2661,7 @@ internal class LizardHooks
                 }
                 else
                 {
-                    self.dead = false;
+                    //self.dead = false;
 
                     if (liz.abstractCreature.state != null)
                         liz.abstractCreature.state.alive = true;

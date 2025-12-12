@@ -15,7 +15,7 @@ internal class LizardAIHooks
     {
         orig(self, creature, world);
 
-        if (!ShadowOfOptions.deafen.Value || !lizardstorage.TryGetValue(creature, out LizardData data) && data.liz.ContainsKey("EarRight"))
+        if (!ShadowOfOptions.deafen.Value || !lizardstorage.TryGetValue(creature, out LizardData data) || !data.liz.ContainsKey("EarRight"))
         {
             return;
         }

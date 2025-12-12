@@ -1801,10 +1801,10 @@ public class ShadowOfLizards : BaseUnityPlugin
                 return;
             }
 
-            data.actuallyDead = true;
-            data.isAlive = false;
+            Incapacitation.Incapacitation.ActuallyKill(self);
 
-            Debug.Log(all + self + "has been forcefully killed in the Incapacitation Mod due to Beheading");
+            if (ShadowOfOptions.debug_logs.Value)
+                Debug.Log(all + self + "has been forcefully killed in the Incapacitation Mod due to Beheading");
         }
     }
 

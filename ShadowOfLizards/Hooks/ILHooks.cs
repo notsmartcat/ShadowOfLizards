@@ -79,12 +79,6 @@ internal class ILHooks
         }
     }
 
-    public static void AbstractCreatureIsEnteringDen(AbstractCreature self, int i)
-    {
-        Debug.Log("self is = " + self + " other is = " + (self.stuckObjects[i].B as AbstractCreature));
-    }
-
-
     static void ILNewLizardRotModule(ILContext il)
     {
         ILCursor val = new(il);
