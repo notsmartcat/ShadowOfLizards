@@ -439,30 +439,59 @@ public class ShadowOfLizards : BaseUnityPlugin
         {
             return;
         }
-        if (killType == "Bleed")
+        if (killType == "Bleed" && data.lastDamageType != null && data.lastDamageType != "")
         {
             if (ShadowOfOptions.debug_logs.Value)
                 Debug.Log(all + receiver.ToString() + " died by Bleed. Bleed death is Converted to last damage taken: '" + data.lastDamageType + "'");
 
-            ViolenceCheck(receiver, data, data.lastDamageType, sender);
+            killType = data.lastDamageType;
         }
 
         if (data.transformation == "Null" || data.transformation == "Spider" || data.transformation == "Electric")
         {
-            if (ShadowOfOptions.spider_transformation.Value && sender != null && data.transformation == "Null")
+            if (ShadowOfOptions.spider_transformation.Value && data.transformation == "Null")
             {
-                CreatureTemplate.Type type = sender.abstractCreature.creatureTemplate.type;
-                string chanceText = "Spider Transformation after being killed by " + sender;
-
-                if (type == CreatureTemplate.Type.Spider && Chance(receiver.abstractCreature, ShadowOfOptions.spider_transformation_chance.Value * 0.25f, chanceText) || type == CreatureTemplate.Type.BigSpider && Chance(receiver.abstractCreature, ShadowOfOptions.spider_transformation_chance.Value * 0.5f, chanceText) || type == CreatureTemplate.Type.SpitterSpider && Chance(receiver.abstractCreature, ShadowOfOptions.spider_transformation_chance.Value, chanceText) || ModManager.DLCShared && type == DLCSharedEnums.CreatureTemplateType.MotherSpider && Chance(receiver.abstractCreature, ShadowOfOptions.spider_transformation_chance.Value * 1.5f, chanceText) || sender is Lizard liz && lizardstorage.TryGetValue(liz.abstractCreature, out LizardData data2) && (data2.transformation == "SpiderTransformation" && Chance(receiver.abstractCreature, ShadowOfOptions.spider_transformation_chance.Value, chanceText) || data2.transformation == "Spider" && Chance(receiver.abstractCreature, ShadowOfOptions.spider_transformation_chance.Value * 0.5f, chanceText)))
+                if (sender != null)
                 {
-                    if (ShadowOfOptions.debug_logs.Value)
-                        Debug.Log(all + receiver.ToString() + " was made a Spider Mother due to being killed by " + sender);
+                    CreatureTemplate.Type type = sender.abstractCreature.creatureTemplate.type;
+                    string chanceText = "Spider Transformation after being killed by " + sender;
 
-                    data.transformation = "Spider";
-                    data.transformationTimer = receiver.abstractCreature.world.game.IsStorySession ? receiver.abstractCreature.world.game.GetStorySession.saveState.cycleNumber : 1;
+                    if (type == CreatureTemplate.Type.Spider && Chance(receiver.abstractCreature, ShadowOfOptions.spider_transformation_chance.Value * 0.25f, chanceText) || type == CreatureTemplate.Type.BigSpider && Chance(receiver.abstractCreature, ShadowOfOptions.spider_transformation_chance.Value * 0.5f, chanceText) || type == CreatureTemplate.Type.SpitterSpider && Chance(receiver.abstractCreature, ShadowOfOptions.spider_transformation_chance.Value, chanceText) || ModManager.DLCShared && type == DLCSharedEnums.CreatureTemplateType.MotherSpider && Chance(receiver.abstractCreature, ShadowOfOptions.spider_transformation_chance.Value * 1.5f, chanceText) || sender is Lizard liz && lizardstorage.TryGetValue(liz.abstractCreature, out LizardData data2) && (data2.transformation == "SpiderTransformation" && Chance(receiver.abstractCreature, ShadowOfOptions.spider_transformation_chance.Value, chanceText) || data2.transformation == "Spider" && Chance(receiver.abstractCreature, ShadowOfOptions.spider_transformation_chance.Value * 0.5f, chanceText)))
+                    {
+                        if (ShadowOfOptions.debug_logs.Value)
+                            Debug.Log(all + receiver.ToString() + " was made a Spider Mother due to being killed by " + sender);
 
-                    return;
+                        data.transformation = "Spider";
+                        data.transformationTimer = receiver.abstractCreature.world.game.IsStorySession ? receiver.abstractCreature.world.game.GetStorySession.saveState.cycleNumber : 1;
+
+                        return;
+                    }
+                }
+                else if (killType == "Spider")
+                {
+                    if (Chance(receiver.abstractCreature, ShadowOfOptions.spider_transformation_chance.Value, "Spider Transformation after being killed by Spider-type Damage"))
+                    {
+                        if (ShadowOfOptions.debug_logs.Value)
+                            Debug.Log(all + receiver.ToString() + " was made a Spider Mother due to being killed by Spider-type Damage");
+
+                        data.transformation = "Spider";
+                        data.transformationTimer = receiver.abstractCreature.world.game.IsStorySession ? receiver.abstractCreature.world.game.GetStorySession.saveState.cycleNumber : 1;
+
+                        return;
+                    }
+                }
+                else if (killType == "Small Spider")
+                {
+                    if (Chance(receiver.abstractCreature, ShadowOfOptions.spider_transformation_chance.Value * 0.25f, "Spider Transformation after being killed by Small Spider Damage"))
+                    {
+                        if (ShadowOfOptions.debug_logs.Value)
+                            Debug.Log(all + receiver.ToString() + " was made a Spider Mother due to being killed by Small Spider Damage");
+
+                        data.transformation = "Spider";
+                        data.transformationTimer = receiver.abstractCreature.world.game.IsStorySession ? receiver.abstractCreature.world.game.GetStorySession.saveState.cycleNumber : 1;
+
+                        return;
+                    }
                 }
             }
 

@@ -3,9 +3,9 @@ using UnityEngine;
 using RWCustom;
 using Menu;
 using MoreSlugcats;
-using static ShadowOfLizards.ShadowOfLizards;
-using Mono.Cecil;
 using System.Collections.Generic;
+
+using static ShadowOfLizards.ShadowOfLizards;
 
 namespace ShadowOfLizards;
 
@@ -44,6 +44,8 @@ internal class MiscHooks
         On.SlugcatHand.EngageInMovement += SlugcatHandEngageInMovement;
 
         On.KingTusks.Tusk.HitThisChunk += Tusk_HitThisChunk;
+
+        On.ZapCoil.Update += ZapCoilUpdate;
     }
 
     static bool Tusk_HitThisChunk(On.KingTusks.Tusk.orig_HitThisChunk orig, KingTusks.Tusk self, BodyChunk chunk)
@@ -571,4 +573,37 @@ internal class MiscHooks
             }
         }
     }
+
+    #region ZapCoil
+    static void ZapCoilUpdate(On.ZapCoil.orig_Update orig, ZapCoil self, bool eu)
+    {
+        if (self.turnedOn > 0.5f)
+        {
+            for (int i = 0; i < self.room.physicalObjects.Length; i++)
+            {
+                for (int j = 0; j < self.room.physicalObjects[i].Count; j++)
+                {
+                    if (!ModManager.Watcher || self.room.physicalObjects[i][j] is not Lizard)
+                    {
+                        for (int k = 0; k < self.room.physicalObjects[i][j].bodyChunks.Length; k++)
+                        {
+                            if ((self.horizontalAlignment && self.room.physicalObjects[i][j].bodyChunks[k].ContactPoint.y != 0) || (!self.horizontalAlignment && self.room.physicalObjects[i][j].bodyChunks[k].ContactPoint.x != 0))
+                            {
+                                Vector2 a = self.room.physicalObjects[i][j].bodyChunks[k].ContactPoint.ToVector2();
+                                Vector2 v = self.room.physicalObjects[i][j].bodyChunks[k].pos + a * (self.room.physicalObjects[i][j].bodyChunks[k].rad + 30f);
+                                if (self.GetFloatRect.Vector2Inside(v))
+                                {
+                                    if (self.room.physicalObjects[i][j] is Lizard crit && lizardstorage.TryGetValue(crit.abstractCreature, out LizardData data))
+                                    {
+                                        ViolenceCheck(self.room.physicalObjects[i][j] as Lizard, data, "Electric");
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    #endregion
 }

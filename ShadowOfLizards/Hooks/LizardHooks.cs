@@ -3,8 +3,7 @@ using System.Linq;
 using System.Collections.Generic;
 using UnityEngine;
 using RWCustom;
-using MoreSlugcats;
-using Watcher;
+
 using static ShadowOfLizards.ShadowOfLizards;
 
 namespace ShadowOfLizards;
@@ -15,18 +14,19 @@ internal class LizardHooks
     {
         On.AbstractCreature.ctor += NewAbstractLizard;
         On.LizardState.LoadFromString += CreatureState_LoadFromString;
+        On.SaveState.AbstractCreatureToStringStoryWorld_AbstractCreature_WorldCoordinate += SaveStateSaveAbstractCreature;
 
         On.Lizard.ctor += NewLizard;
-        On.Lizard.Violence += LizardViolence;
         On.Lizard.Bite += LizardBite;
-        On.Lizard.Update += LizardUpdate;
         On.Lizard.HitHeadShield += LizardHitHeadShield;
+        On.Lizard.Update += LizardUpdate;
+        On.Lizard.Violence += LizardViolence;
+
 
         On.Creature.Die += CreatureDie;
-
-        On.SaveState.AbstractCreatureToStringStoryWorld_AbstractCreature_WorldCoordinate += SaveStateSaveAbstractCreature;
     }
 
+    #region LizardCreation
     static void NewAbstractLizard(On.AbstractCreature.orig_ctor orig, AbstractCreature self, World world, CreatureTemplate creatureTemplate, Creature realizedCreature, WorldCoordinate pos, EntityID ID)
     {
         orig(self, world, creatureTemplate, realizedCreature, pos, ID);
@@ -83,7 +83,7 @@ internal class LizardHooks
         #region Local
         void Abilities()
         {           
-            if (ShadowOfOptions.tongue_ability.Value && ModManager.MSC && self.creatureTemplate.type == MoreSlugcatsEnums.CreatureTemplateType.TrainLizard)
+            if (ShadowOfOptions.tongue_ability.Value && ModManager.MSC && self.creatureTemplate.type == MoreSlugcats.MoreSlugcatsEnums.CreatureTemplateType.TrainLizard)
             {
                 data.liz["Tongue"] = "Null";
             } //Tongue: Set inside Lizard
@@ -156,7 +156,6 @@ internal class LizardHooks
         }
         #endregion
     }
-
     static void CreatureState_LoadFromString(On.LizardState.orig_LoadFromString orig, LizardState self, string[] s)
     {
         orig(self, s);
@@ -1151,7 +1150,177 @@ internal class LizardHooks
         }
         #endregion
     }
+    static string SaveStateSaveAbstractCreature(On.SaveState.orig_AbstractCreatureToStringStoryWorld_AbstractCreature_WorldCoordinate orig, AbstractCreature self, WorldCoordinate cc)
+    {
+        if (self == null || self.state == null || self.state.unrecognizedSaveStrings == null || self.creatureTemplate.TopAncestor().type != CreatureTemplate.Type.LizardTemplate || !lizardstorage.TryGetValue(self, out LizardData data))
+        {
+            return orig(self, cc);
+        }
 
+        try
+        {
+            if (ShadowOfOptions.debug_logs.Value)
+                Debug.Log(all + "Saving values for " + (data.isGoreHalf ? "Gore Abstract " : "Abstract ") + self);
+
+            Dictionary<string, string> savedData = self.state.unrecognizedSaveStrings;
+
+            if (data.isGoreHalf)
+            {
+                savedData["ShadowOfbeheaded"] = "Gore";
+
+                string liz = "";
+                for (int i = 0; i < data.liz.Count; i++)
+                {
+                    liz += data.liz.ElementAt(i).Key + "=";
+                    liz += data.liz.ElementAt(i).Value + ";";
+                }
+                savedData["ShadowOfLiz"] = liz;
+
+                string chunk = "";
+                for (int i = 0; i < data.availableBodychunks.Count; i++)
+                {
+                    chunk += data.availableBodychunks[i] + ";";
+                }
+                savedData["ShadowOfAvailableBodychunks"] = chunk;
+
+                savedData["ShadowOfTransformation"] = data.transformation;
+
+                string armState = "";
+                for (int i = 0; i < data.armState.Count; i++)
+                {
+                    armState += data.armState[i] + ";";
+                }
+                savedData["ShadowOfarmState"] = armState;
+
+                if (ShadowOfOptions.debug_logs.Value)
+                {
+                    Debug.Log(all + self + " beheaded = " + savedData["ShadowOfbeheaded"]);
+
+                    Debug.Log(all + self + " lizDictionary = " + savedData["ShadowOfLiz"]);
+
+                    Debug.Log(all + self + " bodyChunks = " + savedData["ShadowOfAvailableBodychunks"]);
+
+                    Debug.Log(all + self + " transformation = " + savedData["ShadowOfTransformation"]);
+
+                    Debug.Log(all + self + " armState = " + savedData["ShadowOfarmState"]);
+                }
+            }
+            else
+            {
+                savedData["ShadowOfbeheaded"] = data.beheaded ? "True" : "False";
+
+                string liz = "";
+                for (int i = 0; i < data.liz.Count; i++)
+                {
+                    liz += data.liz.ElementAt(i).Key + "=";
+                    liz += data.liz.ElementAt(i).Value + ";";
+                }
+                savedData["ShadowOfLiz"] = liz;
+
+                string chunk = "";
+                for (int i = 0; i < data.availableBodychunks.Count; i++)
+                {
+                    chunk += data.availableBodychunks[i] + ";";
+                }
+                savedData["ShadowOfAvailableBodychunks"] = chunk;
+
+                if (ShadowOfOptions.cosmetic_body_chunks.Value)
+                {
+                    List<int> list = new(data.cosmeticBodychunks);
+                    for (int i = 0; i < list.Count; i++)
+                    {
+                        if (!data.availableBodychunks.Contains(list[i]))
+                        {
+                            data.cosmeticBodychunks.Remove(list[i]);
+                        }
+                    }
+
+                    chunk = "";
+                    for (int i = 0; i < data.cosmeticBodychunks.Count; i++)
+                    {
+                        chunk += data.cosmeticBodychunks[i] + ";";
+                    }
+                    savedData["ShadowOfCosmeticBodychunks"] = chunk;
+                }
+
+                savedData["ShadowOfTransformation"] = data.transformation;
+                savedData["ShadowOfTransformationTimer"] = data.transformationTimer.ToString();
+
+                string armState = "";
+                for (int i = 0; i < data.armState.Count; i++)
+                {
+                    armState += data.armState[i] + ";";
+                }
+                savedData["ShadowOfarmState"] = armState;
+
+                savedData["ShadowOfLizardUpdatedCycle"] = data.lizardUpdatedCycle.ToString();
+
+                savedData["ShadowOfCheatDeathChance"] = data.cheatDeathChance.ToString();
+
+                savedData["ShadowOfactuallyDead"] = data.actuallyDead ? "True" : "False";
+
+                if (ModManager.Watcher)
+                {
+                    if (data.cutAppendage.Count > 0)
+                    {
+                        string appendage = "";
+                        for (int i = 0; i < data.liz.Count; i++)
+                        {
+                            appendage += data.cutAppendage.ElementAt(i).Key + "=";
+                            appendage += data.cutAppendage.ElementAt(i).Value + ";";
+                        }
+                        savedData["ShadowOfCutAppendage"] = appendage;
+                    }
+
+                    if (data.cutAppendageCycle.Count > 0)
+                    {
+                        string appendage = "";
+                        for (int i = 0; i < data.liz.Count; i++)
+                        {
+                            appendage += data.cutAppendageCycle.ElementAt(i).Key + "=";
+                            appendage += data.cutAppendageCycle.ElementAt(i).Value + ";";
+                        }
+                        savedData["ShadowOfCutAppendageCycle"] = appendage;
+                    }
+                }
+
+                if (ShadowOfOptions.debug_logs.Value)
+                {
+                    Debug.Log(all + self + " beheaded = " + savedData["ShadowOfbeheaded"]);
+                    Debug.Log(all + self + " lizDictionary = " + savedData["ShadowOfLiz"]);
+
+                    if (ShadowOfOptions.cosmetic_body_chunks.Value)
+                        Debug.Log(all + self + " cosmeticBodyChunks = " + savedData["ShadowOfCosmeticBodychunks"]);
+
+                    Debug.Log(all + self + " bodyChunks = " + savedData["ShadowOfAvailableBodychunks"]);
+
+                    Debug.Log(all + self + " transformation = " + savedData["ShadowOfTransformation"]);
+                    Debug.Log(all + self + " transformationTimer = " + savedData["ShadowOfTransformationTimer"]);
+
+                    Debug.Log(all + self + " armState = " + savedData["ShadowOfarmState"]);
+
+                    Debug.Log(all + self + " updatedCycle = " + savedData["ShadowOfLizardUpdatedCycle"]);
+
+                    Debug.Log(all + self + " cheatDeathChance = " + savedData["ShadowOfCheatDeathChance"]);
+
+                    if (ModManager.Watcher)
+                    {
+                        if (savedData.ContainsKey("ShadowOfCutAppendage"))
+                            Debug.Log(all + self + " cutAppendage = " + savedData["ShadowOfCutAppendage"]);
+
+                        if (savedData.ContainsKey("ShadowOfCutAppendageCycle"))
+                            Debug.Log(all + self + " cutAppendageCycle = " + savedData["ShadowOfCutAppendageCycle"]);
+                    }
+                }
+            }
+        }
+        catch (Exception e) { ShadowOfLizards.Logger.LogError(e); }
+
+        return orig(self, cc);
+    }
+    #endregion
+
+    #region Lizard
     static void NewLizard(On.Lizard.orig_ctor orig, Lizard self, AbstractCreature abstractCreature, World world)
     {
         orig(self, abstractCreature, world);
@@ -1167,7 +1336,7 @@ internal class LizardHooks
         {
             self.LizardState.SetRotType(new LizardState.RotType("Slight", false));
 
-            self.rotModule ??= new LizardRotModule(self);
+            self.rotModule ??= new Watcher.LizardRotModule(self);
         }
 
         if (data.isGoreHalf)
@@ -1700,53 +1869,222 @@ internal class LizardHooks
         }
         #endregion
     }
-    /*
-    List<TileTypeResistance> list = new();
-    List<TileConnectionResistance> list2 = new(); 
-
-    self.lizardParams.terrainSpeeds = new LizardBreedParams.SpeedMultiplier[Enum.GetNames(typeof(AItile.Accessibility)).Length];
-    for (int i = 0; i < self.lizardParams.terrainSpeeds.Length; i++)
+    static void LizardBite(On.Lizard.orig_Bite orig, Lizard self, BodyChunk chunk)
     {
-        self.lizardParams.terrainSpeeds[i] = new LizardBreedParams.SpeedMultiplier(0.1f, 1f, 1f, 1f);
-    }
-
-    self.lizardParams.terrainSpeeds[4] = new LizardBreedParams.SpeedMultiplier(1f, 1f, 1f, 1f);
-    list.Add(new TileTypeResistance(AItile.Accessibility.Climb, 0.8f, PathCost.Legality.Allowed));
-    self.lizardParams.terrainSpeeds[5] = new LizardBreedParams.SpeedMultiplier(0.8f, 1f, 1f, 1f);
-    list.Add(new TileTypeResistance(AItile.Accessibility.Wall, 1f, PathCost.Legality.Allowed));
-    self.lizardParams.terrainSpeeds[6] = new LizardBreedParams.SpeedMultiplier(0.6f, 1f, 1f, 1f);
-    list.Add(new TileTypeResistance(AItile.Accessibility.Ceiling, 1.2f, PathCost.Legality.Allowed));
-
-    list2.Add(new TileConnectionResistance(MovementConnection.MovementType.DropToFloor, 20f, PathCost.Legality.Allowed));
-    list2.Add(new TileConnectionResistance(MovementConnection.MovementType.DropToClimb, 2f, PathCost.Legality.Allowed));
-    list2.Add(new TileConnectionResistance(MovementConnection.MovementType.ShortCut, 15f, PathCost.Legality.Allowed));
-    list2.Add(new TileConnectionResistance(MovementConnection.MovementType.ReachOverGap, 1.1f, PathCost.Legality.Allowed));
-    list2.Add(new TileConnectionResistance(MovementConnection.MovementType.ReachUp, 1.1f, PathCost.Legality.Allowed));
-    list2.Add(new TileConnectionResistance(MovementConnection.MovementType.ReachDown, 1.1f, PathCost.Legality.Allowed));
-    list2.Add(new TileConnectionResistance(MovementConnection.MovementType.CeilingSlope, 2f, PathCost.Legality.Allowed));
-
-    list2.Add(new TileConnectionResistance(MovementConnection.MovementType.DropToWater, 20f, PathCost.Legality.Allowed));
-
-    for (int l = 0; l < list.Count; l++)
-    {
-        self.abstractCreature.creatureTemplate.pathingPreferencesTiles[(int)list[l].accessibility] = list[l].cost;
-        if (list[l].cost.legality == PathCost.Legality.Allowed && self.abstractCreature.creatureTemplate.maxAccessibleTerrain < (int)list[l].accessibility && list[l].accessibility != AItile.Accessibility.Sand)
+        if (!lizardstorage.TryGetValue(self.abstractCreature, out LizardData data))
         {
-            self.abstractCreature.creatureTemplate.maxAccessibleTerrain = (int)list[l].accessibility;
+            orig(self, chunk);
+            return;
         }
-    }
 
-    for (int n = 0; n < list2.Count; n++)
+        try
+        {
+            if (ShadowOfOptions.teeth.Value && data.liz.TryGetValue("UpperTeeth", out string upperTeeth))
+            {
+                string lowerTeeth = data.liz["LowerTeeth"];
+
+                bool flag = upperTeeth != "Normal" && lowerTeeth != "Normal";
+
+                if (flag)
+                {
+                    if (UnityEngine.Random.value < 0.4f)
+                    {
+                        if (ModManager.MSC && self.Template.type == MoreSlugcats.MoreSlugcatsEnums.CreatureTemplateType.TrainLizard && self.room != null)
+                        {
+                            for (int i = 0; i < 16; i++)
+                            {
+                                Vector2 a = Custom.RNV();
+                                self.room.AddObject(new Spark(self.firstChunk.pos + a * 40f, a * Mathf.Lerp(4f, 30f, UnityEngine.Random.value), Color.white, null, 8, 24));
+                            }
+                        }
+                        self.biteControlReset = false;
+                        self.JawOpen = 0f;
+                        self.lastJawOpen = 0f;
+
+                        self.room.PlaySound(SoundID.Lizard_Jaws_Shut_Miss_Creature, self.mainBodyChunk);
+                        return;
+                    }
+                }
+                else if (upperTeeth != "Normal" || lowerTeeth != "Normal")
+                {
+                    if (UnityEngine.Random.value < 0.7f)
+                    {
+                        if (ModManager.MSC && self.Template.type == MoreSlugcats.MoreSlugcatsEnums.CreatureTemplateType.TrainLizard && self.room != null)
+                        {
+                            for (int i = 0; i < 16; i++)
+                            {
+                                Vector2 a = Custom.RNV();
+                                self.room.AddObject(new Spark(self.firstChunk.pos + a * 40f, a * Mathf.Lerp(4f, 30f, UnityEngine.Random.value), Color.white, null, 8, 24));
+                            }
+                        }
+                        self.biteControlReset = false;
+                        self.JawOpen = 0f;
+                        self.lastJawOpen = 0f;
+
+                        self.room.PlaySound(SoundID.Lizard_Jaws_Shut_Miss_Creature, self.mainBodyChunk);
+                        return;
+                    }
+                }
+            }
+
+            bool elec = false;
+            bool melt = false;
+
+            if (ShadowOfOptions.electric_transformation.Value && (data.transformation == "Electric" || data.transformation == "ElectricTransformation") && self.graphicsModule != null && graphicstorage.TryGetValue(self.graphicsModule as LizardGraphics, out GraphicsData graphicData))
+            {
+                TransformationElectric.PreElectricLizardBite(self, chunk, graphicData, data);
+                elec = true;
+            }
+            else if (ShadowOfOptions.melted_transformation.Value && (data.transformation == "Melted" || data.transformation == "MeltedTransformation"))
+            {
+                TransformationMelted.PreMeltedLizardBite(self, data, chunk);
+                melt = true;
+            }
+
+            orig(self, chunk);
+
+            if (elec && self.graphicsModule != null && graphicstorage.TryGetValue(self.graphicsModule as LizardGraphics, out GraphicsData graphicData2))
+            {
+                TransformationElectric.PostElectricLizardBite(self, graphicData2, chunk);
+            }
+            else if (melt)
+            {
+                TransformationMelted.PostMeltedLizardBite(self, data, chunk);
+            }
+        }
+        catch (Exception e) { ShadowOfLizards.Logger.LogError(e); }
+    }
+    static bool LizardHitHeadShield(On.Lizard.orig_HitHeadShield orig, Lizard self, Vector2 direction)
     {
-        self.abstractCreature.creatureTemplate.pathingPreferencesConnections[(int)list2[n].movementType] = list2[n].cost;
+        if (lizardstorage.TryGetValue(self.abstractCreature, out LizardData data) && data.beheaded == true)
+        {
+            return false;
+        }
+        return orig(self, direction);
     }
-
-    if (self.lizardParams.terrainSpeeds[2].speed == 0.1f)
+    static void LizardUpdate(On.Lizard.orig_Update orig, Lizard self, bool eu)
     {
-        self.lizardParams.terrainSpeeds[2] = self.lizardParams.terrainSpeeds[1];
-    }
-    */
+        orig(self, eu);
 
+        if (self.abstractCreature == null || !lizardstorage.TryGetValue(self.abstractCreature, out LizardData data))
+        {
+            return;
+        }
+
+        try
+        {
+            if (data.spearList.Count > 0)
+            {
+                List<Spear> tempList = new(data.spearList);
+                for (int i = 0; i < tempList.Count; i++)
+                {
+                    if (tempList[i] == null)
+                    {
+                        data.spearList.Remove(tempList[i]);
+                        continue;
+                    }
+
+                    tempList[i].ChangeMode(Weapon.Mode.Free);
+                    data.spearList.Remove(tempList[i]);
+                }
+            }
+
+            if (data.isGoreHalf || self.dead)
+            {
+                return;
+            }
+
+            if (ShadowOfOptions.deafen.Value && data.liz.ContainsKey("EarRight"))
+            {
+                bool flag = data.liz["EarRight"] == "Deaf";
+                bool flag2 = data.liz["EarLeft"] == "Deaf";
+
+                if (flag && flag2)
+                {
+                    self.deaf = Mathf.Max(self.deaf, 120);
+                }
+                else if (flag ^ flag2)
+                {
+                    self.deaf = Mathf.Max(self.deaf, 4);
+                }
+            } //Deaf
+
+            if (ShadowOfOptions.dismemberment.Value && self.LizardState != null && self.LizardState.limbHealth != null)
+            {
+                for (int i = 0; i < data.armState.Count; i++)
+                {
+                    if (data.armState[i] != "Normal" && data.armState[i] != "Spider")
+                    {
+                        self.LizardState.limbHealth[i] = 0f;
+                    }
+                }
+            } //Limb Health
+
+            /*
+            if (ShadowOfOptions.grass_immune.Value && self.AI != null && self.AI.behavior != null && self.AI.behavior == LizardAI.Behavior.Flee && self.room != null && self.room.updateList != null && 
+                self.room.updateList.Any((UpdatableAndDeletable x) => x is WormGrass))
+            {
+                self.Template.wormGrassImmune = false;
+
+                if (ShadowOfOptions.debug_logs.Value)
+                    Debug.Log(all + self.ToString() + " lost immunity to Worm Grass due to being Scared near Worm Grass");
+            } //Worm Grass Immunity Loss
+            */
+
+            int cycleNumber = CycleNum(self.abstractCreature);
+
+            if (ModManager.HypothermiaModule && ShadowOfOptions.hypothermia_immune.Value && self.dead && self.Hypothermia >= 1f)
+            {
+                data.liz["HypothermiaImmune"] = "True";
+
+                if (ShadowOfOptions.debug_logs.Value)
+                    Debug.Log(all + self.ToString() + " gained Immunity to Hypothermia due to Freezing to Death");
+
+                if (ShadowOfOptions.dynamic_cheat_death.Value)
+                    data.cheatDeathChance += 5;
+            } //HypothermiaImmune
+
+            if (ShadowOfOptions.water_breather.Value && self.dead && self.Submersion > 0.1f && self.lungs <= 0f)
+            {
+                data.liz["WaterBreather"] = "True";
+
+                if (ShadowOfOptions.debug_logs.Value)
+                    Debug.Log(all + self.ToString() + " gained Immunity to Drowning due to Drowning");
+
+                if (ShadowOfOptions.dynamic_cheat_death.Value)
+                    data.cheatDeathChance += 5;
+            } //WaterBreather
+
+            if (self.dead && self.Submersion > 0.1f && self.room.waterObject != null && self.room.waterObject.WaterIsLethal)
+            {
+                if (ShadowOfOptions.lava_immune.Value && !self.abstractCreature.lavaImmune && (!data.liz.TryGetValue("LavaImmune", out string lavaImmune) || lavaImmune == "False"))
+                {
+                    self.abstractCreature.lavaImmune = true;
+                    data.liz["LavaImmune"] = "True";
+
+                    if (ShadowOfOptions.debug_logs.Value)
+                        Debug.Log(all + self.ToString() + " gained Immunity to Lava/Acid due to Swimming in Lethal Water");
+
+                    if (ShadowOfOptions.dynamic_cheat_death.Value)
+                        data.cheatDeathChance += 5;
+                }
+
+                if (ShadowOfOptions.melted_transformation.Value && !meltedPorhibited.Contains(self.Template.type.ToString()) && data.transformation != "SpiderTransformation" && data.transformation != "ElectricTransformation" && data.transformation != "Melted" && data.transformation != "MeltedTransformation" && CWTCycleCheck(data, "PreMeltedCycle", cycleNumber))
+                {
+                    data.liz["PreMeltedCycle"] = cycleNumber.ToString();
+                    TransformationMelted.MeltedLizardUpdate(self, data);
+                    return;
+                }
+            } //LavaImmune && MeltedTransformation
+
+            if (ShadowOfOptions.electric_transformation.Value && data.transformation == "ElectricTransformation" && self.graphicsModule != null && graphicstorage.TryGetValue(self.graphicsModule as LizardGraphics, out GraphicsData GraphicsData))
+            {
+                TransformationElectric.ElectricLizardUpdate(self, data, GraphicsData);
+                return;
+            } //ElectricTransformation
+        }
+        catch (Exception e) { ShadowOfLizards.Logger.LogError(e); }
+    }
     static void LizardViolence(On.Lizard.orig_Violence orig, Lizard self, BodyChunk source, Vector2? directionAndMomentum, BodyChunk hitChunk, PhysicalObject.Appendage.Pos onAppendagePos, Creature.DamageType type, float damage, float stunBonus)
     {
         if (!lizardstorage.TryGetValue(self.abstractCreature, out LizardData data) || type == null)
@@ -1759,7 +2097,7 @@ internal class LizardHooks
         {
             bool sourceOwnerFlag = source != null && source.owner != null;
 
-            bool sourceValidTypeFlag = source != null && (source.owner == null || (source.owner != null && source.owner is not JellyFish && source.owner is not Leech && source.owner is not DartMaggot));
+            bool sourceValidTypeFlag = source != null && (source.owner == null || (source.owner != null && source.owner is not JellyFish && source.owner is not Leech && source.owner is not DartMaggot && source.owner is not SporePlant.AttachedBee));
 
             #region Electric Damage Reduction
             if (type == Creature.DamageType.Bite && sourceOwnerFlag && source.owner is Lizard sourceLiz && lizardstorage.TryGetValue(sourceLiz.abstractCreature, out LizardData sourceData) && (sourceData.transformation == "Electric" || sourceData.transformation == "ElectricTransformation"))
@@ -2392,226 +2730,9 @@ internal class LizardHooks
         }
         #endregion
     }
+    #endregion
 
-    static void LizardBite(On.Lizard.orig_Bite orig, Lizard self, BodyChunk chunk)
-    {
-        if (!lizardstorage.TryGetValue(self.abstractCreature, out LizardData data))
-        {
-            orig(self, chunk);
-            return;
-        }
-
-        try
-        {
-            if (ShadowOfOptions.teeth.Value && data.liz.TryGetValue("UpperTeeth", out string upperTeeth))
-            {
-                string lowerTeeth = data.liz["LowerTeeth"];
-
-                bool flag = upperTeeth != "Normal" && lowerTeeth != "Normal";
-
-                if (flag)
-                {
-                    if (UnityEngine.Random.value < 0.4f)
-                    {
-                        if (ModManager.MSC && self.Template.type == MoreSlugcatsEnums.CreatureTemplateType.TrainLizard && self.room != null)
-                        {
-                            for (int i = 0; i < 16; i++)
-                            {
-                                Vector2 a = Custom.RNV();
-                                self.room.AddObject(new Spark(self.firstChunk.pos + a * 40f, a * Mathf.Lerp(4f, 30f, UnityEngine.Random.value), Color.white, null, 8, 24));
-                            }
-                        }
-                        self.biteControlReset = false;
-                        self.JawOpen = 0f;
-                        self.lastJawOpen = 0f;
-
-                        self.room.PlaySound(SoundID.Lizard_Jaws_Shut_Miss_Creature, self.mainBodyChunk);
-                        return;
-                    }
-                }
-                else if (upperTeeth != "Normal" || lowerTeeth != "Normal")
-                {
-                    if (UnityEngine.Random.value < 0.7f)
-                    {
-                        if (ModManager.MSC && self.Template.type == MoreSlugcatsEnums.CreatureTemplateType.TrainLizard && self.room != null)
-                        {
-                            for (int i = 0; i < 16; i++)
-                            {
-                                Vector2 a = Custom.RNV();
-                                self.room.AddObject(new Spark(self.firstChunk.pos + a * 40f, a * Mathf.Lerp(4f, 30f, UnityEngine.Random.value), Color.white, null, 8, 24));
-                            }
-                        }
-                        self.biteControlReset = false;
-                        self.JawOpen = 0f;
-                        self.lastJawOpen = 0f;
-
-                        self.room.PlaySound(SoundID.Lizard_Jaws_Shut_Miss_Creature, self.mainBodyChunk);
-                        return;
-                    }
-                }
-            }
-
-            bool elec = false;
-            bool melt = false;
-
-            if (ShadowOfOptions.electric_transformation.Value && (data.transformation == "Electric" || data.transformation == "ElectricTransformation") && self.graphicsModule != null && graphicstorage.TryGetValue(self.graphicsModule as LizardGraphics, out GraphicsData graphicData))
-            {
-                TransformationElectric.PreElectricLizardBite(self, chunk, graphicData, data);
-                elec = true;
-            }
-            else if (ShadowOfOptions.melted_transformation.Value && (data.transformation == "Melted" || data.transformation == "MeltedTransformation"))
-            {
-                TransformationMelted.PreMeltedLizardBite(self, data, chunk);
-                melt = true;
-            }
-
-            orig(self, chunk);
-
-            if (elec && self.graphicsModule != null && graphicstorage.TryGetValue(self.graphicsModule as LizardGraphics, out GraphicsData graphicData2))
-            {
-                TransformationElectric.PostElectricLizardBite(self, graphicData2, chunk);
-            }
-            else if (melt)
-            {
-                TransformationMelted.PostMeltedLizardBite(self, data, chunk);
-            }
-        }
-        catch (Exception e) { ShadowOfLizards.Logger.LogError(e); }
-    }
-
-    static void LizardUpdate(On.Lizard.orig_Update orig, Lizard self, bool eu)
-    {
-        orig(self, eu);
-
-        if (self.abstractCreature == null || !lizardstorage.TryGetValue(self.abstractCreature, out LizardData data))
-        {
-            return;
-        }
-
-        try
-        {
-            if (data.spearList.Count > 0)
-            {
-                List<Spear> tempList = new(data.spearList);
-                for (int i = 0; i < tempList.Count; i++)
-                {
-                    if (tempList[i] == null)
-                    {
-                        data.spearList.Remove(tempList[i]);
-                        continue;
-                    }
-
-                    tempList[i].ChangeMode(Weapon.Mode.Free);
-                    data.spearList.Remove(tempList[i]);
-                }
-            }
-
-            if (data.isGoreHalf || self.dead)
-            {
-                return;
-            }
-
-            if (ShadowOfOptions.deafen.Value && data.liz.ContainsKey("EarRight"))
-            {
-                bool flag = data.liz["EarRight"] == "Deaf";
-                bool flag2 = data.liz["EarLeft"] == "Deaf";
-
-                if (flag && flag2)
-                {
-                    self.deaf = Mathf.Max(self.deaf, 120);
-                }
-                else if (flag ^ flag2)
-                {
-                    self.deaf = Mathf.Max(self.deaf, 4);
-                }
-            } //Deaf
-
-            if (ShadowOfOptions.dismemberment.Value && self.LizardState != null && self.LizardState.limbHealth != null)
-            {
-                for (int i = 0; i < data.armState.Count; i++)
-                {
-                    if (data.armState[i] != "Normal" && data.armState[i] != "Spider")
-                    {
-                        self.LizardState.limbHealth[i] = 0f;
-                    }
-                }
-            } //Limb Health
-
-            /*
-            if (ShadowOfOptions.grass_immune.Value && self.AI != null && self.AI.behavior != null && self.AI.behavior == LizardAI.Behavior.Flee && self.room != null && self.room.updateList != null && 
-                self.room.updateList.Any((UpdatableAndDeletable x) => x is WormGrass))
-            {
-                self.Template.wormGrassImmune = false;
-
-                if (ShadowOfOptions.debug_logs.Value)
-                    Debug.Log(all + self.ToString() + " lost immunity to Worm Grass due to being Scared near Worm Grass");
-            } //Worm Grass Immunity Loss
-            */
-
-            int cycleNumber = CycleNum(self.abstractCreature);
-           
-            if (ModManager.HypothermiaModule && ShadowOfOptions.hypothermia_immune.Value && self.dead && self.Hypothermia >= 1f)
-            {
-                data.liz["HypothermiaImmune"] = "True";
-
-                if (ShadowOfOptions.debug_logs.Value)
-                    Debug.Log(all + self.ToString() + " gained Immunity to Hypothermia due to Freezing to Death");
-
-                if (ShadowOfOptions.dynamic_cheat_death.Value)
-                    data.cheatDeathChance += 5;
-            } //HypothermiaImmune
-           
-            if (ShadowOfOptions.water_breather.Value && self.dead && self.Submersion > 0.1f && self.lungs <= 0f)
-            {
-                data.liz["WaterBreather"] = "True";
-
-                if (ShadowOfOptions.debug_logs.Value)
-                    Debug.Log(all + self.ToString() + " gained Immunity to Drowning due to Drowning");
-
-                if (ShadowOfOptions.dynamic_cheat_death.Value)
-                    data.cheatDeathChance += 5;
-            } //WaterBreather
-           
-            if (self.dead && self.Submersion > 0.1f && self.room.waterObject != null && self.room.waterObject.WaterIsLethal)
-            {
-                if (ShadowOfOptions.lava_immune.Value && !self.abstractCreature.lavaImmune && (!data.liz.TryGetValue("LavaImmune", out string lavaImmune) || lavaImmune == "False"))
-                {
-                    self.abstractCreature.lavaImmune = true;
-                    data.liz["LavaImmune"] = "True";
-
-                    if (ShadowOfOptions.debug_logs.Value)
-                        Debug.Log(all + self.ToString() + " gained Immunity to Lava/Acid due to Swimming in Lethal Water");
-
-                    if (ShadowOfOptions.dynamic_cheat_death.Value)
-                        data.cheatDeathChance += 5;
-                }
-
-                if (ShadowOfOptions.melted_transformation.Value && !meltedPorhibited.Contains(self.Template.type.ToString()) && data.transformation != "SpiderTransformation" && data.transformation != "ElectricTransformation" && data.transformation != "Melted" && data.transformation != "MeltedTransformation" && CWTCycleCheck(data, "PreMeltedCycle", cycleNumber))
-                {
-                    data.liz["PreMeltedCycle"] = cycleNumber.ToString();
-                    TransformationMelted.MeltedLizardUpdate(self, data);
-                    return;
-                }
-            } //LavaImmune && MeltedTransformation
-         
-            if (ShadowOfOptions.electric_transformation.Value && data.transformation == "ElectricTransformation" && self.graphicsModule != null && graphicstorage.TryGetValue(self.graphicsModule as LizardGraphics, out GraphicsData GraphicsData))
-            {
-                TransformationElectric.ElectricLizardUpdate(self, data, GraphicsData);
-                return;
-            } //ElectricTransformation
-        }
-        catch (Exception e) { ShadowOfLizards.Logger.LogError(e); }
-    }
-
-    static bool LizardHitHeadShield(On.Lizard.orig_HitHeadShield orig, Lizard self, Vector2 direction)
-    {
-        if (lizardstorage.TryGetValue(self.abstractCreature, out LizardData data) && data.beheaded == true)
-        {
-            return false;
-        }
-        return orig(self, direction);
-    }
-
+    #region CreatureDie
     static void CreatureDie(On.Creature.orig_Die orig, Creature self)
     {
         try
@@ -2681,173 +2802,5 @@ internal class LizardHooks
         }
         catch (Exception e) { ShadowOfLizards.Logger.LogError(e); }
     }
-
-    static string SaveStateSaveAbstractCreature(On.SaveState.orig_AbstractCreatureToStringStoryWorld_AbstractCreature_WorldCoordinate orig, AbstractCreature self, WorldCoordinate cc)
-    {
-        if (self == null || self.state == null || self.state.unrecognizedSaveStrings == null || self.creatureTemplate.TopAncestor().type != CreatureTemplate.Type.LizardTemplate || !lizardstorage.TryGetValue(self, out LizardData data))
-        {
-            return orig(self, cc);
-        }
-
-        try
-        {
-            if (ShadowOfOptions.debug_logs.Value)
-                Debug.Log(all + "Saving values for " + (data.isGoreHalf ? "Gore Abstract " : "Abstract ") + self);
-
-            Dictionary<string, string> savedData = self.state.unrecognizedSaveStrings;
-
-            if (data.isGoreHalf)
-            {
-                savedData["ShadowOfbeheaded"] = "Gore";
-
-                string liz = "";
-                for (int i = 0; i < data.liz.Count; i++)
-                {
-                    liz += data.liz.ElementAt(i).Key + "=";
-                    liz += data.liz.ElementAt(i).Value + ";";
-                }
-                savedData["ShadowOfLiz"] = liz;
-
-                string chunk = "";
-                for (int i = 0; i < data.availableBodychunks.Count; i++)
-                {
-                    chunk += data.availableBodychunks[i] + ";";
-                }
-                savedData["ShadowOfAvailableBodychunks"] = chunk;
-
-                savedData["ShadowOfTransformation"] = data.transformation;
-
-                string armState = "";
-                for (int i = 0; i < data.armState.Count; i++)
-                {
-                    armState += data.armState[i] + ";";
-                }
-                savedData["ShadowOfarmState"] = armState;
-
-                if (ShadowOfOptions.debug_logs.Value)
-                {
-                    Debug.Log(all + self + " beheaded = " + savedData["ShadowOfbeheaded"]);
-
-                    Debug.Log(all + self + " lizDictionary = " + savedData["ShadowOfLiz"]);
-
-                    Debug.Log(all + self + " bodyChunks = " + savedData["ShadowOfAvailableBodychunks"]);
-
-                    Debug.Log(all + self + " transformation = " + savedData["ShadowOfTransformation"]);
-
-                    Debug.Log(all + self + " armState = " + savedData["ShadowOfarmState"]);
-                } 
-            }
-            else
-            {
-                savedData["ShadowOfbeheaded"] = data.beheaded ? "True" : "False";
-
-                string liz = "";
-                for (int i = 0; i < data.liz.Count; i++)
-                {
-                    liz += data.liz.ElementAt(i).Key + "=";
-                    liz += data.liz.ElementAt(i).Value + ";";
-                }
-                savedData["ShadowOfLiz"] = liz;
-
-                string chunk = "";
-                for (int i = 0; i < data.availableBodychunks.Count; i++)
-                {
-                    chunk += data.availableBodychunks[i] + ";";
-                }
-                savedData["ShadowOfAvailableBodychunks"] = chunk;
-
-                if (ShadowOfOptions.cosmetic_body_chunks.Value)
-                {
-                    List<int> list = new(data.cosmeticBodychunks);
-                    for (int i = 0; i < list.Count; i++)
-                    {
-                        if (!data.availableBodychunks.Contains(list[i]))
-                        {
-                            data.cosmeticBodychunks.Remove(list[i]);
-                        }
-                    }
-
-                    chunk = "";
-                    for (int i = 0; i < data.cosmeticBodychunks.Count; i++)
-                    {
-                        chunk += data.cosmeticBodychunks[i] + ";";
-                    }
-                    savedData["ShadowOfCosmeticBodychunks"] = chunk;
-                }
-
-                savedData["ShadowOfTransformation"] = data.transformation;
-                savedData["ShadowOfTransformationTimer"] = data.transformationTimer.ToString();
-
-                string armState = "";
-                for (int i = 0; i < data.armState.Count; i++)
-                {
-                    armState += data.armState[i] + ";";
-                }
-                savedData["ShadowOfarmState"] = armState;
-
-                savedData["ShadowOfLizardUpdatedCycle"] = data.lizardUpdatedCycle.ToString();
-
-                savedData["ShadowOfCheatDeathChance"] = data.cheatDeathChance.ToString();
-
-                savedData["ShadowOfactuallyDead"] = data.actuallyDead ? "True" : "False";
-
-                if (ModManager.Watcher)
-                {
-                    if (data.cutAppendage.Count > 0)
-                    {
-                        string appendage = "";
-                        for (int i = 0; i < data.liz.Count; i++)
-                        {
-                            appendage += data.cutAppendage.ElementAt(i).Key + "=";
-                            appendage += data.cutAppendage.ElementAt(i).Value + ";";
-                        }
-                        savedData["ShadowOfCutAppendage"] = appendage;
-                    }
-
-                    if (data.cutAppendageCycle.Count > 0)
-                    {
-                        string appendage = "";
-                        for (int i = 0; i < data.liz.Count; i++)
-                        {
-                            appendage += data.cutAppendageCycle.ElementAt(i).Key + "=";
-                            appendage += data.cutAppendageCycle.ElementAt(i).Value + ";";
-                        }
-                        savedData["ShadowOfCutAppendageCycle"] = appendage;
-                    }
-                }
-
-                if (ShadowOfOptions.debug_logs.Value)
-                {
-                    Debug.Log(all + self + " beheaded = " + savedData["ShadowOfbeheaded"]);
-                    Debug.Log(all + self + " lizDictionary = " + savedData["ShadowOfLiz"]);
-
-                    if (ShadowOfOptions.cosmetic_body_chunks.Value)
-                        Debug.Log(all + self + " cosmeticBodyChunks = " + savedData["ShadowOfCosmeticBodychunks"]);
-
-                    Debug.Log(all + self + " bodyChunks = " + savedData["ShadowOfAvailableBodychunks"]);
-
-                    Debug.Log(all + self + " transformation = " + savedData["ShadowOfTransformation"]);
-                    Debug.Log(all + self + " transformationTimer = " + savedData["ShadowOfTransformationTimer"]);
-
-                    Debug.Log(all + self + " armState = " + savedData["ShadowOfarmState"]);
-
-                    Debug.Log(all + self + " updatedCycle = " + savedData["ShadowOfLizardUpdatedCycle"]);
-
-                    Debug.Log(all + self + " cheatDeathChance = " + savedData["ShadowOfCheatDeathChance"]);
-
-                    if (ModManager.Watcher)
-                    {
-                        if(savedData.ContainsKey("ShadowOfCutAppendage"))
-                            Debug.Log(all + self + " cutAppendage = " + savedData["ShadowOfCutAppendage"]);
-
-                        if (savedData.ContainsKey("ShadowOfCutAppendageCycle"))
-                            Debug.Log(all + self + " cutAppendageCycle = " + savedData["ShadowOfCutAppendageCycle"]);
-                    }
-                }
-            }
-        }
-        catch (Exception e) { ShadowOfLizards.Logger.LogError(e); }
-
-        return orig(self, cc);
-    }
+    #endregion
 }

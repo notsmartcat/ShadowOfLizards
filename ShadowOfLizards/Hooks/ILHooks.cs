@@ -12,30 +12,20 @@ internal class ILHooks
 {
     public static void Apply()
     {
+        IL.AbstractCreature.IsEnteringDen += ILAbstractCreatureIsEnteringDen;
+
+        IL.Creature.BrineWaterInteraction += ILCreatureBrineWaterInteraction;
         IL.Creature.Update += ILCreatureUpdate;
-
-        IL.DaddyTentacle.Update += ILDaddyTentacleUpdate;
-
-        IL.Watcher.LizardRotModule.ctor += ILNewLizardRotModule;
-
-        IL.Lizard.ctor += ILNewLizard; //Tongue
-
-        IL.Lizard.SpearStick += ILSpearStick; //Jump
-
-        /*
-        IL.LizardAI.ctor += NewLizardAI; //Spit
-
-        IL.LizardAI.Update += ILLizardAIUpdate; //Spit
-        */
-
-        IL.WormGrass.WormGrassPatch.InteractWithCreature += ILInteractWithCreature; //WormGrass
 
         IL.DaddyCorruption.EatenCreature.Update += ILDaddyCorruptionEatenCreature; //Rot
         IL.DaddyLongLegs.Eat += ILLDaddyLongLegsEat; //Rot
-
-        IL.Lizard.Update += ILLizardUpdate; //Breathing
+        IL.DaddyTentacle.Update += ILDaddyTentacleUpdate;
 
         IL.Leech.Attached += ILLeechAttached;
+
+        IL.Lizard.ctor += ILNewLizard; //Tongue
+        IL.Lizard.SpearStick += ILLizardSpearStick; //Jump
+        IL.Lizard.Update += ILLizardUpdate; //Breathing
 
         On.LizardAI.LurkTracker.Utility += ShadowOfLizardAILurkTrackerUtility; //Both Swim/Breathe and Camo Related
 
@@ -44,7 +34,13 @@ internal class ILHooks
         IL.LizardGraphics.DrawSprites += ILLizardGraphicsDrawSprites; //camo
         IL.LizardGraphics.Update += ILLizardGraphicsUpdate; //camo
 
-        IL.AbstractCreature.IsEnteringDen += ILAbstractCreatureIsEnteringDen;
+        IL.Spider.Attached += ILSpiderAttached;
+
+        IL.WormGrass.WormGrassPatch.InteractWithCreature += ILInteractWithCreature; //WormGrass
+
+        IL.Watcher.LizardRotModule.ctor += ILNewLizardRotModule;
+
+        IL.Watcher.ARZapper.ZapperContact += ILARZapperZapperContact;
 
         new Hook( //Camo
             typeof(Lizard).GetProperty(nameof(Lizard.VisibilityBonus)).GetGetMethod(), ShadowOfLizardVisibilityBonus);
@@ -58,7 +54,8 @@ internal class ILHooks
         new Hook(typeof(Lizard).GetProperty(nameof(Lizard.IsWallClimber)).GetGetMethod(), ShadowOfIsWallClimber);
     }
 
-    private static void ILAbstractCreatureIsEnteringDen(ILContext il)
+    #region AbstractCreature
+    static void ILAbstractCreatureIsEnteringDen(ILContext il)
     {
         ILCursor val = new(il);
         if (val.TryGotoNext(MoveType.Before, new Func<Instruction, bool>[2]
@@ -78,74 +75,31 @@ internal class ILHooks
             ShadowOfLizards.Logger.LogInfo(all + "Could not find match for ILAbstractCreatureIsEnteringDen!");
         }
     }
+    #endregion
 
-    static void ILNewLizardRotModule(ILContext il)
+    #region Creature
+    static void ILCreatureBrineWaterInteraction(ILContext il)
     {
         ILCursor val = new(il);
-        if (val.TryGotoNext(MoveType.After, new Func<Instruction, bool>[2]
-        {
-            x => x.MatchDiv(),
-            x => x.MatchCallvirt(typeof(List<float>).GetMethod("Add")),
-        }))
-        {
-            val.Emit(OpCodes.Ldarg_0);
-            val.Emit(OpCodes.Ldloc_1);
-            val.Emit(OpCodes.Ldloc_2);
-            val.EmitDelegate(ShadowOfNewLizardRotModule);
-        }
-        else
-        {
-            ShadowOfLizards.Logger.LogInfo(all + "Could not find match for ILNewLizardRotModule!");
-        }
-    }
-    public static void ShadowOfNewLizardRotModule(Watcher.LizardRotModule self, List<float> list, int num)
-    {
-        if (self.lizard != null && self.lizard.abstractCreature != null && lizardstorage.TryGetValue(self.lizard.abstractCreature, out LizardData data))
-        {
-            if (data.cutAppendage.ContainsKey(num) && data.cutAppendageCycle.ContainsKey(num) && data.cutAppendageCycle[num] != CycleNum(self.lizard.abstractCreature))
-            {
-                float listNum;
 
-                if (ModManager.MMF)
-                {
-                    listNum = Math.Max(3, list[num] / 40f);
-                }
-                else
-                {
-                    listNum = list[num] / 40f;
-                }
-
-                float percentage = (float)data.cutAppendage[num] / (float)listNum;
-
-                list[num] *= percentage;
-            }
-        }
-    }
-
-    static void ILDaddyTentacleUpdate(ILContext il)
-    {
-        ILCursor val = new(il);
         if (val.TryGotoNext(MoveType.Before, new Func<Instruction, bool>[2]
-        {  
-            x => x.MatchLdcI4(0),
-            x => x.MatchStloc(6),
+        {
+            x => x.MatchLdarg(0),
+            x => x.MatchCallvirt<Creature>("Die")
         }))
         {
+            val.MoveAfterLabels();
+
             val.Emit(OpCodes.Ldarg_0);
-            val.EmitDelegate(ShadowOfDaddyTentacleUpdate);
+            val.EmitDelegate(delegate (Creature creature)
+            {
+                TryAddKillFeedEntry(creature, "Melted");
+            });
         }
         else
         {
-            ShadowOfLizards.Logger.LogInfo(all + "Could not find match for ILDaddyTentacleUpdate!");
+            ShadowOfLizards.Logger.LogInfo(all + "Could not find match ILCreatureBrineWaterInteraction!");
         }
-    }
-    public static void ShadowOfDaddyTentacleUpdate(DaddyTentacle self)
-    {
-        if (self.daddy is Lizard liz && liz.rotModule.tentacles.Length > 0 && lizardstorage.TryGetValue(liz.abstractCreature, out LizardData data) && data.cutAppendage.Count > 0 && TransformationRot.InnactiveTentacleCheck(data, liz.rotModule.tentacles.IndexOf(self), CycleNum(liz.abstractCreature)))
-        {
-            self.stun = 0;
-            self.limp = true;
-        } 
     }
 
     #region Creature_Update
@@ -204,6 +158,7 @@ internal class ILHooks
             ShadowOfLizards.Logger.LogError(all + "Could not find match for Post-Fluid Hazard Violence!");
             ShadowOfLizards.Logger.LogError(ex4);
         }
+
         try
         {
             c.GotoNext(new Func<Instruction, bool>[10]
@@ -244,6 +199,7 @@ internal class ILHooks
             ShadowOfLizards.Logger.LogError(all + "Could not find match for Bleed Out!");
             ShadowOfLizards.Logger.LogError(ex6);
         }
+
         try
         {
             c.GotoNext(new Func<Instruction, bool>[8]
@@ -313,296 +269,6 @@ internal class ILHooks
         }
     }
     #endregion
-
-    #region Tongue
-    static void ILNewLizard(ILContext il)
-    {
-        try
-        {
-            ILCursor val = new(il);
-            ILLabel target = null;
-            if (val.TryGotoNext(MoveType.After, new Func<Instruction, bool>[4]
-            {
-            x => x.MatchLdarg(0),
-            x => x.MatchLdfld<Lizard>("lizardParams"),
-            x => x.MatchLdfld<LizardBreedParams>("tongue"),
-            x => x.MatchBrfalse(out target)
-            }))
-            {
-                val.Emit(OpCodes.Ldarg_1);
-                val.EmitDelegate(ShadowOfLizardTongue);
-                val.Emit(OpCodes.Brfalse_S, target);
-            }
-            else
-            {
-                ShadowOfLizards.Logger.LogInfo(all + "Could not find match for ILLizard Tongue!");
-            }
-        }
-        catch (Exception e) { ShadowOfLizards.Logger.LogError(e); }
-    }
-    public static bool ShadowOfLizardTongue(AbstractCreature liz)
-    {
-        if (ShadowOfOptions.tongue_ability.Value && lizardstorage.TryGetValue(liz, out LizardData data) && data.liz.TryGetValue("Tongue", out string tongue) && (tongue == "Null" || tongue == "get"))
-        {
-            return false;
-        }
-
-        return true;
-    }
-    #endregion
-
-    #region Jump Module
-    static void ILSpearStick(ILContext il)
-    {
-        try
-        {
-            ILCursor val = new(il);
-            ILLabel target = null;
-            if (val.TryGotoNext(0, new Func<Instruction, bool>[5]
-            {
-            x => x.MatchLdarg(0),
-            x => x.MatchLdfld<Lizard>("jumpModule"),
-            x => x.MatchLdfld<LizardJumpModule>("gasLeakPower"),
-            x => x.MatchLdcR4(0f),
-            x => x.MatchBleUn(out target)
-            }))
-            {
-                val.Emit(OpCodes.Ldarg_0);
-                val.Emit<Lizard>(OpCodes.Ldfld, "jumpModule");
-                val.Emit(OpCodes.Brfalse, target);
-            }
-            else
-            {
-                ShadowOfLizards.Logger.LogInfo(all + "Could not find match for ILSpearStick!");
-            }
-        }
-        catch (Exception e) { ShadowOfLizards.Logger.LogError(e); }
-    }
-    #endregion
-
-    /*
-    #region Spit
-    static void NewLizardAI(ILContext il)
-    {
-        try
-        {
-            ILCursor val = new(il);
-            ILLabel target = null;
-            ILLabel target2 = null;
-
-            #region Lurk
-            if (val.TryGotoNext(new Func<Instruction, bool>[6]
-            {
-            x => x.MatchLdarg(1),
-            x => x.MatchLdfld<AbstractCreature>("creatureTemplate"),
-            x => x.MatchLdfld<CreatureTemplate>("type"),
-            x => x.MatchLdsfld<DLCSharedEnums.CreatureTemplateType>("PeachLizard"),
-            x => x.MatchCall("ExtEnum`1<CreatureTemplate/Type>", "op_Equality"),
-            x => x.MatchBrfalse(out target)
-            }))
-            {
-            }
-            else
-            {
-                ShadowOfLizards.Logger.LogInfo(all + "Could not find target match for ILLizardAI!");
-            }
-
-            if (val.TryGotoPrev(MoveType.Before, new Func<Instruction, bool>[6]
-            {
-            x => x.MatchLdarg(1),
-            x => x.MatchLdfld<AbstractCreature>("creatureTemplate"),
-            x => x.MatchLdfld<CreatureTemplate>("type"),
-            x => x.MatchLdsfld<DLCSharedEnums.CreatureTemplateType>("Salamander"),
-            x => x.MatchCall("ExtEnum`1<CreatureTemplate/Type>", "op_Equality"),
-            x => x.MatchBrtrue(out _)
-            }))
-            {
-                val.MoveAfterLabels();
-
-                val.Emit(OpCodes.Ldarg_0);
-                val.Emit<LizardAI>(OpCodes.Call, "get_lizard");
-                val.EmitDelegate(ShadowOfNewLizardAILurk);
-                val.Emit(OpCodes.Brfalse, target);
-            }
-            else
-            {
-                ShadowOfLizards.Logger.LogInfo(all + "Could not find match for ILLizardAI!");
-            }
-            #endregion
-
-            #region Spit
-            if (val.TryGotoNext(new Func<Instruction, bool>[2]
-            {
-            x => x.MatchCall<ModManager>("get_DLCShared"),
-            x => x.MatchBrfalse(out target)
-            }))
-            {
-            }
-            else
-            {
-                ShadowOfLizards.Logger.LogInfo(all + "Could not find target match for ILLizardAI!");
-            }
-
-            if (val.TryGotoPrev(MoveType.Before, new Func<Instruction, bool>[6]
-            {
-            x => x.MatchLdarg(1),
-            x => x.MatchLdfld<AbstractCreature>("creatureTemplate"),
-            x => x.MatchLdfld<CreatureTemplate>("type"),
-            x => x.MatchLdsfld<DLCSharedEnums.CreatureTemplateType>("RedLizard"),
-            x => x.MatchCall("ExtEnum`1<CreatureTemplate/Type>", "op_Equality"),
-            x => x.MatchBrtrue(out target2)
-            }))
-            {
-                val.MoveAfterLabels();
-
-                val.Emit(OpCodes.Ldarg_0);
-                val.Emit<LizardAI>(OpCodes.Call, "get_lizard");
-                val.EmitDelegate(ShadowOfNewLizardAISpit);
-                val.Emit(OpCodes.Brfalse, target);
-
-                val.Emit(OpCodes.Ldarg_0);
-                val.Emit<LizardAI>(OpCodes.Call, "get_lizard");
-                val.EmitDelegate(ShadowOfNewLizardAISpitValid);
-                val.Emit(OpCodes.Brtrue, target2);
-            }
-            else
-            {
-                ShadowOfLizards.Logger.LogInfo(all + "Could not find match for ILLizardAI!");
-            }
-            #endregion
-        }
-        catch (Exception e) { ShadowOfLizards.Logger.LogError(e); }
-    }
-    public static bool ShadowOfNewLizardAILurk(Lizard self)
-    {
-        if ((ShadowOfOptions.swim_ability.Value || ShadowOfOptions.water_breather.Value) && lizardstorage.TryGetValue(self.abstractCreature, out LizardData data) && (data.liz.TryGetValue("CanSwim", out string CanSwim) && CanSwim != "True" || data.liz.TryGetValue("WaterBreather", out string WaterBreather) && WaterBreather != "True"))
-        {
-            if (ShadowOfOptions.debug_logs.Value)
-                Debug.Log(all + self.ToString() + " did not get it's Lurk ability because it cannot either swim or breathe underwater");
-
-            return false;
-        }
-        return true;
-    }
-    public static bool ShadowOfNewLizardAISpit(Lizard self)
-    {
-        if (lizardstorage.TryGetValue(self.abstractCreature, out LizardData data) && (data.liz.TryGetValue("CanSpit", out string canSpit) && canSpit != "True" || data.isGoreHalf))
-        {
-            if (ShadowOfOptions.debug_logs.Value)
-                Debug.Log(all + self.ToString() + " did not get it's Spit ability");
-
-            return false;
-        }
-        return true;
-    }
-    public static bool ShadowOfNewLizardAISpitValid(Lizard self)
-    {
-        if (lizardstorage.TryGetValue(self.abstractCreature, out LizardData data) && data.liz.TryGetValue("CanSpit", out string canSpit) && canSpit == "True")
-        {
-            return true;
-        }
-        return false;
-    }
-
-    static void ILLizardAIUpdate(ILContext il)
-    {
-        try
-        {
-            ILCursor val = new(il);
-            ILLabel target = null;
-            ILLabel target2 = null;
-
-            if (val.TryGotoNext(new Func<Instruction, bool>[4]
-            {
-            x => x.MatchLdarg(0),
-            x => x.MatchLdfld<LizardAI>("redSpitAI"),
-            x => x.MatchLdfld<LizardAI.LizardSpitTracker>("spitting"),
-            x => x.MatchBrfalse(out target2)
-            }))
-            {
-            }
-            else
-            {
-                ShadowOfLizards.Logger.LogInfo(all + "Could not find target match for ILLizardAI!");
-            }
-
-            if (val.TryGotoPrev(MoveType.Before, new Func<Instruction, bool>[7]
-            {
-            x => x.MatchLdarg(0),
-            x => x.MatchCall<LizardAI>("get_lizard"),
-            x => x.MatchCallvirt<Creature>("get_Template"),
-            x => x.MatchLdfld<CreatureTemplate>("type"),
-            x => x.MatchLdsfld<CreatureTemplate.Type>("RedLizard"),
-            x => x.MatchCall("ExtEnum`1<CreatureTemplate/Type>", "op_Equality"),
-            x => x.MatchBrtrue(out target)
-            }))
-            {
-                val.MoveAfterLabels();
-
-                val.Emit(OpCodes.Ldarg_0);
-                val.Emit<LizardAI>(OpCodes.Ldfld, "redSpitAI");
-                val.Emit(OpCodes.Brtrue_S, target);
-
-                val.Emit(OpCodes.Ldarg_0);
-                val.Emit<LizardAI>(OpCodes.Ldfld, "redSpitAI");
-                val.Emit(OpCodes.Brfalse_S, target2);
-            }
-            else
-            {
-                ShadowOfLizards.Logger.LogInfo(all + "Could not find match for ILLizardAI!");
-            }
-        }
-        catch (Exception e) { ShadowOfLizards.Logger.LogError(e); }
-    }
-    #endregion
-    */
-
-    #region WormGrass
-    static void ILInteractWithCreature(ILContext il)
-    {
-        try
-        {
-            ILCursor val = new(il);
-
-            if (val.TryGotoNext(MoveType.Before, new Func<Instruction, bool>[4]
-            {
-            x => x.MatchLdarg(1),
-            x => x.MatchLdfld<WormGrass.WormGrassPatch.CreatureAndPull>("creature"),
-            x => x.MatchCallvirt<UpdatableAndDeletable>("Destroy"),
-            x => x.MatchRet()
-            }))
-            {
-                val.Emit(OpCodes.Ldarg_1);
-                val.EmitDelegate(ShadowOfInteractWithCreature);
-            }
-            else
-            {
-                ShadowOfLizards.Logger.LogInfo(all + "Could not find match for ILInteractWithCreature!");
-            }
-        }
-        catch (Exception e) { ShadowOfLizards.Logger.LogError(e); }
-    }
-    public static void ShadowOfInteractWithCreature(WormGrass.WormGrassPatch.CreatureAndPull creatureAndPull)
-    {
-        if (!ShadowOfOptions.grass_immune.Value || creatureAndPull.creature == null || creatureAndPull.creature is not Lizard liz || !lizardstorage.TryGetValue(liz.abstractCreature, out LizardData data) || liz.Template.wormGrassImmune)
-        {
-            return;
-        }
-
-        if (Chance(liz.abstractCreature, ShadowOfOptions.grass_immune_chance.Value, "WormGrass Immune"))
-        {
-            if (ShadowOfOptions.debug_logs.Value)
-                Debug.Log(all + "WormGrass Immune granted to " + liz);
-
-            if (ShadowOfOptions.dynamic_cheat_death.Value)
-                data.cheatDeathChance += 5;
-
-            data.liz["WormGrassImmune"] = "True";
-            data.lastDamageType = null;
-        }
-        else if (ShadowOfOptions.debug_logs.Value)
-            Debug.Log(all + "WormGrass Immune not granted to " + liz);
-    }
     #endregion
 
     #region Rot
@@ -629,6 +295,7 @@ internal class ILHooks
         }
         catch (Exception e) { ShadowOfLizards.Logger.LogError(e); }
     }
+
     static void ILLDaddyLongLegsEat(ILContext il)
     {
         try
@@ -680,25 +347,145 @@ internal class ILHooks
         data.lastDamageType = null;
 
     }
-    #endregion
 
-    #region WaterRelated
-    #region Swim
-    public static bool ShadowOfLizardSwimmer(Func<Lizard, bool> orig, Lizard self)
+    static void ILDaddyTentacleUpdate(ILContext il)
     {
-        try
+        ILCursor val = new(il);
+        if (val.TryGotoNext(MoveType.Before, new Func<Instruction, bool>[2]
         {
-            if (ShadowOfOptions.swim_ability.Value && self.Template.canSwim && (self.abstractCreature.creatureTemplate.waterRelationship == CreatureTemplate.WaterRelationship.Amphibious || self.abstractCreature.creatureTemplate.waterRelationship == CreatureTemplate.WaterRelationship.WaterOnly))
-            {
-                return true;
-            }
+            x => x.MatchLdcI4(0),
+            x => x.MatchStloc(7),
+        }))
+        {
+            val.Emit(OpCodes.Ldarg_0);
+            val.EmitDelegate(ShadowOfDaddyTentacleUpdate);
         }
-        catch (Exception e) { ShadowOfLizards.Logger.LogError(e); }
-        return orig(self);
+        else
+        {
+            ShadowOfLizards.Logger.LogInfo(all + "Could not find match for ILDaddyTentacleUpdate!");
+        }
+    }
+    public static void ShadowOfDaddyTentacleUpdate(DaddyTentacle self)
+    {
+        if (self.daddy is Lizard liz && liz.rotModule.tentacles.Length > 0 && lizardstorage.TryGetValue(liz.abstractCreature, out LizardData data) && data.cutAppendage.Count > 0 && TransformationRot.InnactiveTentacleCheck(data, liz.rotModule.tentacles.IndexOf(self), CycleNum(liz.abstractCreature)))
+        {
+            self.stun = 0;
+            self.limp = true;
+        }
     }
     #endregion
 
-    #region Breathing
+    #region Leech
+    static void ILLeechAttached(ILContext il)
+    {
+        try
+        {
+            ILCursor val = new(il);
+
+            if (val.TryGotoNext(MoveType.Before, new Func<Instruction, bool>[4]
+            {
+                x => x.MatchLdloc(0),
+                x => x.MatchCallvirt<BodyChunk>("get_owner"),
+                x => x.MatchIsinst(typeof(Creature)),
+                x => x.MatchCallvirt<Creature>("Die"),
+            }))
+            {
+                val.MoveAfterLabels();
+
+                val.Emit(OpCodes.Ldloc_0);
+                val.Emit<BodyChunk>(OpCodes.Callvirt, "get_owner");
+                val.Emit(OpCodes.Isinst, typeof(Creature));
+                val.EmitDelegate(ShadowOfLeechAttached);
+            }
+            else
+            {
+                ShadowOfLizards.Logger.LogInfo(all + "Could not find match for ILLeechAttached!");
+            }
+        }
+        catch (Exception e) { ShadowOfLizards.Logger.LogError(e); }
+    }
+    public static void ShadowOfLeechAttached(Creature self)
+    {
+        if (ShadowOfOptions.water_breather.Value && self is Lizard && !self.dead && lizardstorage.TryGetValue(self.abstractCreature, out LizardData data))
+        {
+            if (!data.liz.TryGetValue("WaterBreather", out string WaterBreather) && !defaultWaterBreather.Contains(self.Template.type.ToString()) || WaterBreather != "True")
+            {
+                if (ShadowOfOptions.debug_logs.Value)
+                    Debug.Log(all + self.ToString() + " gained the Drowning Immunity due to dying to a Leech");
+
+                data.liz["WaterBreather"] = "True";
+            }
+            else if (ShadowOfOptions.debug_logs.Value)
+            {
+                Debug.Log(all + self.ToString() + " did not gain the Drowning Immunity due to dying to a Leech because it already is Immune to Drowning");
+            }
+        }
+    }
+    #endregion
+
+    #region Lizard
+    static void ILNewLizard(ILContext il)
+    {
+        try
+        {
+            ILCursor val = new(il);
+            ILLabel target = null;
+            if (val.TryGotoNext(MoveType.After, new Func<Instruction, bool>[4]
+            {
+            x => x.MatchLdarg(0),
+            x => x.MatchLdfld<Lizard>("lizardParams"),
+            x => x.MatchLdfld<LizardBreedParams>("tongue"),
+            x => x.MatchBrfalse(out target)
+            }))
+            {
+                val.Emit(OpCodes.Ldarg_1);
+                val.EmitDelegate(ShadowOfLizardTongue);
+                val.Emit(OpCodes.Brfalse_S, target);
+            }
+            else
+            {
+                ShadowOfLizards.Logger.LogInfo(all + "Could not find match for ILLizard Tongue!");
+            }
+        }
+        catch (Exception e) { ShadowOfLizards.Logger.LogError(e); }
+    }
+    public static bool ShadowOfLizardTongue(AbstractCreature liz)
+    {
+        if (ShadowOfOptions.tongue_ability.Value && lizardstorage.TryGetValue(liz, out LizardData data) && data.liz.TryGetValue("Tongue", out string tongue) && (tongue == "Null" || tongue == "get"))
+        {
+            return false;
+        }
+
+        return true;
+    }
+
+    static void ILLizardSpearStick(ILContext il)
+    {
+        try
+        {
+            ILCursor val = new(il);
+            ILLabel target = null;
+            if (val.TryGotoNext(0, new Func<Instruction, bool>[5]
+            {
+            x => x.MatchLdarg(0),
+            x => x.MatchLdfld<Lizard>("jumpModule"),
+            x => x.MatchLdfld<LizardJumpModule>("gasLeakPower"),
+            x => x.MatchLdcR4(0f),
+            x => x.MatchBleUn(out target)
+            }))
+            {
+                val.Emit(OpCodes.Ldarg_0);
+                val.Emit<Lizard>(OpCodes.Ldfld, "jumpModule");
+                val.Emit(OpCodes.Brfalse, target);
+            }
+            else
+            {
+                ShadowOfLizards.Logger.LogInfo(all + "Could not find match for ILSpearStick!");
+            }
+        }
+        catch (Exception e) { ShadowOfLizards.Logger.LogError(e); }
+    } //Jump Module
+
     static void ILLizardUpdate(ILContext il)
     {
         try
@@ -712,8 +499,8 @@ internal class ILHooks
             x => x.MatchCall<Lizard>("get_Burrower"),
             x => x.MatchBrfalse(out target)
             }))
-            {            
-            }       
+            {
+            }
             else
             {
                 ShadowOfLizards.Logger.LogInfo(all + "Could not find target match for ILLizardUpdate!");
@@ -747,61 +534,13 @@ internal class ILHooks
             {
                 return true;
             }
-            return WaterBreather == "True";         
+            return WaterBreather == "True";
         }
         return true;
     }
-
-    static void ILLeechAttached(ILContext il)
-    {
-        try
-        {
-            ILCursor val = new(il);
-
-            if (val.TryGotoNext(MoveType.Before, new Func<Instruction, bool>[4]
-            {
-                x => x.MatchLdloc(0),
-                x => x.MatchCallvirt<BodyChunk>("get_owner"),
-                x => x.MatchIsinst(typeof(Creature)),
-                x => x.MatchCallvirt<Creature>("Die"),
-            }))
-            {
-                val.MoveAfterLabels();
-
-                val.Emit(OpCodes.Ldloc_0);
-                val.Emit<BodyChunk>(OpCodes.Callvirt, "get_owner");
-                val.Emit(OpCodes.Isinst, typeof(Creature));
-                val.EmitDelegate(ShadowOfLeechAttached);
-            }
-            else
-            {
-                ShadowOfLizards.Logger.LogInfo(all + "Could not find match for ILLeechAttached!");
-            }
-        }
-        catch (Exception e) { ShadowOfLizards.Logger.LogError(e); }
-    }
-
-    public static void ShadowOfLeechAttached(Creature self)
-    {
-        if (ShadowOfOptions.water_breather.Value && self is Lizard && !self.dead && lizardstorage.TryGetValue(self.abstractCreature, out LizardData data))
-        {
-            if (!data.liz.TryGetValue("WaterBreather", out string WaterBreather) && !defaultWaterBreather.Contains(self.Template.type.ToString()) || WaterBreather != "True")
-            {
-                if (ShadowOfOptions.debug_logs.Value)
-                    Debug.Log(all + self.ToString() + " gained the Drowning Immunity due to dying to a Leech");
-
-                data.liz["WaterBreather"] = "True";
-            }
-            else if (ShadowOfOptions.debug_logs.Value)
-            {
-                Debug.Log(all + self.ToString() + " did not gain the Drowning Immunity due to dying to a Leech because it already is Immune to Drowning");
-            }
-        }
-    }
-    #endregion
     #endregion
 
-    #region Both Swim/Breathe and Camo Related
+    #region LizardAI
     static float ShadowOfLizardAILurkTrackerUtility(On.LizardAI.LurkTracker.orig_Utility orig, LizardAI.LurkTracker self) //Both Swim/Breathe and Camo Related
     {
         if (lizardstorage.TryGetValue(self.lizard.abstractCreature, out LizardData data))
@@ -933,7 +672,7 @@ internal class ILHooks
     }
     #endregion
 
-    #region Camo
+    #region LizardGraphics
     static void ILLizardGraphicsDrawSprites(ILContext il)
     {
         try
@@ -1038,7 +777,170 @@ internal class ILHooks
     {
         return ShadowOfOptions.camo_ability.Value && lizardstorage.TryGetValue(self.abstractCreature, out LizardData data) && CanCamoCheck(data, self.Template.type.ToString());
     }
+    #endregion
 
+    #region Spider
+    static void ILSpiderAttached(ILContext il)
+    {
+        ILCursor val = new(il);
+
+        if (val.TryGotoNext(MoveType.Before, new Func<Instruction, bool>[4]
+        {
+            x => x.MatchLdloc(0),
+            x => x.MatchCallvirt<BodyChunk>("get_owner"),
+            x => x.MatchIsinst(typeof(Creature)),
+            x => x.MatchCallvirt<Creature>("Die")
+        }))
+        {
+            val.Emit(OpCodes.Ldloc_0);
+            val.Emit<BodyChunk>(OpCodes.Callvirt, "get_owner");
+            val.Emit(OpCodes.Isinst, typeof(Creature));
+            val.EmitDelegate(delegate (Creature creature)
+            {
+                TryAddKillFeedEntry(creature, "Small Spider");
+            });
+        }
+        else
+        {
+            ShadowOfLizards.Logger.LogInfo(all + "Could not find match ILSpiderAttached!");
+        }
+    }
+    #endregion
+
+    #region WormGrass
+    static void ILInteractWithCreature(ILContext il)
+    {
+        try
+        {
+            ILCursor val = new(il);
+
+            if (val.TryGotoNext(MoveType.Before, new Func<Instruction, bool>[4]
+            {
+            x => x.MatchLdarg(1),
+            x => x.MatchLdfld<WormGrass.WormGrassPatch.CreatureAndPull>("creature"),
+            x => x.MatchCallvirt<UpdatableAndDeletable>("Destroy"),
+            x => x.MatchRet()
+            }))
+            {
+                val.Emit(OpCodes.Ldarg_1);
+                val.EmitDelegate(ShadowOfInteractWithCreature);
+            }
+            else
+            {
+                ShadowOfLizards.Logger.LogInfo(all + "Could not find match for ILInteractWithCreature!");
+            }
+        }
+        catch (Exception e) { ShadowOfLizards.Logger.LogError(e); }
+    }
+    public static void ShadowOfInteractWithCreature(WormGrass.WormGrassPatch.CreatureAndPull creatureAndPull)
+    {
+        if (!ShadowOfOptions.grass_immune.Value || creatureAndPull.creature == null || creatureAndPull.creature is not Lizard liz || !lizardstorage.TryGetValue(liz.abstractCreature, out LizardData data) || liz.Template.wormGrassImmune)
+        {
+            return;
+        }
+
+        if (Chance(liz.abstractCreature, ShadowOfOptions.grass_immune_chance.Value, "WormGrass Immune"))
+        {
+            if (ShadowOfOptions.debug_logs.Value)
+                Debug.Log(all + "WormGrass Immune granted to " + liz);
+
+            if (ShadowOfOptions.dynamic_cheat_death.Value)
+                data.cheatDeathChance += 5;
+
+            data.liz["WormGrassImmune"] = "True";
+            data.lastDamageType = null;
+        }
+        else if (ShadowOfOptions.debug_logs.Value)
+            Debug.Log(all + "WormGrass Immune not granted to " + liz);
+    }
+    #endregion
+
+    #region LizardRotModule
+    static void ILNewLizardRotModule(ILContext il)
+    {
+        ILCursor val = new(il);
+        if (val.TryGotoNext(MoveType.After, new Func<Instruction, bool>[2]
+        {
+            x => x.MatchDiv(),
+            x => x.MatchCallvirt(typeof(List<float>).GetMethod("Add")),
+        }))
+        {
+            val.Emit(OpCodes.Ldarg_0);
+            val.Emit(OpCodes.Ldloc_1);
+            val.Emit(OpCodes.Ldloc_2);
+            val.EmitDelegate(ShadowOfNewLizardRotModule);
+        }
+        else
+        {
+            ShadowOfLizards.Logger.LogInfo(all + "Could not find match for ILNewLizardRotModule!");
+        }
+    }
+    public static void ShadowOfNewLizardRotModule(Watcher.LizardRotModule self, List<float> list, int num)
+    {
+        if (self.lizard != null && self.lizard.abstractCreature != null && lizardstorage.TryGetValue(self.lizard.abstractCreature, out LizardData data))
+        {
+            if (data.cutAppendage.ContainsKey(num) && data.cutAppendageCycle.ContainsKey(num) && data.cutAppendageCycle[num] != CycleNum(self.lizard.abstractCreature))
+            {
+                float listNum;
+
+                if (ModManager.MMF)
+                {
+                    listNum = Math.Max(3, list[num] / 40f);
+                }
+                else
+                {
+                    listNum = list[num] / 40f;
+                }
+
+                float percentage = (float)data.cutAppendage[num] / (float)listNum;
+
+                list[num] *= percentage;
+            }
+        }
+    }
+    #endregion
+
+    #region Zapper
+    static void ILARZapperZapperContact(ILContext il)
+    {
+        ILCursor val = new(il);
+
+        if (val.TryGotoNext(MoveType.Before, new Func<Instruction, bool>[4]
+        {
+            x => x.MatchLdarg(1),
+            x => x.MatchCallvirt<BodyChunk>("get_owner"),
+            x => x.MatchIsinst(typeof(Creature)),
+            x => x.MatchCallvirt<Creature>("Die")
+        }))
+        {
+            val.Emit(OpCodes.Ldarg_1);
+            val.Emit<BodyChunk>(OpCodes.Callvirt, "get_owner");
+            val.Emit(OpCodes.Isinst, typeof(Creature));
+            val.EmitDelegate(delegate (Creature creature)
+            {
+                TryAddKillFeedEntry(creature, "Electric");
+            });
+        }
+        else
+        {
+            ShadowOfLizards.Logger.LogInfo(all + "Could not find match ILARZapperZapperContact!");
+        }
+    }
+    #endregion
+
+    #region Manual Hooks
+    public static bool ShadowOfLizardSwimmer(Func<Lizard, bool> orig, Lizard self)
+    {
+        try
+        {
+            if (ShadowOfOptions.swim_ability.Value && self.Template.canSwim && (self.abstractCreature.creatureTemplate.waterRelationship == CreatureTemplate.WaterRelationship.Amphibious || self.abstractCreature.creatureTemplate.waterRelationship == CreatureTemplate.WaterRelationship.WaterOnly))
+            {
+                return true;
+            }
+        }
+        catch (Exception e) { ShadowOfLizards.Logger.LogError(e); }
+        return orig(self);
+    }
     public static float ShadowOfLizardVisibilityBonus(Func<Lizard, float> orig, Lizard self)
     {
         try
@@ -1051,8 +953,6 @@ internal class ILHooks
         catch (Exception e) { ShadowOfLizards.Logger.LogError(e); }
         return orig(self);
     }
-    #endregion
-
     public static float ShadowOfTotalMass(Func<PhysicalObject, float> orig, PhysicalObject self)
     {
         try
@@ -1070,7 +970,6 @@ internal class ILHooks
         catch (Exception e) { ShadowOfLizards.Logger.LogError(e); }
         return orig(self);
     }
-
     public static bool ShadowOfIsWallClimber(Func<Lizard, bool> orig, Lizard self)
     {
         try
@@ -1083,23 +982,12 @@ internal class ILHooks
         catch (Exception e) { ShadowOfLizards.Logger.LogError(e); }
         return orig(self);
     }
+    #endregion
 }
 /*
 class ILHooks
 {
 	public static bool ShadowOfLizardUpdate(Lizard self)
-    {
-        return true;
-    }
-}
-
-class ILHooks
-{
-	public static bool ShadowOfLizardGraphicsDrawSprites(Creature self)
-    {
-        return true;
-    }
-	public static bool ShadowOfLizardWhiteGraphicsDrawSprites(Creature self)
     {
         return true;
     }
