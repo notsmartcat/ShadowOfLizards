@@ -2105,13 +2105,13 @@ internal class LizardHooks
                 self.Violence(source, directionAndMomentum, hitChunk, onAppendagePos, Creature.DamageType.Electric, damage / 2, stunBonus / 2);
 
                 if (ShadowOfOptions.debug_logs.Value)
-                    Debug.Log(all + source.owner.ToString() + "'s Bite dealt additional Electric damage to " + self.ToString());
+                    Debug.Log(all + source.owner + "'s Bite dealt additional Electric damage to " + self);
             }
 
             if (type == Creature.DamageType.Electric && (data.transformation == "Electric" || data.transformation == "ElectricTransformation"))
             {
                 if (ShadowOfOptions.debug_logs.Value)
-                    Debug.Log(all + source.owner.ToString() + "'s damage was halved due to Resistance on " + self);
+                    Debug.Log(all + source.owner + "'s damage was halved due to Resistance on " + self);
 
                 if (data.transformation == "Electric" && UnityEngine.Random.value < 0.2)
                     data.transformationTimer++;
@@ -2132,7 +2132,7 @@ internal class LizardHooks
                         damage /= 2f;
                     }
                 }
-                else if (source.owner is Player && self.AI.friendTracker.friend != source.owner)
+                else if (source.owner is Player && self.AI != null && self.AI.friendTracker != null && self.AI.friendTracker.friend != source.owner && self.room != null && self.room.abstractRoom != null)
                 {
                     for (int i = 0; i < self.room.abstractRoom.creatures.Count; i++)
                     {
@@ -2158,27 +2158,24 @@ internal class LizardHooks
 
             float multiplier = ShadowOfOptions.damage_based_chance.Value ? damage : 1;
 
-            if (ShadowOfOptions.dismemberment.Value && onAppendagePos != null && sourceValidTypeFlag && (type == Creature.DamageType.Stab || type == Creature.DamageType.Bite) && HealthBasedChance(self, ShadowOfOptions.dismemberment_chance.Value * multiplier, "Dismembernment"))
+            if (ModManager.Watcher && ShadowOfOptions.dismemberment.Value && onAppendagePos != null && onAppendagePos.appendage != null && sourceValidTypeFlag && (type == Creature.DamageType.Stab || type == Creature.DamageType.Bite) && HealthBasedChance(self, ShadowOfOptions.dismemberment_chance.Value * multiplier, "Dismembernment") && !TransformationRot.InnactiveTentacleCheck(data, onAppendagePos.appendage.appIndex, CycleNum(self.abstractCreature)))
             {
-                if (!TransformationRot.InnactiveTentacleCheck(data, onAppendagePos.appendage.appIndex, CycleNum(self.abstractCreature)))
+                int prevPos = data.cutAppendage.TryGetValue(onAppendagePos.appendage.appIndex, out int pos) ? pos : onAppendagePos.appendage.segments.Length;
+
+                data.cutAppendage[onAppendagePos.appendage.appIndex] = Mathf.Min(onAppendagePos.prevSegment, prevPos);
+                data.cutAppendageCycle[onAppendagePos.appendage.appIndex] = CycleNum(self.abstractCreature);
+
+                onAppendagePos.appendage.canBeHit = false;
+
+                if (ShadowOfOptions.debug_logs.Value)
+                    Debug.Log(all + onAppendagePos.appendage.appIndex + " appendage was cut down to size " + data.cutAppendage[onAppendagePos.appendage.appIndex]);
+
+                if (sourceOwnerFlag && source.owner is Spear spear)
                 {
-                    int prevPos = data.cutAppendage.TryGetValue(onAppendagePos.appendage.appIndex, out int pos) ? pos : onAppendagePos.appendage.segments.Length;
-
-                    data.cutAppendage[onAppendagePos.appendage.appIndex] = Mathf.Min(onAppendagePos.prevSegment, prevPos);
-                    data.cutAppendageCycle[onAppendagePos.appendage.appIndex] = CycleNum(self.abstractCreature);
-
-                    onAppendagePos.appendage.canBeHit = false;
-
-                    if (ShadowOfOptions.debug_logs.Value)
-                        Debug.Log(all + onAppendagePos.appendage.appIndex + " appendage was cut down to size " + data.cutAppendage[onAppendagePos.appendage.appIndex]);
-
-                    if (sourceOwnerFlag && source.owner is Spear spear)
-                    {
-                        data.spearList.Add(spear);
-                    }
-
-                    return;
+                    data.spearList.Add(spear);
                 }
+
+                return;
             }
 
             if (hitChunk == null || damage < 0f || !sourceValidTypeFlag || !directionAndMomentum.HasValue)
@@ -2197,7 +2194,7 @@ internal class LizardHooks
                             string eye = (UnityEngine.Random.Range(0, 2) == 0) ? "EyeRight" : "EyeLeft";
 
                             if (ShadowOfOptions.debug_logs.Value)
-                                Debug.Log(all + self.ToString() + "'s " + eye + " was hit");
+                                Debug.Log(all + self + "'s " + eye + " was hit");
 
                             if (type == Creature.DamageType.Stab || type == Creature.DamageType.Bite)
                             {
@@ -2210,7 +2207,7 @@ internal class LizardHooks
                                     self.Blind(5);
 
                                     if (ShadowOfOptions.debug_logs.Value)
-                                        Debug.Log(all + self.ToString() + "'s " + eye + " is already Cut");
+                                        Debug.Log(all + self + "'s " + eye + " is already Cut");
                                 }
                                 else
                                 {
@@ -2422,7 +2419,7 @@ internal class LizardHooks
                         if (ShadowOfOptions.tongue_ability.Value && self.tongue != null && data.lastDamageType != "Melted" && type != Creature.DamageType.Blunt)
                         {
                             if (ShadowOfOptions.debug_logs.Value)
-                                Debug.Log(all + self.ToString() + " was hit in it's Mouth");
+                                Debug.Log(all + self + " was hit in it's Mouth");
 
                             if (Chance(self.abstractCreature, ShadowOfOptions.tongue_ability_chance.Value * multiplier, "Tongue being Cut"))
                             {
@@ -2432,7 +2429,7 @@ internal class LizardHooks
                                 self.lizardParams.tongue = false;
 
                                 if (ShadowOfOptions.debug_logs.Value)
-                                    Debug.Log(all + self.ToString() + " lost it's Tongue due to being hit in Mouth");
+                                    Debug.Log(all + self + " lost it's Tongue due to being hit in Mouth");
 
                                 if (ShadowOfOptions.dynamic_cheat_death.Value)
                                     data.cheatDeathChance -= 5;
@@ -2447,7 +2444,7 @@ internal class LizardHooks
                     else if (ShadowOfOptions.decapitation.Value && data.beheaded == false && data.lastDamageType != "Melted" && type != Creature.DamageType.Blunt)
                     {
                         if (ShadowOfOptions.debug_logs.Value)
-                            Debug.Log(all + self.ToString() + " was hit it's Neck");
+                            Debug.Log(all + self + " was hit it's Neck");
 
                         if (HealthBasedChance(self, ShadowOfOptions.decapitation_chance.Value * multiplier, "Decapitation"))
                         {
@@ -2471,7 +2468,7 @@ internal class LizardHooks
                 if (hitChunk.index == 1 && ShadowOfOptions.decapitation.Value && data.beheaded == false && sourceOwnerFlag && source.owner is Spear && Vector2.Dot(source.pos - self.bodyChunks[1].pos, self.bodyChunks[0].pos - self.bodyChunks[1].pos) > 0f && HealthBasedChance(self, ShadowOfOptions.decapitation_chance.Value * multiplier, "Decapitation"))
                 {
                     if (ShadowOfOptions.debug_logs.Value)
-                        Debug.Log(all + self.ToString() + " was hit it's Neck through bodychunk 1");
+                        Debug.Log(all + self + " was hit it's Neck through bodychunk 1");
 
                     data.beheaded = true;
                     Decapitation(self);

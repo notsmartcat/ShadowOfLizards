@@ -9,6 +9,7 @@ using System.Runtime.CompilerServices;
 using UnityEngine;
 using static RoomCamera;
 using LizardCosmetics;
+using System.Reflection;
 
 namespace ShadowOfLizards;
 
@@ -890,7 +891,7 @@ public class ShadowOfLizards : BaseUnityPlugin
         }
 
         if (ShadowOfOptions.debug_logs.Value)
-            Debug.Log("self is = " + self + " other is = " + dragee);
+            Debug.Log(all + "EatRegroth, eater is = " + self + " and eatee is = " + dragee);
 
         string selfTemplate = self.creatureTemplate.ToString();
         string drageeTemplate = dragee.creatureTemplate.ToString();
@@ -1291,6 +1292,8 @@ public class ShadowOfLizards : BaseUnityPlugin
                 data.availableBodychunks.Remove(i);
             }
 
+            InconKill(abstractLizard);
+
             self.room.abstractRoom.AddEntity(abstractLizard);
 
             abstractLizard.RealizeInRoom();
@@ -1306,6 +1309,20 @@ public class ShadowOfLizards : BaseUnityPlugin
             }
         }
         catch (Exception e) { Logger.LogError(e); }
+
+        void InconKill(AbstractCreature self)
+        {
+            if (!Incapacitation.Incapacitation.inconstorage.TryGetValue(self, out Incapacitation.Incapacitation.InconData data))
+            {
+                return;
+            }
+
+            data.actuallyDead = true;
+            data.isAlive = false;
+
+            if (ShadowOfOptions.debug_logs.Value)
+                Debug.Log(all + self + "has been forcefully killed in the Incapacitation Mod due to being a Cut Half");
+        }
     }
 
     public static void CutInHalfGraphics(LizardGraphics graphics, SpriteLeaser sLeaser, List<int> availableBodychunks, Vector2 camPos, float timeStacker)

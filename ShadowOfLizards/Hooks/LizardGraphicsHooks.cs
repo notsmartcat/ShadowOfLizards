@@ -1321,7 +1321,7 @@ internal class LizardGraphicsHooks
                         self.ColorBody(sLeaser, self.palette.blackColor);
                     }
 
-                    for (int j = self.SpriteLimbsStart; j < self.SpriteLimbsEnd; j++)
+                    for (int j = self.SpriteLimbsColorStart; j < self.SpriteLimbsColorEnd; j++)
                     {
                         if (!ShadowOfOptions.dismemberment.Value || data.armState[j - self.SpriteLimbsColorStart] != "Cut")
                         {
