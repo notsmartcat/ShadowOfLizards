@@ -578,7 +578,7 @@ internal class LizardGraphicsHooks
             {
                 List<int> bodyChunks = new();
 
-                if (ShadowOfOptions.cut_in_half.Value && !ShadowOfOptions.cosmetic_body_chunks.Value)
+                if (ShadowOfOptions.cut_in_half.Value && (data.isGoreHalf || !ShadowOfOptions.cosmetic_body_chunks.Value))
                 {
                     bodyChunks = data.availableBodychunks;
                 }

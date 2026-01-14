@@ -1292,7 +1292,8 @@ public class ShadowOfLizards : BaseUnityPlugin
                 data.availableBodychunks.Remove(i);
             }
 
-            InconKill(abstractLizard);
+            if (shadowOfIncapacitationCheck)
+                InconKill(abstractLizard);
 
             self.room.abstractRoom.AddEntity(abstractLizard);
 
@@ -1321,7 +1322,7 @@ public class ShadowOfLizards : BaseUnityPlugin
             data.isAlive = false;
 
             if (ShadowOfOptions.debug_logs.Value)
-                Debug.Log(all + self + "has been forcefully killed in the Incapacitation Mod due to being a Cut Half");
+                Debug.Log(all + self + " has been forcefully killed in the Incapacitation Mod due to being a Cut Half");
         }
     }
 
@@ -1825,7 +1826,7 @@ public class ShadowOfLizards : BaseUnityPlugin
             if (bloodModCheck && ShadowOfOptions.blood_emitter.Value)
                 BloodEmitter();
 
-            if (graphicstorage.TryGetValue(graphicsModule, out GraphicsData data3))
+            if (graphicstorage.TryGetValue(graphicsModule, out GraphicsData data3) && data3.electricColorTimer > 0)
                 (lizCutHeadAbstract.realizedObject as LizCutHead).electricColorTimer = data3.electricColorTimer + 50;
 
             if (ShadowOfOptions.debug_logs.Value)
@@ -1850,7 +1851,7 @@ public class ShadowOfLizards : BaseUnityPlugin
             Incapacitation.Incapacitation.ActuallyKill(self);
 
             if (ShadowOfOptions.debug_logs.Value)
-                Debug.Log(all + self + "has been forcefully killed in the Incapacitation Mod due to Beheading");
+                Debug.Log(all + self + " has been forcefully killed in the Incapacitation Mod due to Beheading");
         }
     }
 
@@ -1932,6 +1933,11 @@ public class ShadowOfLizards : BaseUnityPlugin
                 }
                 SmallChunk(pos);
             }
+        }
+
+        if (shadowOfIncapacitationCheck)
+        {
+            InconKill();
         }
 
         self.Destroy();
@@ -2025,6 +2031,19 @@ public class ShadowOfLizards : BaseUnityPlugin
 
             self.room.abstractRoom.AddEntity(LizSmallChunkAbstract);
             LizSmallChunkAbstract.RealizeInRoom();
+        }
+
+        void InconKill()
+        {
+            if (!Incapacitation.Incapacitation.inconstorage.TryGetValue(self.abstractCreature, out Incapacitation.Incapacitation.InconData data))
+            {
+                return;
+            }
+
+            Incapacitation.Incapacitation.ActuallyKill(self);
+
+            if (ShadowOfOptions.debug_logs.Value)
+                Debug.Log(all + self + " has been forcefully killed in the Incapacitation Mod due to Eviciration");
         }
     }
     #endregion
