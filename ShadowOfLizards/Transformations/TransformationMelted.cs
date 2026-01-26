@@ -1,10 +1,8 @@
-using MoreSlugcats;
 using RWCustom;
-using Smoke;
 using UnityEngine;
-using static Explosion;
 using System;
 using System.Collections.Generic;
+
 using static ShadowOfLizards.ShadowOfLizards;
 
 namespace ShadowOfLizards;
@@ -13,39 +11,11 @@ internal class TransformationMelted
 {
     static public void Apply()
     {
-        On.LizardAI.DetermineBehavior += NoBehavior;
         On.LizardAI.AggressiveBehavior += NoBite;
+        On.LizardAI.DetermineBehavior += NoBehavior;
     }
 
-    #region Spit
-    public static void MeltedSpitDraw(LizardSpit self, RoomCamera.SpriteLeaser sLeaser, LizardData data)
-    {
-        Color color = new(float.Parse(data.liz["MeltedR"]), float.Parse(data.liz["MeltedG"]), float.Parse(data.liz["MeltedB"]));
-
-        sLeaser.sprites[self.DotSprite].color = color;
-    }
-
-    public static void MeltedSpitUpdate(LizardSpit self)
-    {
-        if (self.stickChunk.owner is not Creature owner)
-        {
-            return;
-        }
-
-        if (owner is Lizard liz && lizardstorage.TryGetValue(liz.abstractCreature, out LizardData data))
-        {
-            PreViolenceCheck(liz, data);
-        }
-
-        LethatWaterDamage(owner, self.stickChunk);
-
-        if (owner is Lizard liz2 && lizardstorage.TryGetValue(liz2.abstractCreature, out LizardData data2))
-        {
-            PostViolenceCheck(liz2, data2, "Melted", self.lizard);
-        }
-    }
-    #endregion
-
+    #region Lizard
     public static void NewMeltedLizard(Lizard self, World world, LizardData data)
     {
         AbstractCreature abstractCreature = self.abstractCreature;
@@ -100,7 +70,7 @@ internal class TransformationMelted
                 data.liz["HypothermiaImmune"] = "True";
 
                 if (ShadowOfOptions.debug_logs.Value)
-                    Debug.Log(all + self.ToString() + "'s Melted Transformation has overridden HypothermiaImmune to True");
+                    Debug.Log(all + self + "'s Melted Transformation has overridden HypothermiaImmune to True");
             }
         }
         #endregion
@@ -112,7 +82,7 @@ internal class TransformationMelted
             data.liz["LavaImmune"] = "True";
 
             if (ShadowOfOptions.debug_logs.Value)
-                Debug.Log(all + self.ToString() + "'s Melted Transformation has overridden LavaImmune to True");
+                Debug.Log(all + self + "'s Melted Transformation has overridden LavaImmune to True");
         }
         #endregion
 
@@ -123,11 +93,6 @@ internal class TransformationMelted
             data.liz["MeltedR"] = waterColour.r.ToString();
             data.liz["MeltedG"] = waterColour.g.ToString();
             data.liz["MeltedB"] = waterColour.b.ToString();
-        }
-
-        if (false && abstractCreature.creatureTemplate.type != CreatureTemplate.Type.WhiteLizard)
-        {
-            self.effectColor = new Color(float.Parse(data.liz["MeltedR"]), float.Parse(data.liz["MeltedG"]), float.Parse(data.liz["MeltedB"]));
         }
         #endregion
     }
@@ -145,12 +110,11 @@ internal class TransformationMelted
         }
         else
         {
-            self.room.AddObject(new Smolder(self.room, self.firstChunk.pos, self.firstChunk, null));
-            self.room.AddObject(new ExplosionSmoke(self.firstChunk.pos, Custom.RNV() * 5f * UnityEngine.Random.value, 1f));
+            self.room.AddObject(new Smoke.Smolder(self.room, self.firstChunk.pos, self.firstChunk, null));
+            self.room.AddObject(new Explosion.ExplosionSmoke(self.firstChunk.pos, Custom.RNV() * 5f * UnityEngine.Random.value, 1f));
             self.room.PlaySound(SoundID.Firecracker_Burn, self.firstChunk.pos, 0.5f, 0.5f + UnityEngine.Random.value * 1.5f);
         }
     }
-
     public static void PostMeltedLizardBite(Lizard self, LizardData data, BodyChunk chunk)
     {
         if (chunk == null || chunk.owner == null || chunk.owner is not Creature owner || owner is not Lizard liz || !lizardstorage.TryGetValue(liz.abstractCreature, out _))
@@ -158,102 +122,6 @@ internal class TransformationMelted
             return;
         }
         PostViolenceCheck(liz, data, "Melted", self);
-    }
-
-    static void LethatWaterDamage(Creature crit, BodyChunk self)
-    {
-        try
-        {
-            if (crit is Lizard liz && lizardstorage.TryGetValue(liz.abstractCreature, out LizardData data) && (data.transformation == "Melted" || data.transformation == "MeltedTransformation") || crit.abstractCreature.lavaImmune)
-            {
-                crit.room.AddObject(new Smolder(crit.room, crit.firstChunk.pos, crit.firstChunk, null));
-                crit.room.AddObject(new ExplosionSmoke(crit.firstChunk.pos, Custom.RNV() * 5f * UnityEngine.Random.value, 1f));
-                crit.room.PlaySound(SoundID.Firecracker_Burn, crit.firstChunk.pos, 0.5f, 0.5f + UnityEngine.Random.value * 1.5f);
-                return;
-            }
-
-            if (crit is Player && !crit.dead)
-            {
-                if (ModManager.MSC && ((crit as Player).SlugCatClass == MoreSlugcatsEnums.SlugcatStatsName.Artificer) || (crit as Player).SlugCatClass != null && (crit as Player).SlugCatClass.value == "sproutcat")
-                {
-                    (crit as Player).pyroJumpCounter = (crit as Player).pyroJumpCounter + 1;
-                    if ((crit as Player).pyroJumpCounter >= MoreSlugcats.MoreSlugcats.cfgArtificerExplosionCapacity.Value)
-                    {
-                        (crit as Player).PyroDeath();
-                    }
-                }
-                else
-                {
-                    crit.Die();
-                }
-            }
-            else if (crit.State is HealthState || (crit.State is HealthState && (crit.State as HealthState).health > 1f))
-            {
-                if (!crit.dead)
-                {
-                    crit.Violence(null, new Vector2?(new Vector2(0f, 5f)), crit.firstChunk, null, Creature.DamageType.Explosion, 0.2f, 0.1f);
-                }
-            }
-            else if (!crit.dead)
-            {
-                if (crit is Lizard liz2 && lizardstorage.TryGetValue(liz2.abstractCreature, out LizardData data2))
-                {
-                    data2.lastDamageType = "Melted";
-                    PreViolenceCheck(liz2, data2);
-                    crit.Die();
-                    PostViolenceCheck(liz2, data2, "Melted", self.owner as Lizard);
-                }
-                else
-                {
-                    crit.Die();
-                }
-            }
-
-            if (crit.lavaContactCount == 0)
-            {
-                crit.mainBodyChunk.vel.x = 35f * self.vel.normalized.x;
-                crit.mainBodyChunk.vel.y = 35f * self.vel.normalized.y;
-                crit.room.AddObject(new Smolder(crit.room, crit.firstChunk.pos, crit.firstChunk, null));
-            }
-            else if (crit.lavaContactCount == 1)
-            {
-                crit.mainBodyChunk.vel.x = 20f * self.vel.normalized.x;
-                crit.mainBodyChunk.vel.y = 20f * self.vel.normalized.y;
-            }
-            else if (crit.lavaContactCount == 2)
-            {
-                crit.mainBodyChunk.vel.x = 15f * self.vel.normalized.x;
-                crit.mainBodyChunk.vel.y = 15f * self.vel.normalized.y;
-            }
-            else if (crit.lavaContactCount == 3)
-            {
-                crit.mainBodyChunk.vel.x = 5f * self.vel.normalized.x;
-                crit.mainBodyChunk.vel.y = 5f * self.vel.normalized.y;
-                crit.room.AddObject(new Smolder(crit.room, crit.firstChunk.pos, crit.firstChunk, null));
-            }
-
-            if (crit.lavaContactCount < ((crit is Player) ? 400 : 30))
-            {
-                crit.lavaContactCount++;
-                crit.room.AddObject(new ExplosionSmoke(crit.firstChunk.pos, Custom.RNV() * 5f * UnityEngine.Random.value, 1f));
-            }
-
-            if (!crit.lavaContact)
-            {
-                if (crit.lavaContactCount <= 3)
-                {
-                    for (int i = 0; i < 14 + (3 - crit.lavaContactCount) * 5; i++)
-                    {
-                        Vector2 val = Custom.RNV();
-                        crit.room.AddObject(new Spark(crit.firstChunk.pos + val * UnityEngine.Random.value * 40f, val * Mathf.Lerp(4f, 30f, UnityEngine.Random.value), Color.white, null, 8, 24));
-                    }
-                }
-                crit.room.PlaySound(SoundID.Firecracker_Burn, crit.firstChunk.pos, 0.5f, 0.5f + UnityEngine.Random.value * 1.5f);
-                crit.lavaContact = true;
-                crit.lavaContactCount++;
-            }
-        }
-        catch (Exception e) { ShadowOfLizards.Logger.LogError(e); }
     }
 
     public static void MeltedLizardUpdate(Lizard self, LizardData data)
@@ -282,23 +150,166 @@ internal class TransformationMelted
         }
         catch (Exception e) { ShadowOfLizards.Logger.LogError(e); }
     }
+    #endregion
 
-    #region Behavior
+    #region LizardAI
+    static void NoBite(On.LizardAI.orig_AggressiveBehavior orig, LizardAI self, Tracker.CreatureRepresentation target, float tongueChance)
+    {
+        if (!ShadowOfOptions.melted_transformation.Value || !lizardstorage.TryGetValue(self.lizard.abstractCreature, out LizardData data) || data.transformation != "Melted")
+        {
+            orig(self, target, tongueChance);
+        }
+    }
     static LizardAI.Behavior NoBehavior(On.LizardAI.orig_DetermineBehavior orig, LizardAI self)
     {
         if (ShadowOfOptions.melted_transformation.Value && lizardstorage.TryGetValue(self.lizard.abstractCreature, out LizardData data) && data.transformation == "Melted")
         {
             return LizardAI.Behavior.Injured;
         }
-        return orig.Invoke(self);
+        return orig(self);
+    }
+    #endregion
+
+    #region LizardSpit
+    public static void MeltedSpitDraw(LizardSpit self, RoomCamera.SpriteLeaser sLeaser, LizardData data)
+    {
+        Color color = new(float.Parse(data.liz["MeltedR"]), float.Parse(data.liz["MeltedG"]), float.Parse(data.liz["MeltedB"]));
+
+        sLeaser.sprites[self.DotSprite].color = color;
     }
 
-    static void NoBite(On.LizardAI.orig_AggressiveBehavior orig, LizardAI self, Tracker.CreatureRepresentation target, float tongueChance)
+    public static void MeltedSpitUpdate(LizardSpit self)
     {
-        if (!ShadowOfOptions.melted_transformation.Value || !lizardstorage.TryGetValue(self.lizard.abstractCreature, out LizardData data) || data.transformation != "Melted")
+        if (self.stickChunk.owner is not Creature owner)
         {
-            orig.Invoke(self, target, tongueChance);
-        }    
+            return;
+        }
+
+        if (owner is Lizard liz && lizardstorage.TryGetValue(liz.abstractCreature, out LizardData data))
+        {
+            PreViolenceCheck(liz, data);
+        }
+
+        LethatWaterDamage(owner, self.stickChunk);
+
+        if (owner is Lizard liz2 && lizardstorage.TryGetValue(liz2.abstractCreature, out LizardData data2))
+        {
+            PostViolenceCheck(liz2, data2, "Melted", self.lizard);
+        }
+    }
+    #endregion
+
+    #region Misc
+    static void LethatWaterDamage(Creature crit, BodyChunk self)
+    {
+        try
+        {
+            if (crit is Lizard liz && lizardstorage.TryGetValue(liz.abstractCreature, out LizardData data) && (data.transformation == "Melted" || data.transformation == "MeltedTransformation") || crit.abstractCreature.lavaImmune)
+            {
+                crit.room.AddObject(new Smoke.Smolder(crit.room, crit.firstChunk.pos, crit.firstChunk, null));
+                crit.room.AddObject(new Explosion.ExplosionSmoke(crit.firstChunk.pos, Custom.RNV() * 5f * UnityEngine.Random.value, 1f));
+                crit.room.PlaySound(SoundID.Firecracker_Burn, crit.firstChunk.pos, 0.5f, 0.5f + UnityEngine.Random.value * 1.5f);
+                return;
+            }
+
+            if (crit is Player && !crit.dead)
+            {
+                if (ModManager.MSC && ((crit as Player).SlugCatClass == MoreSlugcats.MoreSlugcatsEnums.SlugcatStatsName.Artificer) || (crit as Player).SlugCatClass != null && (crit as Player).SlugCatClass.value == "sproutcat")
+                {
+                    (crit as Player).pyroJumpCounter = (crit as Player).pyroJumpCounter + 1;
+                    if ((crit as Player).pyroJumpCounter >= MoreSlugcats.MoreSlugcats.cfgArtificerExplosionCapacity.Value)
+                    {
+                        if (shadowOfIncapacitationCheck)
+                            Incapacitation.Incapacitation.ActuallyKill(crit);
+
+                        (crit as Player).PyroDeath();
+                    }
+                }
+                else
+                {
+                    if (shadowOfIncapacitationCheck)
+                        Incapacitation.Incapacitation.ActuallyKill(crit);
+
+                    crit.Die();
+                }
+            }
+            else if (crit.State is HealthState || (crit.State is HealthState && (crit.State as HealthState).health > 1f))
+            {
+                if (!crit.dead)
+                {
+                    crit.Violence(null, new Vector2?(new Vector2(0f, 5f)), crit.firstChunk, null, Creature.DamageType.Explosion, 0.2f, 0.1f);
+                }
+            }
+            else if (!crit.dead)
+            {
+                if (crit is Lizard liz2 && lizardstorage.TryGetValue(liz2.abstractCreature, out LizardData data2))
+                {
+                    data2.lastDamageType = "Melted";
+                    PreViolenceCheck(liz2, data2);
+
+                    if (shadowOfIncapacitationCheck)
+                        Incapacitation.Incapacitation.ActuallyKill(crit);
+
+                    crit.Die();
+                    PostViolenceCheck(liz2, data2, "Melted", self.owner as Lizard);
+                }
+                else
+                {
+                    if (shadowOfIncapacitationCheck)
+                        Incapacitation.Incapacitation.ActuallyKill(crit);
+
+                    crit.Die();
+                }
+            }
+
+            if (crit.dead && shadowOfIncapacitationCheck)
+                Incapacitation.Incapacitation.ActuallyKill(crit);
+
+            if (crit.lavaContactCount == 0)
+            {
+                crit.mainBodyChunk.vel.x = 35f * self.vel.normalized.x;
+                crit.mainBodyChunk.vel.y = 35f * self.vel.normalized.y;
+                crit.room.AddObject(new Smoke.Smolder(crit.room, crit.firstChunk.pos, crit.firstChunk, null));
+            }
+            else if (crit.lavaContactCount == 1)
+            {
+                crit.mainBodyChunk.vel.x = 20f * self.vel.normalized.x;
+                crit.mainBodyChunk.vel.y = 20f * self.vel.normalized.y;
+            }
+            else if (crit.lavaContactCount == 2)
+            {
+                crit.mainBodyChunk.vel.x = 15f * self.vel.normalized.x;
+                crit.mainBodyChunk.vel.y = 15f * self.vel.normalized.y;
+            }
+            else if (crit.lavaContactCount == 3)
+            {
+                crit.mainBodyChunk.vel.x = 5f * self.vel.normalized.x;
+                crit.mainBodyChunk.vel.y = 5f * self.vel.normalized.y;
+                crit.room.AddObject(new Smoke.Smolder(crit.room, crit.firstChunk.pos, crit.firstChunk, null));
+            }
+
+            if (crit.lavaContactCount < ((crit is Player) ? 400 : 30))
+            {
+                crit.lavaContactCount++;
+                crit.room.AddObject(new Explosion.ExplosionSmoke(crit.firstChunk.pos, Custom.RNV() * 5f * UnityEngine.Random.value, 1f));
+            }
+
+            if (!crit.lavaContact)
+            {
+                if (crit.lavaContactCount <= 3)
+                {
+                    for (int i = 0; i < 14 + (3 - crit.lavaContactCount) * 5; i++)
+                    {
+                        Vector2 val = Custom.RNV();
+                        crit.room.AddObject(new Spark(crit.firstChunk.pos + val * UnityEngine.Random.value * 40f, val * Mathf.Lerp(4f, 30f, UnityEngine.Random.value), Color.white, null, 8, 24));
+                    }
+                }
+                crit.room.PlaySound(SoundID.Firecracker_Burn, crit.firstChunk.pos, 0.5f, 0.5f + UnityEngine.Random.value * 1.5f);
+                crit.lavaContact = true;
+                crit.lavaContactCount++;
+            }
+        }
+        catch (Exception e) { ShadowOfLizards.Logger.LogError(e); }
     }
     #endregion
 }

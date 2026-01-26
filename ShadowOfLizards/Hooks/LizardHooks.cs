@@ -2631,7 +2631,6 @@ internal class LizardHooks
         {
             if (ShadowOfOptions.spider_transformation.Value && (data.transformation == "Spider" || data.transformation == "SpiderTransformation"))
             {
-                Debug.Log("Spew Babies");
                 TransformationSpider.BabyPuff(liz);
 
                 if (shadowOfIncapacitationCheck)
@@ -2700,13 +2699,11 @@ internal class LizardHooks
 
             if (!data.spewBabies)
             {
-                Debug.Log("Spew Babies was dead");
                 data2.spiderMotherWasDead = true;
                 TransformationSpider.BabyPuff(liz);
             }
             else
             {
-                Debug.Log("Spew Babies was not dead");
                 data2.spiderMotherWasDead = false;
             }
         }

@@ -2,6 +2,7 @@
 using RWCustom;
 using UnityEngine;
 using Watcher;
+
 using static ShadowOfLizards.ShadowOfLizards;
 
 namespace ShadowOfLizards;
@@ -10,16 +11,158 @@ internal class TransformationRot
 {
     public static void Apply()
     {
-        On.Watcher.LizardRotGraphics.DrawSprites += LizardRotGraphicsDrawSprites;
-
-        On.Watcher.LizardRotModule.Update += LizardRotModuleUpdate;
-
         On.DaddyGraphics.DaddyDeadLeg.ctor += NewDaddyDeadLeg;
 
         On.DaddyTentacle.Update += DaddyTentacleUpdate;
 
+        On.Watcher.LizardRotGraphics.DrawSprites += LizardRotGraphicsDrawSprites;
+
         On.Watcher.LizardRotModule.Act += LizardRotModuleAct;
+        On.Watcher.LizardRotModule.Update += LizardRotModuleUpdate;
     }
+
+    #region DaddyGraphics
+    static void NewDaddyDeadLeg(On.DaddyGraphics.DaddyDeadLeg.orig_ctor orig, DaddyGraphics.DaddyDeadLeg self, GraphicsModule owner, DaddyGraphics.IHaveRotGraphics rotOwner, int index, int parts, int firstSprite, BodyChunk connectedChunk, BodyChunk secondaryChunk)
+    {
+        orig(self, owner, rotOwner, index, parts, firstSprite, connectedChunk, secondaryChunk);
+
+        if (owner is not LizardGraphics lizGraphics || !lizardstorage.TryGetValue(lizGraphics.lizard.abstractCreature, out _))
+        {
+            return;
+        }
+
+        if (!graphicstorage.TryGetValue(lizGraphics, out GraphicsData data))
+        {
+            graphicstorage.Add(lizGraphics, new GraphicsData());
+            graphicstorage.TryGetValue(lizGraphics, out data);
+        }
+
+        data.deadLeg.Add(connectedChunk.index);
+    }
+    #endregion
+
+    #region DaddyTentacle
+    static void DaddyTentacleUpdate(On.DaddyTentacle.orig_Update orig, DaddyTentacle self)
+    {
+        if (self.daddy is Lizard liz && liz.rotModule.tentacles.Length > 0 && lizardstorage.TryGetValue(liz.abstractCreature, out LizardData data) && data.cutAppendage.Count > 0)
+        {
+            int appIndex = liz.rotModule.tentacles.IndexOf(self);
+
+            if (!InnactiveTentacleCheck(data, appIndex, CycleNum(liz.abstractCreature)))
+            {
+                orig(self);
+                return;
+            }
+
+            (liz.State as DaddyLongLegs.IHaveTentacleHealthState).TentacleHealth[appIndex] = 0;
+
+            self.neededForLocomotion = true;
+            self.grabChunk = null;
+            self.limp = true;
+
+            self.stun = 0;
+        }
+
+        orig(self);
+    }
+    #endregion
+
+    #region LizardRotGraphics
+    static void LizardRotGraphicsDrawSprites(On.Watcher.LizardRotGraphics.orig_DrawSprites orig, LizardRotGraphics self, RoomCamera.SpriteLeaser sLeaser, RoomCamera rCam, float timeStacker, Vector2 camPos)
+    {
+        orig(self, sLeaser, rCam, timeStacker, camPos);
+
+        if (!graphicstorage.TryGetValue(self.lGraphics, out GraphicsData data2) || !lizardstorage.TryGetValue(self.lGraphics.lizard.abstractCreature, out LizardData data))
+        {
+            return;
+        }
+
+        try
+        {
+            if (ShadowOfOptions.cut_in_half.Value && (!data.availableBodychunks.Contains(1) || !data.availableBodychunks.Contains(2)))
+            {
+                float num3 = self.lGraphics.headConnectionRad * 0.5f + self.lGraphics.lizard.bodyChunkConnections[0].distance + self.lGraphics.lizard.bodyChunkConnections[1].distance / 2;
+
+                for (int i = 0; i < self.deadLegs.Length; i++)
+                {
+                    if (!data.availableBodychunks.Contains(1) && data2.deadLeg[i] <= 1)
+                    {
+                        for (int j = self.deadLegs[i].firstSprite; j < self.deadLegs[i].firstSprite + self.deadLegs[i].sprites; j++)
+                        {
+                            sLeaser.sprites[j].isVisible = false;
+                        }
+                    }
+                    if (!data.availableBodychunks.Contains(2) && data2.deadLeg[i] >= 2)
+                    {
+                        for (int j = self.deadLegs[i].firstSprite; j < self.deadLegs[i].firstSprite + self.deadLegs[i].sprites; j++)
+                        {
+                            sLeaser.sprites[j].isVisible = false;
+                        }
+                    }
+                }
+                for (int i = 0; i < self.eyes.Length; i++)
+                {
+                    float eyePos = self.eyePositions[i].x * self.lGraphics.BodyAndTailLength;
+
+                    if (!data.availableBodychunks.Contains(1) && eyePos <= num3)
+                    {
+                        for (int j = self.eyes[i].firstSprite; j < self.eyes[i].firstSprite + self.eyes[i].sprites; j++)
+                        {
+                            sLeaser.sprites[j].isVisible = false;
+                        }
+                    }
+                    if (!data.availableBodychunks.Contains(2) && eyePos > num3)
+                    {
+                        for (int j = self.eyes[i].firstSprite; j < self.eyes[i].firstSprite + self.eyes[i].sprites; j++)
+                        {
+                            sLeaser.sprites[j].isVisible = false;
+                        }
+                    }
+                }
+            }
+
+            if (ShadowOfOptions.dismemberment.Value && data.cutAppendage.Count > 0)
+            {
+                for (int i = 0; i < self.legs.Length; i++)
+                {
+                    if (!InnactiveTentacleCheck(data, i, CycleNum(self.lGraphics.lizard.abstractCreature)))
+                    {
+                        continue;
+                    }
+
+                    for (int j = self.legs[i].firstSprite + 1; j < self.legs[i].firstSprite + self.legs[i].sprites; j++)
+                    {
+                        sLeaser.sprites[j].isVisible = false;
+                    }
+
+                    float percentage = (float)data.cutAppendage[i] / (float)self.lGraphics.lizard.appendages[i].segments.Length;
+
+                    DaddyGraphics.DaddyLegGraphic leg = self.legs[i];
+
+                    int start = Mathf.RoundToInt(leg.segments.Length * percentage) - 1;
+
+                    Vector2 vector = Vector2.Lerp(leg.segments[start].lastPos, leg.segments[start].pos, timeStacker);
+
+                    for (int j = start + 1; j < leg.segments.Length; j++)
+                    {
+                        (sLeaser.sprites[leg.firstSprite] as TriangleMesh).MoveVertice(j * 4, vector - camPos);
+                        (sLeaser.sprites[leg.firstSprite] as TriangleMesh).MoveVertice(j * 4 + 1, vector - camPos);
+                        (sLeaser.sprites[leg.firstSprite] as TriangleMesh).MoveVertice(j * 4 + 2, vector - camPos);
+                        (sLeaser.sprites[leg.firstSprite] as TriangleMesh).MoveVertice(j * 4 + 3, vector - camPos);
+                    }
+
+                    for (int j = leg.firstSprite + 1; j < leg.firstSprite + leg.bumps.Length; j++)
+                    {
+                        sLeaser.sprites[j].isVisible = false;
+                    }
+                }
+            }
+        }
+        catch (Exception e) { ShadowOfLizards.Logger.LogError(e); }
+    }
+    #endregion
+
+    #region LizardRotModule
     static void LizardRotModuleAct(On.Watcher.LizardRotModule.orig_Act orig, LizardRotModule self)
     {
         if (ShadowOfLizardRotModuleAct())
@@ -112,31 +255,6 @@ internal class TransformationRot
             return false;
         }
     }
-
-    static void DaddyTentacleUpdate(On.DaddyTentacle.orig_Update orig, DaddyTentacle self)
-    {
-        if (self.daddy is Lizard liz && liz.rotModule.tentacles.Length > 0 && lizardstorage.TryGetValue(liz.abstractCreature, out LizardData data) && data.cutAppendage.Count > 0)
-        {
-            int appIndex = liz.rotModule.tentacles.IndexOf(self);
-
-            if (!InnactiveTentacleCheck(data, appIndex, CycleNum(liz.abstractCreature)))
-            {
-                orig(self);
-                return;
-            }
-
-            (liz.State as DaddyLongLegs.IHaveTentacleHealthState).TentacleHealth[appIndex] = 0;
-
-            self.neededForLocomotion = true;
-            self.grabChunk = null;
-            self.limp = true;
-
-            self.stun = 0;
-        }
-
-        orig(self);
-    }
-
     static void LizardRotModuleUpdate(On.Watcher.LizardRotModule.orig_Update orig, LizardRotModule self)
     {
         if (self.lizard is Lizard liz && self.tentacles.Length > 0 && lizardstorage.TryGetValue(liz.abstractCreature, out LizardData data) && data.cutAppendage.Count > 0)
@@ -185,120 +303,12 @@ internal class TransformationRot
 
         orig(self);
     }
+    #endregion
 
-    static void NewDaddyDeadLeg(On.DaddyGraphics.DaddyDeadLeg.orig_ctor orig, DaddyGraphics.DaddyDeadLeg self, GraphicsModule owner, DaddyGraphics.IHaveRotGraphics rotOwner, int index, int parts, int firstSprite, BodyChunk connectedChunk, BodyChunk secondaryChunk)
-    {
-        orig(self, owner, rotOwner, index, parts, firstSprite, connectedChunk, secondaryChunk);
-
-        if (owner is not LizardGraphics lizGraphics)
-        {
-            return;
-        }
-
-        if (!graphicstorage.TryGetValue(lizGraphics, out GraphicsData data))
-        {
-            graphicstorage.Add(lizGraphics, new GraphicsData());
-            graphicstorage.TryGetValue(lizGraphics, out data);
-        }
-
-        data.deadLeg.Add(connectedChunk.index);
-    }
-
-    static void LizardRotGraphicsDrawSprites(On.Watcher.LizardRotGraphics.orig_DrawSprites orig, LizardRotGraphics self, RoomCamera.SpriteLeaser sLeaser, RoomCamera rCam, float timeStacker, Vector2 camPos)
-    {
-        orig(self, sLeaser, rCam, timeStacker, camPos);
-
-        if (self.lGraphics == null || self.lGraphics.lizard == null || !graphicstorage.TryGetValue(self.lGraphics, out GraphicsData data2) || !lizardstorage.TryGetValue(self.lGraphics.lizard.abstractCreature, out LizardData data))
-        {
-            return;
-        }
-
-        try
-        {
-            if (ShadowOfOptions.cut_in_half.Value && (!data.availableBodychunks.Contains(1) || !data.availableBodychunks.Contains(2)))
-            {
-                float num3 = self.lGraphics.headConnectionRad * 0.5f + self.lGraphics.lizard.bodyChunkConnections[0].distance + self.lGraphics.lizard.bodyChunkConnections[1].distance / 2;
-
-                for (int i = 0; i < self.deadLegs.Length; i++)
-                {
-                    if (!data.availableBodychunks.Contains(1) && data2.deadLeg[i] <= 1)
-                    {
-                        for (int j = self.deadLegs[i].firstSprite; j < self.deadLegs[i].firstSprite + self.deadLegs[i].sprites; j++)
-                        {
-                            sLeaser.sprites[j].isVisible = false;
-                        }
-                    }
-                    if (!data.availableBodychunks.Contains(2) && data2.deadLeg[i] >= 2)
-                    {
-                        for (int j = self.deadLegs[i].firstSprite; j < self.deadLegs[i].firstSprite + self.deadLegs[i].sprites; j++)
-                        {
-                            sLeaser.sprites[j].isVisible = false;
-                        }
-                    }
-                }
-                for (int i = 0; i < self.eyes.Length; i++)
-                {
-                    float eyePos = self.eyePositions[i].x * self.lGraphics.BodyAndTailLength;
-
-                    if (!data.availableBodychunks.Contains(1) && eyePos <= num3)
-                    {
-                        for (int j = self.eyes[i].firstSprite; j < self.eyes[i].firstSprite + self.eyes[i].sprites; j++)
-                        {
-                            sLeaser.sprites[j].isVisible = false;
-                        }
-                    }
-                    if (!data.availableBodychunks.Contains(2) && eyePos > num3)
-                    {
-                        for (int j = self.eyes[i].firstSprite; j < self.eyes[i].firstSprite + self.eyes[i].sprites; j++)
-                        {
-                            sLeaser.sprites[j].isVisible = false;
-                        }
-                    }
-                }
-            }
-
-            if (ShadowOfOptions.dismemberment.Value && data.cutAppendage.Count > 0)
-            {
-                for(int i = 0; i < self.legs.Length; i++)
-                {
-                    if (!InnactiveTentacleCheck(data, i, CycleNum(self.lGraphics.lizard.abstractCreature)))
-                    {
-                        continue;
-                    }
-
-                    for (int j = self.legs[i].firstSprite + 1; j < self.legs[i].firstSprite + self.legs[i].sprites; j++)
-                    {
-                        sLeaser.sprites[j].isVisible = false;
-                    }
-
-                    float percentage = (float)data.cutAppendage[i] / (float)self.lGraphics.lizard.appendages[i].segments.Length;
-
-                    DaddyGraphics.DaddyLegGraphic leg = self.legs[i];
-
-                    int start = Mathf.RoundToInt(leg.segments.Length * percentage) - 1;
-
-                    Vector2 vector = Vector2.Lerp(leg.segments[start].lastPos, leg.segments[start].pos, timeStacker);
-
-                    for (int j = start + 1; j < leg.segments.Length; j++)
-                    {
-                        (sLeaser.sprites[leg.firstSprite] as TriangleMesh).MoveVertice(j * 4, vector - camPos);
-                        (sLeaser.sprites[leg.firstSprite] as TriangleMesh).MoveVertice(j * 4 + 1, vector - camPos);
-                        (sLeaser.sprites[leg.firstSprite] as TriangleMesh).MoveVertice(j * 4 + 2, vector - camPos);
-                        (sLeaser.sprites[leg.firstSprite] as TriangleMesh).MoveVertice(j * 4 + 3, vector - camPos);
-                    }
-
-                    for (int j = leg.firstSprite + 1; j < leg.firstSprite + leg.bumps.Length; j++)
-                    {
-                        sLeaser.sprites[j].isVisible = false;
-                    }
-                }
-            }
-        }
-        catch (Exception e) { ShadowOfLizards.Logger.LogError(e); }
-    }
-
+    #region Other
     public static bool InnactiveTentacleCheck(LizardData data, int tentacleNum, int cycleNumber)
     {
         return data.cutAppendage.ContainsKey(tentacleNum) && data.cutAppendageCycle.TryGetValue(tentacleNum, out int cycle) && cycle == cycleNumber;
     }
+    #endregion
 }

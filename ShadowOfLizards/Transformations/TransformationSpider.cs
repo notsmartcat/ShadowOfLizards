@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+
 using static ShadowOfLizards.ShadowOfLizards;
 
 namespace ShadowOfLizards;
@@ -10,187 +11,41 @@ internal class TransformationSpider
 {
     public static void Apply()
     {
-        On.Spider.ConsiderPrey += SpiderConsiderPrey;
-        On.Spider.Move_Vector2 += spiderLegMove;
-        On.Spider.FormCentipede += spiderLegStopCentipede;
-
         On.BigSpider.Violence += BigSpiderViolence;
+
+        On.Spider.ConsiderPrey += SpiderConsiderPrey;
+        On.Spider.FormCentipede += spiderLegStopCentipede;
+        On.Spider.Move_Vector2 += spiderLegMove;
     }
 
-    #region Spit
-    public static void SpiderSpitDraw(RoomCamera.SpriteLeaser sLeaser)
+    #region BigSpider
+    static void BigSpiderViolence(On.BigSpider.orig_Violence orig, BigSpider self, BodyChunk source, Vector2? directionAndMomentum, BodyChunk hitChunk, PhysicalObject.Appendage.Pos hitAppendage, Creature.DamageType type, float damage, float stunBonus)
     {
-        for (int i = 0; i < sLeaser.sprites.Length; i++)
+        if (source != null && source.owner != null && source.owner is Lizard liz && lizardstorage.TryGetValue(liz.abstractCreature, out LizardData data) && (data.transformation == "SpiderTransformation" || data.transformation == "Spider"))
         {
-            sLeaser.sprites[i].isVisible = false;
+            data.spiderLikness--;
+
+            if (data.transformation == "SpiderTransformation")
+            {
+                damage /= 2f;
+            }
         }
-    }
-
-    public static void SpiderSpitUpdate(LizardSpit self, LizardData data)
-    {
-        Vector2 pos = self.pos;
-
-        if (float.Parse(data.liz["SpiderNumber"]) > 0 && data.transformation == "Spider" ? UnityEngine.Random.Range(0, 100) < 10 : UnityEngine.Random.Range(0, 100) == 0)
+        else if (source != null && source.owner != null && source.owner is Player)
         {
-            AbstractCreature spid = new(self.room.world, StaticWorld.GetCreatureTemplate(CreatureTemplate.Type.Spider), null, self.room.GetWorldCoordinate(pos), self.room.world.game.GetNewID());
-            self.room.abstractRoom.AddEntity(spid);
-            spid.RealizeInRoom();
-            spid.realizedCreature.mainBodyChunk.vel = self.vel * 2f;
-            ((Spider)spid.realizedCreature).bloodLust = 1f;
-            data.liz["SpiderNumber"] = (float.Parse(data.liz["SpiderNumber"]) - 1f).ToString();
+            for (int i = 0; i < self.room.abstractRoom.creatures.Count; i++)
+            {
+                if (self.room.abstractRoom.creatures[i].realizedCreature != null && self.room.abstractRoom.creatures[i].realizedCreature is Lizard liz2 && lizardstorage.TryGetValue(liz2.abstractCreature, out LizardData lizdata2) && lizdata2.spiderLikness > 0 && liz2.AI != null && liz2.AI.friendTracker.friend == source.owner && (self.room.abstractRoom.creatures[i].rippleLayer == self.abstractPhysicalObject.rippleLayer || self.room.abstractRoom.creatures[i].rippleBothSides || self.abstractPhysicalObject.rippleBothSides))
+                {
+                    lizdata2.spiderLikness--;
+                }
+            }
         }
 
-        AbstractPhysicalObject spit = new(self.room.world, AbstractPhysicalObject.AbstractObjectType.DartMaggot, null, self.room.GetWorldCoordinate(pos), self.lizard.room.game.GetNewID());
-        self.room.abstractRoom.AddEntity(spit);
-        spit.RealizeInRoom();
-        (spit.realizedObject as DartMaggot).Shoot(self.pos, self.vel.normalized, self.lizard);
-        self.lizard.room.PlaySound(SoundID.Big_Spider_Spit, self.lizard.mainBodyChunk);
-
-        self.Destroy();
+        orig(self, source, directionAndMomentum, hitChunk, hitAppendage, type, damage, stunBonus);
     }
     #endregion
 
-    public static void BabyPuff(Lizard self)
-    {
-        if (self.inShortcut || self.slatedForDeletetion || self.room == null || self.room.world == null || self.room.game.cameras[0].room != self.room || !lizardstorage.TryGetValue(self.abstractCreature, out LizardData data))
-        {
-            return;
-        }
-
-        try
-        {
-            if (IncapacitationSpewBabies())
-            {
-                return;
-            }
-
-            Debug.Log("Spew Babies = true");
-            data.spewBabies = true;
-
-            if (shadowOfIncapacitationCheck)
-                InconKill(self.abstractCreature);
-
-            if (!data.liz.ContainsKey("SpiderNumber"))
-            {
-                Debug.Log(all + "SpiderNumber Value was not present on " + self + " If able please report to the mod author of Shadow Of Lizards");
-                ShadowOfLizards.Logger.LogError(all + "SpiderNumber Value was not present on " + self + " If able please report to the mod author of Shadow Of Lizards");
-                data.liz.Add("SpiderNumber", "0");
-            }
-
-            if (data.beheaded == false && data.transformation != "SpiderTransformation")
-            {
-                data.beheaded = true;
-                Decapitation(self);
-            }
-            data.transformation = "Null";
-
-            InsectCoordinator insectCoordinator = null;
-            for (int i = 0; i < self.room.updateList.Count; i++)
-            {
-                if (self.room.updateList[i] is InsectCoordinator coordinator)
-                {
-                    insectCoordinator = coordinator;
-                    break;
-                }
-            }
-
-            for (int j = 0; j < 70; j++)
-            {
-                SporeCloud sporeCloud = new(self.firstChunk.pos, Custom.RNV() * UnityEngine.Random.value * 10f, new Color(0.1f, 0.25f, 0.1f, 0.8f), 1f, null, j % 20, insectCoordinator)
-                {
-                    nonToxic = true
-                };
-                self.room.AddObject(sporeCloud);
-            }
-
-            SporePuffVisionObscurer sporePuffVisionObscurer = new(self.firstChunk.pos)
-            {
-                doNotCallDeer = true
-            };
-            self.room.AddObject(sporePuffVisionObscurer);
-
-            for (int k = 0; k < 7; k++)
-            {
-                self.room.AddObject(new PuffBallSkin(self.firstChunk.pos, Custom.RNV() * UnityEngine.Random.value * 16f, new Color(0.1f, 0.3f, 0.1f), new Color(0.1f, 0.1f, 0.3f)));
-            }
-
-            self.room.PlaySound(SoundID.Puffball_Eplode, self.firstChunk.pos);
-
-            for (int l = 0; l < float.Parse(data.liz["SpiderNumber"]); l++)
-            {
-                Vector2 pos = self.mainBodyChunk.pos;
-                AbstractCreature spid = new(self.room.world, StaticWorld.GetCreatureTemplate(CreatureTemplate.Type.Spider), null, self.room.GetWorldCoordinate(pos), self.room.world.game.GetNewID());
-                self.room.abstractRoom.AddEntity(spid);
-                spid.RealizeInRoom();
-                ((Spider)spid.realizedCreature).bloodLust = 1f;
-            }
-
-            data.liz["SpiderNumber"] = "0";
-        }
-        catch (Exception e) { ShadowOfLizards.Logger.LogError(e); }
-
-        void InconKill(AbstractCreature self)
-        {
-            if (!Incapacitation.Incapacitation.inconstorage.TryGetValue(self, out Incapacitation.Incapacitation.InconData data))
-            {
-                return;
-            }
-
-            data.actuallyDead = true;
-            data.isAlive = false;
-
-            if (ShadowOfOptions.debug_logs.Value)
-                Debug.Log(all + self + " has been forcefully killed in the Incapacitation Mod due to being a Cut Half");
-        }
-
-        bool IncapacitationSpewBabies()
-        {
-            return Incapacitation.ShadowOfOptions.spid_mother.Value && Incapacitation.Incapacitation.inconstorage.TryGetValue(self.abstractCreature, out Incapacitation.Incapacitation.InconData data2) && !data2.spiderMotherWasDead && data.availableBodychunks.Count == self.bodyChunks.Length;
-        }
-    }
-
-    #region Small Spider
-    static bool SpiderConsiderPrey(On.Spider.orig_ConsiderPrey orig, Spider self, Creature crit)
-    {
-        if (ShadowOfOptions.spider_transformation.Value && crit != null)
-        {
-            if (crit is Lizard && lizardstorage.TryGetValue(crit.abstractCreature, out LizardData data) && (data.transformation == "Spider" || data.transformation == "SpiderTransformation") && data.spiderLikness > 0)
-            {
-                return false;
-            }
-            else if (crit is Player)
-            {
-                for (int i = 0; i < self.room.abstractRoom.creatures.Count; i++)
-                {
-                    if (self.room.abstractRoom.creatures[i].realizedCreature != null && self.room.abstractRoom.creatures[i].realizedCreature is Lizard liz && lizardstorage.TryGetValue(liz.abstractCreature, out LizardData data2) && data2.spiderLikness > 0 && liz.AI != null && liz.AI.friendTracker.friend == crit && (self.room.abstractRoom.creatures[i].rippleLayer == self.abstractPhysicalObject.rippleLayer || self.room.abstractRoom.creatures[i].rippleBothSides || self.abstractPhysicalObject.rippleBothSides))
-                    {
-                        return false;
-                    }
-                }
-            }
-        }
-
-        return orig.Invoke(self, crit);
-    }
-
-    static void spiderLegMove(On.Spider.orig_Move_Vector2 orig, Spider self, Vector2 dest)
-    {
-        if (ShadowOfOptions.spider_transformation.Value && spidLeg.TryGetValue(self, out SpiderAsLeg data) && data.liz != null && !data.liz.dead && self.room == data.liz.room)
-        {
-            self.moving = false;
-            return;
-        }
-        orig.Invoke(self, dest);
-    }
-
-    static void spiderLegStopCentipede(On.Spider.orig_FormCentipede orig, Spider self, Spider otherSpider)
-    {
-        if (!ShadowOfOptions.spider_transformation.Value || !spidLeg.TryGetValue(self, out SpiderAsLeg data) || data.liz == null || data.liz.dead)
-        {
-            orig.Invoke(self, otherSpider);
-        }
-    }
-
+    #region LizardGraphics
     public static void SpiderLizardGraphicsDraw(LizardGraphics self, RoomCamera.SpriteLeaser sLeaser, LizardData data)
     {
         if (!data.liz.ContainsKey("SpiderNumber"))
@@ -363,28 +218,177 @@ internal class TransformationSpider
     }
     #endregion
 
-    static void BigSpiderViolence(On.BigSpider.orig_Violence orig, BigSpider self, BodyChunk source, Vector2? directionAndMomentum, BodyChunk hitChunk, PhysicalObject.Appendage.Pos hitAppendage, Creature.DamageType type, float damage, float stunBonus)
+    #region LizardSpit
+    public static void SpiderSpitDraw(RoomCamera.SpriteLeaser sLeaser)
     {
-        if (source != null && source.owner != null && source.owner is Lizard liz && lizardstorage.TryGetValue(liz.abstractCreature, out LizardData data) && (data.transformation == "SpiderTransformation" || data.transformation == "Spider"))
+        for (int i = 0; i < sLeaser.sprites.Length; i++)
         {
-            data.spiderLikness--;
-
-            if (data.transformation == "SpiderTransformation")
-            {
-                damage /= 2f;
-            }
+            sLeaser.sprites[i].isVisible = false;
         }
-        else if (source != null && source.owner != null && source.owner is Player)
+    }
+
+    public static void SpiderSpitUpdate(LizardSpit self, LizardData data)
+    {
+        Vector2 pos = self.pos;
+
+        if (float.Parse(data.liz["SpiderNumber"]) > 0 && data.transformation == "Spider" ? UnityEngine.Random.Range(0, 100) < 10 : UnityEngine.Random.Range(0, 100) == 0)
         {
-            for (int i = 0; i < self.room.abstractRoom.creatures.Count; i++)
+            AbstractCreature spid = new(self.room.world, StaticWorld.GetCreatureTemplate(CreatureTemplate.Type.Spider), null, self.room.GetWorldCoordinate(pos), self.room.world.game.GetNewID());
+            self.room.abstractRoom.AddEntity(spid);
+            spid.RealizeInRoom();
+            spid.realizedCreature.mainBodyChunk.vel = self.vel * 2f;
+            ((Spider)spid.realizedCreature).bloodLust = 1f;
+            data.liz["SpiderNumber"] = (float.Parse(data.liz["SpiderNumber"]) - 1f).ToString();
+        }
+
+        AbstractPhysicalObject spit = new(self.room.world, AbstractPhysicalObject.AbstractObjectType.DartMaggot, null, self.room.GetWorldCoordinate(pos), self.lizard.room.game.GetNewID());
+        self.room.abstractRoom.AddEntity(spit);
+        spit.RealizeInRoom();
+        (spit.realizedObject as DartMaggot).Shoot(self.pos, self.vel.normalized, self.lizard);
+        self.lizard.room.PlaySound(SoundID.Big_Spider_Spit, self.lizard.mainBodyChunk);
+
+        self.Destroy();
+    }
+    #endregion
+
+    #region Spider
+    static bool SpiderConsiderPrey(On.Spider.orig_ConsiderPrey orig, Spider self, Creature crit)
+    {
+        if (ShadowOfOptions.spider_transformation.Value && crit != null)
+        {
+            if (crit is Lizard && lizardstorage.TryGetValue(crit.abstractCreature, out LizardData data) && (data.transformation == "Spider" || data.transformation == "SpiderTransformation") && data.spiderLikness > 0)
             {
-                if (self.room.abstractRoom.creatures[i].realizedCreature != null && self.room.abstractRoom.creatures[i].realizedCreature is Lizard liz2 && lizardstorage.TryGetValue(liz2.abstractCreature, out LizardData lizdata2) && lizdata2.spiderLikness > 0 && liz2.AI != null && liz2.AI.friendTracker.friend == source.owner && (self.room.abstractRoom.creatures[i].rippleLayer == self.abstractPhysicalObject.rippleLayer || self.room.abstractRoom.creatures[i].rippleBothSides || self.abstractPhysicalObject.rippleBothSides))
+                return false;
+            }
+            else if (crit is Player)
+            {
+                for (int i = 0; i < self.room.abstractRoom.creatures.Count; i++)
                 {
-                    lizdata2.spiderLikness--;
+                    if (self.room.abstractRoom.creatures[i].realizedCreature != null && self.room.abstractRoom.creatures[i].realizedCreature is Lizard liz && lizardstorage.TryGetValue(liz.abstractCreature, out LizardData data2) && data2.spiderLikness > 0 && liz.AI != null && liz.AI.friendTracker.friend == crit && (self.room.abstractRoom.creatures[i].rippleLayer == self.abstractPhysicalObject.rippleLayer || self.room.abstractRoom.creatures[i].rippleBothSides || self.abstractPhysicalObject.rippleBothSides))
+                    {
+                        return false;
+                    }
                 }
             }
         }
 
-        orig(self, source, directionAndMomentum, hitChunk, hitAppendage, type, damage, stunBonus);
+        return orig(self, crit);
     }
+    static void spiderLegStopCentipede(On.Spider.orig_FormCentipede orig, Spider self, Spider otherSpider)
+    {
+        if (!ShadowOfOptions.spider_transformation.Value || !spidLeg.TryGetValue(self, out SpiderAsLeg data) || data.liz == null || data.liz.dead)
+        {
+            orig(self, otherSpider);
+        }
+    }
+    static void spiderLegMove(On.Spider.orig_Move_Vector2 orig, Spider self, Vector2 dest)
+    {
+        if (ShadowOfOptions.spider_transformation.Value && spidLeg.TryGetValue(self, out SpiderAsLeg data) && data.liz != null && !data.liz.dead && self.room == data.liz.room)
+        {
+            self.moving = false;
+            return;
+        }
+        orig(self, dest);
+    }
+    #endregion
+
+    #region Misc
+    public static void BabyPuff(Lizard self)
+    {
+        if (self.inShortcut || self.slatedForDeletetion || self.room == null || self.room.world == null || self.room.game.cameras[0].room != self.room || !lizardstorage.TryGetValue(self.abstractCreature, out LizardData data))
+        {
+            return;
+        }
+
+        try
+        {
+            if (IncapacitationSpewBabies())
+            {
+                return;
+            }
+
+            data.spewBabies = true;
+
+            if (shadowOfIncapacitationCheck)
+                InconKill(self.abstractCreature);
+
+            if (!data.liz.ContainsKey("SpiderNumber"))
+            {
+                Debug.Log(all + "SpiderNumber Value was not present on " + self + " If able please report to the mod author of Shadow Of Lizards");
+                ShadowOfLizards.Logger.LogError(all + "SpiderNumber Value was not present on " + self + " If able please report to the mod author of Shadow Of Lizards");
+                data.liz.Add("SpiderNumber", "0");
+            }
+
+            if (data.beheaded == false && data.transformation != "SpiderTransformation")
+            {
+                data.beheaded = true;
+                Decapitation(self);
+            }
+            data.transformation = "Null";
+
+            InsectCoordinator insectCoordinator = null;
+            for (int i = 0; i < self.room.updateList.Count; i++)
+            {
+                if (self.room.updateList[i] is InsectCoordinator coordinator)
+                {
+                    insectCoordinator = coordinator;
+                    break;
+                }
+            }
+
+            for (int j = 0; j < 70; j++)
+            {
+                SporeCloud sporeCloud = new(self.firstChunk.pos, Custom.RNV() * UnityEngine.Random.value * 10f, new Color(0.1f, 0.25f, 0.1f, 0.8f), 1f, null, j % 20, insectCoordinator)
+                {
+                    nonToxic = true
+                };
+                self.room.AddObject(sporeCloud);
+            }
+
+            SporePuffVisionObscurer sporePuffVisionObscurer = new(self.firstChunk.pos)
+            {
+                doNotCallDeer = true
+            };
+            self.room.AddObject(sporePuffVisionObscurer);
+
+            for (int k = 0; k < 7; k++)
+            {
+                self.room.AddObject(new PuffBallSkin(self.firstChunk.pos, Custom.RNV() * UnityEngine.Random.value * 16f, new Color(0.1f, 0.3f, 0.1f), new Color(0.1f, 0.1f, 0.3f)));
+            }
+
+            self.room.PlaySound(SoundID.Puffball_Eplode, self.firstChunk.pos);
+
+            for (int l = 0; l < float.Parse(data.liz["SpiderNumber"]); l++)
+            {
+                Vector2 pos = self.mainBodyChunk.pos;
+                AbstractCreature spid = new(self.room.world, StaticWorld.GetCreatureTemplate(CreatureTemplate.Type.Spider), null, self.room.GetWorldCoordinate(pos), self.room.world.game.GetNewID());
+                self.room.abstractRoom.AddEntity(spid);
+                spid.RealizeInRoom();
+                ((Spider)spid.realizedCreature).bloodLust = 1f;
+            }
+
+            data.liz["SpiderNumber"] = "0";
+        }
+        catch (Exception e) { ShadowOfLizards.Logger.LogError(e); }
+
+        void InconKill(AbstractCreature self)
+        {
+            if (!Incapacitation.Incapacitation.inconstorage.TryGetValue(self, out Incapacitation.Incapacitation.InconData data))
+            {
+                return;
+            }
+
+            data.actuallyDead = true;
+            data.isAlive = false;
+
+            if (ShadowOfOptions.debug_logs.Value)
+                Debug.Log(all + self + " has been forcefully killed in the Incapacitation Mod due to being a Cut Half");
+        }
+
+        bool IncapacitationSpewBabies()
+        {
+            return Incapacitation.ShadowOfOptions.spid_mother.Value && Incapacitation.Incapacitation.inconstorage.TryGetValue(self.abstractCreature, out Incapacitation.Incapacitation.InconData data2) && !data2.spiderMotherWasDead && data.availableBodychunks.Count == self.bodyChunks.Length;
+        }
+    }
+    #endregion
 }
