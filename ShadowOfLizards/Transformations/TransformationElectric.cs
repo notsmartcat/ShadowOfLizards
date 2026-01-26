@@ -135,7 +135,7 @@ internal class TransformationElectric
     #endregion
 
     #region LizardBubble
-    public static void ElectricBubbleDraw(LizardBubble self, RoomCamera.SpriteLeaser sLeaser, float timeStacker, GraphicsData data2, bool camo)
+    public static void ElectricBubbleDraw(LizardBubble self, RoomCamera.SpriteLeaser sLeaser, float timeStacker, GraphicsData data2)
     {
         if (data2.electricColorTimer <= 0)
         {
@@ -196,9 +196,11 @@ internal class TransformationElectric
             }
             else if (data2.lightFlash > 0f)
             {
-                data2.lightSource = new LightSource(self.lizard.mainBodyChunk.pos, false, new Color(1f, 1f, 1f), self.lizard);
-                data2.lightSource.affectedByPaletteDarkness = 0f;
-                data2.lightSource.requireUpKeep = true;
+                data2.lightSource = new LightSource(self.lizard.mainBodyChunk.pos, false, new Color(1f, 1f, 1f), self.lizard)
+                {
+                    affectedByPaletteDarkness = 0f,
+                    requireUpKeep = true
+                };
                 self.lizard.room.AddObject(data2.lightSource);
             }
             if (data2.lightFlash > 0f)
@@ -314,9 +316,11 @@ internal class TransformationElectric
             }
             else if (data.lightFlash > 0f)
             {
-                data.lightSource = new LightSource(self.lizard.mainBodyChunk.pos, false, new Color(1f, 1f, 1f), self.lizard);
-                data.lightSource.affectedByPaletteDarkness = 0f;
-                data.lightSource.requireUpKeep = true;
+                data.lightSource = new LightSource(self.lizard.mainBodyChunk.pos, false, new Color(1f, 1f, 1f), self.lizard)
+                {
+                    affectedByPaletteDarkness = 0f,
+                    requireUpKeep = true
+                };
                 self.lizard.room.AddObject(data.lightSource);
             }
             if (data.lightFlash > 0f)
@@ -467,7 +471,7 @@ internal class TransformationElectric
 
         void Spark()
         {
-            BodyChunk tempChunk = chunk == null ? self.bodyChunks[UnityEngine.Random.Range(0, self.bodyChunks.Length)] : chunk;
+            BodyChunk tempChunk = chunk ?? self.bodyChunks[UnityEngine.Random.Range(0, self.bodyChunks.Length)];
             Vector2 pos = tempChunk.pos + new Vector2(tempChunk.rad * UnityEngine.Random.Range(-1f, 1f), tempChunk.rad * UnityEngine.Random.Range(-1f, 1f));
 
             self.room.AddObject(new Spark(pos, Custom.RNV() * Mathf.Lerp(4f, 14f, UnityEngine.Random.value), new Color(0.7f, 0.7f, 1f), null, 8, 14));

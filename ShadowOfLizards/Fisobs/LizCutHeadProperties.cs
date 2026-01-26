@@ -1,5 +1,4 @@
 using Fisobs.Properties;
-using static Player;
 
 namespace ShadowOfLizards;
 
@@ -10,8 +9,8 @@ sealed class LizCutHeadProperties : ItemProperties
         throwable = true;
     }
 
-    public override void Grabability(Player player, ref ObjectGrabability grabability)
+    public override void Grabability(Player player, ref Player.ObjectGrabability grabability)
     {
-        grabability = ObjectGrabability.TwoHands;
+        grabability = Player.ObjectGrabability.TwoHands;
     }
 }

@@ -1,5 +1,4 @@
 using RWCustom;
-using System.Security.Policy;
 using UnityEngine;
 using static RoomCamera;
 
@@ -35,8 +34,6 @@ internal sealed class LizBigChunk : PlayerCarryableItem, IDrawable
 
     private int whiteFlicker = 0;
     private int flicker;
-
-    private const int sourceCodeLizardsFlickerThreshold = 10;
 
     private RoomPalette palette;
 
@@ -291,7 +288,7 @@ internal sealed class LizBigChunk : PlayerCarryableItem, IDrawable
             if (grabbedBy[0].grabber is Player slug && CanEatMeat(slug) && slug.input[0].pckp)
             {
                 int num11 = 0;
-                if (ModManager.MMF && (slug.grasps[0] == null || !(slug.grasps[0].grabbed is LizBigChunk)) && slug.grasps[1] != null && slug.grasps[1].grabbed is LizBigChunk)
+                if (ModManager.MMF && (slug.grasps[0] == null || slug.grasps[0].grabbed is not LizBigChunk) && slug.grasps[1] != null && slug.grasps[1].grabbed is LizBigChunk)
                 {
                     num11 = 1;
                 }

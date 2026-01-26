@@ -179,10 +179,8 @@ internal class TransformationRot
                 }
                 num9 += num12 / (float)self.tentacles.Length;
             }
-            num10 = Mathf.Pow(num10 * num9, Custom.LerpMap((float)self.stuckCounter, 100f, 200f, 0.8f, 0.1f));
             num9 = Mathf.Pow(num9, 0.3f);
             num9 = Mathf.Max(num9, self.unconditionalSupport);
-            num10 = Mathf.Max(num10, self.unconditionalSupport);
             float num13 = 0f;
             for (int num14 = 0; num14 < self.tentacles.Length; num14++)
             {

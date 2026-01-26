@@ -26,7 +26,7 @@ sealed class LizCutHead : PlayerCarryableItem, IDrawable
     private float lastDarkness = -1f;
     private float darkness;
 
-    private Color bodyColour;
+    //private Color bodyColour;
     private Color effectColour;
 
     private Color eyeRightColour;
@@ -46,7 +46,7 @@ sealed class LizCutHead : PlayerCarryableItem, IDrawable
     private const int spriteJawStart = 2;
 
     private List<string> headSprites;
-    private List<string> cosmeticSprites = new();
+    private readonly List<string> cosmeticSprites = new();
 
     private float jawRotation;
     private float lastJawRotation;
@@ -56,7 +56,6 @@ sealed class LizCutHead : PlayerCarryableItem, IDrawable
     private readonly List<int> headSpriteNum = new() { 9, 16, 16, 10, 10, 10, 15, 14 };
 
     private Color whiteCamoColor = new(0f, 0f, 0f);
-    private Color whitePickUpColor;
     private float whiteCamoColorAmount = -1f;
 
     private float baseBlink;
@@ -313,8 +312,10 @@ sealed class LizCutHead : PlayerCarryableItem, IDrawable
         }
         else if (room.Darkness(bodyChunks[0].pos) > 0f && Abstr.breed != "Salamander" && Abstr.breed != "BlackLizard")
         {
-            lightSource = new LightSource(bodyChunks[0].pos, false, EffectColor, this);
-            lightSource.requireUpKeep = true;
+            lightSource = new LightSource(bodyChunks[0].pos, false, EffectColor, this)
+            {
+                requireUpKeep = true
+            };
             room.AddObject(lightSource);
         }
 
@@ -438,7 +439,7 @@ sealed class LizCutHead : PlayerCarryableItem, IDrawable
 
     public void InitiateSprites(RoomCamera.SpriteLeaser sLeaser, RoomCamera rCam)
     {
-        bodyColour = new Color(Abstr.bodyColourR, Abstr.bodyColourG, Abstr.bodyColourB);
+        //bodyColour = new Color(Abstr.bodyColourR, Abstr.bodyColourG, Abstr.bodyColourB);
         effectColour = new Color(Abstr.effectColourR, Abstr.effectColourG, Abstr.effectColourB);
         bloodColour = (Abstr.bloodColourR != -1f) ? new Color(Abstr.bloodColourR, Abstr.bloodColourG, Abstr.bloodColourB) : Color.black;
         bool flag = Abstr.headSprite5 != null;
@@ -508,7 +509,7 @@ sealed class LizCutHead : PlayerCarryableItem, IDrawable
         #region Colour
         if (Abstr.canCamo || Abstr.breed == "ZoopLizard")
         {
-            whiteCamoColor = whitePickUpColor = rCam.PixelColorAtCoordinate(bodyChunks[0].pos);
+            whiteCamoColor = rCam.PixelColorAtCoordinate(bodyChunks[0].pos);
         }
 
         if (Abstr.breed == "CyanLizard")
@@ -727,7 +728,7 @@ sealed class LizCutHead : PlayerCarryableItem, IDrawable
         }
         else if (Abstr.breed == "BlizzardLizard")
         {
-            Color color = new Color(0.99f, 1f, 0.98f);
+            Color color = new(0.99f, 1f, 0.98f);
             sLeaser.sprites[4].color = color;
             sLeaser.sprites[1].color = color;
             sLeaser.sprites[2].color = color;

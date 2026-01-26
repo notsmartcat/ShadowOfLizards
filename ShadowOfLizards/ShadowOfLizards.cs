@@ -2043,7 +2043,7 @@ public class ShadowOfLizards : BaseUnityPlugin
 
         void InconKill()
         {
-            if (!Incapacitation.Incapacitation.inconstorage.TryGetValue(self.abstractCreature, out Incapacitation.Incapacitation.InconData data))
+            if (!Incapacitation.Incapacitation.inconstorage.TryGetValue(self.abstractCreature, out _))
             {
                 return;
             }

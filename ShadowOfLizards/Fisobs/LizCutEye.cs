@@ -1,7 +1,6 @@
 using RWCustom;
 using UnityEngine;
 using static RoomCamera;
-using static SharedPhysics;
 
 namespace ShadowOfLizards;
 
@@ -26,7 +25,7 @@ sealed class LizCutEye : PlayerCarryableItem, IDrawable
 
     private float rotSpeed;
 
-    readonly TerrainCollisionData scratchTerrainCollisionData = new();
+    readonly SharedPhysics.TerrainCollisionData scratchTerrainCollisionData = new();
     #endregion
 
     public LizCutEyeAbstract Abstr { get; }
@@ -297,9 +296,9 @@ sealed class LizCutEye : PlayerCarryableItem, IDrawable
                 cords[i, j, 2] += a * (3f + Mathf.Abs(rotSpeed) / 5f) * Mathf.Pow(1f - num, 3f);
                 if (j > 1 && room.GetTile(cords[i, j, 0]).Solid)
                 {
-                    TerrainCollisionData terrainCollisionData = scratchTerrainCollisionData.Set(cords[i, j, 0], cords[i, j, 1], cords[i, j, 2], 1f, new IntVector2(0, 0), lastGrabbed);
-                    terrainCollisionData = VerticalCollision(room, terrainCollisionData);
-                    terrainCollisionData = HorizontalCollision(room, terrainCollisionData);
+                    SharedPhysics.TerrainCollisionData terrainCollisionData = scratchTerrainCollisionData.Set(cords[i, j, 0], cords[i, j, 1], cords[i, j, 2], 1f, new IntVector2(0, 0), lastGrabbed);
+                    terrainCollisionData = SharedPhysics.VerticalCollision(room, terrainCollisionData);
+                    terrainCollisionData = SharedPhysics.HorizontalCollision(room, terrainCollisionData);
                     cords[i, j, 0] = terrainCollisionData.pos;
                     cords[i, j, 2] = terrainCollisionData.vel;
                 }

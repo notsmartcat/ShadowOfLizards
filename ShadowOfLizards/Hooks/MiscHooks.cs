@@ -377,7 +377,7 @@ internal class MiscHooks
             {
                 if (ShadowOfOptions.electric_transformation.Value && data.transformation == "ElectricTransformation" && graphicstorage.TryGetValue(self.lizardGraphics, out GraphicsData data2))
                 {
-                    TransformationElectric.ElectricBubbleDraw(self, sLeaser, timeStacker, data2, true);
+                    TransformationElectric.ElectricBubbleDraw(self, sLeaser, timeStacker, data2);
                     return;
                 }
                 Color color = Color.Lerp(self.lizardGraphics.effectColor, self.lizardGraphics.whiteCamoColor, self.lizardGraphics.whiteCamoColorAmount);
@@ -397,7 +397,7 @@ internal class MiscHooks
             }
             else if (ShadowOfOptions.electric_transformation.Value && data.transformation == "ElectricTransformation" && graphicstorage.TryGetValue(self.lizardGraphics, out GraphicsData data2))
             {
-                TransformationElectric.ElectricBubbleDraw(self, sLeaser, timeStacker, data2, false);
+                TransformationElectric.ElectricBubbleDraw(self, sLeaser, timeStacker, data2);
             }
         }
         catch (Exception e) { ShadowOfLizards.Logger.LogError(e); }

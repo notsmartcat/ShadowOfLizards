@@ -14,8 +14,8 @@ internal class TransformationSpider
         On.BigSpider.Violence += BigSpiderViolence;
 
         On.Spider.ConsiderPrey += SpiderConsiderPrey;
-        On.Spider.FormCentipede += spiderLegStopCentipede;
-        On.Spider.Move_Vector2 += spiderLegMove;
+        On.Spider.FormCentipede += SpiderLegStopCentipede;
+        On.Spider.Move_Vector2 += SpiderLegMove;
     }
 
     #region BigSpider
@@ -274,14 +274,14 @@ internal class TransformationSpider
 
         return orig(self, crit);
     }
-    static void spiderLegStopCentipede(On.Spider.orig_FormCentipede orig, Spider self, Spider otherSpider)
+    static void SpiderLegStopCentipede(On.Spider.orig_FormCentipede orig, Spider self, Spider otherSpider)
     {
         if (!ShadowOfOptions.spider_transformation.Value || !spidLeg.TryGetValue(self, out SpiderAsLeg data) || data.liz == null || data.liz.dead)
         {
             orig(self, otherSpider);
         }
     }
-    static void spiderLegMove(On.Spider.orig_Move_Vector2 orig, Spider self, Vector2 dest)
+    static void SpiderLegMove(On.Spider.orig_Move_Vector2 orig, Spider self, Vector2 dest)
     {
         if (ShadowOfOptions.spider_transformation.Value && spidLeg.TryGetValue(self, out SpiderAsLeg data) && data.liz != null && !data.liz.dead && self.room == data.liz.room)
         {
