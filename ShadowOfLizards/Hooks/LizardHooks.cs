@@ -22,7 +22,6 @@ internal class LizardHooks
         On.Lizard.Update += LizardUpdate;
         On.Lizard.Violence += LizardViolence;
 
-
         On.Creature.Die += CreatureDie;
     }
 
@@ -336,6 +335,32 @@ internal class LizardHooks
                             }
                         }
                         savedData.Remove("ShadowOfAvailableBodychunks");
+                    }
+
+                    if (savedData.ContainsKey("ShadowOfCosmeticBodychunks"))
+                    {
+                        if (ShadowOfOptions.cosmetic_body_chunks.Value)
+                        {
+                            data.cosmeticBodychunks.Clear();
+
+                            string chunkTemp = "";
+                            for (int i = 0; i < savedData["ShadowOfCosmeticBodychunks"].Length; i++)
+                            {
+                                char letter = savedData["ShadowOfCosmeticBodychunks"][i];
+
+                                if (letter.ToString() == ";")
+                                {
+                                    data.cosmeticBodychunks.Add(int.Parse(chunkTemp));
+                                    chunkTemp = "";
+                                }
+                                else
+                                {
+                                    chunkTemp += letter;
+                                }
+                            }
+                        }
+
+                        savedData.Remove("ShadowOfCosmeticBodychunks");
                     }
 
                     data.actuallyDead = true;
@@ -1182,6 +1207,16 @@ internal class LizardHooks
                     chunk += data.availableBodychunks[i] + ";";
                 }
                 savedData["ShadowOfAvailableBodychunks"] = chunk;
+
+                if (ShadowOfOptions.cosmetic_body_chunks.Value)
+                {
+                    chunk = "";
+                    for (int i = 0; i < data.cosmeticBodychunks.Count; i++)
+                    {
+                        chunk += data.cosmeticBodychunks[i] + ";";
+                    }
+                    savedData["ShadowOfCosmeticBodychunks"] = chunk;
+                }
 
                 savedData["ShadowOfTransformation"] = data.transformation;
 

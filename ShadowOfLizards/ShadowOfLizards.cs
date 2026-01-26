@@ -9,7 +9,6 @@ using System.Runtime.CompilerServices;
 using UnityEngine;
 using static RoomCamera;
 using LizardCosmetics;
-using System.Reflection;
 
 namespace ShadowOfLizards;
 
@@ -1248,6 +1247,9 @@ public class ShadowOfLizards : BaseUnityPlugin
 
             AbstractCreature abstractLizard = new(self.room.world, self.Template, null, pos, self.abstractCreature.ID);
 
+            if (shadowOfIncapacitationCheck)
+                InconKill(abstractLizard);
+
             if (!lizardstorage.TryGetValue(abstractLizard, out LizardData data2))
             {
                 lizardstorage.Add(abstractLizard, new LizardData());
@@ -1264,6 +1266,7 @@ public class ShadowOfLizards : BaseUnityPlugin
             data2.transformation = data.transformation;
             data2.liz = new(data.liz);
             data2.availableBodychunks = new();
+            data2.cosmeticBodychunks = data.cosmeticBodychunks;
             data2.armState = new(data.armState);
             data2.actuallyDead = true;
 
@@ -1291,9 +1294,6 @@ public class ShadowOfLizards : BaseUnityPlugin
                 data2.availableBodychunks.Add(i);
                 data.availableBodychunks.Remove(i);
             }
-
-            if (shadowOfIncapacitationCheck)
-                InconKill(abstractLizard);
 
             self.room.abstractRoom.AddEntity(abstractLizard);
 
@@ -1729,14 +1729,12 @@ public class ShadowOfLizards : BaseUnityPlugin
             if (ShadowOfOptions.debug_logs.Value)
                 Debug.Log(all + self + " was Decapitated");
 
+            if (shadowOfIncapacitationCheck)
+                InconKill();
+
             if (!lizardstorage.TryGetValue(self.abstractCreature, out LizardData data) || data.sLeaser == null)
             {
                 return;
-            }
-
-            if (shadowOfIncapacitationCheck)
-            {
-                InconKill();
             }
 
             if (ShadowOfOptions.dynamic_cheat_death.Value)
@@ -1910,6 +1908,9 @@ public class ShadowOfLizards : BaseUnityPlugin
 
     public static void Eviscerate(Lizard self)
     {
+        if (shadowOfIncapacitationCheck)
+            InconKill();
+
         if (!lizardstorage.TryGetValue(self.abstractCreature, out LizardData data))
         {
             return;
@@ -1933,11 +1934,6 @@ public class ShadowOfLizards : BaseUnityPlugin
                 }
                 SmallChunk(pos);
             }
-        }
-
-        if (shadowOfIncapacitationCheck)
-        {
-            InconKill();
         }
 
         self.Destroy();

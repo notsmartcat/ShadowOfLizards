@@ -13,6 +13,8 @@ sealed class LizCutHead : PlayerCarryableItem, IDrawable
     public float donned = 0;
 
     public Color bloodColour;
+
+    public LightSource lightSource;
     #endregion
 
     public Vector2 rotation;
@@ -44,6 +46,7 @@ sealed class LizCutHead : PlayerCarryableItem, IDrawable
     private const int spriteJawStart = 2;
 
     private List<string> headSprites;
+    private List<string> cosmeticSprites = new();
 
     private float jawRotation;
     private float lastJawRotation;
@@ -294,6 +297,27 @@ sealed class LizCutHead : PlayerCarryableItem, IDrawable
             whiteCamoColorAmount = Mathf.Clamp(Mathf.Lerp(whiteCamoColorAmount, 1, 0.05f * UnityEngine.Random.value), 0f, 1f);
         }
 
+        if (lightSource != null)
+        {
+            lightSource.stayAlive = true;
+            lightSource.setPos = new Vector2?(bodyChunks[0].pos);
+            lightSource.setRad = new float?(100f);
+
+            lightSource.setAlpha = new float?(0.6f * (1f - whiteCamoColorAmount));
+            lightSource.color = EffectColor;
+
+            if (lightSource.slatedForDeletetion || room.Darkness(bodyChunks[0].pos) == 0f)
+            {
+                lightSource = null;
+            }
+        }
+        else if (room.Darkness(bodyChunks[0].pos) > 0f && Abstr.breed != "Salamander" && Abstr.breed != "BlackLizard")
+        {
+            lightSource = new LightSource(bodyChunks[0].pos, false, EffectColor, this);
+            lightSource.requireUpKeep = true;
+            room.AddObject(lightSource);
+        }
+
         //donned = Custom.LerpAndTick(donned, to, 0.11f, 0.033333335f);
 
         lastRotation = rotation;
@@ -449,13 +473,20 @@ sealed class LizCutHead : PlayerCarryableItem, IDrawable
             headSpriteNum[7] = right ? 14 : 15;
         }
 
-        sLeaser.sprites = new FSprite[headSprites.Count];
-
-        for (int i = 0; i < headSprites.Count; i++)
+        if (Abstr.breed == "BlizzardLizard")
         {
-            sLeaser.sprites[i] = new FSprite(headSprites[i], true);
-            sLeaser.sprites[i].scaleX = Abstr.scaleX;
-            sLeaser.sprites[i].scaleY = Abstr.scaleY;
+            cosmeticSprites.Add("BlizardHaloShine");
+        }
+
+        sLeaser.sprites = new FSprite[headSprites.Count  + cosmeticSprites.Count];
+
+        for (int i = 0; i < headSprites.Count + cosmeticSprites.Count; i++)
+        {
+            sLeaser.sprites[i] = new FSprite("pixel", true)
+            {
+                scaleX = Abstr.scaleX,
+                scaleY = Abstr.scaleY
+            };
         }
 
         if (flag)
@@ -615,6 +646,27 @@ sealed class LizCutHead : PlayerCarryableItem, IDrawable
                 sLeaser.sprites[i].x = pos.x - camPos.x - (7f * rotation.x);
                 sLeaser.sprites[i].y = pos.y - camPos.y - (7f * rotation.y);
             }
+        }
+
+        for (int i = 0; i < cosmeticSprites.Count; i++)
+        {
+            string name = cosmeticSprites[i];
+
+            if (Abstr.breed == "BlizzardLizard")
+            {
+                name += headAngleNum;
+            }
+
+            int j = i + headSprites.Count;
+
+            sLeaser.sprites[j].color = Color.white;
+            sLeaser.sprites[j].element = Futile.atlasManager.GetElementWithName(name);
+            sLeaser.sprites[j].x = pos.x - camPos.x;
+            sLeaser.sprites[j].y = pos.y - camPos.y;
+            sLeaser.sprites[j].rotation = headRotation;
+
+            sLeaser.sprites[j].scaleX = flipX ? Abstr.scaleX * -1 : Abstr.scaleX;
+            sLeaser.sprites[j].scaleY = Abstr.scaleY;
         }
 
         if (flicker > sourceCodeLizardsFlickerThreshold)

@@ -4,7 +4,6 @@ using UnityEngine;
 using RWCustom;
 using Watcher;
 using LizardCosmetics;
-using static RoomCamera;
 
 using static ShadowOfLizards.ShadowOfLizards;
 
@@ -19,6 +18,7 @@ internal class LizardGraphicsHooks
         On.LizardGraphics.AddToContainer += LizardGraphicsAddToContainer;
         On.LizardGraphics.DrawSprites += LizardGraphicsDraw;
         On.LizardGraphics.InitiateSprites += LizardGraphicsInitiateSprites;
+        On.LizardGraphics.Update += LizardGraphicsUpdate;
 
         On.LizardCosmetics.Antennae.ctor += NewAntennae;
         On.Watcher.PeachHeadStripes.ctor += NewPeachHeadStripes;
@@ -28,6 +28,11 @@ internal class LizardGraphicsHooks
     static void NewLizardGraphics(On.LizardGraphics.orig_ctor orig, LizardGraphics self, PhysicalObject ow)
     {
         orig(self, ow);
+
+        if (!lizardstorage.TryGetValue(self.lizard.abstractCreature, out LizardData _))
+        {
+            return;
+        }
 
         if (!graphicstorage.TryGetValue(self, out GraphicsData _))
         {
@@ -85,18 +90,18 @@ internal class LizardGraphicsHooks
         {
             return orig.Invoke(self, spriteIndex, cosmetic);
         }
-        else if (ShadowOfOptions.water_breather.Value && cosmetic is AxolotlGills && (!ModManager.Watcher || self.lizard.Template.type != WatcherEnums.CreatureTemplateType.BlizzardLizard) && data.liz.TryGetValue("WaterBreather", out string WaterBreather) && WaterBreather != "True" || ShadowOfOptions.cosmetic_body_chunks.Value && (data.cosmeticBodychunks.Count == 0 || !data.cosmeticBodychunks.Contains(0) && cosmetic is Whiskers && self.lizard.Template.type != CreatureTemplate.Type.BlackLizard || !data.cosmeticBodychunks.Contains(2) && (cosmetic is TailFin || cosmetic is TailGeckoScales || cosmetic is TailTuft)))
+        else if (ShadowOfOptions.water_breather.Value && cosmetic is AxolotlGills && (!ModManager.Watcher || self.lizard.Template.type != WatcherEnums.CreatureTemplateType.BlizzardLizard) && data.liz.TryGetValue("WaterBreather", out string WaterBreather) && WaterBreather != "True" || !data.availableBodychunks.Contains(0) && (cosmetic is Whiskers || cosmetic is AxolotlGills || cosmetic is Antennae || ModManager.Watcher && cosmetic is PeachHeadStripes) || !data.availableBodychunks.Contains(2) && (cosmetic is TailFin || cosmetic is TailGeckoScales || cosmetic is TailTuft) || ShadowOfOptions.cosmetic_body_chunks.Value && (data.cosmeticBodychunks.Count == 0 || !data.cosmeticBodychunks.Contains(0) && cosmetic is Whiskers && self.lizard.Template.type != CreatureTemplate.Type.BlackLizard || !data.cosmeticBodychunks.Contains(2) && (cosmetic is TailFin || cosmetic is TailGeckoScales || cosmetic is TailTuft)))
         {
             return spriteIndex;
         }
 
         return orig.Invoke(self, spriteIndex, cosmetic);
     }
-    static void LizardGraphicsAddToContainer(On.LizardGraphics.orig_AddToContainer orig, LizardGraphics self, SpriteLeaser sLeaser, RoomCamera rCam, FContainer newContatiner)
+    static void LizardGraphicsAddToContainer(On.LizardGraphics.orig_AddToContainer orig, LizardGraphics self, RoomCamera.SpriteLeaser sLeaser, RoomCamera rCam, FContainer newContatiner)
     {
-        orig.Invoke(self, sLeaser, rCam, newContatiner);
+        orig(self, sLeaser, rCam, newContatiner);
 
-        if (!graphicstorage.TryGetValue(self, out GraphicsData data2) || !lizardstorage.TryGetValue(self.lizard.abstractCreature, out LizardData data))
+        if (!graphicstorage.TryGetValue(self, out GraphicsData graphicData) || !lizardstorage.TryGetValue(self.lizard.abstractCreature, out LizardData data))
         {
             return;
         }
@@ -105,28 +110,28 @@ internal class LizardGraphicsHooks
             goto Line1;
         }
 
-        if (ShadowOfOptions.blind.Value && data.liz.TryGetValue("EyeRight", out string eye) && eye != "Incompatible" && sLeaser.sprites.Length > data2.eyeSprites && data2.eyeSprites != 0)
+        if (ShadowOfOptions.blind.Value && data.liz.TryGetValue("EyeRight", out string eye) && eye != "Incompatible" && sLeaser.sprites.Length > graphicData.eyeSprites && graphicData.eyeSprites != 0)
         {
             newContatiner ??= rCam.ReturnFContainer("Midground");
-            newContatiner.AddChild(sLeaser.sprites[data2.eyeSprites]);
-            newContatiner.AddChild(sLeaser.sprites[data2.eyeSprites + 1]);
-            sLeaser.sprites[data2.eyeSprites].MoveInFrontOfOtherNode(sLeaser.sprites[self.SpriteHeadStart + 4]);
-            sLeaser.sprites[data2.eyeSprites + 1].MoveInFrontOfOtherNode(sLeaser.sprites[self.SpriteHeadStart + 4]);
+            newContatiner.AddChild(sLeaser.sprites[graphicData.eyeSprites]);
+            newContatiner.AddChild(sLeaser.sprites[graphicData.eyeSprites + 1]);
+            sLeaser.sprites[graphicData.eyeSprites].MoveInFrontOfOtherNode(sLeaser.sprites[self.SpriteHeadStart + 4]);
+            sLeaser.sprites[graphicData.eyeSprites + 1].MoveInFrontOfOtherNode(sLeaser.sprites[self.SpriteHeadStart + 4]);
         }
 
     Line1:
-        if (ShadowOfOptions.cut_in_half.Value && sLeaser.sprites.Length > data2.cutHalfSprites && data2.cutHalfSprites != 0)
+        if (ShadowOfOptions.cut_in_half.Value && sLeaser.sprites.Length > graphicData.cutHalfSprites && graphicData.cutHalfSprites != 0)
         {
             newContatiner ??= rCam.ReturnFContainer("Midground");
-            newContatiner.AddChild(sLeaser.sprites[data2.cutHalfSprites]);
-            newContatiner.AddChild(sLeaser.sprites[data2.cutHalfSprites + 1]);
+            newContatiner.AddChild(sLeaser.sprites[graphicData.cutHalfSprites]);
+            newContatiner.AddChild(sLeaser.sprites[graphicData.cutHalfSprites + 1]);
         }
     }
-    static void LizardGraphicsDraw(On.LizardGraphics.orig_DrawSprites orig, LizardGraphics self, SpriteLeaser sLeaser, RoomCamera rCam, float timeStacker, Vector2 camPos)
+    static void LizardGraphicsDraw(On.LizardGraphics.orig_DrawSprites orig, LizardGraphics self, RoomCamera.SpriteLeaser sLeaser, RoomCamera rCam, float timeStacker, Vector2 camPos)
     {
-        orig.Invoke(self, sLeaser, rCam, timeStacker, camPos);
+        orig(self, sLeaser, rCam, timeStacker, camPos);
 
-        if (self.culled || self.debugVisualization || !graphicstorage.TryGetValue(self, out GraphicsData data2) || !lizardstorage.TryGetValue(self.lizard.abstractCreature, out LizardData data))
+        if (self.culled || self.debugVisualization || !graphicstorage.TryGetValue(self, out GraphicsData graphicData) || !lizardstorage.TryGetValue(self.lizard.abstractCreature, out LizardData data))
         {
             return;
         }
@@ -147,12 +152,10 @@ internal class LizardGraphicsHooks
                 int num13 = 3 - (int)(Mathf.Abs(num) * 3.9f);
 
                 sLeaser.sprites[self.SpriteHeadStart + 3].element = Futile.atlasManager.GetElementWithName("LizardHeadStump" + num13 + "." + (data.liz.TryGetValue("BeheadedSprite", out string sprite) ? sprite : "0") + "Cut");
-
                 sLeaser.sprites[self.SpriteHeadStart + 3].color = BloodColoursCheck(self.lizard.Template.type.ToString()) ? bloodcolours[self.lizard.Template.type.ToString()] : (ModManager.Watcher && self.lizard.Template.type == WatcherEnums.CreatureTemplateType.IndigoLizard) ? Color.Lerp(self.effectColor, self.palette.blackColor, 0.5f) : self.effectColor;
-
                 sLeaser.sprites[self.SpriteHeadStart + 3].anchorY = 0.0f;
 
-                Vector2 pos = ((Vector2.Lerp(self.lizard.bodyChunks[1].lastPos, self.lizard.bodyChunks[1].pos, timeStacker) + Vector2.Lerp(self.lizard.bodyChunks[0].lastPos, self.lizard.bodyChunks[0].pos, timeStacker)) / 2) - camPos;
+                Vector2 pos = Vector2.Lerp(Vector2.Lerp(self.lizard.bodyChunks[1].lastPos, self.lizard.bodyChunks[1].pos, timeStacker), Vector2.Lerp(self.lizard.bodyChunks[0].lastPos, self.lizard.bodyChunks[0].pos, timeStacker), 0.75f) - camPos;
 
                 sLeaser.sprites[self.SpriteHeadStart + 3].isVisible = true;
                 sLeaser.sprites[self.SpriteHeadStart + 3].x = pos.x;
@@ -175,94 +178,87 @@ internal class LizardGraphicsHooks
 
                 if (ShadowOfOptions.blind.Value && data.liz.ContainsKey("EyeRight"))
                 {
-                    sLeaser.sprites[data2.eyeSprites].isVisible = false;
-                    sLeaser.sprites[data2.eyeSprites + 1].isVisible = false;
+                    sLeaser.sprites[graphicData.eyeSprites].isVisible = false;
+                    sLeaser.sprites[graphicData.eyeSprites + 1].isVisible = false;
                 }
 
-                for (int j = 0; j < self.cosmetics.Count; j++)
-                {
-                    if (self.cosmetics[j] is Whiskers || self.cosmetics[j] is AxolotlGills || self.cosmetics[j] is Antennae || self.cosmetics[j] is Antennae || ModManager.Watcher && self.cosmetics[j] is PeachHeadStripes)
-                    {
-                        for (int k = self.cosmetics[j].startSprite; k < self.cosmetics[j].startSprite + self.cosmetics[j].numberOfSprites; k++)
-                        {
-                            sLeaser.sprites[k].isVisible = false;
-                        }
-                    }
-                }
+                HeadlessCosmetics();
             }
             else
             {
-                float num7 = Mathf.Lerp(self.lastHeadDepthRotation, self.headDepthRotation, timeStacker);
-                Vector2 val3 = Vector2.Lerp(Vector2.Lerp(self.head.lastPos, self.head.pos, timeStacker), Vector2.Lerp(self.drawPositions[0, 1], self.drawPositions[0, 0], timeStacker), 0.2f);
-                Vector2 val4 = Custom.PerpendicularVector(Vector2.Lerp(self.drawPositions[0, 1], self.drawPositions[0, 0], timeStacker) - Vector2.Lerp(self.head.lastPos, self.head.pos, timeStacker));
-                Vector2 normalized = val4.normalized;
-                float num8 = Mathf.Lerp(self.lizard.lastJawOpen, self.lizard.JawOpen, timeStacker);
-
-                if (self.lizard.JawReadyForBite && self.lizard.Consious)
-                {
-                    num8 += UnityEngine.Random.value * 0.2f;
-                }
-
-                num8 = Mathf.Lerp(num8, Mathf.Lerp(self.lastVoiceVisualization, self.voiceVisualization, timeStacker) + 0.2f, Mathf.Lerp(self.lastVoiceVisualizationIntensity, self.voiceVisualizationIntensity, timeStacker) * 0.8f);
-                num8 = Mathf.Clamp(num8, 0f, 1f);
-                float num9 = Custom.AimFromOneVectorToAnother(Vector2.Lerp(self.drawPositions[0, 1], self.drawPositions[0, 0], timeStacker), Vector2.Lerp(self.head.lastPos, self.head.pos, timeStacker));
-                int num10 = 3 - (int)(Mathf.Abs(num7) * 3.9f);
-
-                if (num10 < 0 || num10 > 3)
-                {
-                    num10 = 0;
-                }
-
                 if (ShadowOfOptions.teeth.Value && data.liz.TryGetValue("UpperTeeth", out string teeth) && (teeth != "Incompatible" || data.liz["LowerTeeth"] != "Incompatible"))
                 {
                     if (data.liz["UpperTeeth"] != "Incompatible" && data.liz["UpperTeeth"] != "Normal")
                     {
-                        if (!Futile.atlasManager.DoesContainElementWithName(sLeaser.sprites[self.SpriteHeadStart + 2].element.name + data.liz["UpperTeeth"]))
+                        int teethIndex = self.SpriteHeadStart + 2;
+
+                        if (Futile.atlasManager.DoesContainElementWithName(sLeaser.sprites[teethIndex].element.name + data.liz["UpperTeeth"]))
+                        {
+                            sLeaser.sprites[teethIndex].element = Futile.atlasManager.GetElementWithName(sLeaser.sprites[teethIndex].element.name + data.liz["UpperTeeth"]);
+                        }
+                        else
                         {
                             data.liz["UpperTeeth"] = "Incompatible";
 
-                            Debug.Log(all + "Upper Teeth " + sLeaser.sprites[self.SpriteHeadStart + 2].element.name + " of " + self.lizard + " are Incompatible, if able please report to the mod author of Shadow Of Lizards");
-                            ShadowOfLizards.Logger.LogError(all + "Upper Teeth " + sLeaser.sprites[self.SpriteHeadStart + 2].element.name + " of " + self.lizard + " are Incompatible, if able please report to the mod author of Shadow Of Lizards");
-                        }
-                        else
-                        {
-                            sLeaser.sprites[self.SpriteHeadStart + 2].element = Futile.atlasManager.GetElementWithName(sLeaser.sprites[self.SpriteHeadStart + 2].element.name + data.liz["UpperTeeth"]);
+                            Debug.Log(all + "Upper Teeth " + sLeaser.sprites[teethIndex].element.name + " of " + self.lizard + " are Incompatible, if able please report to the mod author of Shadow Of Lizards");
+                            ShadowOfLizards.Logger.LogError(all + "Upper Teeth " + sLeaser.sprites[teethIndex].element.name + " of " + self.lizard + " are Incompatible, if able please report to the mod author of Shadow Of Lizards");
                         }
                     }
-
                     if (data.liz["LowerTeeth"] != "Incompatible" && data.liz["LowerTeeth"] != "Normal")
                     {
-                        if (!Futile.atlasManager.DoesContainElementWithName(sLeaser.sprites[self.SpriteHeadStart + 1].element.name + data.liz["UpperTeeth"]))
+                        int teethIndex = self.SpriteHeadStart + 1;
+
+                        if (!Futile.atlasManager.DoesContainElementWithName(sLeaser.sprites[teethIndex].element.name + data.liz["UpperTeeth"]))
+                        {
+                            sLeaser.sprites[teethIndex].element = Futile.atlasManager.GetElementWithName(sLeaser.sprites[teethIndex].element.name + data.liz["LowerTeeth"]);
+                        }
+                        else
                         {
                             data.liz["LowerTeeth"] = "Incompatible";
 
-                            Debug.Log(all + "Lower Teeth " + sLeaser.sprites[self.SpriteHeadStart + 1].element.name + " of " + self.lizard + " are Incompatible, if able please report to the mod author of Shadow Of Lizards");
-                            ShadowOfLizards.Logger.LogError(all + "Lower Teeth " + sLeaser.sprites[self.SpriteHeadStart + 1].element.name + " of " + self.lizard + " are Incompatible, if able please report to the mod author of Shadow Of Lizards");
-                        }
-                        else
-                        {
-                            sLeaser.sprites[self.SpriteHeadStart + 1].element = Futile.atlasManager.GetElementWithName(sLeaser.sprites[self.SpriteHeadStart + 1].element.name + data.liz["LowerTeeth"]);
+                            Debug.Log(all + "Lower Teeth " + sLeaser.sprites[teethIndex].element.name + " of " + self.lizard + " are Incompatible, if able please report to the mod author of Shadow Of Lizards");
+                            ShadowOfLizards.Logger.LogError(all + "Lower Teeth " + sLeaser.sprites[teethIndex].element.name + " of " + self.lizard + " are Incompatible, if able please report to the mod author of Shadow Of Lizards");
                         }
                     }
                 }
-
                 if (ShadowOfOptions.blind.Value && data.liz.TryGetValue("EyeRight", out string eye) && graphicstorage.TryGetValue(self, out GraphicsData graphData) && eye != "Incompatible")
                 {
-                    if (Futile.atlasManager.DoesContainElementWithName("Right" + sLeaser.sprites[self.SpriteHeadStart + 4].element.name + "Normal"))
-                    {
-                        string spriteName = sLeaser.sprites[self.SpriteHeadStart + 4].element.name;
+                    int eyeIndex = self.SpriteHeadStart + 4;
 
-                        string spriteNameR = sLeaser.sprites[self.SpriteHeadStart + 4].scaleX > 0f ? "Right" + spriteName : "Left" + spriteName;
-                        string spriteNameL = sLeaser.sprites[self.SpriteHeadStart + 4].scaleX > 0f ? "Left" + spriteName : "Right" + spriteName;
+                    if (Futile.atlasManager.DoesContainElementWithName("Right" + sLeaser.sprites[eyeIndex].element.name + "Normal"))
+                    {
+                        if (Futile.atlasManager.DoesContainElementWithName(sLeaser.sprites[eyeIndex].element.name + "Nose"))
+                        {
+                            sLeaser.sprites[eyeIndex].element = Futile.atlasManager.GetElementWithName(sLeaser.sprites[eyeIndex].element.name + "Nose");
+                        }
+                        else
+                        {
+                            data.liz["EyeRight"] = "Incompatible";
+                            data.liz["EyeLeft"] = "Incompatible";
+
+                            if (graphData.eyeSprites != 0)
+                            {
+                                sLeaser.sprites[graphData.eyeSprites].isVisible = false;
+                                sLeaser.sprites[graphData.eyeSprites + 1].isVisible = false;
+                            }
+
+                            Debug.Log(all + "Eyes " + sLeaser.sprites[self.SpriteHeadStart + 4].element.name + " of " + self.lizard + " are Incompatible, if able please report to the mod author of Shadow Of Lizards");
+                            ShadowOfLizards.Logger.LogError(all + "Eyes " + sLeaser.sprites[self.SpriteHeadStart + 4].element.name + " of " + self.lizard + " are Incompatible, if able please report to the mod author of Shadow Of Lizards");
+                        }
+
+                        string spriteName = sLeaser.sprites[eyeIndex].element.name;
+
+                        string spriteNameR = sLeaser.sprites[eyeIndex].scaleX > 0f ? "Right" + spriteName : "Left" + spriteName;
+                        string spriteNameL = sLeaser.sprites[eyeIndex].scaleX > 0f ? "Left" + spriteName : "Right" + spriteName;
 
                         for (int l = graphData.eyeSprites; l < graphData.eyeSprites + 2; l++)
                         {
-                            sLeaser.sprites[l].scaleX = Mathf.Sign(num7) * self.lizard.lizardParams.headSize * self.iVars.headSize;
-                            sLeaser.sprites[l].scaleY = self.lizard.lizardParams.headSize * self.iVars.headSize;
-                            sLeaser.sprites[l].x = val3.x + normalized.x * num8 * num7 * self.lizard.lizardParams.jawOpenMoveJawsApart * (1f - self.lizard.lizardParams.jawOpenLowerJawFac) - camPos.x;
-                            sLeaser.sprites[l].y = val3.y + normalized.y * num8 * num7 * self.lizard.lizardParams.jawOpenMoveJawsApart * (1f - self.lizard.lizardParams.jawOpenLowerJawFac) - camPos.y;
-                            sLeaser.sprites[l].rotation = num9 + self.lizard.lizardParams.jawOpenAngle * (1f - self.lizard.lizardParams.jawOpenLowerJawFac) * num8 * num7;
-                            sLeaser.sprites[l].SetAnchor(sLeaser.sprites[self.SpriteHeadStart + 4].anchorX, sLeaser.sprites[self.SpriteHeadStart + 4].anchorY);
+                            sLeaser.sprites[l].scaleX = sLeaser.sprites[eyeIndex].scaleX;
+                            sLeaser.sprites[l].scaleY = sLeaser.sprites[eyeIndex].scaleY;
+                            sLeaser.sprites[l].x = sLeaser.sprites[eyeIndex].x;
+                            sLeaser.sprites[l].y = sLeaser.sprites[eyeIndex].y;
+                            sLeaser.sprites[l].rotation = sLeaser.sprites[eyeIndex].rotation;
+                            sLeaser.sprites[l].SetAnchor(sLeaser.sprites[eyeIndex].anchorX, sLeaser.sprites[eyeIndex].anchorY);
                         }
 
                         switch (data.liz["EyeRight"])
@@ -328,25 +324,6 @@ internal class LizardGraphicsHooks
                                 sLeaser.sprites[graphData.eyeSprites + 1].element = Futile.atlasManager.GetElementWithName(spriteNameL + "Normal");
                                 break;
                         }
-
-                        if (Futile.atlasManager.DoesContainElementWithName(sLeaser.sprites[self.SpriteHeadStart + 4].element.name + "Nose"))
-                        {
-                            sLeaser.sprites[self.SpriteHeadStart + 4].element = Futile.atlasManager.GetElementWithName(sLeaser.sprites[self.SpriteHeadStart + 4].element.name + "Nose");
-                        }
-                        else
-                        {
-                            data.liz["EyeRight"] = "Incompatible";
-                            data.liz["EyeLeft"] = "Incompatible";
-
-                            if (graphData.eyeSprites != 0)
-                            {
-                                sLeaser.sprites[graphData.eyeSprites].isVisible = false;
-                                sLeaser.sprites[graphData.eyeSprites + 1].isVisible = false;
-                            }
-
-                            Debug.Log(all + "Eyes " + sLeaser.sprites[self.SpriteHeadStart + 4].element.name + " of " + self.lizard + " are Incompatible, if able please report to the mod author of Shadow Of Lizards");
-                            ShadowOfLizards.Logger.LogError(all + "Eyes " + sLeaser.sprites[self.SpriteHeadStart + 4].element.name + " of " + self.lizard + " are Incompatible, if able please report to the mod author of Shadow Of Lizards");
-                        }
                     }
                     else
                     {
@@ -359,138 +336,10 @@ internal class LizardGraphicsHooks
                             sLeaser.sprites[graphData.eyeSprites + 1].isVisible = false;
                         }
 
-
-                        Debug.Log(all + "Eyes " + sLeaser.sprites[self.SpriteHeadStart + 4].element.name + " of " + self.lizard + " are Incompatible, if able please report to the mod author of Shadow Of Lizards");
-                        ShadowOfLizards.Logger.LogError(all + "Eyes " + sLeaser.sprites[self.SpriteHeadStart + 4].element.name + " of " + self.lizard + " are Incompatible, if able please report to the mod author of Shadow Of Lizards");
+                        Debug.Log(all + "Eyes " + sLeaser.sprites[eyeIndex].element.name + " of " + self.lizard + " are Incompatible, if able please report to the mod author of Shadow Of Lizards");
+                        ShadowOfLizards.Logger.LogError(all + "Eyes " + sLeaser.sprites[eyeIndex].element.name + " of " + self.lizard + " are Incompatible, if able please report to the mod author of Shadow Of Lizards");
                     }
                 }
-
-                /*
-                if (ShadowOfOptions.teeth.Value && data.liz.TryGetValue("UpperTeeth", out string teeth) && teeth != "Incompatible")
-                {
-                    if (data.liz["UpperTeeth"] != "Normal")
-                    {
-                        sLeaser.sprites[self.SpriteHeadStart + 2].element = Futile.atlasManager.GetElementWithName("LizardUpperTeeth" + num10 + "." + self.lizard.lizardParams.headGraphics[2].ToString() + data.liz["UpperTeeth"]);
-                    }
-
-                    if (data.liz["LowerTeeth"] != "Normal")
-                    {
-                        sLeaser.sprites[self.SpriteHeadStart + 1].element = Futile.atlasManager.GetElementWithName("LizardLowerTeeth" + num10 + "." + self.lizard.lizardParams.headGraphics[1].ToString() + data.liz["LowerTeeth"]);
-                    }
-                }
-
-                if (ShadowOfOptions.blind.Value && data.liz.TryGetValue("EyeRight", out string eye) && graphicstorage.TryGetValue(self, out GraphicsData graphData) && (eye != "Incompatible" || graphData.eyeSprites != 0))
-                {
-                    if(Futile.atlasManager.DoesContainElementWithName("LizardEyes" + num10 + "." + self.lizard.lizardParams.headGraphics[4] + "Nose"))
-                    {
-                        sLeaser.sprites[self.SpriteHeadStart + 4].element = Futile.atlasManager.GetElementWithName("LizardEyes" + num10 + "." + self.lizard.lizardParams.headGraphics[4] + "Nose");
-
-                        string spriteName = "LizardEyes" + num10 + "." + self.lizard.lizardParams.headGraphics[4];
-
-                        string spriteNameR = sLeaser.sprites[self.SpriteHeadStart + 4].scaleX > 0f ? "Right" + spriteName : "Left" + spriteName;
-                        string spriteNameL = sLeaser.sprites[self.SpriteHeadStart + 4].scaleX > 0f ? "Left" + spriteName : "Right" + spriteName;
-
-                        if (Futile.atlasManager.DoesContainElementWithName(spriteNameR + "Normal"))
-                        {
-                            for (int l = graphData.eyeSprites; l < graphData.eyeSprites + 2; l++)
-                            {
-                                sLeaser.sprites[l].scaleX = Mathf.Sign(num7) * self.lizard.lizardParams.headSize * self.iVars.headSize;
-                                sLeaser.sprites[l].scaleY = self.lizard.lizardParams.headSize * self.iVars.headSize;
-                                sLeaser.sprites[l].x = val3.x + normalized.x * num8 * num7 * self.lizard.lizardParams.jawOpenMoveJawsApart * (1f - self.lizard.lizardParams.jawOpenLowerJawFac) - camPos.x;
-                                sLeaser.sprites[l].y = val3.y + normalized.y * num8 * num7 * self.lizard.lizardParams.jawOpenMoveJawsApart * (1f - self.lizard.lizardParams.jawOpenLowerJawFac) - camPos.y;
-                                sLeaser.sprites[l].rotation = num9 + self.lizard.lizardParams.jawOpenAngle * (1f - self.lizard.lizardParams.jawOpenLowerJawFac) * num8 * num7;
-                                sLeaser.sprites[l].SetAnchor(sLeaser.sprites[self.SpriteHeadStart + 4].anchorX, sLeaser.sprites[self.SpriteHeadStart + 4].anchorY);
-                            }
-
-                            switch (data.liz["EyeRight"])
-                            {
-                                case "Blind":
-                                    sLeaser.sprites[graphData.eyeSprites].color = Color.white;
-                                    sLeaser.sprites[graphData.eyeSprites].element = Futile.atlasManager.GetElementWithName(spriteNameR + "Normal");
-                                    break;
-                                case "Scar":
-                                    sLeaser.sprites[graphData.eyeSprites].color = sLeaser.sprites[self.SpriteHeadStart + 4].color;
-                                    sLeaser.sprites[graphData.eyeSprites].element = Futile.atlasManager.GetElementWithName(spriteNameR + "Scar");
-                                    break;
-                                case "BlindScar":
-                                    sLeaser.sprites[graphData.eyeSprites].color = Color.white;
-                                    sLeaser.sprites[graphData.eyeSprites].element = Futile.atlasManager.GetElementWithName(spriteNameR + "Scar");
-                                    break;
-                                case "Scar2":
-                                    sLeaser.sprites[graphData.eyeSprites].color = sLeaser.sprites[self.SpriteHeadStart + 4].color;
-                                    sLeaser.sprites[graphData.eyeSprites].element = Futile.atlasManager.GetElementWithName(spriteNameR + "Scar2");
-                                    break;
-                                case "BlindScar2":
-                                    sLeaser.sprites[graphData.eyeSprites].color = Color.white;
-                                    sLeaser.sprites[graphData.eyeSprites].element = Futile.atlasManager.GetElementWithName(spriteNameR + "Scar2");
-                                    break;
-                                case "Cut":
-                                    sLeaser.sprites[graphData.eyeSprites].color = BloodColoursCheck(self.lizard.Template.type.ToString()) ? bloodcolours[self.lizard.Template.type.ToString()] : self.effectColor;
-                                    sLeaser.sprites[graphData.eyeSprites].element = Futile.atlasManager.GetElementWithName(spriteNameR + "Cut");
-                                    break;
-                                default:
-                                    sLeaser.sprites[graphData.eyeSprites].color = sLeaser.sprites[self.SpriteHeadStart + 4].color;
-                                    sLeaser.sprites[graphData.eyeSprites].element = Futile.atlasManager.GetElementWithName(spriteNameR + "Normal");
-                                    break;
-                            }
-
-                            switch (data.liz["EyeLeft"])
-                            {
-                                case "Blind":
-                                    sLeaser.sprites[graphData.eyeSprites + 1].color = Color.white;
-                                    sLeaser.sprites[graphData.eyeSprites + 1].element = Futile.atlasManager.GetElementWithName(spriteNameL + "Normal");
-                                    break;
-                                case "Scar":
-                                    sLeaser.sprites[graphData.eyeSprites + 1].color = sLeaser.sprites[self.SpriteHeadStart + 4].color;
-                                    sLeaser.sprites[graphData.eyeSprites + 1].element = Futile.atlasManager.GetElementWithName(spriteNameL + "Scar");
-                                    break;
-                                case "BlindScar":
-                                    sLeaser.sprites[graphData.eyeSprites + 1].color = Color.white;
-                                    sLeaser.sprites[graphData.eyeSprites + 1].element = Futile.atlasManager.GetElementWithName(spriteNameL + "Scar");
-                                    break;
-                                case "Scar2":
-                                    sLeaser.sprites[graphData.eyeSprites + 1].color = sLeaser.sprites[self.SpriteHeadStart + 4].color;
-                                    sLeaser.sprites[graphData.eyeSprites + 1].element = Futile.atlasManager.GetElementWithName(spriteNameL + "Scar2");
-                                    break;
-                                case "BlindScar2":
-                                    sLeaser.sprites[graphData.eyeSprites + 1].color = Color.white;
-                                    sLeaser.sprites[graphData.eyeSprites + 1].element = Futile.atlasManager.GetElementWithName(spriteNameL + "Scar2");
-                                    break;
-                                case "Cut":
-                                    sLeaser.sprites[graphData.eyeSprites + 1].color = BloodColoursCheck(self.lizard.Template.type.ToString()) ? bloodcolours[self.lizard.Template.type.ToString()] : self.effectColor;
-                                    sLeaser.sprites[graphData.eyeSprites + 1].element = Futile.atlasManager.GetElementWithName(spriteNameL + "Cut");
-                                    break;
-                                default:
-                                    sLeaser.sprites[graphData.eyeSprites + 1].color = sLeaser.sprites[self.SpriteHeadStart + 4].color;
-                                    sLeaser.sprites[graphData.eyeSprites + 1].element = Futile.atlasManager.GetElementWithName(spriteNameL + "Normal");
-                                    break;
-                            }
-                        }
-                        else
-                        {
-                            data.liz["EyeRight"] = "Incompatible";
-                            data.liz["EyeLeft"] = "Incompatible";
-
-                            if (graphData.eyeSprites != 0)
-                            {
-                                sLeaser.sprites[graphData.eyeSprites].isVisible = false;
-                                sLeaser.sprites[graphData.eyeSprites + 1].isVisible = false;
-                            }
-                        }
-                    }
-                    else
-                    {
-                        data.liz["EyeRight"] = "Incompatible";
-                        data.liz["EyeLeft"] = "Incompatible";
-
-                        if (graphData.eyeSprites != 0)
-                        {
-                            sLeaser.sprites[graphData.eyeSprites].isVisible = false;
-                            sLeaser.sprites[graphData.eyeSprites + 1].isVisible = false;
-                        }
-                    }
-                }
-                */
 
                 if (data.liz.TryGetValue("Tongue", out string tongue) && tongue == "Tube" && self.lizard.tongue != null && self.lizard.tongue.Out)
                 {
@@ -524,9 +373,7 @@ internal class LizardGraphicsHooks
 
         Line1:
             if (ShadowOfOptions.camo_ability.Value && CanCamoCheck(data, self.lizard.Template.type.ToString()) || ShadowOfOptions.electric_transformation.Value && (data.transformation == "Electric" || data.transformation == "ElectricTransformation"))
-            {
-                CamoLizardGraphicsDraw(self, sLeaser, timeStacker, data, data2);
-            }
+                CamoLizardGraphicsDraw();
 
             if (ShadowOfOptions.camo_ability.Value && data.liz.TryGetValue("CanCamo", out string CanCamo2))
             {
@@ -578,13 +425,9 @@ internal class LizardGraphicsHooks
             {
                 List<int> bodyChunks = new();
 
-                if (ShadowOfOptions.cut_in_half.Value && (data.isGoreHalf || !ShadowOfOptions.cosmetic_body_chunks.Value))
+                if (!ShadowOfOptions.cosmetic_body_chunks.Value)
                 {
                     bodyChunks = data.availableBodychunks;
-                }
-                else if (!ShadowOfOptions.cut_in_half.Value && ShadowOfOptions.cosmetic_body_chunks.Value)
-                {
-                    bodyChunks = data.cosmeticBodychunks;
                 }
                 else
                 {
@@ -638,7 +481,7 @@ internal class LizardGraphicsHooks
                 }
             }
 
-            if (ShadowOfOptions.spider_transformation.Value && data.transformation == "SpiderTransformation" && !self.lizard.dead && !self.lizard.Stunned)
+            if (ShadowOfOptions.spider_transformation.Value && data.transformation == "SpiderTransformation" && self.lizard.Consious)
             {
                 TransformationSpider.SpiderLizardGraphicsDraw(self, sLeaser, data);
                 return;
@@ -646,251 +489,234 @@ internal class LizardGraphicsHooks
         }
         catch (Exception e) { ShadowOfLizards.Logger.LogError(e); }
 
+        #region Local
         void GoreLimbSprites(List<int> availableBodychunks)
         {
-            try
+            for (int i = 0; i < self.lizard.bodyChunks.Length; i++)
             {
-                for (int i = 0; i < self.lizard.bodyChunks.Length; i++)
+                if (!availableBodychunks.Contains(i))
                 {
-                    if (!availableBodychunks.Contains(i))
-                    {
-                        self.lizard.bodyChunks[i].collideWithObjects = false;
-                    }
-                }
-
-                if (!availableBodychunks.Contains(0) && !data.beheaded)
-                {
-                    for (int i = self.SpriteHeadStart; i < self.SpriteHeadEnd; i++)
-                    {
-                        sLeaser.sprites[i].isVisible = false;
-                    }
-
-                    for (int j = 0; j < self.cosmetics.Count; j++)
-                    {
-                        if (self.cosmetics[j] is Whiskers || self.cosmetics[j] is AxolotlGills || self.cosmetics[j] is Antennae || ModManager.Watcher && self.cosmetics[j] is PeachHeadStripes)
-                        {
-                            for (int k = self.cosmetics[j].startSprite; k < self.cosmetics[j].startSprite + self.cosmetics[j].numberOfSprites; k++)
-                            {
-                                sLeaser.sprites[k].isVisible = false;
-                            }
-                        }
-                    }
-                }
-
-                if (!availableBodychunks.Contains(1))
-                {
-                    if (self.limbs.Length == 4)
-                    {
-                        sLeaser.sprites[self.SpriteLimbsStart].isVisible = false;
-                        sLeaser.sprites[self.SpriteLimbsStart + 1].isVisible = false;
-
-                        sLeaser.sprites[self.SpriteLimbsColorStart].isVisible = false;
-                        sLeaser.sprites[self.SpriteLimbsColorStart + 1].isVisible = false;
-                    }
-                    else if (self.limbs.Length >= 6)
-                    {
-                        sLeaser.sprites[self.SpriteLimbsStart].isVisible = false;
-                        sLeaser.sprites[self.SpriteLimbsStart + 1].isVisible = false;
-                        sLeaser.sprites[self.SpriteLimbsStart + 2].isVisible = false;
-                        sLeaser.sprites[self.SpriteLimbsStart + 3].isVisible = false;
-
-                        sLeaser.sprites[self.SpriteLimbsColorStart].isVisible = false;
-                        sLeaser.sprites[self.SpriteLimbsColorStart + 1].isVisible = false;
-                        sLeaser.sprites[self.SpriteLimbsColorStart + 2].isVisible = false;
-                        sLeaser.sprites[self.SpriteLimbsColorStart + 3].isVisible = false;
-                    }
-
-                    if (availableBodychunks.Contains(2))
-                    {
-                        Vector2 pos = ((Vector2.Lerp(self.lizard.bodyChunks[2].lastPos, self.lizard.bodyChunks[2].pos, timeStacker) + Vector2.Lerp(self.lizard.bodyChunks[1].lastPos, self.lizard.bodyChunks[1].pos, timeStacker)) / 2) - camPos;
-
-                        for (int i = data2.cutHalfSprites; i < data2.cutHalfSprites + 2; i++)
-                        {
-                            sLeaser.sprites[i].isVisible = true;
-                            sLeaser.sprites[i].x = pos.x;
-                            sLeaser.sprites[i].y = pos.y;
-                            sLeaser.sprites[i].rotation = Custom.AimFromOneVectorToAnother(self.lizard.bodyChunks[2].pos, self.lizard.bodyChunks[1].pos);
-                        }
-
-                        sLeaser.sprites[data2.cutHalfSprites].element = Futile.atlasManager.GetElementWithName("LizardCutHalf1");
-                        sLeaser.sprites[data2.cutHalfSprites + 1].element = Futile.atlasManager.GetElementWithName("LizardCutHalf12");
-
-                        sLeaser.sprites[data2.cutHalfSprites].color = BloodColoursCheck(self.lizard.Template.type.ToString()) ? bloodcolours[self.lizard.Template.type.ToString()] : (ModManager.Watcher && self.lizard.Template.type == WatcherEnums.CreatureTemplateType.IndigoLizard) ? Color.Lerp(self.effectColor, self.palette.blackColor, 0.5f) : self.effectColor;
-                        sLeaser.sprites[data2.cutHalfSprites + 1].color = Color.white;
-
-                        //CutInHalfGraphics(self, sLeaser, availableBodychunks, camPos, timeStacker);
-                    }
-                }
-                if (!availableBodychunks.Contains(2))
-                {
-                    sLeaser.sprites[self.SpriteTail].isVisible = false;
-                    if (self.limbs.Length == 4)
-                    {
-                        sLeaser.sprites[self.SpriteLimbsStart + 2].isVisible = false;
-                        sLeaser.sprites[self.SpriteLimbsStart + 3].isVisible = false;
-                        sLeaser.sprites[self.SpriteLimbsColorStart + 2].isVisible = false;
-                        sLeaser.sprites[self.SpriteLimbsColorStart + 3].isVisible = false;
-                    }
-                    else if (self.limbs.Length >= 6)
-                    {
-                        sLeaser.sprites[self.SpriteLimbsStart + 4].isVisible = false;
-                        sLeaser.sprites[self.SpriteLimbsStart + 5].isVisible = false;
-                        sLeaser.sprites[self.SpriteLimbsColorStart + 4].isVisible = false;
-                        sLeaser.sprites[self.SpriteLimbsColorStart + 5].isVisible = false;
-                    }
-
-                    if (availableBodychunks.Contains(1))
-                    {
-                        Vector2 pos = ((Vector2.Lerp(self.lizard.bodyChunks[1].lastPos, self.lizard.bodyChunks[1].pos, timeStacker) + Vector2.Lerp(self.lizard.bodyChunks[2].lastPos, self.lizard.bodyChunks[2].pos, timeStacker)) / 2) - camPos;
-
-                        for (int i = data2.cutHalfSprites; i < data2.cutHalfSprites + 2; i++)
-                        {
-                            sLeaser.sprites[i].isVisible = true;
-                            sLeaser.sprites[i].x = pos.x;
-                            sLeaser.sprites[i].y = pos.y;
-                            sLeaser.sprites[i].rotation = Custom.AimFromOneVectorToAnother(self.lizard.bodyChunks[1].pos, self.lizard.bodyChunks[2].pos);
-                        }
-
-                        sLeaser.sprites[data2.cutHalfSprites].element = Futile.atlasManager.GetElementWithName("LizardCutHalf1");
-                        sLeaser.sprites[data2.cutHalfSprites + 1].element = Futile.atlasManager.GetElementWithName("LizardCutHalf12");
-
-                        sLeaser.sprites[data2.cutHalfSprites].color = BloodColoursCheck(self.lizard.Template.type.ToString()) ? bloodcolours[self.lizard.Template.type.ToString()] : (ModManager.Watcher && self.lizard.Template.type == WatcherEnums.CreatureTemplateType.IndigoLizard) ? Color.Lerp(self.effectColor, self.palette.blackColor, 0.5f) : self.effectColor;
-                        sLeaser.sprites[data2.cutHalfSprites + 1].color = Color.white;
-
-                        //CutInHalfGraphics(self, sLeaser, availableBodychunks, camPos, timeStacker);
-                    }
-                }
-
-                float num3 = 5f;
-                Vector2 vector = Vector2.Lerp(self.drawPositions[0, 1], self.drawPositions[0, 0], timeStacker);
-                vector = Vector2.Lerp(vector, Vector2.Lerp(self.head.lastPos, self.head.pos, timeStacker), 0.2f);
-                float num4 = (Mathf.Sin(Mathf.Lerp(self.lastBreath, self.breath, timeStacker) * 3.1415927f * 2f) + 1f) * 0.5f * Mathf.Pow(1f - self.lizard.AI.runSpeed, 2f);
-                for (int j = 0; j < 4; j++)
-                {
-                    int num5 = (j < 2) ? 1 : 2;
-                    Vector2 vector2 = self.BodyPosition(num5, timeStacker);
-                    if (self.lizard.animation == Lizard.Animation.ThreatSpotted || self.lizard.animation == Lizard.Animation.ThreatReSpotted)
-                    {
-                        vector2 += Custom.DegToVec(UnityEngine.Random.value * 360f) * UnityEngine.Random.value * 2f;
-                    }
-                    float num6 = self.BodyChunkDisplayRad(num5);
-                    if (num5 % 2 == 0)
-                    {
-                        num6 = (num6 + self.BodyChunkDisplayRad(num5 - 1)) / 2f;
-                    }
-                    num6 *= 1f + num4 * (float)(3 - num5) * 0.1f * ((num5 == 0) ? 0.5f : 1f);
-                    num6 *= self.iVars.fatness;
-                    Vector2 normalized = (vector - vector2).normalized;
-                    Vector2 a = Custom.PerpendicularVector(normalized);
-                    float d = Vector2.Distance(vector2, vector);
-
-                    if ((num5 == 1 || j == 2) && !availableBodychunks.Contains(1))
-                    {
-                        sLeaser.sprites[j].isVisible = false;
-                        (sLeaser.sprites[self.SpriteBodyMesh] as TriangleMesh).MoveVertice(j * 4, vector2 + normalized * d - a * num3 - camPos);
-                        (sLeaser.sprites[self.SpriteBodyMesh] as TriangleMesh).MoveVertice(j * 4 + 1, vector2 + normalized * d - a * num3 - camPos);
-                        (sLeaser.sprites[self.SpriteBodyMesh] as TriangleMesh).MoveVertice(j * 4 + 2, vector2 + normalized * d - a * num3 - camPos);
-                        (sLeaser.sprites[self.SpriteBodyMesh] as TriangleMesh).MoveVertice(j * 4 + 3, vector2 + normalized * d - a * num3 - camPos);
-                    }
-                    else if (num5 == 2 && !availableBodychunks.Contains(2))
-                    {
-                        sLeaser.sprites[j].isVisible = false;
-                        (sLeaser.sprites[self.SpriteBodyMesh] as TriangleMesh).MoveVertice(j * 4, vector2 + normalized * d - a * num3 - camPos);
-                        (sLeaser.sprites[self.SpriteBodyMesh] as TriangleMesh).MoveVertice(j * 4 + 1, vector2 + normalized * d - a * num3 - camPos);
-                        (sLeaser.sprites[self.SpriteBodyMesh] as TriangleMesh).MoveVertice(j * 4 + 2, vector2 + normalized * d - a * num3 - camPos);
-                        (sLeaser.sprites[self.SpriteBodyMesh] as TriangleMesh).MoveVertice(j * 4 + 3, vector2 + normalized * d - a * num3 - camPos);
-                    }
+                    self.lizard.bodyChunks[i].collideWithObjects = false;
                 }
             }
-            catch (Exception e) { ShadowOfLizards.Logger.LogError(e); }
-        }
 
-        void CamoLizardGraphicsDraw(LizardGraphics self, SpriteLeaser sLeaser, float timeStacker, LizardData data, GraphicsData data2)
-        {
-            try
+            if (!availableBodychunks.Contains(0) && !data.beheaded)
             {
-                Color effectColour = self.effectColor;
-                Color headColour = self.effectColor;
-
-                Color bodyColour = self.DynamicBodyColor(0f);
-
-                bool isSalamander = self.lizard.Template.type == CreatureTemplate.Type.Salamander || self.lizard.Template.type.ToString() == "MoleSalamander";
-
-                bool head = true;
-                if (self.lizard.Template.type == CreatureTemplate.Type.BlackLizard || isSalamander || self.lizard.Template.type.ToString() == "NoodleEater" || ModManager.Watcher && (self.lizard.Template.type == WatcherEnums.CreatureTemplateType.BasiliskLizard || self.lizard.Template.type == WatcherEnums.CreatureTemplateType.IndigoLizard))
+                for (int i = self.SpriteHeadStart; i < self.SpriteHeadEnd; i++)
                 {
-                    head = false;
+                    sLeaser.sprites[i].isVisible = false;
                 }
 
-                if (self.whiteCamoColorAmount > 0.25f || data2.electricColorTimer > 0)
+                HeadlessCosmetics();
+            }
+
+            if (!availableBodychunks.Contains(1))
+            {
+                if (self.limbs.Length == 4)
                 {
-                    data2.camoOnce = true;
+                    sLeaser.sprites[self.SpriteLimbsStart].isVisible = false;
+                    sLeaser.sprites[self.SpriteLimbsStart + 1].isVisible = false;
 
-                    effectColour = CamoElectric(self, data2, effectColour);
-                    bodyColour = Camo(self, bodyColour);
+                    sLeaser.sprites[self.SpriteLimbsColorStart].isVisible = false;
+                    sLeaser.sprites[self.SpriteLimbsColorStart + 1].isVisible = false;
+                }
+                else if (self.limbs.Length >= 6)
+                {
+                    sLeaser.sprites[self.SpriteLimbsStart].isVisible = false;
+                    sLeaser.sprites[self.SpriteLimbsStart + 1].isVisible = false;
+                    sLeaser.sprites[self.SpriteLimbsStart + 2].isVisible = false;
+                    sLeaser.sprites[self.SpriteLimbsStart + 3].isVisible = false;
 
-                    if (data2.electricColorTimer > 0)
-                        data2.electricColorTimer--;
+                    sLeaser.sprites[self.SpriteLimbsColorStart].isVisible = false;
+                    sLeaser.sprites[self.SpriteLimbsColorStart + 1].isVisible = false;
+                    sLeaser.sprites[self.SpriteLimbsColorStart + 2].isVisible = false;
+                    sLeaser.sprites[self.SpriteLimbsColorStart + 3].isVisible = false;
+                }
 
-                    if (head)
+                if (availableBodychunks.Contains(2))
+                {
+                    Vector2 pos = ((Vector2.Lerp(self.lizard.bodyChunks[2].lastPos, self.lizard.bodyChunks[2].pos, timeStacker) + Vector2.Lerp(self.lizard.bodyChunks[1].lastPos, self.lizard.bodyChunks[1].pos, timeStacker)) / 2) - camPos;
+
+                    for (int i = graphicData.cutHalfSprites; i < graphicData.cutHalfSprites + 2; i++)
                     {
-                        float num = 1f - Mathf.Pow(0.5f + 0.5f * Mathf.Sin(Mathf.Lerp(self.lastBlink, self.blink, timeStacker) * 2f * 3.1415927f), 1.5f + self.lizard.AI.excitement * 1.5f);
-                        if (self.headColorSetter != 0f)
-                        {
-                            num = Mathf.Lerp(num, (self.headColorSetter > 0f) ? 1f : 0f, Mathf.Abs(self.headColorSetter));
-                        }
-                        if (self.flicker > 10)
-                        {
-                            num = self.flickerColor;
-                        }
-                        num = Mathf.Lerp(num, Mathf.Pow(Mathf.Max(0f, Mathf.Lerp(self.lastVoiceVisualization, self.voiceVisualization, timeStacker)), 0.75f), Mathf.Lerp(self.lastVoiceVisualizationIntensity, self.voiceVisualizationIntensity, timeStacker));
-                        headColour = Color.Lerp(CamoElectric(self, data2, self.HeadColor1), effectColour, num);
-                    }
-                    else if (isSalamander)
-                    {
-                        headColour = Camo(self, self.SalamanderColor);
-                    }
-                    else
-                    {
-                        headColour = bodyColour;
+                        sLeaser.sprites[i].isVisible = true;
+                        sLeaser.sprites[i].x = pos.x;
+                        sLeaser.sprites[i].y = pos.y;
+                        sLeaser.sprites[i].rotation = Custom.AimFromOneVectorToAnother(self.lizard.bodyChunks[2].pos, self.lizard.bodyChunks[1].pos);
                     }
 
-                    #region Body
-                    sLeaser.sprites[self.SpriteBodyMesh].color = bodyColour;
-                    sLeaser.sprites[self.SpriteTail].color = bodyColour;
+                    sLeaser.sprites[graphicData.cutHalfSprites].element = Futile.atlasManager.GetElementWithName("LizardCutHalf1");
+                    sLeaser.sprites[graphicData.cutHalfSprites + 1].element = Futile.atlasManager.GetElementWithName("LizardCutHalf12");
 
-                    for (int i = self.SpriteBodyCirclesStart; i < self.SpriteBodyCirclesEnd; i++)
-                    {
-                        sLeaser.sprites[i].color = bodyColour;
-                    }
-                    #endregion
+                    sLeaser.sprites[graphicData.cutHalfSprites].color = BloodColoursCheck(self.lizard.Template.type.ToString()) ? bloodcolours[self.lizard.Template.type.ToString()] : (ModManager.Watcher && self.lizard.Template.type == WatcherEnums.CreatureTemplateType.IndigoLizard) ? Color.Lerp(self.effectColor, self.palette.blackColor, 0.5f) : self.effectColor;
+                    sLeaser.sprites[graphicData.cutHalfSprites + 1].color = Color.white;
+                }
+            }
+            if (!availableBodychunks.Contains(2))
+            {
+                sLeaser.sprites[self.SpriteTail].isVisible = false;
+                if (self.limbs.Length == 4)
+                {
+                    sLeaser.sprites[self.SpriteLimbsStart + 2].isVisible = false;
+                    sLeaser.sprites[self.SpriteLimbsStart + 3].isVisible = false;
+                    sLeaser.sprites[self.SpriteLimbsColorStart + 2].isVisible = false;
+                    sLeaser.sprites[self.SpriteLimbsColorStart + 3].isVisible = false;
+                }
+                else if (self.limbs.Length >= 6)
+                {
+                    sLeaser.sprites[self.SpriteLimbsStart + 4].isVisible = false;
+                    sLeaser.sprites[self.SpriteLimbsStart + 5].isVisible = false;
+                    sLeaser.sprites[self.SpriteLimbsColorStart + 4].isVisible = false;
+                    sLeaser.sprites[self.SpriteLimbsColorStart + 5].isVisible = false;
+                }
 
-                    #region Limbs
-                    for (int j = self.SpriteLimbsStart; j < self.SpriteLimbsEnd; j++)
-                    {
-                        sLeaser.sprites[j].color = bodyColour;
-                    }
-                    for (int s = self.SpriteLimbsColorStart; s < self.SpriteLimbsColorEnd; s++)
-                    {
-                        if (!ShadowOfOptions.dismemberment.Value || data.armState[s - self.SpriteLimbsColorStart] != "Cut")
-                        {
-                            sLeaser.sprites[s].color = effectColour;
-                        }
-                        else if (ShadowOfOptions.dismemberment.Value && data.armState[s - self.SpriteLimbsColorStart] == "Cut" && BloodColoursCheck(self.lizard.Template.type.ToString()))
-                        {
-                            sLeaser.sprites[s].color = bloodcolours[self.lizard.Template.type.ToString()];
-                        }
-                    }
-                    #endregion
+                if (availableBodychunks.Contains(1))
+                {
+                    Vector2 pos = ((Vector2.Lerp(self.lizard.bodyChunks[1].lastPos, self.lizard.bodyChunks[1].pos, timeStacker) + Vector2.Lerp(self.lizard.bodyChunks[2].lastPos, self.lizard.bodyChunks[2].pos, timeStacker)) / 2) - camPos;
 
-                    #region Tongue
-                    if (ModManager.Watcher && self.lizard.tongue != null && self.lizard.tongue.Out && self.lizard.Template.type == WatcherEnums.CreatureTemplateType.IndigoLizard)
+                    for (int i = graphicData.cutHalfSprites; i < graphicData.cutHalfSprites + 2; i++)
                     {
-                        sLeaser.sprites[self.SpriteTongueStart + 1].color = effectColour;
+                        sLeaser.sprites[i].isVisible = true;
+                        sLeaser.sprites[i].x = pos.x;
+                        sLeaser.sprites[i].y = pos.y;
+                        sLeaser.sprites[i].rotation = Custom.AimFromOneVectorToAnother(self.lizard.bodyChunks[1].pos, self.lizard.bodyChunks[2].pos);
                     }
-                    #endregion
 
-                    #region Head
+                    sLeaser.sprites[graphicData.cutHalfSprites].element = Futile.atlasManager.GetElementWithName("LizardCutHalf1");
+                    sLeaser.sprites[graphicData.cutHalfSprites + 1].element = Futile.atlasManager.GetElementWithName("LizardCutHalf12");
+
+                    sLeaser.sprites[graphicData.cutHalfSprites].color = BloodColoursCheck(self.lizard.Template.type.ToString()) ? bloodcolours[self.lizard.Template.type.ToString()] : (ModManager.Watcher && self.lizard.Template.type == WatcherEnums.CreatureTemplateType.IndigoLizard) ? Color.Lerp(self.effectColor, self.palette.blackColor, 0.5f) : self.effectColor;
+                    sLeaser.sprites[graphicData.cutHalfSprites + 1].color = Color.white;
+                }
+            }
+
+            float num3 = 5f;
+            Vector2 vector = Vector2.Lerp(self.drawPositions[0, 1], self.drawPositions[0, 0], timeStacker);
+            vector = Vector2.Lerp(vector, Vector2.Lerp(self.head.lastPos, self.head.pos, timeStacker), 0.2f);
+            float num4 = (Mathf.Sin(Mathf.Lerp(self.lastBreath, self.breath, timeStacker) * 3.1415927f * 2f) + 1f) * 0.5f * Mathf.Pow(1f - self.lizard.AI.runSpeed, 2f);
+            for (int j = 0; j < 4; j++)
+            {
+                int num5 = (j < 2) ? 1 : 2;
+                Vector2 vector2 = self.BodyPosition(num5, timeStacker);
+                if (self.lizard.animation == Lizard.Animation.ThreatSpotted || self.lizard.animation == Lizard.Animation.ThreatReSpotted)
+                {
+                    vector2 += Custom.DegToVec(UnityEngine.Random.value * 360f) * UnityEngine.Random.value * 2f;
+                }
+                float num6 = self.BodyChunkDisplayRad(num5);
+                if (num5 % 2 == 0)
+                {
+                    num6 = (num6 + self.BodyChunkDisplayRad(num5 - 1)) / 2f;
+                }
+                num6 *= 1f + num4 * (float)(3 - num5) * 0.1f * ((num5 == 0) ? 0.5f : 1f);
+                num6 *= self.iVars.fatness;
+                Vector2 normalized = (vector - vector2).normalized;
+                Vector2 a = Custom.PerpendicularVector(normalized);
+                float d = Vector2.Distance(vector2, vector);
+
+                if ((num5 == 1 || j == 2) && !availableBodychunks.Contains(1))
+                {
+                    sLeaser.sprites[j].isVisible = false;
+                    (sLeaser.sprites[self.SpriteBodyMesh] as TriangleMesh).MoveVertice(j * 4, vector2 + normalized * d - a * num3 - camPos);
+                    (sLeaser.sprites[self.SpriteBodyMesh] as TriangleMesh).MoveVertice(j * 4 + 1, vector2 + normalized * d - a * num3 - camPos);
+                    (sLeaser.sprites[self.SpriteBodyMesh] as TriangleMesh).MoveVertice(j * 4 + 2, vector2 + normalized * d - a * num3 - camPos);
+                    (sLeaser.sprites[self.SpriteBodyMesh] as TriangleMesh).MoveVertice(j * 4 + 3, vector2 + normalized * d - a * num3 - camPos);
+                }
+                else if (num5 == 2 && !availableBodychunks.Contains(2))
+                {
+                    sLeaser.sprites[j].isVisible = false;
+                    (sLeaser.sprites[self.SpriteBodyMesh] as TriangleMesh).MoveVertice(j * 4, vector2 + normalized * d - a * num3 - camPos);
+                    (sLeaser.sprites[self.SpriteBodyMesh] as TriangleMesh).MoveVertice(j * 4 + 1, vector2 + normalized * d - a * num3 - camPos);
+                    (sLeaser.sprites[self.SpriteBodyMesh] as TriangleMesh).MoveVertice(j * 4 + 2, vector2 + normalized * d - a * num3 - camPos);
+                    (sLeaser.sprites[self.SpriteBodyMesh] as TriangleMesh).MoveVertice(j * 4 + 3, vector2 + normalized * d - a * num3 - camPos);
+                }
+            }
+        }
+        void CamoLizardGraphicsDraw()
+        {
+            Color effectColour = self.effectColor;
+            Color headColour = self.effectColor;
+
+            Color bodyColour = self.DynamicBodyColor(0f);
+
+            bool isSalamander = self.lizard.Template.type == CreatureTemplate.Type.Salamander || self.lizard.Template.type.ToString() == "MoleSalamander";
+
+            bool head = true;
+            if (self.lizard.Template.type == CreatureTemplate.Type.BlackLizard || isSalamander || self.lizard.Template.type.ToString() == "NoodleEater" || ModManager.Watcher && (self.lizard.Template.type == WatcherEnums.CreatureTemplateType.BasiliskLizard || self.lizard.Template.type == WatcherEnums.CreatureTemplateType.IndigoLizard))
+            {
+                head = false;
+            }
+
+            if (self.whiteCamoColorAmount > 0.25f || graphicData.electricColorTimer > 0)
+            {
+                graphicData.camoOnce = true;
+
+                effectColour = CamoElectric(self, graphicData, effectColour);
+                bodyColour = Camo(self, bodyColour);
+
+                if (graphicData.electricColorTimer > 0)
+                    graphicData.electricColorTimer--;
+
+                if (head)
+                {
+                    float num = 1f - Mathf.Pow(0.5f + 0.5f * Mathf.Sin(Mathf.Lerp(self.lastBlink, self.blink, timeStacker) * 2f * 3.1415927f), 1.5f + self.lizard.AI.excitement * 1.5f);
+                    if (self.headColorSetter != 0f)
+                    {
+                        num = Mathf.Lerp(num, (self.headColorSetter > 0f) ? 1f : 0f, Mathf.Abs(self.headColorSetter));
+                    }
+                    if (self.flicker > 10)
+                    {
+                        num = self.flickerColor;
+                    }
+                    num = Mathf.Lerp(num, Mathf.Pow(Mathf.Max(0f, Mathf.Lerp(self.lastVoiceVisualization, self.voiceVisualization, timeStacker)), 0.75f), Mathf.Lerp(self.lastVoiceVisualizationIntensity, self.voiceVisualizationIntensity, timeStacker));
+                    headColour = Color.Lerp(CamoElectric(self, graphicData, self.HeadColor1), effectColour, num);
+                }
+                else if (isSalamander)
+                {
+                    headColour = Camo(self, self.SalamanderColor);
+                }
+                else
+                {
+                    headColour = bodyColour;
+                }
+
+                #region Body
+                sLeaser.sprites[self.SpriteBodyMesh].color = bodyColour;
+                sLeaser.sprites[self.SpriteTail].color = bodyColour;
+
+                for (int i = self.SpriteBodyCirclesStart; i < self.SpriteBodyCirclesEnd; i++)
+                {
+                    sLeaser.sprites[i].color = bodyColour;
+                }
+                #endregion
+
+                #region Limbs
+                for (int j = self.SpriteLimbsStart; j < self.SpriteLimbsEnd; j++)
+                {
+                    sLeaser.sprites[j].color = bodyColour;
+                }
+                for (int s = self.SpriteLimbsColorStart; s < self.SpriteLimbsColorEnd; s++)
+                {
+                    if (!ShadowOfOptions.dismemberment.Value || data.armState[s - self.SpriteLimbsColorStart] != "Cut")
+                    {
+                        sLeaser.sprites[s].color = effectColour;
+                    }
+                    else if (ShadowOfOptions.dismemberment.Value && data.armState[s - self.SpriteLimbsColorStart] == "Cut" && BloodColoursCheck(self.lizard.Template.type.ToString()))
+                    {
+                        sLeaser.sprites[s].color = bloodcolours[self.lizard.Template.type.ToString()];
+                    }
+                }
+                #endregion
+
+                #region Tongue
+                if (ModManager.Watcher && self.lizard.tongue != null && self.lizard.tongue.Out && self.lizard.Template.type == WatcherEnums.CreatureTemplateType.IndigoLizard)
+                {
+                    sLeaser.sprites[self.SpriteTongueStart + 1].color = effectColour;
+                }
+                #endregion
+
+                #region Head
+                if (data.availableBodychunks.Contains(0) && !data.beheaded)
+                {
                     if (self.lizard.Template.type == CreatureTemplate.Type.CyanLizard || ModManager.Watcher && self.lizard.Template.type == WatcherEnums.CreatureTemplateType.IndigoLizard)
                     {
                         sLeaser.sprites[self.SpriteHeadStart].color = bodyColour;
@@ -898,10 +724,10 @@ internal class LizardGraphicsHooks
                     }
                     else if (ModManager.Watcher && self.lizard.Template.type == WatcherEnums.CreatureTemplateType.BasiliskLizard)
                     {
-                        Color color4 = CamoElectric(self, data2, Color.Lerp(self.HeadColor(timeStacker), self.lizard.effectColor, 0.7f));
+                        Color color4 = CamoElectric(self, graphicData, Color.Lerp(self.HeadColor(timeStacker), self.lizard.effectColor, 0.7f));
                         if (self.whiteFlicker > 0 && (self.whiteFlicker > 15 || self.everySecondDraw))
                         {
-                            color4 = CamoElectric(self, data2, new Color(1f, 1f, 1f));
+                            color4 = CamoElectric(self, graphicData, new Color(1f, 1f, 1f));
                         }
                         sLeaser.sprites[self.SpriteHeadStart].color = color4;
                         sLeaser.sprites[self.SpriteHeadStart + 3].color = color4;
@@ -911,624 +737,703 @@ internal class LizardGraphicsHooks
                         sLeaser.sprites[self.SpriteHeadStart].color = headColour;
                         sLeaser.sprites[self.SpriteHeadStart + 3].color = headColour;
                     }
-                    #endregion
+                }
+                #endregion
 
-                    #region Teeth
-                    if (self.lizard.Template.type == CreatureTemplate.Type.CyanLizard)
+                #region Teeth
+                if (self.lizard.Template.type == CreatureTemplate.Type.CyanLizard)
+                {
+                    sLeaser.sprites[self.SpriteHeadStart + 1].color = Electrify(self.HeadColor(timeStacker));
+                    sLeaser.sprites[self.SpriteHeadStart + 2].color = Electrify(self.HeadColor(timeStacker));
+                }
+                #endregion
+
+                #region Tail
+                if (self.iVars.tailColor > 0f)
+                {
+                    for (int j = 0; j < (sLeaser.sprites[self.SpriteTail] as TriangleMesh).verticeColors.Length; j++)
                     {
-                        sLeaser.sprites[self.SpriteHeadStart + 1].color = Electrify(self.HeadColor(timeStacker));
-                        sLeaser.sprites[self.SpriteHeadStart + 2].color = Electrify(self.HeadColor(timeStacker));
+                        float t = (float)(j / 2) * 2f / (float)((sLeaser.sprites[self.SpriteTail] as TriangleMesh).verticeColors.Length - 1);
+                        (sLeaser.sprites[self.SpriteTail] as TriangleMesh).verticeColors[j] = TailColor(Mathf.Lerp(self.bodyLength / self.BodyAndTailLength, 1f, t));
                     }
-                    #endregion
+                }
+                #endregion
 
-                    #region Tail
-                    if (self.iVars.tailColor > 0f)
+                #region Cosmetics
+                for (int c = 0; c < self.cosmetics.Count; c++)
+                {
+                    if (self.cosmetics[c] is Antennae antennae)
                     {
-                        for (int j = 0; j < (sLeaser.sprites[self.SpriteTail] as TriangleMesh).verticeColors.Length; j++)
+                        if (!data.availableBodychunks.Contains(0) || data.beheaded)
                         {
-                            float t = (float)(j / 2) * 2f / (float)((sLeaser.sprites[self.SpriteTail] as TriangleMesh).verticeColors.Length - 1);
-                            (sLeaser.sprites[self.SpriteTail] as TriangleMesh).verticeColors[j] = TailColor(Mathf.Lerp(self.bodyLength / self.BodyAndTailLength, 1f, t));
+                            continue;
+                        }
+
+                        float flicker = Mathf.Pow(UnityEngine.Random.value, 1f - 0.5f * self.lizard.AI.yellowAI.commFlicker) * self.lizard.AI.yellowAI.commFlicker;
+                        if (!self.lizard.Consious)
+                        {
+                            flicker = 0f;
+                        }
+
+                        for (int i = 0; i < 2; i++)
+                        {
+                            sLeaser.sprites[antennae.startSprite + i].color = headColour;
+
+                            float num2 = 0f;
+
+                            for (int j = 0; j < antennae.segments; j++)
+                            {
+                                float num3 = (float)j / (float)(antennae.segments - 1);
+                                for (int k = 0; k < 2; k++)
+                                {
+                                    (sLeaser.sprites[antennae.Sprite(i, k)] as TriangleMesh).verticeColors[j * 4] = AntennaeEffectColor(k, (num3 + num2) / 2f, flicker, antennae);
+                                    (sLeaser.sprites[antennae.Sprite(i, k)] as TriangleMesh).verticeColors[j * 4 + 1] = AntennaeEffectColor(k, (num3 + num2) / 2f, flicker, antennae);
+                                    (sLeaser.sprites[antennae.Sprite(i, k)] as TriangleMesh).verticeColors[j * 4 + 2] = AntennaeEffectColor(k, num3, flicker, antennae);
+                                    if (j < antennae.segments - 1)
+                                    {
+                                        (sLeaser.sprites[antennae.Sprite(i, k)] as TriangleMesh).verticeColors[j * 4 + 3] = AntennaeEffectColor(k, num3, flicker, antennae);
+                                    }
+                                }
+                                num2 = num3;
+                            }
+                        }
+
+                        Color AntennaeEffectColor(int part, float tip, float flicker, Antennae antennae)
+                        {
+                            tip = Mathf.Pow(Mathf.InverseLerp(0f, 0.6f, tip), 0.5f);
+                            if (part == 0)
+                            {
+                                return Color.Lerp(head ? headColour : effectColour, Color.Lerp(effectColour, self.palette.blackColor, flicker), tip);
+                            }
+                            return Color.Lerp(effectColour, new Color(1f, 1f, 1f, antennae.alpha), flicker);
                         }
                     }
-                    #endregion
-
-                    #region Cosmetics
-                    for (int c = 0; c < self.cosmetics.Count; c++)
+                    else if (self.cosmetics[c] is AxolotlGills axolotlGills)
                     {
-                        if (self.cosmetics[c] is Antennae antennae)
+                        if (!data.availableBodychunks.Contains(0) || data.beheaded)
                         {
-                            float flicker = Mathf.Pow(UnityEngine.Random.value, 1f - 0.5f * self.lizard.AI.yellowAI.commFlicker) * self.lizard.AI.yellowAI.commFlicker;
-                            if (!self.lizard.Consious)
+                            continue;
+                        }
+
+                        for (int i = axolotlGills.startSprite + axolotlGills.scalesPositions.Length - 1; i >= axolotlGills.startSprite; i--)
+                        {
+                            sLeaser.sprites[i].color = headColour;
+
+                            if (axolotlGills.colored)
                             {
-                                flicker = 0f;
-                            }
-
-                            for (int i = 0; i < 2; i++)
-                            {
-                                sLeaser.sprites[antennae.startSprite + i].color = headColour;
-
-                                float num2 = 0f;
-
-                                for (int j = 0; j < antennae.segments; j++)
-                                {
-                                    float num3 = (float)j / (float)(antennae.segments - 1);
-                                    for (int k = 0; k < 2; k++)
-                                    {
-                                        (sLeaser.sprites[antennae.Sprite(i, k)] as TriangleMesh).verticeColors[j * 4] = AntennaeEffectColor(k, (num3 + num2) / 2f, flicker, antennae);
-                                        (sLeaser.sprites[antennae.Sprite(i, k)] as TriangleMesh).verticeColors[j * 4 + 1] = AntennaeEffectColor(k, (num3 + num2) / 2f, flicker, antennae);
-                                        (sLeaser.sprites[antennae.Sprite(i, k)] as TriangleMesh).verticeColors[j * 4 + 2] = AntennaeEffectColor(k, num3, flicker, antennae);
-                                        if (j < antennae.segments - 1)
-                                        {
-                                            (sLeaser.sprites[antennae.Sprite(i, k)] as TriangleMesh).verticeColors[j * 4 + 3] = AntennaeEffectColor(k, num3, flicker, antennae);
-                                        }
-                                    }
-                                    num2 = num3;
-                                }
-                            }
-
-                            Color AntennaeEffectColor(int part, float tip, float flicker, Antennae antennae)
-                            {
-                                tip = Mathf.Pow(Mathf.InverseLerp(0f, 0.6f, tip), 0.5f);
-                                if (part == 0)
-                                {
-                                    return Color.Lerp(head ? headColour : effectColour, Color.Lerp(effectColour, self.palette.blackColor, flicker), tip);
-                                }
-                                return Color.Lerp(effectColour, new Color(1f, 1f, 1f, antennae.alpha), flicker);
+                                sLeaser.sprites[i + axolotlGills.scalesPositions.Length].color = effectColour;
                             }
                         }
-                        else if (self.cosmetics[c] is AxolotlGills axolotlGills)
+                    }
+                    else if (self.cosmetics[c] is BodyStripes bodyStripes)
+                    {
+                        for (int i = bodyStripes.startSprite + bodyStripes.scalesPositions.Length - 1; i >= bodyStripes.startSprite; i--)
                         {
-                            for (int i = axolotlGills.startSprite + axolotlGills.scalesPositions.Length - 1; i >= axolotlGills.startSprite; i--)
+                            for (int j = 0; j < 4; j++)
                             {
-                                sLeaser.sprites[i].color = headColour;
-
-                                if (axolotlGills.colored)
+                                if (j > 1)
                                 {
-                                    sLeaser.sprites[i + axolotlGills.scalesPositions.Length].color = effectColour;
-                                }
-                            }
-                        }
-                        else if (self.cosmetics[c] is BodyStripes bodyStripes)
-                        {
-                            for (int i = bodyStripes.startSprite + bodyStripes.scalesPositions.Length - 1; i >= bodyStripes.startSprite; i--)
-                            {
-                                for (int j = 0; j < 4; j++)
-                                {
-                                    if (j > 1)
-                                    {
-                                        (sLeaser.sprites[i] as TriangleMesh).verticeColors[j] = effectColour;
-                                    }
-                                    else
-                                    {
-                                        (sLeaser.sprites[i] as TriangleMesh).verticeColors[j] = bodyColour;
-                                    }
-                                }
-                            }
-                        }
-                        else if (self.cosmetics[c] is BumpHawk bumpHawk)
-                        {
-                            for (int i = bumpHawk.startSprite + bumpHawk.numberOfSprites - 1; i >= bumpHawk.startSprite; i--)
-                            {
-                                float num = Mathf.InverseLerp((float)bumpHawk.startSprite, (float)(bumpHawk.startSprite + bumpHawk.numberOfSprites - 1), (float)i);
-                                float num2 = Mathf.Lerp(0.05f, bumpHawk.spineLength / self.BodyAndTailLength, num);
-                                LizardGraphics.LizardSpineData lizardSpineData = self.SpinePosition(num2, timeStacker);
-
-                                if (bumpHawk.coloredHawk)
-                                {
-                                    sLeaser.sprites[i].color = Color.Lerp(headColour, bodyColour, num);
+                                    (sLeaser.sprites[i] as TriangleMesh).verticeColors[j] = effectColour;
                                 }
                                 else
                                 {
-                                    sLeaser.sprites[i].color = bodyColour;
+                                    (sLeaser.sprites[i] as TriangleMesh).verticeColors[j] = bodyColour;
                                 }
                             }
                         }
-                        else if (self.cosmetics[c] is JumpRings jumpRings)
+                    }
+                    else if (self.cosmetics[c] is BumpHawk bumpHawk)
+                    {
+                        for (int i = bumpHawk.startSprite + bumpHawk.numberOfSprites - 1; i >= bumpHawk.startSprite; i--)
                         {
-                            Color ringsColor = headColour;
-                            if (self.lizard.animation == Lizard.Animation.PrepareToJump)
+                            float num = Mathf.InverseLerp((float)bumpHawk.startSprite, (float)(bumpHawk.startSprite + bumpHawk.numberOfSprites - 1), (float)i);
+                            float num2 = Mathf.Lerp(0.05f, bumpHawk.spineLength / self.BodyAndTailLength, num);
+                            LizardGraphics.LizardSpineData lizardSpineData = self.SpinePosition(num2, timeStacker);
+
+                            if (bumpHawk.coloredHawk)
                             {
-                                float num = 0.5f + 0.5f * Mathf.InverseLerp((float)self.lizard.timeToRemainInAnimation, 0f, (float)self.lizard.timeInAnimation);
-                                ringsColor = Color.Lerp(headColour, Color.Lerp(Color.white, effectColour, num), UnityEngine.Random.value);
+                                sLeaser.sprites[i].color = Color.Lerp(headColour, bodyColour, num);
                             }
-                            for (int i = 0; i < 2; i++)
+                            else
                             {
-                                for (int j = 0; j < 2; j++)
+                                sLeaser.sprites[i].color = bodyColour;
+                            }
+                        }
+                    }
+                    else if (self.cosmetics[c] is JumpRings jumpRings)
+                    {
+                        if (!data.availableBodychunks.Contains(1))
+                        {
+                            continue;
+                        }
+
+                        Color ringsColor = headColour;
+                        if (self.lizard.animation == Lizard.Animation.PrepareToJump)
+                        {
+                            float num = 0.5f + 0.5f * Mathf.InverseLerp((float)self.lizard.timeToRemainInAnimation, 0f, (float)self.lizard.timeInAnimation);
+                            ringsColor = Color.Lerp(headColour, Color.Lerp(Color.white, effectColour, num), UnityEngine.Random.value);
+                        }
+                        for (int i = 0; i < 2; i++)
+                        {
+                            for (int j = 0; j < 2; j++)
+                            {
+                                sLeaser.sprites[jumpRings.RingSprite(i, j, 0)].color = new Color(1f, 0f, 0f);
+                                sLeaser.sprites[jumpRings.RingSprite(i, j, 0)].color = ringsColor;
+                                sLeaser.sprites[jumpRings.RingSprite(i, j, 1)].color = bodyColour;
+                            }
+                        }
+                    }
+                    else if (self.cosmetics[c] is LongBodyScales longBodyScales)
+                    {
+                        for (int i = longBodyScales.startSprite + longBodyScales.scalesPositions.Length - 1; i >= longBodyScales.startSprite; i--)
+                        {
+                            sLeaser.sprites[i].color = Camo(self, self.BodyColor(longBodyScales.scalesPositions[i - longBodyScales.startSprite].y));
+                            if (longBodyScales.colored)
+                            {
+                                if (self.lizard.Template.type == CreatureTemplate.Type.WhiteLizard)
                                 {
-                                    sLeaser.sprites[jumpRings.RingSprite(i, j, 0)].color = new Color(1f, 0f, 0f);
-                                    sLeaser.sprites[jumpRings.RingSprite(i, j, 0)].color = ringsColor;
-                                    sLeaser.sprites[jumpRings.RingSprite(i, j, 1)].color = bodyColour;
+                                    sLeaser.sprites[i + longBodyScales.scalesPositions.Length].color = CamoElectric(self, graphicData, self.HeadColor(1f));
+                                }
+                                else
+                                {
+                                    sLeaser.sprites[i + longBodyScales.scalesPositions.Length].color = effectColour;
                                 }
                             }
                         }
-                        else if (self.cosmetics[c] is LongBodyScales longBodyScales)
+                    }
+                    else if (self.cosmetics[c] is LongHeadScales longHeadScales)
+                    {
+                        if (!data.availableBodychunks.Contains(1))
                         {
-                            for (int i = longBodyScales.startSprite + longBodyScales.scalesPositions.Length - 1; i >= longBodyScales.startSprite; i--)
+                            continue;
+                        }
+
+                        for (int i = longHeadScales.startSprite + longHeadScales.scalesPositions.Length - 1; i >= longHeadScales.startSprite; i--)
+                        {
+                            sLeaser.sprites[i].color = headColour;
+                            if (longHeadScales.colored)
                             {
-                                sLeaser.sprites[i].color = Camo(self, self.BodyColor(longBodyScales.scalesPositions[i - longBodyScales.startSprite].y));
-                                if (longBodyScales.colored)
+                                sLeaser.sprites[i + longHeadScales.scalesPositions.Length].color = effectColour;
+                            }
+                        }
+                    }
+                    else if (self.cosmetics[c] is LongShoulderScales longShoulderScales)
+                    {
+                        for (int i = longShoulderScales.startSprite + longShoulderScales.scalesPositions.Length - 1; i >= longShoulderScales.startSprite; i--)
+                        {
+                            sLeaser.sprites[i].color = Camo(self, self.BodyColor(longShoulderScales.scalesPositions[i - longShoulderScales.startSprite].y));
+                            if (longShoulderScales.colored)
+                            {
+                                if (self.lizard.Template.type == CreatureTemplate.Type.WhiteLizard)
                                 {
-                                    if (self.lizard.Template.type == CreatureTemplate.Type.WhiteLizard)
+                                    sLeaser.sprites[i + longShoulderScales.scalesPositions.Length].color = CamoElectric(self, graphicData, self.HeadColor(1f));
+                                }
+                                else
+                                {
+                                    sLeaser.sprites[i + longShoulderScales.scalesPositions.Length].color = effectColour;
+                                }
+                            }
+                        }
+                    }
+                    else if (self.cosmetics[c] is ShortBodyScales shortBodyScales)
+                    {
+                        for (int i = shortBodyScales.startSprite + shortBodyScales.scalesPositions.Length - 1; i >= shortBodyScales.startSprite; i--)
+                        {
+                            sLeaser.sprites[i].color = headColour;
+                        }
+                    }
+                    else if (self.cosmetics[c] is SpineSpikes spineSpikes)
+                    {
+                        for (int i = spineSpikes.startSprite; i < spineSpikes.startSprite + spineSpikes.bumps; i++)
+                        {
+                            float f = Mathf.Lerp(0.05f, spineSpikes.spineLength / self.BodyAndTailLength, Mathf.InverseLerp((float)spineSpikes.startSprite, (float)(spineSpikes.startSprite + spineSpikes.bumps - 1), (float)i));
+                            sLeaser.sprites[i].color = Camo(self, self.BodyColor(f));
+                            if (spineSpikes.colored == 1)
+                            {
+                                sLeaser.sprites[i + spineSpikes.bumps].color = effectColour;
+                            }
+                            else if (spineSpikes.colored == 2)
+                            {
+                                float f2 = Mathf.InverseLerp((float)spineSpikes.startSprite, (float)(spineSpikes.startSprite + spineSpikes.bumps - 1), (float)i);
+                                sLeaser.sprites[i + spineSpikes.bumps].color = CamoElectric(self, graphicData, Color.Lerp(effectColour, self.BodyColor(f), Mathf.Pow(f2, 0.5f)));
+                            }
+                        }
+                    }
+                    else if (self.cosmetics[c] is TailFin tailFin)
+                    {
+                        if (!data.availableBodychunks.Contains(2))
+                        {
+                            continue;
+                        }
+
+                        for (int i = 0; i < 2; i++)
+                        {
+                            int num = i * (tailFin.colored ? (tailFin.bumps * 2) : tailFin.bumps);
+                            for (int j = tailFin.startSprite; j < tailFin.startSprite + tailFin.bumps; j++)
+                            {
+                                float f = Mathf.Lerp(0.05f, tailFin.spineLength / self.BodyAndTailLength, Mathf.InverseLerp((float)tailFin.startSprite, (float)(tailFin.startSprite + tailFin.bumps - 1), (float)j));
+                                sLeaser.sprites[j + num].color = Camo(self, self.BodyColor(f));
+                                if (tailFin.colored)
+                                {
+                                    sLeaser.sprites[j + tailFin.bumps + num].color = effectColour;
+                                }
+                            }
+                        }
+                    }
+                    else if (self.cosmetics[c] is TailGeckoScales tailGeckoScales)
+                    {
+                        if (!data.availableBodychunks.Contains(2))
+                        {
+                            continue;
+                        }
+
+                        if (tailGeckoScales.bigScales)
+                        {
+                            LizardGraphics.LizardSpineData lizardSpineData = self.SpinePosition(0.4f, timeStacker);
+                            for (int i = 0; i < tailGeckoScales.rows; i++)
+                            {
+                                float num = Mathf.InverseLerp(0f, (float)(tailGeckoScales.rows - 1), (float)i);
+                                float num2 = Mathf.Lerp(0.5f, 0.99f, Mathf.Pow(num, 0.8f));
+                                LizardGraphics.LizardSpineData lizardSpineData2 = self.SpinePosition(num2, timeStacker);
+                                Color a = Camo(self, self.BodyColor(num2));
+                                for (int j = 0; j < tailGeckoScales.lines; j++)
+                                {
+                                    float num3 = ((float)j + ((i % 2 == 0) ? 0.5f : 0f)) / (float)(tailGeckoScales.lines - 1);
+                                    num3 = -1f + 2f * num3;
+                                    num3 += Mathf.Lerp(self.lastDepthRotation, self.depthRotation, timeStacker);
+                                    if (num3 < -1f)
                                     {
-                                        sLeaser.sprites[i + longBodyScales.scalesPositions.Length].color = CamoElectric(self, data2, self.HeadColor(1f));
+                                        num3 += 2f;
                                     }
-                                    else
+                                    else if (num3 > 1f)
                                     {
-                                        sLeaser.sprites[i + longBodyScales.scalesPositions.Length].color = effectColour;
+                                        num3 -= 2f;
                                     }
-                                }
-                            }
-                        }
-                        else if (self.cosmetics[c] is LongHeadScales longHeadScales)
-                        {
-                            for (int i = longHeadScales.startSprite + longHeadScales.scalesPositions.Length - 1; i >= longHeadScales.startSprite; i--)
-                            {
-                                sLeaser.sprites[i].color = headColour;
-                                if (longHeadScales.colored)
-                                {
-                                    sLeaser.sprites[i + longHeadScales.scalesPositions.Length].color = effectColour;
-                                }
-                            }
-                        }
-                        else if (self.cosmetics[c] is LongShoulderScales longShoulderScales)
-                        {
-                            for (int i = longShoulderScales.startSprite + longShoulderScales.scalesPositions.Length - 1; i >= longShoulderScales.startSprite; i--)
-                            {
-                                sLeaser.sprites[i].color = Camo(self, self.BodyColor(longShoulderScales.scalesPositions[i - longShoulderScales.startSprite].y));
-                                if (longShoulderScales.colored)
-                                {
-                                    if (self.lizard.Template.type == CreatureTemplate.Type.WhiteLizard)
+                                    Vector2 vector = lizardSpineData.pos + lizardSpineData.perp * (lizardSpineData.rad + 0.5f) * num3;
+                                    Vector2 vector2 = lizardSpineData2.pos + lizardSpineData2.perp * (lizardSpineData2.rad + 0.5f) * num3;
+                                    if (self.iVars.tailColor > 0f)
                                     {
-                                        sLeaser.sprites[i + longShoulderScales.scalesPositions.Length].color = CamoElectric(self, data2, self.HeadColor(1f));
-                                    }
-                                    else
-                                    {
-                                        sLeaser.sprites[i + longShoulderScales.scalesPositions.Length].color = effectColour;
-                                    }
-                                }
-                            }
-                        }
-                        else if (self.cosmetics[c] is ShortBodyScales shortBodyScales)
-                        {
-                            for (int i = shortBodyScales.startSprite + shortBodyScales.scalesPositions.Length - 1; i >= shortBodyScales.startSprite; i--)
-                            {
-                                sLeaser.sprites[i].color = headColour;
-                            }
-                        }
-                        else if (self.cosmetics[c] is SpineSpikes spineSpikes)
-                        {
-                            for (int i = spineSpikes.startSprite; i < spineSpikes.startSprite + spineSpikes.bumps; i++)
-                            {
-                                float f = Mathf.Lerp(0.05f, spineSpikes.spineLength / self.BodyAndTailLength, Mathf.InverseLerp((float)spineSpikes.startSprite, (float)(spineSpikes.startSprite + spineSpikes.bumps - 1), (float)i));
-                                sLeaser.sprites[i].color = Camo(self, self.BodyColor(f));
-                                if (spineSpikes.colored == 1)
-                                {
-                                    sLeaser.sprites[i + spineSpikes.bumps].color = effectColour;
-                                }
-                                else if (spineSpikes.colored == 2)
-                                {
-                                    float f2 = Mathf.InverseLerp((float)spineSpikes.startSprite, (float)(spineSpikes.startSprite + spineSpikes.bumps - 1), (float)i);
-                                    sLeaser.sprites[i + spineSpikes.bumps].color = CamoElectric(self, data2, Color.Lerp(effectColour, self.BodyColor(f), Mathf.Pow(f2, 0.5f)));
-                                }
-                            }
-                        }
-                        else if (self.cosmetics[c] is TailFin tailFin)
-                        {
-                            for (int i = 0; i < 2; i++)
-                            {
-                                int num = i * (tailFin.colored ? (tailFin.bumps * 2) : tailFin.bumps);
-                                for (int j = tailFin.startSprite; j < tailFin.startSprite + tailFin.bumps; j++)
-                                {
-                                    float f = Mathf.Lerp(0.05f, tailFin.spineLength / self.BodyAndTailLength, Mathf.InverseLerp((float)tailFin.startSprite, (float)(tailFin.startSprite + tailFin.bumps - 1), (float)j));
-                                    sLeaser.sprites[j + num].color = Camo(self, self.BodyColor(f));
-                                    if (tailFin.colored)
-                                    {
-                                        sLeaser.sprites[j + tailFin.bumps + num].color = effectColour;
-                                    }
-                                }
-                            }
-                        }
-                        else if (self.cosmetics[c] is TailGeckoScales tailGeckoScales)
-                        {
-                            if (tailGeckoScales.bigScales)
-                            {
-                                LizardGraphics.LizardSpineData lizardSpineData = self.SpinePosition(0.4f, timeStacker);
-                                for (int i = 0; i < tailGeckoScales.rows; i++)
-                                {
-                                    float num = Mathf.InverseLerp(0f, (float)(tailGeckoScales.rows - 1), (float)i);
-                                    float num2 = Mathf.Lerp(0.5f, 0.99f, Mathf.Pow(num, 0.8f));
-                                    LizardGraphics.LizardSpineData lizardSpineData2 = self.SpinePosition(num2, timeStacker);
-                                    Color a = Camo(self, self.BodyColor(num2));
-                                    for (int j = 0; j < tailGeckoScales.lines; j++)
-                                    {
-                                        float num3 = ((float)j + ((i % 2 == 0) ? 0.5f : 0f)) / (float)(tailGeckoScales.lines - 1);
-                                        num3 = -1f + 2f * num3;
-                                        num3 += Mathf.Lerp(self.lastDepthRotation, self.depthRotation, timeStacker);
-                                        if (num3 < -1f)
+                                        float num4 = Mathf.InverseLerp(0.5f, 1f, Mathf.Abs(Vector2.Dot(Custom.DirVec(vector2, vector), Custom.DegToVec(-45f + 120f * num3))));
+                                        num4 = Custom.LerpMap(Mathf.Abs(num3), 0.5f, 1f, 0.3f, 0f) + 0.7f * Mathf.Pow(num4 * Mathf.Pow(self.iVars.tailColor, 0.3f), Mathf.Lerp(2f, 0.5f, num));
+                                        if (num < 0.5f)
                                         {
-                                            num3 += 2f;
+                                            num4 *= Custom.LerpMap(num, 0f, 0.5f, 0.2f, 1f);
                                         }
-                                        else if (num3 > 1f)
+                                        num4 = Mathf.Pow(num4, Mathf.Lerp(2f, 0.5f, num));
+                                        if (num4 < 0.5f)
                                         {
-                                            num3 -= 2f;
-                                        }
-                                        Vector2 vector = lizardSpineData.pos + lizardSpineData.perp * (lizardSpineData.rad + 0.5f) * num3;
-                                        Vector2 vector2 = lizardSpineData2.pos + lizardSpineData2.perp * (lizardSpineData2.rad + 0.5f) * num3;
-                                        if (self.iVars.tailColor > 0f)
-                                        {
-                                            float num4 = Mathf.InverseLerp(0.5f, 1f, Mathf.Abs(Vector2.Dot(Custom.DirVec(vector2, vector), Custom.DegToVec(-45f + 120f * num3))));
-                                            num4 = Custom.LerpMap(Mathf.Abs(num3), 0.5f, 1f, 0.3f, 0f) + 0.7f * Mathf.Pow(num4 * Mathf.Pow(self.iVars.tailColor, 0.3f), Mathf.Lerp(2f, 0.5f, num));
-                                            if (num < 0.5f)
-                                            {
-                                                num4 *= Custom.LerpMap(num, 0f, 0.5f, 0.2f, 1f);
-                                            }
-                                            num4 = Mathf.Pow(num4, Mathf.Lerp(2f, 0.5f, num));
-                                            if (num4 < 0.5f)
-                                            {
-                                                sLeaser.sprites[tailGeckoScales.startSprite + i * tailGeckoScales.lines + j].color = Color.Lerp(a, effectColour, Mathf.InverseLerp(0f, 0.5f, num4));
-                                            }
-                                            else
-                                            {
-                                                sLeaser.sprites[tailGeckoScales.startSprite + i * tailGeckoScales.lines + j].color = Camo(self, Color.Lerp(effectColour, Color.white, Mathf.InverseLerp(0.5f, 1f, num4)));
-                                            }
+                                            sLeaser.sprites[tailGeckoScales.startSprite + i * tailGeckoScales.lines + j].color = Color.Lerp(a, effectColour, Mathf.InverseLerp(0f, 0.5f, num4));
                                         }
                                         else
                                         {
-                                            sLeaser.sprites[tailGeckoScales.startSprite + i * tailGeckoScales.lines + j].color = Color.Lerp(a, effectColour, Custom.LerpMap(num, 0f, 0.8f, 0.2f, Custom.LerpMap(Mathf.Abs(num3), 0.5f, 1f, 0.8f, 0.4f), 0.8f));
+                                            sLeaser.sprites[tailGeckoScales.startSprite + i * tailGeckoScales.lines + j].color = Camo(self, Color.Lerp(effectColour, Color.white, Mathf.InverseLerp(0.5f, 1f, num4)));
                                         }
-                                    }
-                                    lizardSpineData = lizardSpineData2;
-                                }
-                                return;
-                            }
-                            for (int k = 0; k < tailGeckoScales.rows; k++)
-                            {
-                                float f = Mathf.InverseLerp(0f, (float)(tailGeckoScales.rows - 1), (float)k);
-                                float num5 = Mathf.Lerp(0.4f, 0.95f, Mathf.Pow(f, 0.8f));
-                                Color geckoColor = Color.Lerp(Camo(self, self.BodyColor(num5)), effectColour, 0.2f + 0.8f * Mathf.Pow(f, 0.5f));
-                                for (int l = 0; l < tailGeckoScales.lines; l++)
-                                {
-                                    sLeaser.sprites[tailGeckoScales.startSprite + k * tailGeckoScales.lines + l].color = new Color(1f, 0f, 0f);
-                                    sLeaser.sprites[tailGeckoScales.startSprite + k * tailGeckoScales.lines + l].color = geckoColor;
-                                }
-                            }
-                        }
-                        else if (self.cosmetics[c] is TailTuft tailTuft)
-                        {
-                            for (int i = tailTuft.startSprite + tailTuft.scalesPositions.Length - 1; i >= tailTuft.startSprite; i--)
-                            {
-                                sLeaser.sprites[i].color = Camo(self, self.BodyColor(tailTuft.scalesPositions[i - tailTuft.startSprite].y));
-                                if (tailTuft.colored)
-                                {
-                                    if (self.lizard.Template.type == CreatureTemplate.Type.WhiteLizard)
-                                    {
-                                        sLeaser.sprites[i + tailTuft.scalesPositions.Length].color = CamoElectric(self, data2, self.HeadColor(1f));
                                     }
                                     else
                                     {
-                                        sLeaser.sprites[i + tailTuft.scalesPositions.Length].color = effectColour;
+                                        sLeaser.sprites[tailGeckoScales.startSprite + i * tailGeckoScales.lines + j].color = Color.Lerp(a, effectColour, Custom.LerpMap(num, 0f, 0.8f, 0.2f, Custom.LerpMap(Mathf.Abs(num3), 0.5f, 1f, 0.8f, 0.4f), 0.8f));
                                     }
                                 }
+                                lizardSpineData = lizardSpineData2;
                             }
+                            return;
                         }
-                        else if (self.cosmetics[c] is Whiskers whiskers)
+                        for (int k = 0; k < tailGeckoScales.rows; k++)
                         {
-                            for (int i = 0; i < whiskers.amount; i++)
+                            float f = Mathf.InverseLerp(0f, (float)(tailGeckoScales.rows - 1), (float)k);
+                            float num5 = Mathf.Lerp(0.4f, 0.95f, Mathf.Pow(f, 0.8f));
+                            Color geckoColor = Color.Lerp(Camo(self, self.BodyColor(num5)), effectColour, 0.2f + 0.8f * Mathf.Pow(f, 0.5f));
+                            for (int l = 0; l < tailGeckoScales.lines; l++)
                             {
-                                for (int j = 0; j < 2; j++)
-                                {
-                                    for (int k = 0; k < 4; k++)
-                                    {
-                                        for (int l = k * 4; l < k * 4 + ((k == 3) ? 3 : 4); l++)
-                                        {
-                                            (sLeaser.sprites[whiskers.startSprite + i * 2 + j] as TriangleMesh).verticeColors[l] = Color.Lerp(headColour, new Color(1f, 1f, 1f), (float)(k - 1) / 2f * Mathf.Lerp(whiskers.whiskerLightUp[i, j, 1], whiskers.whiskerLightUp[i, j, 0], timeStacker));
-                                        }
-                                    }
-                                }
+                                sLeaser.sprites[tailGeckoScales.startSprite + k * tailGeckoScales.lines + l].color = new Color(1f, 0f, 0f);
+                                sLeaser.sprites[tailGeckoScales.startSprite + k * tailGeckoScales.lines + l].color = geckoColor;
                             }
                         }
-                        else if (self.cosmetics[c] is WingScales wingScales)
-                        {
-                            for (int i = 0; i < wingScales.numberOfSprites; i++)
-                            {
-                                if (ModManager.DLCShared && self.lizard.Template.type == DLCSharedEnums.CreatureTemplateType.ZoopLizard)
-                                {
-                                    sLeaser.sprites[wingScales.startSprite + i].color = Camo(self, self.BodyColor(0f));
-                                }
-                                else
-                                {
-                                    sLeaser.sprites[wingScales.startSprite + i].color = bodyColour;
-                                }
-                            }
-                        }
-
-                        if (!ModManager.Watcher)
+                    }
+                    else if (self.cosmetics[c] is TailTuft tailTuft)
+                    {
+                        if (!data.availableBodychunks.Contains(2))
                         {
                             continue;
                         }
 
-                        else if (self.cosmetics[c] is SkinkStripes skinkStripes)
+                        for (int i = tailTuft.startSprite + tailTuft.scalesPositions.Length - 1; i >= tailTuft.startSprite; i--)
                         {
-                            for (int i = 0; i < skinkStripes.segs; i++)
+                            sLeaser.sprites[i].color = Camo(self, self.BodyColor(tailTuft.scalesPositions[i - tailTuft.startSprite].y));
+                            if (tailTuft.colored)
                             {
-                                float s = Mathf.InverseLerp(0f, (float)skinkStripes.segs, (float)i);
-                                LizardGraphics.LizardSpineData lizardSpineData = skinkStripes.lGraphics.SpinePosition(s, timeStacker);
-
-                                Color colorStripes = CamoElectric(self, data2, skinkStripes.SetColorAlpha(skinkStripes.color, 0.5f + lizardSpineData.depthRotation * 0.5f));
-                                (sLeaser.sprites[skinkStripes.startSprite + 1] as TriangleMesh).verticeColors[i * 2] = colorStripes;
-                                (sLeaser.sprites[skinkStripes.startSprite + 1] as TriangleMesh).verticeColors[i * 2 + 1] = colorStripes;
-                            }
-                            if (self.iVars.tailColor > 0f)
-                            {
-                                for (int i = 0; i < (sLeaser.sprites[skinkStripes.startSprite] as TriangleMesh).verticeColors.Length; i++)
+                                if (self.lizard.Template.type == CreatureTemplate.Type.WhiteLizard)
                                 {
-                                    float f = (float)(i / 2) * 2f / (float)((sLeaser.sprites[skinkStripes.startSprite] as TriangleMesh).verticeColors.Length - 1);
-                                    (sLeaser.sprites[skinkStripes.startSprite] as TriangleMesh).verticeColors[i] = Camo(self, self.BodyColor(f));
+                                    sLeaser.sprites[i + tailTuft.scalesPositions.Length].color = CamoElectric(self, graphicData, self.HeadColor(1f));
                                 }
+                                else
+                                {
+                                    sLeaser.sprites[i + tailTuft.scalesPositions.Length].color = effectColour;
+                                }
+                            }
+                        }
+                    }
+                    else if (self.cosmetics[c] is Whiskers whiskers)
+                    {
+                        if (!data.availableBodychunks.Contains(0) || data.beheaded)
+                        {
+                            continue;
+                        }
+
+                        for (int i = 0; i < whiskers.amount; i++)
+                        {
+                            for (int j = 0; j < 2; j++)
+                            {
+                                for (int k = 0; k < 4; k++)
+                                {
+                                    for (int l = k * 4; l < k * 4 + ((k == 3) ? 3 : 4); l++)
+                                    {
+                                        (sLeaser.sprites[whiskers.startSprite + i * 2 + j] as TriangleMesh).verticeColors[l] = Color.Lerp(headColour, new Color(1f, 1f, 1f), (float)(k - 1) / 2f * Mathf.Lerp(whiskers.whiskerLightUp[i, j, 1], whiskers.whiskerLightUp[i, j, 0], timeStacker));
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    else if (self.cosmetics[c] is WingScales wingScales)
+                    {
+                        if (!data.availableBodychunks.Contains(1))
+                        {
+                            continue;
+                        }
+
+                        for (int i = 0; i < wingScales.numberOfSprites; i++)
+                        {
+                            if (ModManager.DLCShared && self.lizard.Template.type == DLCSharedEnums.CreatureTemplateType.ZoopLizard)
+                            {
+                                sLeaser.sprites[wingScales.startSprite + i].color = Camo(self, self.BodyColor(0f));
                             }
                             else
                             {
-                                sLeaser.sprites[skinkStripes.startSprite].color = Camo(self, self.palette.blackColor);
+                                sLeaser.sprites[wingScales.startSprite + i].color = bodyColour;
                             }
-                        }
-                        else if (self.cosmetics[c] is SkinkSpeckles skinkSpeckles)
-                        {
-                            for (int i = 0; i < skinkSpeckles.spots; i++)
-                            {
-                                sLeaser.sprites[skinkSpeckles.startSprite + i].color = Camo(self, self.BodyColor(skinkSpeckles.spotInfo[i].x));
-                            }
-                        }
-
-                        else if (self.cosmetics[c] is PeachBackFin peachBackFin)
-                        {
-                            for (int i = peachBackFin.startSprite; i < peachBackFin.startSprite + peachBackFin.bumps; i++)
-                            {
-                                sLeaser.sprites[i].color = Camo(self, peachBackFin.palette.blackColor);
-                                if (peachBackFin.colored)
-                                {
-                                    sLeaser.sprites[i + peachBackFin.bumps].color = CamoElectric(self, data2, effectColour);
-                                }
-                            }
-                        }
-                        else if (self.cosmetics[c] is PeachHeadStripes peachHeadStripes)
-                        {
-                            float num = Mathf.Pow(UnityEngine.Random.value, 1f - 0.5f * self.lizard.AI.yellowAI.commFlicker) * self.lizard.AI.yellowAI.commFlicker;
-                            if (!self.lizard.Consious)
-                            {
-                                num = 0f;
-                            }
-
-                            Color color = peachHeadStripes.EffectColor(num);
-                            sLeaser.sprites[peachHeadStripes.startSprite].color = CamoElectric(self, data2, color);
                         }
                     }
-                    #endregion
+
+                    else if (!ModManager.Watcher)
+                    {
+                        continue;
+                    }
+                    else if (self.cosmetics[c] is BlizzardHaloShine blizzardHaloShine)
+                    {
+                        if (!data.availableBodychunks.Contains(0) || data.beheaded)
+                        {
+                            continue;
+                        }
+
+                        sLeaser.sprites[blizzardHaloShine.startSprite].color = CamoElectric(self, graphicData, Color.Lerp(Color.white, Color.Lerp(new Color(0.9f, 0.05f, 0f), Color.Lerp(new Color(1f, 0.4f, 0f), Color.white, Mathf.Abs(Mathf.Sin((float)blizzardHaloShine.heatWiwble * 0.07f)) * 0.3f), blizzardHaloShine.heat - 1f), blizzardHaloShine.heat));
+                    }
+                    else if (self.cosmetics[c] is SkinkStripes skinkStripes)
+                    {
+                        for (int i = 0; i < skinkStripes.segs; i++)
+                        {
+                            float s = Mathf.InverseLerp(0f, (float)skinkStripes.segs, (float)i);
+                            LizardGraphics.LizardSpineData lizardSpineData = skinkStripes.lGraphics.SpinePosition(s, timeStacker);
+
+                            Color colorStripes = CamoElectric(self, graphicData, skinkStripes.SetColorAlpha(skinkStripes.color, 0.5f + lizardSpineData.depthRotation * 0.5f));
+                            (sLeaser.sprites[skinkStripes.startSprite + 1] as TriangleMesh).verticeColors[i * 2] = colorStripes;
+                            (sLeaser.sprites[skinkStripes.startSprite + 1] as TriangleMesh).verticeColors[i * 2 + 1] = colorStripes;
+                        }
+                        if (self.iVars.tailColor > 0f)
+                        {
+                            for (int i = 0; i < (sLeaser.sprites[skinkStripes.startSprite] as TriangleMesh).verticeColors.Length; i++)
+                            {
+                                float f = (float)(i / 2) * 2f / (float)((sLeaser.sprites[skinkStripes.startSprite] as TriangleMesh).verticeColors.Length - 1);
+                                (sLeaser.sprites[skinkStripes.startSprite] as TriangleMesh).verticeColors[i] = Camo(self, self.BodyColor(f));
+                            }
+                        }
+                        else
+                        {
+                            sLeaser.sprites[skinkStripes.startSprite].color = Camo(self, self.palette.blackColor);
+                        }
+                    }
+                    else if (self.cosmetics[c] is SkinkSpeckles skinkSpeckles)
+                    {
+                        for (int i = 0; i < skinkSpeckles.spots; i++)
+                        {
+                            sLeaser.sprites[skinkSpeckles.startSprite + i].color = Camo(self, self.BodyColor(skinkSpeckles.spotInfo[i].x));
+                        }
+                    }
+                    else if (self.cosmetics[c] is PeachBackFin peachBackFin)
+                    {
+                        for (int i = peachBackFin.startSprite; i < peachBackFin.startSprite + peachBackFin.bumps; i++)
+                        {
+                            sLeaser.sprites[i].color = Camo(self, peachBackFin.palette.blackColor);
+                            if (peachBackFin.colored)
+                            {
+                                sLeaser.sprites[i + peachBackFin.bumps].color = CamoElectric(self, graphicData, effectColour);
+                            }
+                        }
+                    }
+                    else if (self.cosmetics[c] is PeachHeadStripes peachHeadStripes)
+                    {
+                        if (!data.availableBodychunks.Contains(0) || data.beheaded)
+                        {
+                            continue;
+                        }
+
+                        float num = Mathf.Pow(UnityEngine.Random.value, 1f - 0.5f * self.lizard.AI.yellowAI.commFlicker) * self.lizard.AI.yellowAI.commFlicker;
+                        if (!self.lizard.Consious)
+                        {
+                            num = 0f;
+                        }
+
+                        Color color = peachHeadStripes.EffectColor(num);
+                        sLeaser.sprites[peachHeadStripes.startSprite].color = CamoElectric(self, graphicData, color);
+                    }
                 }
-                else if (data2.camoOnce)
+                #endregion
+            }
+            else if (graphicData.camoOnce)
+            {
+                graphicData.camoOnce = false;
+
+                if (ModManager.DLCShared && (self.Caramel || self.lizard.Template.type == DLCSharedEnums.CreatureTemplateType.ZoopLizard))
                 {
-                    data2.camoOnce = false;
+                    self.ColorBody(sLeaser, self.ivarBodyColor);
+                }
+                else if (isSalamander)
+                {
+                    self.ColorBody(sLeaser, self.SalamanderColor);
+                }
+                else
+                {
+                    self.ColorBody(sLeaser, self.palette.blackColor);
+                }
 
-                    if (ModManager.DLCShared && (self.Caramel || self.lizard.Template.type == DLCSharedEnums.CreatureTemplateType.ZoopLizard))
+                for (int j = self.SpriteLimbsColorStart; j < self.SpriteLimbsColorEnd; j++)
+                {
+                    if (!ShadowOfOptions.dismemberment.Value || data.armState[j - self.SpriteLimbsColorStart] != "Cut")
                     {
-                        self.ColorBody(sLeaser, self.ivarBodyColor);
+                        sLeaser.sprites[j].color = effectColour;
                     }
-                    else if (isSalamander)
+                    else if (ShadowOfOptions.dismemberment.Value && data.armState[j - self.SpriteLimbsColorStart] == "Cut" && BloodColoursCheck(self.lizard.Template.type.ToString()))
                     {
-                        self.ColorBody(sLeaser, self.SalamanderColor);
+                        sLeaser.sprites[j].color = bloodcolours[self.lizard.Template.type.ToString()];
                     }
-                    else
-                    {
-                        self.ColorBody(sLeaser, self.palette.blackColor);
-                    }
+                }
 
-                    for (int j = self.SpriteLimbsColorStart; j < self.SpriteLimbsColorEnd; j++)
-                    {
-                        if (!ShadowOfOptions.dismemberment.Value || data.armState[j - self.SpriteLimbsColorStart] != "Cut")
-                        {
-                            sLeaser.sprites[j].color = effectColour;
-                        }
-                        else if (ShadowOfOptions.dismemberment.Value && data.armState[j - self.SpriteLimbsColorStart] == "Cut" && BloodColoursCheck(self.lizard.Template.type.ToString()))
-                        {
-                            sLeaser.sprites[j].color = bloodcolours[self.lizard.Template.type.ToString()];
-                        }
-                    }
+                if (self.lizard.Template.type == CreatureTemplate.Type.CyanLizard || self.lizard.Template.type == WatcherEnums.CreatureTemplateType.IndigoLizard)
+                {
+                    sLeaser.sprites[self.SpriteHeadStart].color = self.palette.blackColor;
+                    sLeaser.sprites[self.SpriteHeadStart + 3].color = self.palette.blackColor;
+                }
+                else if (isSalamander)
+                {
+                    sLeaser.sprites[self.SpriteHeadStart].color = self.SalamanderColor;
+                    sLeaser.sprites[self.SpriteHeadStart + 3].color = self.SalamanderColor;
+                }
 
-                    if (self.lizard.Template.type == CreatureTemplate.Type.CyanLizard || self.lizard.Template.type == WatcherEnums.CreatureTemplateType.IndigoLizard)
+                if (self.iVars.tailColor > 0f)
+                {
+                    for (int j = 0; j < (sLeaser.sprites[self.SpriteTail] as TriangleMesh).verticeColors.Length; j++)
                     {
-                        sLeaser.sprites[self.SpriteHeadStart].color = self.palette.blackColor;
-                        sLeaser.sprites[self.SpriteHeadStart + 3].color = self.palette.blackColor;
+                        float t = (float)(j / 2) * 2f / (float)((sLeaser.sprites[self.SpriteTail] as TriangleMesh).verticeColors.Length - 1);
+                        (sLeaser.sprites[self.SpriteTail] as TriangleMesh).verticeColors[j] = self.BodyColor(Mathf.Lerp(self.bodyLength / self.BodyAndTailLength, 1f, t));
                     }
-                    else if (isSalamander)
-                    {
-                        sLeaser.sprites[self.SpriteHeadStart].color = self.SalamanderColor;
-                        sLeaser.sprites[self.SpriteHeadStart + 3].color = self.SalamanderColor;
-                    }
+                }
 
-                    if (self.iVars.tailColor > 0f)
+                for (int c = 0; c < self.cosmetics.Count; c++)
+                {
+                    if (self.cosmetics[c] is JumpRings jumpRings)
                     {
-                        for (int j = 0; j < (sLeaser.sprites[self.SpriteTail] as TriangleMesh).verticeColors.Length; j++)
-                        {
-                            float t = (float)(j / 2) * 2f / (float)((sLeaser.sprites[self.SpriteTail] as TriangleMesh).verticeColors.Length - 1);
-                            (sLeaser.sprites[self.SpriteTail] as TriangleMesh).verticeColors[j] = self.BodyColor(Mathf.Lerp(self.bodyLength / self.BodyAndTailLength, 1f, t));
-                        }
-                    }
-
-                    for (int c = 0; c < self.cosmetics.Count; c++)
-                    {
-                        if (self.cosmetics[c] is JumpRings jumpRings)
-                        {
-                            for (int i = 0; i < 2; i++)
-                            {
-                                for (int j = 0; j < 2; j++)
-                                {
-                                    sLeaser.sprites[jumpRings.RingSprite(i, j, 1)].color = self.BodyColor(timeStacker);
-                                }
-                            }
-                        }
-                        else if (self.cosmetics[c] is LongBodyScales longBodyScales)
-                        {
-                            for (int i = longBodyScales.startSprite + longBodyScales.scalesPositions.Length - 1; i >= longBodyScales.startSprite; i--)
-                            {
-                                sLeaser.sprites[i].color = self.BodyColor(longBodyScales.scalesPositions[i - longBodyScales.startSprite].y);
-                                if (longBodyScales.colored)
-                                {
-                                    if (self.lizard.Template.type == CreatureTemplate.Type.WhiteLizard)
-                                    {
-                                        sLeaser.sprites[i + longBodyScales.scalesPositions.Length].color = self.HeadColor(1f);
-                                    }
-                                    else
-                                    {
-                                        sLeaser.sprites[i + longBodyScales.scalesPositions.Length].color = self.effectColor;
-                                    }
-                                }
-                            }
-                        }
-                        else if (self.cosmetics[c] is LongShoulderScales longShoulderScales)
-                        {
-                            for (int i = longShoulderScales.startSprite + longShoulderScales.scalesPositions.Length - 1; i >= longShoulderScales.startSprite; i--)
-                            {
-                                sLeaser.sprites[i].color = self.BodyColor(longShoulderScales.scalesPositions[i - longShoulderScales.startSprite].y);
-                                if (longShoulderScales.colored)
-                                {
-                                    if (self.lizard.Template.type == CreatureTemplate.Type.WhiteLizard)
-                                    {
-                                        sLeaser.sprites[i + longShoulderScales.scalesPositions.Length].color = self.HeadColor(1f);
-                                    }
-                                    else
-                                    {
-                                        sLeaser.sprites[i + longShoulderScales.scalesPositions.Length].color = self.effectColor;
-                                    }
-                                }
-                            }
-                        }
-                        else if (self.cosmetics[c] is SpineSpikes spineSpikes)
-                        {
-                            for (int i = spineSpikes.startSprite; i < spineSpikes.startSprite + spineSpikes.bumps; i++)
-                            {
-                                float f = Mathf.Lerp(0.05f, spineSpikes.spineLength / self.BodyAndTailLength, Mathf.InverseLerp((float)spineSpikes.startSprite, (float)(spineSpikes.startSprite + spineSpikes.bumps - 1), (float)i));
-                                if (spineSpikes.colored == 1)
-                                {
-                                    sLeaser.sprites[i + spineSpikes.bumps].color = self.effectColor;
-                                }
-                                else if (spineSpikes.colored == 2)
-                                {
-                                    float f2 = Mathf.InverseLerp((float)spineSpikes.startSprite, (float)(spineSpikes.startSprite + spineSpikes.bumps - 1), (float)i);
-                                    sLeaser.sprites[i + spineSpikes.bumps].color = Color.Lerp(self.effectColor, self.BodyColor(f), Mathf.Pow(f2, 0.5f));
-                                }
-                            }
-                        }
-                        else if (self.cosmetics[c] is TailFin tailFin)
-                        {
-                            for (int i = 0; i < 2; i++)
-                            {
-                                int num = i * tailFin.bumps * 2;
-                                for (int j = tailFin.startSprite; j < tailFin.startSprite + tailFin.bumps; j++)
-                                {
-                                    float f = Mathf.Lerp(0.05f, tailFin.spineLength / self.BodyAndTailLength, Mathf.InverseLerp((float)tailFin.startSprite, (float)(tailFin.startSprite + tailFin.bumps - 1), (float)j));
-                                    sLeaser.sprites[j + num].color = self.BodyColor(f);
-                                    if (tailFin.colored)
-                                    {
-                                        sLeaser.sprites[j + tailFin.bumps + num].color = self.effectColor;
-                                    }
-                                }
-                            }
-                        }
-                        else if (self.cosmetics[c] is TailTuft tailTuft)
-                        {
-                            for (int i = tailTuft.startSprite + tailTuft.scalesPositions.Length - 1; i >= tailTuft.startSprite; i--)
-                            {
-                                sLeaser.sprites[i].color = self.BodyColor(tailTuft.scalesPositions[i - tailTuft.startSprite].y);
-                                if (tailTuft.colored)
-                                {
-                                    if (self.lizard.Template.type == CreatureTemplate.Type.WhiteLizard)
-                                    {
-                                        sLeaser.sprites[i + tailTuft.scalesPositions.Length].color = self.HeadColor(1f);
-                                    }
-                                    else
-                                    {
-                                        sLeaser.sprites[i + tailTuft.scalesPositions.Length].color = self.effectColor;
-                                    }
-                                }
-                            }
-                        }
-                        else if (self.cosmetics[c] is Whiskers whiskers)
-                        {
-                            for (int i = 0; i < whiskers.amount; i++)
-                            {
-                                for (int j = 0; j < 2; j++)
-                                {
-                                    for (int k = 0; k < 4; k++)
-                                    {
-                                        for (int l = k * 4; l < k * 4 + ((k == 3) ? 3 : 4); l++)
-                                        {
-                                            (sLeaser.sprites[whiskers.startSprite + i * 2 + j] as TriangleMesh).verticeColors[l] = Color.Lerp(self.HeadColor(timeStacker), new Color(1f, 1f, 1f), (float)(k - 1) / 2f * Mathf.Lerp(whiskers.whiskerLightUp[i, j, 1], whiskers.whiskerLightUp[i, j, 0], timeStacker));
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                        else if (self.cosmetics[c] is WingScales wingScales)
-                        {
-                            for (int i = 0; i < wingScales.numberOfSprites; i++)
-                            {
-                                if (ModManager.DLCShared && wingScales.lGraphics.lizard.Template.type == DLCSharedEnums.CreatureTemplateType.ZoopLizard)
-                                {
-                                    sLeaser.sprites[wingScales.startSprite + i].color = wingScales.lGraphics.BodyColor(0f);
-                                }
-                                else
-                                {
-                                    sLeaser.sprites[wingScales.startSprite + i].color = self.palette.blackColor;
-                                }
-                            }
-                        }
-
-                        if (!ModManager.Watcher)
+                        if (!data.availableBodychunks.Contains(1))
                         {
                             continue;
                         }
 
-                        else if (self.cosmetics[c] is SkinkStripes skinkStripes)
+                        for (int i = 0; i < 2; i++)
                         {
-                            if (self.iVars.tailColor > 0f)
+                            for (int j = 0; j < 2; j++)
                             {
-                                for (int i = 0; i < (sLeaser.sprites[skinkStripes.startSprite] as TriangleMesh).verticeColors.Length; i++)
+                                sLeaser.sprites[jumpRings.RingSprite(i, j, 1)].color = self.BodyColor(timeStacker);
+                            }
+                        }
+                    }
+                    else if (self.cosmetics[c] is LongBodyScales longBodyScales)
+                    {
+                        for (int i = longBodyScales.startSprite + longBodyScales.scalesPositions.Length - 1; i >= longBodyScales.startSprite; i--)
+                        {
+                            sLeaser.sprites[i].color = self.BodyColor(longBodyScales.scalesPositions[i - longBodyScales.startSprite].y);
+                            if (longBodyScales.colored)
+                            {
+                                if (self.lizard.Template.type == CreatureTemplate.Type.WhiteLizard)
                                 {
-                                    float f = (float)(i / 2) * 2f / (float)((sLeaser.sprites[skinkStripes.startSprite] as TriangleMesh).verticeColors.Length - 1);
-                                    (sLeaser.sprites[skinkStripes.startSprite] as TriangleMesh).verticeColors[i] = self.BodyColor(f);
+                                    sLeaser.sprites[i + longBodyScales.scalesPositions.Length].color = self.HeadColor(1f);
                                 }
+                                else
+                                {
+                                    sLeaser.sprites[i + longBodyScales.scalesPositions.Length].color = self.effectColor;
+                                }
+                            }
+                        }
+                    }
+                    else if (self.cosmetics[c] is LongShoulderScales longShoulderScales)
+                    {
+                        for (int i = longShoulderScales.startSprite + longShoulderScales.scalesPositions.Length - 1; i >= longShoulderScales.startSprite; i--)
+                        {
+                            sLeaser.sprites[i].color = self.BodyColor(longShoulderScales.scalesPositions[i - longShoulderScales.startSprite].y);
+                            if (longShoulderScales.colored)
+                            {
+                                if (self.lizard.Template.type == CreatureTemplate.Type.WhiteLizard)
+                                {
+                                    sLeaser.sprites[i + longShoulderScales.scalesPositions.Length].color = self.HeadColor(1f);
+                                }
+                                else
+                                {
+                                    sLeaser.sprites[i + longShoulderScales.scalesPositions.Length].color = self.effectColor;
+                                }
+                            }
+                        }
+                    }
+                    else if (self.cosmetics[c] is SpineSpikes spineSpikes)
+                    {
+                        for (int i = spineSpikes.startSprite; i < spineSpikes.startSprite + spineSpikes.bumps; i++)
+                        {
+                            float f = Mathf.Lerp(0.05f, spineSpikes.spineLength / self.BodyAndTailLength, Mathf.InverseLerp((float)spineSpikes.startSprite, (float)(spineSpikes.startSprite + spineSpikes.bumps - 1), (float)i));
+                            if (spineSpikes.colored == 1)
+                            {
+                                sLeaser.sprites[i + spineSpikes.bumps].color = self.effectColor;
+                            }
+                            else if (spineSpikes.colored == 2)
+                            {
+                                float f2 = Mathf.InverseLerp((float)spineSpikes.startSprite, (float)(spineSpikes.startSprite + spineSpikes.bumps - 1), (float)i);
+                                sLeaser.sprites[i + spineSpikes.bumps].color = Color.Lerp(self.effectColor, self.BodyColor(f), Mathf.Pow(f2, 0.5f));
+                            }
+                        }
+                    }
+                    else if (self.cosmetics[c] is TailFin tailFin)
+                    {
+                        if (!data.availableBodychunks.Contains(2))
+                        {
+                            continue;
+                        }
+
+                        for (int i = 0; i < 2; i++)
+                        {
+                            int num = i * tailFin.bumps * 2;
+                            for (int j = tailFin.startSprite; j < tailFin.startSprite + tailFin.bumps; j++)
+                            {
+                                float f = Mathf.Lerp(0.05f, tailFin.spineLength / self.BodyAndTailLength, Mathf.InverseLerp((float)tailFin.startSprite, (float)(tailFin.startSprite + tailFin.bumps - 1), (float)j));
+                                sLeaser.sprites[j + num].color = self.BodyColor(f);
+                                if (tailFin.colored)
+                                {
+                                    sLeaser.sprites[j + tailFin.bumps + num].color = self.effectColor;
+                                }
+                            }
+                        }
+                    }
+                    else if (self.cosmetics[c] is TailTuft tailTuft)
+                    {
+                        if (!data.availableBodychunks.Contains(2))
+                        {
+                            continue;
+                        }
+
+                        for (int i = tailTuft.startSprite + tailTuft.scalesPositions.Length - 1; i >= tailTuft.startSprite; i--)
+                        {
+                            sLeaser.sprites[i].color = self.BodyColor(tailTuft.scalesPositions[i - tailTuft.startSprite].y);
+                            if (tailTuft.colored)
+                            {
+                                if (self.lizard.Template.type == CreatureTemplate.Type.WhiteLizard)
+                                {
+                                    sLeaser.sprites[i + tailTuft.scalesPositions.Length].color = self.HeadColor(1f);
+                                }
+                                else
+                                {
+                                    sLeaser.sprites[i + tailTuft.scalesPositions.Length].color = self.effectColor;
+                                }
+                            }
+                        }
+                    }
+                    else if (self.cosmetics[c] is Whiskers whiskers)
+                    {
+                        if (!data.availableBodychunks.Contains(0) || data.beheaded)
+                        {
+                            continue;
+                        }
+
+                        for (int i = 0; i < whiskers.amount; i++)
+                        {
+                            for (int j = 0; j < 2; j++)
+                            {
+                                for (int k = 0; k < 4; k++)
+                                {
+                                    for (int l = k * 4; l < k * 4 + ((k == 3) ? 3 : 4); l++)
+                                    {
+                                        (sLeaser.sprites[whiskers.startSprite + i * 2 + j] as TriangleMesh).verticeColors[l] = Color.Lerp(self.HeadColor(timeStacker), new Color(1f, 1f, 1f), (float)(k - 1) / 2f * Mathf.Lerp(whiskers.whiskerLightUp[i, j, 1], whiskers.whiskerLightUp[i, j, 0], timeStacker));
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    else if (self.cosmetics[c] is WingScales wingScales)
+                    {
+                        if (!data.availableBodychunks.Contains(1))
+                        {
+                            continue;
+                        }
+
+                        for (int i = 0; i < wingScales.numberOfSprites; i++)
+                        {
+                            if (ModManager.DLCShared && wingScales.lGraphics.lizard.Template.type == DLCSharedEnums.CreatureTemplateType.ZoopLizard)
+                            {
+                                sLeaser.sprites[wingScales.startSprite + i].color = wingScales.lGraphics.BodyColor(0f);
                             }
                             else
                             {
-                                sLeaser.sprites[skinkStripes.startSprite].color = self.palette.blackColor;
+                                sLeaser.sprites[wingScales.startSprite + i].color = self.palette.blackColor;
                             }
                         }
-                        else if (self.cosmetics[c] is SkinkSpeckles skinkSpeckles)
-                        {
-                            for (int i = 0; i < skinkSpeckles.spots; i++)
-                            {
-                                sLeaser.sprites[skinkSpeckles.startSprite + i].color = self.BodyColor(skinkSpeckles.spotInfo[i].x);
-                            }
-                        }
+                    }
 
-                        else if (self.cosmetics[c] is PeachBackFin peachBackFin)
+                    else if (!ModManager.Watcher)
+                    {
+                        continue;
+                    }
+                    else if (self.cosmetics[c] is SkinkStripes skinkStripes)
+                    {
+                        if (self.iVars.tailColor > 0f)
                         {
-                            for (int i = peachBackFin.startSprite; i < peachBackFin.startSprite + peachBackFin.bumps; i++)
+                            for (int i = 0; i < (sLeaser.sprites[skinkStripes.startSprite] as TriangleMesh).verticeColors.Length; i++)
                             {
-                                sLeaser.sprites[i].color = peachBackFin.palette.blackColor;
-                                if (peachBackFin.colored)
-                                {
-                                    sLeaser.sprites[i + peachBackFin.bumps].color = self.effectColor;
-                                }
+                                float f = (float)(i / 2) * 2f / (float)((sLeaser.sprites[skinkStripes.startSprite] as TriangleMesh).verticeColors.Length - 1);
+                                (sLeaser.sprites[skinkStripes.startSprite] as TriangleMesh).verticeColors[i] = self.BodyColor(f);
+                            }
+                        }
+                        else
+                        {
+                            sLeaser.sprites[skinkStripes.startSprite].color = self.palette.blackColor;
+                        }
+                    }
+                    else if (self.cosmetics[c] is SkinkSpeckles skinkSpeckles)
+                    {
+                        for (int i = 0; i < skinkSpeckles.spots; i++)
+                        {
+                            sLeaser.sprites[skinkSpeckles.startSprite + i].color = self.BodyColor(skinkSpeckles.spotInfo[i].x);
+                        }
+                    }
+                    else if (self.cosmetics[c] is PeachBackFin peachBackFin)
+                    {
+                        for (int i = peachBackFin.startSprite; i < peachBackFin.startSprite + peachBackFin.bumps; i++)
+                        {
+                            sLeaser.sprites[i].color = peachBackFin.palette.blackColor;
+                            if (peachBackFin.colored)
+                            {
+                                sLeaser.sprites[i + peachBackFin.bumps].color = self.effectColor;
                             }
                         }
                     }
                 }
             }
-            catch (Exception e) { ShadowOfLizards.Logger.LogError(e); }
 
             Color Electrify(Color col)
             {
-                return Color.Lerp(col, new Color(0.7f, 0.7f, 1f), (float)(data2.electricColorTimer / 50f));
+                return Color.Lerp(col, new Color(0.7f, 0.7f, 1f), (float)(graphicData.electricColorTimer / 50f));
             }
 
             Color TailColor(float f)
@@ -1554,12 +1459,11 @@ internal class LizardGraphicsHooks
                 num = Mathf.Pow(num, self.lizard.lizardParams.tailColorationExponent) * self.iVars.tailColor;
                 if (ModManager.DLCShared && (self.Caramel || self.lizard.Template.type == DLCSharedEnums.CreatureTemplateType.ZoopLizard))
                 {
-                    return Color.Lerp(Camo(self, self.ivarBodyColor), CamoElectric(self, data2, self.effectColor), num);
+                    return Color.Lerp(Camo(self, self.ivarBodyColor), CamoElectric(self, graphicData, self.effectColor), num);
                 }
-                return Color.Lerp(Camo(self, self.palette.blackColor), CamoElectric(self, data2, self.effectColor), num);
+                return Color.Lerp(Camo(self, self.palette.blackColor), CamoElectric(self, graphicData, self.effectColor), num);
             }
         }
-
         Color WhiteNoCamoHeadColor(LizardGraphics self, float timeStacker)
         {
             if (self.whiteFlicker > 0 && (self.whiteFlicker > 15 || self.everySecondDraw))
@@ -1578,10 +1482,24 @@ internal class LizardGraphicsHooks
             num = Mathf.Lerp(num, Mathf.Pow(Mathf.Max(0f, Mathf.Lerp(self.lastVoiceVisualization, self.voiceVisualization, timeStacker)), 0.75f), Mathf.Lerp(self.lastVoiceVisualizationIntensity, self.voiceVisualizationIntensity, timeStacker));
             return Color.Lerp(new Color(1f, 1f, 1f), self.palette.blackColor, num);
         }
+        void HeadlessCosmetics()
+        {
+            for (int j = 0; j < self.cosmetics.Count; j++)
+            {
+                if (self.cosmetics[j] is Whiskers || self.cosmetics[j] is AxolotlGills || self.cosmetics[j] is Antennae || ModManager.Watcher && (self.cosmetics[j] is BlizzardHaloShine || self.cosmetics[j] is PeachHeadStripes))
+                {
+                    for (int k = self.cosmetics[j].startSprite; k < self.cosmetics[j].startSprite + self.cosmetics[j].numberOfSprites; k++)
+                    {
+                        sLeaser.sprites[k].isVisible = false;
+                    }
+                }
+            }
+        }
+        #endregion
     }
-    static void LizardGraphicsInitiateSprites(On.LizardGraphics.orig_InitiateSprites orig, LizardGraphics self, SpriteLeaser sLeaser, RoomCamera rCam)
+    static void LizardGraphicsInitiateSprites(On.LizardGraphics.orig_InitiateSprites orig, LizardGraphics self, RoomCamera.SpriteLeaser sLeaser, RoomCamera rCam)
     {
-        orig.Invoke(self, sLeaser, rCam);
+        orig(self, sLeaser, rCam);
 
         try
         {
@@ -1652,6 +1570,17 @@ internal class LizardGraphicsHooks
             self.AddToContainer(sLeaser, rCam, null);
         }
         catch (Exception e) { ShadowOfLizards.Logger.LogError(e); }
+    }
+    static void LizardGraphicsUpdate(On.LizardGraphics.orig_Update orig, LizardGraphics self)
+    {
+        orig(self);
+
+        if (!ILHooks.ShadowOfLizardGraphicsDrawSpritesLightSource(self.lizard) || self.lightSource == null)
+        {
+            return;
+        }
+
+        self.lightSource.slatedForDeletetion = true;
     }
     #endregion
 

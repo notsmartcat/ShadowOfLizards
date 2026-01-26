@@ -769,6 +769,31 @@ internal class ILHooks
             {
                 ShadowOfLizards.Logger.LogInfo(all + "Could not find match for ILLizardGraphicsUpdate Zoop");
             }
+
+            if (val.TryGotoNext(MoveType.Before, new Func<Instruction, bool>[9]
+            {
+                x => x.MatchLdarg(0),
+                x => x.MatchLdfld<LizardGraphics>("lizard"),
+                x => x.MatchLdfld<UpdatableAndDeletable>("room"),
+                x => x.MatchLdarg(0),
+                x => x.MatchLdfld<LizardGraphics>("head"),
+                x => x.MatchLdfld<BodyPart>("pos"),
+                x => x.MatchCallvirt<Room>("Darkness"),
+                x => x.MatchLdcR4(0.0f),
+                x => x.MatchBleUn(out target)
+            }))
+            {
+                val.MoveAfterLabels();
+
+                val.Emit(OpCodes.Ldarg_0);
+                val.Emit<LizardGraphics>(OpCodes.Ldfld, "lizard");
+                val.EmitDelegate(ShadowOfLizardGraphicsDrawSpritesLightSource);
+                val.Emit(OpCodes.Brfalse, target);
+            }
+            else
+            {
+                ShadowOfLizards.Logger.LogInfo(all + "Could not find match for ILLizardGraphicsUpdate LightSource!");
+            }
         }
         catch (Exception e) { ShadowOfLizards.Logger.LogError(e); }
     }
@@ -776,6 +801,10 @@ internal class ILHooks
     public static bool ShadowOfLizardGraphicsDrawSprites(Creature self)
     {
         return ShadowOfOptions.camo_ability.Value && lizardstorage.TryGetValue(self.abstractCreature, out LizardData data) && CanCamoCheck(data, self.Template.type.ToString());
+    }
+    public static bool ShadowOfLizardGraphicsDrawSpritesLightSource(Creature self)
+    {
+        return !((ShadowOfOptions.decapitation.Value || ShadowOfOptions.cut_in_half.Value) && lizardstorage.TryGetValue(self.abstractCreature, out LizardData data) && (data.beheaded || data.isGoreHalf));
     }
     #endregion
 
