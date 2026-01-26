@@ -1,21 +1,20 @@
-using IL.MoreSlugcats;
-using IL.Watcher;
-using UnityEngine;
 using static CreatureTemplate;
-using static RelationshipTracker;
+
 using static ShadowOfLizards.ShadowOfLizards;
 
 namespace ShadowOfLizards;
+
 internal class CustomRelationsHooks
 {
     public static void Apply()
     {
-        On.LizardAI.IUseARelationshipTracker_UpdateDynamicRelationship += LizardAIUpdateDynamicRelationship;
-
         On.BigSpiderAI.IUseARelationshipTracker_UpdateDynamicRelationship += BigSpiderAIUpdateDynamicRelationship;
+
+        On.LizardAI.IUseARelationshipTracker_UpdateDynamicRelationship += LizardAIUpdateDynamicRelationship;
     }
 
-    static Relationship BigSpiderAIUpdateDynamicRelationship(On.BigSpiderAI.orig_IUseARelationshipTracker_UpdateDynamicRelationship orig, BigSpiderAI self, DynamicRelationship dRelation)
+    #region BigSpiderAI
+    static Relationship BigSpiderAIUpdateDynamicRelationship(On.BigSpiderAI.orig_IUseARelationshipTracker_UpdateDynamicRelationship orig, BigSpiderAI self, RelationshipTracker.DynamicRelationship dRelation)
     {
         if (!ShadowOfOptions.spider_transformation.Value || dRelation.trackerRep.representedCreature.realizedCreature == null)
         {
@@ -48,8 +47,10 @@ internal class CustomRelationsHooks
 
         return orig(self, dRelation);
     }
+    #endregion
 
-    static Relationship LizardAIUpdateDynamicRelationship(On.LizardAI.orig_IUseARelationshipTracker_UpdateDynamicRelationship orig, LizardAI self, DynamicRelationship dRelation)
+    #region LizardAI
+    static Relationship LizardAIUpdateDynamicRelationship(On.LizardAI.orig_IUseARelationshipTracker_UpdateDynamicRelationship orig, LizardAI self, RelationshipTracker.DynamicRelationship dRelation)
     {
         if ((!ShadowOfOptions.spider_transformation.Value && !ShadowOfOptions.electric_transformation.Value && !ShadowOfOptions.melted_transformation.Value) || !lizardstorage.TryGetValue(self.lizard.abstractCreature, out LizardData data) || data.transformation == "Null" || data.transformation == "ElectricTransformation" || data.transformation == "Melted" || (self.friendTracker.giftOfferedToMe != null && self.friendTracker.giftOfferedToMe.active && self.friendTracker.giftOfferedToMe.item == dRelation.trackerRep.representedCreature.realizedCreature) || dRelation.trackerRep.representedCreature.realizedCreature == null)
         {
@@ -118,31 +119,9 @@ internal class CustomRelationsHooks
 
         return orig(self, dRelation);
     }
+    #endregion
 
-    private static bool IsThisBigCreatureForShelter(AbstractCreature creature)
-    {
-        Type type = creature.creatureTemplate.type;
-        return type == Type.Deer || type == Type.BrotherLongLegs || type == Type.DaddyLongLegs || type == Type.RedCentipede || type == Type.MirosBird || type == Type.PoleMimic || type == Type.TentaclePlant || creature.creatureTemplate.IsVulture || (ModManager.DLCShared && MSCIsThisBigCreatureForShelter()) || (ModManager.Watcher && WatcherIsThisBigCreatureForShelter());
-
-        bool MSCIsThisBigCreatureForShelter()
-        {
-            if (type == DLCSharedEnums.CreatureTemplateType.TerrorLongLegs)
-            {
-                return true;
-            }
-            if (type == DLCSharedEnums.CreatureTemplateType.MirosVulture)
-            {
-                return true;
-            }
-
-            return false;
-        }
-        bool WatcherIsThisBigCreatureForShelter()
-        {
-            return false;
-        }
-    }
-
+    #region TemplateChecks
     static bool SpiderTemplateCheck(Creature crit)
     {
         return crit != null && (crit is Spider || crit is BigSpider);
@@ -170,33 +149,31 @@ internal class CustomRelationsHooks
         }
         return false;
     }
+    #endregion
 
-    //Unused Code
-    /*
-    public static bool LizardElectricTransformationTemplateCheck(Creature crit)
+    #region Misc
+    private static bool IsThisBigCreatureForShelter(AbstractCreature creature)
     {
-        if (crit != null && crit is Lizard liz && ShadowOfLizards.lizardstorage.TryGetValue(liz.abstractCreature, out ShadowOfLizards.LizardData data) && data.transformation == "ElectricTransformation")
-        {
-            return true;
-        }
-        return false;
-    }
-    public static bool LizardElectricTemplateCheck(Creature crit)
-    {
-        if (crit != null && crit is Lizard liz && ShadowOfLizards.lizardstorage.TryGetValue(liz.abstractCreature, out ShadowOfLizards.LizardData data) && (data.transformation == "Electric" || data.transformation == "ElectricTransformation"))
-        {
-            return true;
-        }
-        return false;
-    }
+        Type type = creature.creatureTemplate.type;
+        return type == Type.Deer || type == Type.BrotherLongLegs || type == Type.DaddyLongLegs || type == Type.RedCentipede || type == Type.MirosBird || type == Type.PoleMimic || type == Type.TentaclePlant || creature.creatureTemplate.IsVulture || (ModManager.DLCShared && MSCIsThisBigCreatureForShelter()) || (ModManager.Watcher && WatcherIsThisBigCreatureForShelter());
 
-    public static bool MeltedTemplateCheck(Creature crit, DynamicRelationship rel)
-    {
-        if (crit != null && crit.Template.type != Type.Slugcat && rel.currentRelationship.type != Relationship.Type.Ignores && rel.currentRelationship.type != Relationship.Type.DoesntTrack)
+        bool MSCIsThisBigCreatureForShelter()
         {
-            return true;
+            if (type == DLCSharedEnums.CreatureTemplateType.TerrorLongLegs)
+            {
+                return true;
+            }
+            if (type == DLCSharedEnums.CreatureTemplateType.MirosVulture)
+            {
+                return true;
+            }
+
+            return false;
         }
-        return false;
+        bool WatcherIsThisBigCreatureForShelter()
+        {
+            return false;
+        }
     }
-    */
+    #endregion
 }
