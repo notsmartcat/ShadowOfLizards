@@ -60,6 +60,7 @@ public class ShadowOfLizards : BaseUnityPlugin
         public int transformationTimer = -1;
 
         public int spiderLikness = 0;
+        public bool spewBabies = false;
 
         //Used to make sure AbstractCreature only makes changes once a cycle, set to the current cycle number after the AbstractCreature is finished making changes. AbstractCreature will only makes changes once in the Arena.
         public int lizardUpdatedCycle = -1;
@@ -568,6 +569,21 @@ public class ShadowOfLizards : BaseUnityPlugin
                 }
                 return;
             }
+        }
+
+        if (killType == "Hypothermia")
+        {
+            if (ShadowOfOptions.hypothermia_immune.Value)
+            {
+                data.liz["HypothermiaImmune"] = "True";
+
+                if (ShadowOfOptions.debug_logs.Value)
+                    Debug.Log(all + receiver + " gained Immunity to Hypothermia due to Freezing to Death");
+
+                if (ShadowOfOptions.dynamic_cheat_death.Value)
+                    data.cheatDeathChance += 5;
+            }
+            return;
         }
 
         if (!(killType == "Fell"))

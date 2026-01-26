@@ -52,13 +52,24 @@ internal class TransformationSpider
 
     public static void BabyPuff(Lizard self)
     {
-        if (self.inShortcut || self.slatedForDeletetion || self.room == null || self.room.world == null || self.room.game.cameras[0].room != self.room || !lizardstorage.TryGetValue(self.abstractCreature, out LizardData data) || (data.transformation != "Spider" && data.transformation != "SpiderTransformation"))
+        if (self.inShortcut || self.slatedForDeletetion || self.room == null || self.room.world == null || self.room.game.cameras[0].room != self.room || !lizardstorage.TryGetValue(self.abstractCreature, out LizardData data))
         {
             return;
         }
 
         try
         {
+            if (IncapacitationSpewBabies())
+            {
+                return;
+            }
+
+            Debug.Log("Spew Babies = true");
+            data.spewBabies = true;
+
+            if (shadowOfIncapacitationCheck)
+                InconKill(self.abstractCreature);
+
             if (!data.liz.ContainsKey("SpiderNumber"))
             {
                 Debug.Log(all + "SpiderNumber Value was not present on " + self + " If able please report to the mod author of Shadow Of Lizards");
@@ -117,6 +128,25 @@ internal class TransformationSpider
             data.liz["SpiderNumber"] = "0";
         }
         catch (Exception e) { ShadowOfLizards.Logger.LogError(e); }
+
+        void InconKill(AbstractCreature self)
+        {
+            if (!Incapacitation.Incapacitation.inconstorage.TryGetValue(self, out Incapacitation.Incapacitation.InconData data))
+            {
+                return;
+            }
+
+            data.actuallyDead = true;
+            data.isAlive = false;
+
+            if (ShadowOfOptions.debug_logs.Value)
+                Debug.Log(all + self + " has been forcefully killed in the Incapacitation Mod due to being a Cut Half");
+        }
+
+        bool IncapacitationSpewBabies()
+        {
+            return Incapacitation.ShadowOfOptions.spid_mother.Value && Incapacitation.Incapacitation.inconstorage.TryGetValue(self.abstractCreature, out Incapacitation.Incapacitation.InconData data2) && !data2.spiderMotherWasDead && data.availableBodychunks.Count == self.bodyChunks.Length;
+        }
     }
 
     #region Small Spider

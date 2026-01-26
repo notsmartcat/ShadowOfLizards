@@ -6,6 +6,7 @@ namespace ShadowOfLizards;
 
 public class BrokenTooth : CosmeticSprite
 {
+    #region Values
     private RoomPalette palette;
 
     private Color colour;
@@ -24,6 +25,7 @@ public class BrokenTooth : CosmeticSprite
     private float baseLastBlink;
 
     private const int SourceCodeLizardsFlickerThreshold = 10;
+    #endregion
 
     public BrokenTooth(Vector2 pos, Vector2 vel, string spriteName, Color colour, Color rootColour, float scaleX, float scaleY)
     {
@@ -87,13 +89,16 @@ public class BrokenTooth : CosmeticSprite
 
         lastRotation = rotation;
         rotation += rotVel * Vector2.Distance(lastPos, pos);
+
         lastZRotation = zRotation;
         zRotation += zRotVel * Vector2.Distance(lastPos, pos);
+
         if (!Custom.DistLess(lastPos, pos, 3f) && room.GetTile(pos).Solid && !room.GetTile(lastPos).Solid)
         {
             IntVector2? intVector = SharedPhysics.RayTraceTilesForTerrainReturnFirstSolid(room, room.GetTilePosition(lastPos), room.GetTilePosition(pos));
             FloatRect floatRect = Custom.RectCollision(pos, lastPos, room.TileRect(intVector.Value).Grow(2f));
             pos = floatRect.GetCorner(FloatRect.CornerLabel.D);
+
             bool flag = false;
             if (floatRect.GetCorner(FloatRect.CornerLabel.B).x < 0f)
             {
@@ -131,11 +136,14 @@ public class BrokenTooth : CosmeticSprite
                 firstImpact = true;
             }
         }
+
         SharedPhysics.TerrainCollisionData terrainCollisionData = scratchTerrainCollisionData.Set(pos, lastPos, vel, 3f, new IntVector2(0, 0), true);
         terrainCollisionData = SharedPhysics.VerticalCollision(room, terrainCollisionData);
         terrainCollisionData = SharedPhysics.HorizontalCollision(room, terrainCollisionData);
+
         pos = terrainCollisionData.pos;
         vel = terrainCollisionData.vel;
+
         if (terrainCollisionData.contactPoint.x != 0)
         {
             vel.y *= 0.6f;
@@ -157,10 +165,12 @@ public class BrokenTooth : CosmeticSprite
                 }
             }
         }
+
         if (dissapearCounter > 390 || pos.x < -100f || pos.y < -100f)
         {
             Destroy();
         }
+
         base.Update(eu);
     }
 
@@ -175,13 +185,14 @@ public class BrokenTooth : CosmeticSprite
 
     public override void DrawSprites(RoomCamera.SpriteLeaser sLeaser, RoomCamera rCam, float timeStacker, Vector2 camPos)
     {
-        Vector2 vector = Vector2.Lerp(lastPos, pos, timeStacker);
+        Vector2 currentPos = Vector2.Lerp(lastPos, pos, timeStacker);
         float num = Mathf.InverseLerp(305f, 380f, (float)counter + timeStacker);
-        vector.y -= 20f * Mathf.Pow(num, 3f);
+        currentPos.y -= 20f * Mathf.Pow(num, 3f);
         float num2 = Mathf.Pow(1f - num, 0.25f);
-        lastDarkness = darkness;
-        darkness = rCam.room.Darkness(vector);
-        darkness *= 1f - 0.5f * rCam.room.LightSourceExposure(vector);
+
+        darkness = rCam.room.Darkness(currentPos);
+        darkness *= 1f - 0.5f * rCam.room.LightSourceExposure(currentPos);
+
         Vector2 vector2 = Custom.DegToVec(Mathf.Lerp(lastZRotation, zRotation, timeStacker));
 
         if (electricColorTimer > 0)
@@ -191,10 +202,11 @@ public class BrokenTooth : CosmeticSprite
 
         for (int i = 0; i < sLeaser.sprites.Length; i++)
         {
-            sLeaser.sprites[i].x = vector.x - camPos.x;
-            sLeaser.sprites[i].y = vector.y - camPos.y;
+            sLeaser.sprites[i].x = currentPos.x - camPos.x;
+            sLeaser.sprites[i].y = currentPos.y - camPos.y;
             sLeaser.sprites[i].rotation = Mathf.Lerp(lastRotation, rotation, timeStacker);
             sLeaser.sprites[i].scaleY = num2 * scaleY;
+
             if (Mathf.Abs(vector2.x) < 0.1f)
             {
                 sLeaser.sprites[i].scaleX = 0.1f * Mathf.Sign(vector2.x) * num2 * scaleX;
@@ -223,6 +235,7 @@ public class BrokenTooth : CosmeticSprite
                 sLeaser.sprites[j].color = Color.Lerp(sLeaser.sprites[j].color, earthColor, Mathf.Pow(Mathf.InverseLerp(0.3f, 1f, num), 1.6f));
             }
         }
+
         base.DrawSprites(sLeaser, rCam, timeStacker, camPos);
     }
 
@@ -257,7 +270,6 @@ public class BrokenTooth : CosmeticSprite
 
     private float rotVel;
 
-    private float lastDarkness = -1f;
     private float darkness;
 
     private readonly float hue;

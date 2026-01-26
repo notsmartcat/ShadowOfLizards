@@ -478,7 +478,7 @@ sealed class LizCutHead : PlayerCarryableItem, IDrawable
             cosmeticSprites.Add("BlizardHaloShine");
         }
 
-        sLeaser.sprites = new FSprite[headSprites.Count  + cosmeticSprites.Count];
+        sLeaser.sprites = new FSprite[headSprites.Count + cosmeticSprites.Count];
 
         for (int i = 0; i < headSprites.Count + cosmeticSprites.Count; i++)
         {

@@ -15,6 +15,7 @@ internal class ILHooks
         IL.AbstractCreature.IsEnteringDen += ILAbstractCreatureIsEnteringDen;
 
         IL.Creature.BrineWaterInteraction += ILCreatureBrineWaterInteraction;
+        IL.Creature.HypothermiaUpdate += ILCreatureHypothermiaUpdate;
         IL.Creature.Update += ILCreatureUpdate;
 
         IL.DaddyCorruption.EatenCreature.Update += ILDaddyCorruptionEatenCreature; //Rot
@@ -99,6 +100,28 @@ internal class ILHooks
         else
         {
             ShadowOfLizards.Logger.LogInfo(all + "Could not find match ILCreatureBrineWaterInteraction!");
+        }
+    }
+
+    static void ILCreatureHypothermiaUpdate(ILContext il)
+    {
+        ILCursor val = new(il);
+
+        if (val.TryGotoNext(MoveType.Before, new Func<Instruction, bool>[2]
+        {
+            x => x.MatchLdarg(0),
+            x => x.MatchCallvirt<Creature>("Die")
+        }))
+        {
+            val.Emit(OpCodes.Ldarg_0);
+            val.EmitDelegate(delegate (Creature creature)
+            {
+                TryAddKillFeedEntry(creature, "Hypothermia");
+            });
+        }
+        else
+        {
+            ShadowOfLizards.Logger.LogInfo(all + "Could not find match ILCreatureHypothermiaUpdate Die!");
         }
     }
 
@@ -247,7 +270,7 @@ internal class ILHooks
 
     public static void ILPreViolenceCheck(Creature receiver)
     {
-        if (receiver != null && receiver is Lizard liz && liz.abstractCreature != null && lizardstorage.TryGetValue(liz.abstractCreature, out LizardData data))
+        if (receiver != null && receiver is Lizard liz && lizardstorage.TryGetValue(liz.abstractCreature, out LizardData data))
         {
             PreViolenceCheck(liz, data);
         }
@@ -255,7 +278,7 @@ internal class ILHooks
 
     public static void ILPostViolenceCheck(Creature receiver, string killType)
     {
-        if (receiver != null && receiver is Lizard liz && liz.abstractCreature != null && lizardstorage.TryGetValue(liz.abstractCreature, out LizardData data))
+        if (receiver != null && receiver is Lizard liz && lizardstorage.TryGetValue(liz.abstractCreature, out LizardData data))
         {
             PostViolenceCheck(liz, data, killType, null);
         }
@@ -263,7 +286,7 @@ internal class ILHooks
 
     public static void TryAddKillFeedEntry(Creature receiver, string killType)
     {
-        if (receiver != null && receiver is Lizard liz && liz.abstractCreature != null && lizardstorage.TryGetValue(liz.abstractCreature, out LizardData data))
+        if (receiver != null && receiver is Lizard liz && lizardstorage.TryGetValue(liz.abstractCreature, out LizardData data))
         {
             ViolenceCheck(liz, data, killType, null);
         }

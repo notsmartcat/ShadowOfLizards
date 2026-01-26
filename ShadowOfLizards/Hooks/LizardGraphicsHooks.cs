@@ -227,25 +227,6 @@ internal class LizardGraphicsHooks
 
                     if (Futile.atlasManager.DoesContainElementWithName("Right" + sLeaser.sprites[eyeIndex].element.name + "Normal"))
                     {
-                        if (Futile.atlasManager.DoesContainElementWithName(sLeaser.sprites[eyeIndex].element.name + "Nose"))
-                        {
-                            sLeaser.sprites[eyeIndex].element = Futile.atlasManager.GetElementWithName(sLeaser.sprites[eyeIndex].element.name + "Nose");
-                        }
-                        else
-                        {
-                            data.liz["EyeRight"] = "Incompatible";
-                            data.liz["EyeLeft"] = "Incompatible";
-
-                            if (graphData.eyeSprites != 0)
-                            {
-                                sLeaser.sprites[graphData.eyeSprites].isVisible = false;
-                                sLeaser.sprites[graphData.eyeSprites + 1].isVisible = false;
-                            }
-
-                            Debug.Log(all + "Eyes " + sLeaser.sprites[self.SpriteHeadStart + 4].element.name + " of " + self.lizard + " are Incompatible, if able please report to the mod author of Shadow Of Lizards");
-                            ShadowOfLizards.Logger.LogError(all + "Eyes " + sLeaser.sprites[self.SpriteHeadStart + 4].element.name + " of " + self.lizard + " are Incompatible, if able please report to the mod author of Shadow Of Lizards");
-                        }
-
                         string spriteName = sLeaser.sprites[eyeIndex].element.name;
 
                         string spriteNameR = sLeaser.sprites[eyeIndex].scaleX > 0f ? "Right" + spriteName : "Left" + spriteName;
@@ -292,7 +273,6 @@ internal class LizardGraphicsHooks
                                 sLeaser.sprites[graphData.eyeSprites].element = Futile.atlasManager.GetElementWithName(spriteNameR + "Normal");
                                 break;
                         }
-
                         switch (data.liz["EyeLeft"])
                         {
                             case "Blind":
@@ -323,6 +303,25 @@ internal class LizardGraphicsHooks
                                 sLeaser.sprites[graphData.eyeSprites + 1].color = sLeaser.sprites[self.SpriteHeadStart + 4].color;
                                 sLeaser.sprites[graphData.eyeSprites + 1].element = Futile.atlasManager.GetElementWithName(spriteNameL + "Normal");
                                 break;
+                        }
+
+                        if (Futile.atlasManager.DoesContainElementWithName(sLeaser.sprites[eyeIndex].element.name + "Nose"))
+                        {
+                            sLeaser.sprites[eyeIndex].element = Futile.atlasManager.GetElementWithName(sLeaser.sprites[eyeIndex].element.name + "Nose");
+                        }
+                        else
+                        {
+                            data.liz["EyeRight"] = "Incompatible";
+                            data.liz["EyeLeft"] = "Incompatible";
+
+                            if (graphData.eyeSprites != 0)
+                            {
+                                sLeaser.sprites[graphData.eyeSprites].isVisible = false;
+                                sLeaser.sprites[graphData.eyeSprites + 1].isVisible = false;
+                            }
+
+                            Debug.Log(all + "Eyes " + sLeaser.sprites[self.SpriteHeadStart + 4].element.name + " of " + self.lizard + " are Incompatible, if able please report to the mod author of Shadow Of Lizards");
+                            ShadowOfLizards.Logger.LogError(all + "Eyes " + sLeaser.sprites[self.SpriteHeadStart + 4].element.name + " of " + self.lizard + " are Incompatible, if able please report to the mod author of Shadow Of Lizards");
                         }
                     }
                     else
