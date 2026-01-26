@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-using static ShadowOfLizards.ShadowOfLizards;
+﻿using static ShadowOfLizards.ShadowOfLizards;
 
 namespace ShadowOfLizards;
 
@@ -20,53 +18,48 @@ internal class LizardAIHooks
             return;
         }
 
-        bool flag5 = data.liz["EarRight"] == "Deaf";
-        bool flag6 = data.liz["EarLeft"] == "Deaf";
+        bool earRightDeaf = data.liz["EarRight"] == "Deaf";
+        bool earLeftDeaf = data.liz["EarLeft"] == "Deaf";
 
         if (ShadowOfOptions.blind.Value && data.liz.ContainsKey("EyeRight"))
         {
-            bool flag = data.liz["EyeRight"] == "Blind" || data.liz["EyeRight"] == "BlindScar" || data.liz["EyeRight"] == "BlindScar2" || data.liz["EyeRight"] == "Cut";
-            bool flag2 = data.liz["EyeLeft"] == "Blind" || data.liz["EyeLeft"] == "BlindScar" || data.liz["EyeLeft"] == "BlindScar2" || data.liz["EyeLeft"] == "Cut";
+            bool eyeRightBlind = data.liz["EyeRight"] == "Blind" || data.liz["EyeRight"] == "BlindScar" || data.liz["EyeRight"] == "BlindScar2" || data.liz["EyeRight"] == "Cut";
+            bool eyeLeftBlind = data.liz["EyeLeft"] == "Blind" || data.liz["EyeLeft"] == "BlindScar" || data.liz["EyeLeft"] == "BlindScar2" || data.liz["EyeLeft"] == "Cut";
 
-            if (flag && flag2)
+            if (eyeRightBlind && eyeLeftBlind)
             {
-                List<AIModule> modules = self.modules;
-
                 bool superHearing = false;
 
-                for (int j = 0; j < modules.Count; j++)
+                for (int j = 0; j < self.modules.Count; j++)
                 {
-                    if (modules[j] is SuperHearing)
+                    if (self.modules[j] is SuperHearing)
                     {
                         superHearing = true;
-
                         break;
                     }
                 }
 
-                if (!superHearing && (!flag5 || !flag6))
+                if (!superHearing && (!earRightDeaf || !earLeftDeaf))
                 {
                     self.modules.Add(new SuperHearing(self, self.tracker, 350f));
                 }
             }
         }
 
-        if (flag5 && flag6)
+        if (earRightDeaf && earLeftDeaf)
         {
-            List<AIModule> modules = self.modules;
-
-            for (int i = 0; i < modules.Count; i++)
+            for (int i = 0; i < self.modules.Count; i++)
             {
-                if (modules[i] is SuperHearing)
+                if (self.modules[i] is SuperHearing)
                 {
-                    (modules[i] as SuperHearing).superHearingSkill = 0f;
+                    (self.modules[i] as SuperHearing).superHearingSkill = 0f;
 
                     break;
                 }
             }
 
         }
-        else if (flag5 ^ flag6)
+        else if (earRightDeaf ^ earLeftDeaf)
         {
             for (int i = 0; i < self.modules.Count; i++)
             {
