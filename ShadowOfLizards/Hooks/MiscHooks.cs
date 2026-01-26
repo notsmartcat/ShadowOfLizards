@@ -1,9 +1,6 @@
 ﻿using System;
 using UnityEngine;
 using RWCustom;
-using Menu;
-using MoreSlugcats;
-using System.Collections.Generic;
 
 using static ShadowOfLizards.ShadowOfLizards;
 
@@ -13,133 +10,101 @@ internal class MiscHooks
 {
     public static void Apply()
     {
-        On.LizardJumpModule.Update += GasLeak;
-
-        On.SlugcatStats.NourishmentOfObjectEaten += LizardLegEaten;
-
-        On.Spear.HitSomething += SpearHit;
-        On.DartMaggot.Update += DartMaggotUpdate;
-
-        On.FlareBomb.Update += FlareBombUpdate;
-        On.Explosion.Update += ExplosionUpdate;
-
-        On.LizardBubble.DrawSprites += BubbleDraw;
+        On.BigEel.JawsSnap += BigEelJawsSnap;
+        On.BigEel.Swallow += BigEelSwallow;
 
         On.Creature.Grab += CreatureGrab;
 
-        On.BigEel.Swallow += BigEelSwallow;
-        On.BigEel.JawsSnap += BigEelJawsSnap;
+        On.DartMaggot.Update += DartMaggotUpdate;
 
-        On.SocialEventRecognizer.Killing += SocialEventRecognizerKilling;
+        On.Explosion.Update += ExplosionUpdate;
 
-        On.Spark.DrawSprites += SparkDrawSprites;
-        On.StationaryEffect.DrawSprites += StationaryEffectDrawSprites;
+        On.FlareBomb.Update += FlareBombUpdate;
 
-        On.MoreSlugcats.SingularityBomb.Explode += SingularityBombExplode;
+        On.KingTusks.Tusk.HitThisChunk += KingTuskHitThisChunk;
 
-        On.SlugcatHand.Update += SlugcatHandUpdate;
+        On.LizardBubble.DrawSprites += BubbleDraw;
+        On.LizardJumpModule.Update += GasLeak;
 
         On.Player.HeavyCarry += PlayerHeavyCarry;
 
         On.SlugcatHand.EngageInMovement += SlugcatHandEngageInMovement;
+        On.SlugcatHand.Update += SlugcatHandUpdate;
 
-        On.KingTusks.Tusk.HitThisChunk += Tusk_HitThisChunk;
+        On.SlugcatStats.NourishmentOfObjectEaten += LizardLegEaten;
+
+        On.Spark.DrawSprites += SparkDrawSprites;
+
+        On.Spear.HitSomething += SpearHit;
+
+        On.SocialEventRecognizer.Killing += SocialEventRecognizerKilling;
+
+        On.StationaryEffect.DrawSprites += StationaryEffectDrawSprites;
 
         On.ZapCoil.Update += ZapCoilUpdate;
+
+        On.MoreSlugcats.SingularityBomb.Explode += SingularityBombExplode;
     }
 
-    static bool Tusk_HitThisChunk(On.KingTusks.Tusk.orig_HitThisChunk orig, KingTusks.Tusk self, BodyChunk chunk)
+    #region BigEel
+    static void BigEelJawsSnap(On.BigEel.orig_JawsSnap orig, BigEel self)
     {
-        if (ShadowOfOptions.cut_in_half.Value && chunk != null && chunk.owner != null && chunk.owner is Lizard liz && lizardstorage.TryGetValue(liz.abstractCreature, out LizardData data) && !data.availableBodychunks.Contains(chunk.index))
+        for (int j = 0; j < self.room.physicalObjects.Length; j++)
         {
-            return false;
+            for (int k = self.room.physicalObjects[j].Count - 1; k >= 0; k--)
+            {
+                if (self.room.physicalObjects[j][k] is Lizard liz && lizardstorage.TryGetValue(liz.abstractCreature, out LizardData data) && (self.room.physicalObjects[j][k].abstractPhysicalObject.rippleLayer == self.abstractPhysicalObject.rippleLayer || self.room.physicalObjects[j][k].abstractPhysicalObject.rippleBothSides || self.abstractPhysicalObject.rippleBothSides))
+                {
+                    for (int l = 0; l < self.room.physicalObjects[j][k].bodyChunks.Length; l++)
+                    {
+                        if (self.InBiteArea(self.room.physicalObjects[j][k].bodyChunks[l].pos, self.room.physicalObjects[j][k].bodyChunks[l].rad / 2f))
+                        {
+                            data.lastDamageType = "BigEel";
+                        }
+                    }
+                }
+            }
         }
 
-        return orig(self, chunk);
-    }
-
-    static bool SlugcatHandEngageInMovement(On.SlugcatHand.orig_EngageInMovement orig, SlugcatHand self)
-    {
-        Player scug = self.owner.owner as Player;
-
-        if (scug.privSneak > 0.5f && scug.grasps[self.limbNumber] != null && scug.grasps[self.limbNumber].grabbed is LizCutHead)
-        {
-            self.huntSpeed = 12f;
-            self.quickness = 0.7f;
-            return true;
-        }
-        return orig(self);
-    }
-
-    static bool PlayerHeavyCarry(On.Player.orig_HeavyCarry orig, Player self, PhysicalObject obj)
-    {
-        if (obj is LizCutHead && self.privSneak > 0.5f)
-        {
-            return false;
-        }
-        return orig(self, obj);
-    }
-
-    static void SlugcatHandUpdate(On.SlugcatHand.orig_Update orig, SlugcatHand self)
-    {
         orig(self);
-
-        Player scug = self.owner.owner as Player;
-
-        if (scug.privSneak > 0.5f && scug.grasps[self.limbNumber] != null)
+    }
+    static void BigEelSwallow(On.BigEel.orig_Swallow orig, BigEel self)
+    {
+        for (int i = 0; i < self.clampedObjects.Count; i++)
         {
-            if (scug.grasps[self.limbNumber].grabbed is LizCutHead)
+            if (self.clampedObjects[i].chunk.owner is Lizard liz && lizardstorage.TryGetValue(liz.abstractCreature, out LizardData data))
             {
-                self.relativeHuntPos *= 1f - (scug.grasps[self.limbNumber].grabbed as LizCutHead).donned;
+                UnderwaterDen(data, liz.abstractCreature);
             }
         }
+
+        orig(self);
     }
+    #endregion
 
-    static void GasLeak(On.LizardJumpModule.orig_Update orig, LizardJumpModule self)
+    #region Creature
+    static bool CreatureGrab(On.Creature.orig_Grab orig, Creature self, PhysicalObject obj, int graspUsed, int chunkGrabbed, Creature.Grasp.Shareability shareability, float dominance, bool overrideEquallyDominant, bool pacifying)
     {
-        orig.Invoke(self);
-
-        if (!ShadowOfOptions.jump_ability.Value || self.lizard == null || self.gasLeakSpear == null || !lizardstorage.TryGetValue(self.lizard.abstractCreature, out LizardData data) || !Chance(self.lizard.abstractCreature, ShadowOfOptions.jump_ability_chance.Value, "Removing Jump Ability due to Gas Leak"))
+        if (self.grasps != null && obj is Lizard liz && lizardstorage.TryGetValue(liz.abstractCreature, out LizardData data) && !data.availableBodychunks.Contains(chunkGrabbed))
         {
-            return;
-        }
-
-        try
-        {
-            data.liz["CanJump"] = "False";
-
-            if (ShadowOfOptions.debug_logs.Value)
-                Debug.Log(all + self.ToString() + " lost the Jump Ability due to Gas Leak");
-
-            if (ShadowOfOptions.dynamic_cheat_death.Value)
-                data.cheatDeathChance -= 5;
-        }
-        catch (Exception e) { ShadowOfLizards.Logger.LogError(e); }
-    }
-
-    static int LizardLegEaten(On.SlugcatStats.orig_NourishmentOfObjectEaten orig, SlugcatStats.Name slugcatIndex, IPlayerEdible eatenobject)
-    {
-        if (eatenobject is LizCutLeg)
-        {
-            if (ModManager.MSC && slugcatIndex == MoreSlugcatsEnums.SlugcatStatsName.Saint)
+            if (chunkGrabbed == 0 && data.availableBodychunks.Contains(1) || chunkGrabbed == 2 && data.availableBodychunks.Contains(1))
             {
-                return -1;
+                chunkGrabbed = 1;
             }
-            int num = 0;
-            return (!(slugcatIndex == SlugcatStats.Name.Red) && (!ModManager.MSC || !(slugcatIndex == MoreSlugcatsEnums.SlugcatStatsName.Artificer))) ? (num + eatenobject.FoodPoints) : (num + 2 * eatenobject.FoodPoints);
+            else if (chunkGrabbed == 0 && data.availableBodychunks.Contains(2) || chunkGrabbed == 1 && data.availableBodychunks.Contains(2))
+            {
+                chunkGrabbed = 2;
+            }
+            else
+            {
+                return false;
+            }
         }
-        return orig.Invoke(slugcatIndex, eatenobject);
+        return orig(self, obj, graspUsed, chunkGrabbed, shareability, dominance, overrideEquallyDominant, pacifying);
     }
+    #endregion
 
-    static bool SpearHit(On.Spear.orig_HitSomething orig, Spear self, SharedPhysics.CollisionResult result, bool eu)
-    {
-        if (ShadowOfOptions.cut_in_half.Value && result.chunk != null && result.chunk.owner != null && result.chunk.owner is Lizard liz && lizardstorage.TryGetValue(liz.abstractCreature, out LizardData data) && !data.availableBodychunks.Contains(result.chunk.index))
-        {
-            return false;
-        }
-        return orig(self, result, eu);
-    }
-
+    #region DartMaggot
     static void DartMaggotUpdate(On.DartMaggot.orig_Update orig, DartMaggot self, bool eu)
     {
         orig(self, eu);
@@ -149,127 +114,9 @@ internal class MiscHooks
             self.Unstuck();
         }
     }
+    #endregion
 
-    static void FlareBombUpdate(On.FlareBomb.orig_Update orig, FlareBomb self, bool eu)
-    {
-        orig(self, eu);
-
-        if (!ShadowOfOptions.blind.Value || self.burning <= 0f)
-        {
-            return;
-        }
-
-        try
-        {
-            if (!singleUse.TryGetValue(self, out OneTimeUseData data2))
-            {
-                singleUse.Add(self, new OneTimeUseData());
-                singleUse.TryGetValue(self, out data2);
-            }
-
-            for (int i = 0; i < self.room.abstractRoom.creatures.Count; i++)
-            {
-                if (self.room.abstractRoom.creatures[i].realizedCreature != null && (self.room.abstractRoom.creatures[i].rippleLayer == self.abstractPhysicalObject.rippleLayer || self.room.abstractRoom.creatures[i].rippleBothSides || self.abstractPhysicalObject.rippleBothSides) && (Custom.DistLess(self.firstChunk.pos, self.room.abstractRoom.creatures[i].realizedCreature.mainBodyChunk.pos, self.LightIntensity * 600f) || (Custom.DistLess(self.firstChunk.pos, self.room.abstractRoom.creatures[i].realizedCreature.mainBodyChunk.pos, self.LightIntensity * 1600f) && self.room.VisualContact(self.firstChunk.pos, self.room.abstractRoom.creatures[i].realizedCreature.mainBodyChunk.pos))))
-                {
-                    if (self.room.abstractRoom.creatures[i].realizedCreature is Lizard liz && lizardstorage.TryGetValue(liz.abstractCreature, out LizardData data) && data.liz.TryGetValue("EyeRight", out string eye) && eye != "Incompatible" && !data2.lizStorage.Contains(liz) && (!ShadowOfOptions.distance_based_blind.Value || (int)Custom.LerpMap(Vector2.Distance(self.firstChunk.pos, self.room.abstractRoom.creatures[i].realizedCreature.VisionPoint), 60f, 600f, 400f, 20f) > 300))
-                    {
-                        data2.lizStorage.Add(liz);
-
-                        float multiplier = ShadowOfOptions.distance_based_blind.Value ? Custom.LerpMap(Custom.LerpMap(Vector2.Distance(self.firstChunk.pos, self.room.abstractRoom.creatures[i].realizedCreature.VisionPoint), 60f, 600f, 400f, 20f), 20, 400, 0, 2) : 1;
-
-                        bool flag = eye == "Blind" || eye == "BlindScar" || eye == "BlindScar2" || eye == "Cut";
-                        bool flag2 = data.liz["EyeLeft"] == "Blind" || data.liz["EyeLeft"] == "BlindScar" || data.liz["EyeLeft"] == "BlindScar2" || data.liz["EyeLeft"] == "Cut";
-                        if (!flag && Chance(liz.abstractCreature, ShadowOfOptions.blind_chance.Value * multiplier, "FlareBomb Blinding Right Eye"))
-                        {
-                            if (eye == "Normal")
-                            {
-                                data.liz["EyeRight"] = "Blind";
-                                liz.Template.visualRadius -= data.visualRadius * 0.5f;
-                                liz.Template.waterVision -= data.visualRadius * 0.5f;
-                                liz.Template.throughSurfaceVision -= data.visualRadius * 0.5f;
-                            }
-                            else if (eye == "Scar")
-                            {
-                                data.liz["EyeRight"] = "BlindScar";
-                                liz.Template.visualRadius -= data.visualRadius * 0.5f;
-                                liz.Template.waterVision -= data.visualRadius * 0.5f;
-                                liz.Template.throughSurfaceVision -= data.visualRadius * 0.5f;
-                            }
-                            else if (eye == "Scar2")
-                            {
-                                data.liz["EyeRight"] = "BlindScar2";
-                                liz.Template.visualRadius -= data.visualRadius * 0.5f;
-                                liz.Template.waterVision -= data.visualRadius * 0.5f;
-                                liz.Template.throughSurfaceVision -= data.visualRadius * 0.5f;
-                            }
-                            if (ShadowOfOptions.debug_logs.Value)
-                                Debug.Log(all + self.ToString() + " Right Eye was Blinded");
-                        }
-                        if (!flag2 && Chance(liz.abstractCreature, ShadowOfOptions.blind_chance.Value * multiplier, "FlareBomb Blinding Left Eye"))
-                        {
-                            if (data.liz["EyeLeft"] == "Normal")
-                            {
-                                data.liz["EyeLeft"] = "Blind";
-                                liz.Template.visualRadius -= data.visualRadius * 0.5f;
-                                liz.Template.waterVision -= data.visualRadius * 0.5f;
-                                liz.Template.throughSurfaceVision -= data.visualRadius * 0.5f;
-                            }
-                            else if (data.liz["EyeLeft"] == "Scar")
-                            {
-                                data.liz["EyeLeft"] = "BlindScar";
-                                liz.Template.visualRadius -= data.visualRadius * 0.5f;
-                                liz.Template.waterVision -= data.visualRadius * 0.5f;
-                                liz.Template.throughSurfaceVision -= data.visualRadius * 0.5f;
-                            }
-                            else if (data.liz["EyeLeft"] == "Scar2")
-                            {
-                                data.liz["EyeLeft"] = "BlindScar2";
-                                liz.Template.visualRadius -= data.visualRadius * 0.5f;
-                                liz.Template.waterVision -= data.visualRadius * 0.5f;
-                                liz.Template.throughSurfaceVision -= data.visualRadius * 0.5f;
-                            }
-                            if (ShadowOfOptions.debug_logs.Value)
-                                Debug.Log(all + self.ToString() + " Left Eye was Blinded");
-                        }
-
-                        bool flag3 = data.liz["EyeRight"] == "Blind" || data.liz["EyeRight"] == "BlindScar" || data.liz["EyeRight"] == "BlindScar2" || data.liz["EyeRight"] == "Cut";
-                        bool flag4 = data.liz["EyeLeft"] == "Blind" || data.liz["EyeLeft"] == "BlindScar" || data.liz["EyeLeft"] == "BlindScar2" || data.liz["EyeLeft"] == "Cut";
-
-                        if (ShadowOfOptions.deafen.Value && data.liz.ContainsKey("EarRight") && flag3 && flag4)
-                        {
-                            List<AIModule> modules = liz.AI.modules;
-
-                            bool superHearing = false;
-
-                            bool flag5 = data.liz["EarRight"] == "Deaf";
-                            bool flag6 = data.liz["EarLeft"] == "Deaf";
-
-                            float multiplier2 = (flag5 ? 1 : 0) + (flag6 ? 1 : 0);
-
-                            for (int j = 0; j < modules.Count; j++)
-                            {
-                                if (modules[j] is SuperHearing)
-                                {
-                                    superHearing = true;
-
-                                    (modules[j] as SuperHearing).superHearingSkill = multiplier2 * 175f;
-
-                                    break;
-                                }
-                            }
-
-                            if (!superHearing)
-                            {
-                                liz.AI.modules.Add(new SuperHearing(liz.AI, liz.AI.tracker, multiplier2 * 175f));
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        catch (Exception e) { ShadowOfLizards.Logger.LogError(e); }
-    }
-
+    #region Explosion
     static void ExplosionUpdate(On.Explosion.orig_Update orig, Explosion self, bool eu)
     {
         orig(self, eu);
@@ -383,7 +230,138 @@ internal class MiscHooks
         }
         catch (Exception e) { ShadowOfLizards.Logger.LogError(e); }
     }
+    #endregion
 
+    #region FlareBomb
+    static void FlareBombUpdate(On.FlareBomb.orig_Update orig, FlareBomb self, bool eu)
+    {
+        orig(self, eu);
+
+        if (!ShadowOfOptions.blind.Value || self.burning <= 0f)
+        {
+            return;
+        }
+
+        try
+        {
+            if (!singleUse.TryGetValue(self, out OneTimeUseData data2))
+            {
+                singleUse.Add(self, new OneTimeUseData());
+                singleUse.TryGetValue(self, out data2);
+            }
+
+            for (int i = 0; i < self.room.abstractRoom.creatures.Count; i++)
+            {
+                if (self.room.abstractRoom.creatures[i].realizedCreature != null && (self.room.abstractRoom.creatures[i].rippleLayer == self.abstractPhysicalObject.rippleLayer || self.room.abstractRoom.creatures[i].rippleBothSides || self.abstractPhysicalObject.rippleBothSides) && (Custom.DistLess(self.firstChunk.pos, self.room.abstractRoom.creatures[i].realizedCreature.mainBodyChunk.pos, self.LightIntensity * 600f) || (Custom.DistLess(self.firstChunk.pos, self.room.abstractRoom.creatures[i].realizedCreature.mainBodyChunk.pos, self.LightIntensity * 1600f) && self.room.VisualContact(self.firstChunk.pos, self.room.abstractRoom.creatures[i].realizedCreature.mainBodyChunk.pos))))
+                {
+                    if (self.room.abstractRoom.creatures[i].realizedCreature is Lizard liz && lizardstorage.TryGetValue(liz.abstractCreature, out LizardData data) && data.liz.TryGetValue("EyeRight", out string eye) && eye != "Incompatible" && !data2.lizStorage.Contains(liz) && (!ShadowOfOptions.distance_based_blind.Value || (int)Custom.LerpMap(Vector2.Distance(self.firstChunk.pos, self.room.abstractRoom.creatures[i].realizedCreature.VisionPoint), 60f, 600f, 400f, 20f) > 300))
+                    {
+                        data2.lizStorage.Add(liz);
+
+                        float multiplier = ShadowOfOptions.distance_based_blind.Value ? Custom.LerpMap(Custom.LerpMap(Vector2.Distance(self.firstChunk.pos, self.room.abstractRoom.creatures[i].realizedCreature.VisionPoint), 60f, 600f, 400f, 20f), 20, 400, 0, 2) : 1;
+
+                        bool eyeRightBlind = eye == "Blind" || eye == "BlindScar" || eye == "BlindScar2" || eye == "Cut";
+                        bool eyeLeftBlind = data.liz["EyeLeft"] == "Blind" || data.liz["EyeLeft"] == "BlindScar" || data.liz["EyeLeft"] == "BlindScar2" || data.liz["EyeLeft"] == "Cut";
+                        if (!eyeRightBlind && Chance(liz.abstractCreature, ShadowOfOptions.blind_chance.Value * multiplier, "FlareBomb Blinding Right Eye"))
+                        {
+                            if (eye == "Normal")
+                            {
+                                data.liz["EyeRight"] = "Blind";
+                                liz.Template.visualRadius -= data.visualRadius * 0.5f;
+                                liz.Template.waterVision -= data.visualRadius * 0.5f;
+                                liz.Template.throughSurfaceVision -= data.visualRadius * 0.5f;
+                            }
+                            else if (eye == "Scar")
+                            {
+                                data.liz["EyeRight"] = "BlindScar";
+                                liz.Template.visualRadius -= data.visualRadius * 0.5f;
+                                liz.Template.waterVision -= data.visualRadius * 0.5f;
+                                liz.Template.throughSurfaceVision -= data.visualRadius * 0.5f;
+                            }
+                            else if (eye == "Scar2")
+                            {
+                                data.liz["EyeRight"] = "BlindScar2";
+                                liz.Template.visualRadius -= data.visualRadius * 0.5f;
+                                liz.Template.waterVision -= data.visualRadius * 0.5f;
+                                liz.Template.throughSurfaceVision -= data.visualRadius * 0.5f;
+                            }
+                            if (ShadowOfOptions.debug_logs.Value)
+                                Debug.Log(all + self + " Right Eye was Blinded");
+                        }
+                        if (!eyeLeftBlind && Chance(liz.abstractCreature, ShadowOfOptions.blind_chance.Value * multiplier, "FlareBomb Blinding Left Eye"))
+                        {
+                            if (data.liz["EyeLeft"] == "Normal")
+                            {
+                                data.liz["EyeLeft"] = "Blind";
+                                liz.Template.visualRadius -= data.visualRadius * 0.5f;
+                                liz.Template.waterVision -= data.visualRadius * 0.5f;
+                                liz.Template.throughSurfaceVision -= data.visualRadius * 0.5f;
+                            }
+                            else if (data.liz["EyeLeft"] == "Scar")
+                            {
+                                data.liz["EyeLeft"] = "BlindScar";
+                                liz.Template.visualRadius -= data.visualRadius * 0.5f;
+                                liz.Template.waterVision -= data.visualRadius * 0.5f;
+                                liz.Template.throughSurfaceVision -= data.visualRadius * 0.5f;
+                            }
+                            else if (data.liz["EyeLeft"] == "Scar2")
+                            {
+                                data.liz["EyeLeft"] = "BlindScar2";
+                                liz.Template.visualRadius -= data.visualRadius * 0.5f;
+                                liz.Template.waterVision -= data.visualRadius * 0.5f;
+                                liz.Template.throughSurfaceVision -= data.visualRadius * 0.5f;
+                            }
+                            if (ShadowOfOptions.debug_logs.Value)
+                                Debug.Log(all + self + " Left Eye was Blinded");
+                        }
+
+                        eyeRightBlind = data.liz["EyeRight"] == "Blind" || data.liz["EyeRight"] == "BlindScar" || data.liz["EyeRight"] == "BlindScar2" || data.liz["EyeRight"] == "Cut";
+                        eyeLeftBlind = data.liz["EyeLeft"] == "Blind" || data.liz["EyeLeft"] == "BlindScar" || data.liz["EyeLeft"] == "BlindScar2" || data.liz["EyeLeft"] == "Cut";
+
+                        if (ShadowOfOptions.deafen.Value && data.liz.ContainsKey("EarRight") && eyeRightBlind && eyeLeftBlind)
+                        {
+                            bool superHearing = false;
+
+                            float multiplier2 = (data.liz["EarRight"] != "Deaf" ? 1 : 0) + (data.liz["EarLeft"] != "Deaf" ? 1 : 0);
+
+                            for (int j = 0; j < liz.AI.modules.Count; j++)
+                            {
+                                if (liz.AI.modules[j] is SuperHearing)
+                                {
+                                    superHearing = true;
+
+                                    (liz.AI.modules[j] as SuperHearing).superHearingSkill = multiplier2 * 175f;
+
+                                    break;
+                                }
+                            }
+
+                            if (!superHearing)
+                            {
+                                liz.AI.modules.Add(new SuperHearing(liz.AI, liz.AI.tracker, multiplier2 * 175f));
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        catch (Exception e) { ShadowOfLizards.Logger.LogError(e); }
+    }
+    #endregion
+
+    #region KingTusk
+    static bool KingTuskHitThisChunk(On.KingTusks.Tusk.orig_HitThisChunk orig, KingTusks.Tusk self, BodyChunk chunk)
+    {
+        if (ShadowOfOptions.cut_in_half.Value && chunk != null && chunk.owner != null && chunk.owner is Lizard liz && lizardstorage.TryGetValue(liz.abstractCreature, out LizardData data) && !data.availableBodychunks.Contains(chunk.index))
+        {
+            return false;
+        }
+
+        return orig(self, chunk);
+    }
+    #endregion
+
+    #region Lizard
     static void BubbleDraw(On.LizardBubble.orig_DrawSprites orig, LizardBubble self, RoomCamera.SpriteLeaser sLeaser, RoomCamera rCam, float timeStacker, Vector2 camPos)
     {
         orig(self, sLeaser, rCam, timeStacker, camPos);
@@ -424,42 +402,99 @@ internal class MiscHooks
         }
         catch (Exception e) { ShadowOfLizards.Logger.LogError(e); }
     }
-
-    static void BigEelSwallow(On.BigEel.orig_Swallow orig, BigEel self)
+    static void GasLeak(On.LizardJumpModule.orig_Update orig, LizardJumpModule self)
     {
-        for (int i = 0; i < self.clampedObjects.Count; i++)
+        orig(self);
+
+        if (!ShadowOfOptions.jump_ability.Value || self.lizard == null || self.gasLeakSpear == null || !lizardstorage.TryGetValue(self.lizard.abstractCreature, out LizardData data) || !Chance(self.lizard.abstractCreature, ShadowOfOptions.jump_ability_chance.Value, "Removing Jump Ability due to Gas Leak"))
         {
-            if (self.clampedObjects[i].chunk.owner is Lizard liz && lizardstorage.TryGetValue(liz.abstractCreature, out LizardData data))
-            {
-                UnderwaterDen(data, liz.abstractCreature);
-            }
+            return;
         }
 
-        orig(self);
-    }
-
-    static void BigEelJawsSnap(On.BigEel.orig_JawsSnap orig, BigEel self)
-    {
-        for (int j = 0; j < self.room.physicalObjects.Length; j++)
+        try
         {
-            for (int k = self.room.physicalObjects[j].Count - 1; k >= 0; k--)
+            data.liz["CanJump"] = "False";
+
+            if (ShadowOfOptions.debug_logs.Value)
+                Debug.Log(all + self + " lost the Jump Ability due to Gas Leak");
+
+            if (ShadowOfOptions.dynamic_cheat_death.Value)
+                data.cheatDeathChance -= 5;
+        }
+        catch (Exception e) { ShadowOfLizards.Logger.LogError(e); }
+    }
+    #endregion
+
+    #region Player
+    static bool PlayerHeavyCarry(On.Player.orig_HeavyCarry orig, Player self, PhysicalObject obj)
+    {
+        return (obj is not LizCutHead || self.privSneak <= 0.5f) && orig(self, obj);
+    }
+    #endregion
+
+    #region Slugcat
+    static bool SlugcatHandEngageInMovement(On.SlugcatHand.orig_EngageInMovement orig, SlugcatHand self)
+    {
+        Player scug = self.owner.owner as Player;
+
+        if (scug.privSneak > 0.5f && scug.grasps[self.limbNumber] != null && scug.grasps[self.limbNumber].grabbed is LizCutHead)
+        {
+            self.huntSpeed = 12f;
+            self.quickness = 0.7f;
+            return true;
+        }
+        return orig(self);
+    }
+    static void SlugcatHandUpdate(On.SlugcatHand.orig_Update orig, SlugcatHand self)
+    {
+        orig(self);
+
+        Player scug = self.owner.owner as Player;
+
+        if (scug.privSneak > 0.5f && scug.grasps[self.limbNumber] != null)
+        {
+            if (scug.grasps[self.limbNumber].grabbed is LizCutHead)
             {
-                if (self.room.physicalObjects[j][k] is Lizard liz && lizardstorage.TryGetValue(liz.abstractCreature, out LizardData data) && (self.room.physicalObjects[j][k].abstractPhysicalObject.rippleLayer == self.abstractPhysicalObject.rippleLayer || self.room.physicalObjects[j][k].abstractPhysicalObject.rippleBothSides || self.abstractPhysicalObject.rippleBothSides))
-                {
-                    for (int l = 0; l < self.room.physicalObjects[j][k].bodyChunks.Length; l++)
-                    {
-                        if (self.InBiteArea(self.room.physicalObjects[j][k].bodyChunks[l].pos, self.room.physicalObjects[j][k].bodyChunks[l].rad / 2f))
-                        {
-                            data.lastDamageType = "BigEel";
-                        }
-                    }
-                }
+                self.relativeHuntPos *= 1f - (scug.grasps[self.limbNumber].grabbed as LizCutHead).donned;
             }
         }
-
-        orig(self);
     }
 
+    static int LizardLegEaten(On.SlugcatStats.orig_NourishmentOfObjectEaten orig, SlugcatStats.Name slugcatIndex, IPlayerEdible eatenobject)
+    {
+        if (eatenobject is LizCutLeg)
+        {
+            if (ModManager.MSC && slugcatIndex == MoreSlugcats.MoreSlugcatsEnums.SlugcatStatsName.Saint)
+            {
+                return -1;
+            }
+            int num = 0;
+            return (!(slugcatIndex == SlugcatStats.Name.Red) && (!ModManager.MSC || !(slugcatIndex == MoreSlugcats.MoreSlugcatsEnums.SlugcatStatsName.Artificer))) ? (num + eatenobject.FoodPoints) : (num + 2 * eatenobject.FoodPoints);
+        }
+        return orig(slugcatIndex, eatenobject);
+    }
+    #endregion
+
+    #region Spark
+    static void SparkDrawSprites(On.Spark.orig_DrawSprites orig, Spark self, RoomCamera.SpriteLeaser sLeaser, RoomCamera rCam, float timeStacker, Vector2 camPos)
+    {
+        orig(self, sLeaser, rCam, timeStacker, camPos);
+
+        if (self.lizard != null && graphicstorage.TryGetValue(self.lizard, out GraphicsData data2))
+        {
+            sLeaser.sprites[0].color = CamoElectric(self.lizard, data2, self.lizard.HeadColor(timeStacker));
+        }
+    }
+    #endregion
+
+    #region Spear
+    static bool SpearHit(On.Spear.orig_HitSomething orig, Spear self, SharedPhysics.CollisionResult result, bool eu)
+    {
+        return (!ShadowOfOptions.cut_in_half.Value || result.chunk == null || result.chunk.owner == null || result.chunk.owner is not Lizard liz || !lizardstorage.TryGetValue(liz.abstractCreature, out LizardData data) || data.availableBodychunks.Contains(result.chunk.index)) && orig(self, result, eu);
+    }
+    #endregion
+
+    #region SocialEvent
     static void SocialEventRecognizerKilling(On.SocialEventRecognizer.orig_Killing orig, SocialEventRecognizer self, Creature killer, Creature victim)
     {
         orig(self, killer, victim);
@@ -483,7 +518,7 @@ internal class MiscHooks
                 return 0;
             }
 
-            var score = StoryGameStatisticsScreen.GetNonSandboxKillscore(iconData.critType);
+            var score = Menu.StoryGameStatisticsScreen.GetNonSandboxKillscore(iconData.critType);
             if (score == 0 && MultiplayerUnlocks.SandboxUnlockForSymbolData(iconData) is MultiplayerUnlocks.SandboxUnlockID unlockID)
             {
                 score = KillScores()[unlockID.Index];
@@ -503,42 +538,60 @@ internal class MiscHooks
             {
                 killScores[i] = 1;
             }
-            SandboxSettingsInterface.DefaultKillScores(ref killScores);
+            Menu.SandboxSettingsInterface.DefaultKillScores(ref killScores);
             killScores[(int)MultiplayerUnlocks.SandboxUnlockID.Slugcat] = 1;
         }
         return killScores;
     }
+    #endregion
 
-    static void SparkDrawSprites(On.Spark.orig_DrawSprites orig, Spark self, RoomCamera.SpriteLeaser sLeaser, RoomCamera rCam, float timeStacker, Vector2 camPos)
-    {
-        orig(self, sLeaser, rCam, timeStacker, camPos);
-
-        if (self.lizard != null && graphicstorage.TryGetValue(self.lizard, out GraphicsData data2))
-        {
-            sLeaser.sprites[0].color = CamoElectric(self.lizard, data2, self.lizard.HeadColor(timeStacker));
-        }
-    }
-
+    #region StationarySprite
     static void StationaryEffectDrawSprites(On.StationaryEffect.orig_DrawSprites orig, StationaryEffect self, RoomCamera.SpriteLeaser sLeaser, RoomCamera rCam, float timeStacker, Vector2 camPos)
     {
         orig(self, sLeaser, rCam, timeStacker, camPos);
 
-        if (self.lizard != null && graphicstorage.TryGetValue(self.lizard, out GraphicsData data2))
+        if (self.lizard != null && graphicstorage.TryGetValue(self.lizard, out GraphicsData data))
         {
-            sLeaser.sprites[0].color = CamoElectric(self.lizard, data2, self.lizard.HeadColor(timeStacker));
+            sLeaser.sprites[0].color = CamoElectric(self.lizard, data, self.lizard.HeadColor(timeStacker));
         }
     }
+    #endregion
 
-    static bool CreatureGrab(On.Creature.orig_Grab orig, Creature self, PhysicalObject obj, int graspUsed, int chunkGrabbed, Creature.Grasp.Shareability shareability, float dominance, bool overrideEquallyDominant, bool pacifying)
+    #region ZapCoil
+    static void ZapCoilUpdate(On.ZapCoil.orig_Update orig, ZapCoil self, bool eu)
     {
-        if (self.grasps != null && obj is Lizard liz && lizardstorage.TryGetValue(liz.abstractCreature, out LizardData data) && !data.availableBodychunks.Contains(chunkGrabbed))
+        if (self.turnedOn > 0.5f)
         {
-            return false;
+            for (int i = 0; i < self.room.physicalObjects.Length; i++)
+            {
+                for (int j = 0; j < self.room.physicalObjects[i].Count; j++)
+                {
+                    if (!ModManager.Watcher || self.room.physicalObjects[i][j] is not Lizard)
+                    {
+                        for (int k = 0; k < self.room.physicalObjects[i][j].bodyChunks.Length; k++)
+                        {
+                            if ((self.horizontalAlignment && self.room.physicalObjects[i][j].bodyChunks[k].ContactPoint.y != 0) || (!self.horizontalAlignment && self.room.physicalObjects[i][j].bodyChunks[k].ContactPoint.x != 0))
+                            {
+                                Vector2 a = self.room.physicalObjects[i][j].bodyChunks[k].ContactPoint.ToVector2();
+                                Vector2 v = self.room.physicalObjects[i][j].bodyChunks[k].pos + a * (self.room.physicalObjects[i][j].bodyChunks[k].rad + 30f);
+                                if (self.GetFloatRect.Vector2Inside(v))
+                                {
+                                    if (self.room.physicalObjects[i][j] is Lizard crit && lizardstorage.TryGetValue(crit.abstractCreature, out LizardData data))
+                                    {
+                                        ViolenceCheck(self.room.physicalObjects[i][j] as Lizard, data, "Electric");
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
-        return orig(self, obj, graspUsed, chunkGrabbed, shareability, dominance, overrideEquallyDominant, pacifying);
     }
+    #endregion
 
-    static void SingularityBombExplode(On.MoreSlugcats.SingularityBomb.orig_Explode orig, SingularityBomb self)
+    #region Singularity
+    static void SingularityBombExplode(On.MoreSlugcats.SingularityBomb.orig_Explode orig, MoreSlugcats.SingularityBomb self)
     {
         if (ShadowOfOptions.dynamic_cheat_death.Value)
         {
@@ -568,38 +621,6 @@ internal class MiscHooks
                     if (self.room.physicalObjects[m][n] is Lizard && Custom.Dist(self.room.physicalObjects[m][n].firstChunk.pos, self.firstChunk.pos) < 350f)
                     {
                         Eviscerate(self.room.physicalObjects[m][n] as Lizard);
-                    }
-                }
-            }
-        }
-    }
-
-    #region ZapCoil
-    static void ZapCoilUpdate(On.ZapCoil.orig_Update orig, ZapCoil self, bool eu)
-    {
-        if (self.turnedOn > 0.5f)
-        {
-            for (int i = 0; i < self.room.physicalObjects.Length; i++)
-            {
-                for (int j = 0; j < self.room.physicalObjects[i].Count; j++)
-                {
-                    if (!ModManager.Watcher || self.room.physicalObjects[i][j] is not Lizard)
-                    {
-                        for (int k = 0; k < self.room.physicalObjects[i][j].bodyChunks.Length; k++)
-                        {
-                            if ((self.horizontalAlignment && self.room.physicalObjects[i][j].bodyChunks[k].ContactPoint.y != 0) || (!self.horizontalAlignment && self.room.physicalObjects[i][j].bodyChunks[k].ContactPoint.x != 0))
-                            {
-                                Vector2 a = self.room.physicalObjects[i][j].bodyChunks[k].ContactPoint.ToVector2();
-                                Vector2 v = self.room.physicalObjects[i][j].bodyChunks[k].pos + a * (self.room.physicalObjects[i][j].bodyChunks[k].rad + 30f);
-                                if (self.GetFloatRect.Vector2Inside(v))
-                                {
-                                    if (self.room.physicalObjects[i][j] is Lizard crit && lizardstorage.TryGetValue(crit.abstractCreature, out LizardData data))
-                                    {
-                                        ViolenceCheck(self.room.physicalObjects[i][j] as Lizard, data, "Electric");
-                                    }
-                                }
-                            }
-                        }
                     }
                 }
             }

@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System;
+
 using static ShadowOfLizards.ShadowOfLizards;
 
 namespace ShadowOfLizards;
@@ -16,7 +17,7 @@ internal class LizardTongueHooks
     {
         if (!ShadowOfOptions.tongue_ability.Value || !lizardstorage.TryGetValue(lizard.abstractCreature, out LizardData data) || !data.liz.TryGetValue("Tongue", out string Tongue))
         {
-            orig.Invoke(self, lizard);
+            orig(self, lizard);
             return;
         }
 

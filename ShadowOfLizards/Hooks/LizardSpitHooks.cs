@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 using RWCustom;
-using static RoomCamera;
+
 using static ShadowOfLizards.ShadowOfLizards;
 
 namespace ShadowOfLizards;
@@ -13,9 +13,9 @@ internal class LizardSpitHooks
         On.LizardSpit.Update += SpitUpdate;
     }
 
-    static void SpitDraw(On.LizardSpit.orig_DrawSprites orig, LizardSpit self, SpriteLeaser sLeaser, RoomCamera rCam, float timeStacker, Vector2 camPos)
+    static void SpitDraw(On.LizardSpit.orig_DrawSprites orig, LizardSpit self, RoomCamera.SpriteLeaser sLeaser, RoomCamera rCam, float timeStacker, Vector2 camPos)
     {
-        orig.Invoke(self, sLeaser, rCam, timeStacker, camPos);
+        orig(self, sLeaser, rCam, timeStacker, camPos);
 
         if (self.lizard == null || !lizardstorage.TryGetValue(self.lizard.abstractCreature, out LizardData data))
         {
@@ -42,7 +42,7 @@ internal class LizardSpitHooks
     {
         if (self.lizard == null || !lizardstorage.TryGetValue(self.lizard.abstractCreature, out LizardData data))
         {
-            orig.Invoke(self, eu);
+            orig(self, eu);
             return;
         }
         else if (ShadowOfOptions.spider_transformation.Value && ShadowOfOptions.spider_spit.Value && data.transformation == "SpiderTransformation" && data.liz.ContainsKey("SpiderNumber"))
@@ -51,7 +51,7 @@ internal class LizardSpitHooks
             return;
         }
 
-        orig.Invoke(self, eu);
+        orig(self, eu);
 
         if (ShadowOfOptions.melted_transformation.Value && ShadowOfOptions.melted_spit.Value && (data.transformation == "Melted" || data.transformation == "MeltedTransformation") && self.stickChunk != null && self.stickChunk.owner != null && self.stickChunk.owner.room == self.room && Custom.DistLess(self.stickChunk.pos, self.pos, self.stickChunk.rad + 40f) && self.fallOff > 0)
         {
