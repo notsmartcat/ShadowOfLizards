@@ -430,7 +430,7 @@ internal class LizardGraphicsHooks
                 }
                 else
                 {
-                    for (int i = 0; i < data.availableBodychunks.Count; i++)
+                    for (int i = 0; i < data.cosmeticBodychunks.Count; i++)
                     {
                         if (data.availableBodychunks.Contains(data.cosmeticBodychunks[i]))
                         {
@@ -439,7 +439,7 @@ internal class LizardGraphicsHooks
                     }
                 }
 
-                if (bodyChunks.Count != 0 && bodyChunks.Count != self.lizard.bodyChunks.Length)
+                if (bodyChunks.Count != self.lizard.bodyChunks.Length)
                 {
                     CutInHalfGraphics(self, sLeaser, bodyChunks, camPos, timeStacker);
                 }

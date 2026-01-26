@@ -220,7 +220,7 @@ internal class TransformationMelted
                     if ((crit as Player).pyroJumpCounter >= MoreSlugcats.MoreSlugcats.cfgArtificerExplosionCapacity.Value)
                     {
                         if (shadowOfIncapacitationCheck)
-                            Incapacitation.Incapacitation.ActuallyKill(crit);
+                            InconKill();
 
                         (crit as Player).PyroDeath();
                     }
@@ -228,7 +228,7 @@ internal class TransformationMelted
                 else
                 {
                     if (shadowOfIncapacitationCheck)
-                        Incapacitation.Incapacitation.ActuallyKill(crit);
+                        InconKill();
 
                     crit.Die();
                 }
@@ -248,7 +248,7 @@ internal class TransformationMelted
                     PreViolenceCheck(liz2, data2);
 
                     if (shadowOfIncapacitationCheck)
-                        Incapacitation.Incapacitation.ActuallyKill(crit);
+                        InconKill();
 
                     crit.Die();
                     PostViolenceCheck(liz2, data2, "Melted", self.owner as Lizard);
@@ -256,7 +256,7 @@ internal class TransformationMelted
                 else
                 {
                     if (shadowOfIncapacitationCheck)
-                        Incapacitation.Incapacitation.ActuallyKill(crit);
+                        InconKill();
 
                     crit.Die();
                 }
@@ -310,6 +310,16 @@ internal class TransformationMelted
             }
         }
         catch (Exception e) { ShadowOfLizards.Logger.LogError(e); }
+
+        void InconKill()
+        {
+            if (!Incapacitation.Incapacitation.inconstorage.TryGetValue(crit.abstractCreature, out Incapacitation.Incapacitation.InconData data))
+            {
+                return;
+            }
+
+            Incapacitation.Incapacitation.ActuallyKill(crit);
+        }
     }
     #endregion
 }
