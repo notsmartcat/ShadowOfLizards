@@ -36,7 +36,7 @@ internal class LizardGraphicsHooks
 
         if (!graphicstorage.TryGetValue(self, out GraphicsData _))
         {
-            graphicstorage.Add(self, new GraphicsData());
+            graphicstorage.Add(self, new());
         }
 
         if (!lizardstorage.TryGetValue(self.lizard.abstractCreature, out LizardData data))
@@ -74,7 +74,7 @@ internal class LizardGraphicsHooks
         Line1:
             if (ShadowOfOptions.melted_transformation.Value && (data.transformation == "Melted" || data.transformation == "MeltedTransformation"))
             {
-                self.lizard.effectColor = new Color(float.Parse(data.liz["MeltedR"]), float.Parse(data.liz["MeltedG"]), float.Parse(data.liz["MeltedB"]));
+                self.lizard.effectColor = new(float.Parse(data.liz["MeltedR"]), float.Parse(data.liz["MeltedG"]), float.Parse(data.liz["MeltedB"]));
 
                 if (self.lizard.rotModule != null && self.lizard.LizardState.rotType != LizardState.RotType.Slight)
                 {
@@ -407,10 +407,10 @@ internal class LizardGraphicsHooks
                 }
                 else if (CanCamo2 == "False" && self.lizard.Template.type == CreatureTemplate.Type.WhiteLizard)
                 {
-                    self.whiteCamoColor = new Color(1f, 1f, 1f);
+                    self.whiteCamoColor = new(1f, 1f, 1f);
                     self.whiteCamoColorAmount = 0f;
 
-                    self.ColorBody(sLeaser, new Color(1f, 1f, 1f));
+                    self.ColorBody(sLeaser, new(1f, 1f, 1f));
 
                     sLeaser.sprites[self.SpriteHeadStart].color = WhiteNoCamoHeadColor(self, timeStacker);
                     sLeaser.sprites[self.SpriteHeadStart + 3].color = WhiteNoCamoHeadColor(self, timeStacker);
@@ -726,7 +726,7 @@ internal class LizardGraphicsHooks
                         Color color4 = CamoElectric(self, graphicData, Color.Lerp(self.HeadColor(timeStacker), self.lizard.effectColor, 0.7f));
                         if (self.whiteFlicker > 0 && (self.whiteFlicker > 15 || self.everySecondDraw))
                         {
-                            color4 = CamoElectric(self, graphicData, new Color(1f, 1f, 1f));
+                            color4 = CamoElectric(self, graphicData, new(1f, 1f, 1f));
                         }
                         sLeaser.sprites[self.SpriteHeadStart].color = color4;
                         sLeaser.sprites[self.SpriteHeadStart + 3].color = color4;
@@ -804,7 +804,7 @@ internal class LizardGraphicsHooks
                             {
                                 return Color.Lerp(head ? headColour : effectColour, Color.Lerp(effectColour, self.palette.blackColor, flicker), tip);
                             }
-                            return Color.Lerp(effectColour, new Color(1f, 1f, 1f, antennae.alpha), flicker);
+                            return Color.Lerp(effectColour, new(1f, 1f, 1f, antennae.alpha), flicker);
                         }
                     }
                     else if (self.cosmetics[c] is AxolotlGills axolotlGills)
@@ -876,7 +876,7 @@ internal class LizardGraphicsHooks
                         {
                             for (int j = 0; j < 2; j++)
                             {
-                                sLeaser.sprites[jumpRings.RingSprite(i, j, 0)].color = new Color(1f, 0f, 0f);
+                                sLeaser.sprites[jumpRings.RingSprite(i, j, 0)].color = new(1f, 0f, 0f);
                                 sLeaser.sprites[jumpRings.RingSprite(i, j, 0)].color = ringsColor;
                                 sLeaser.sprites[jumpRings.RingSprite(i, j, 1)].color = bodyColour;
                             }
@@ -1044,7 +1044,7 @@ internal class LizardGraphicsHooks
                             Color geckoColor = Color.Lerp(Camo(self, self.BodyColor(num5)), effectColour, 0.2f + 0.8f * Mathf.Pow(f, 0.5f));
                             for (int l = 0; l < tailGeckoScales.lines; l++)
                             {
-                                sLeaser.sprites[tailGeckoScales.startSprite + k * tailGeckoScales.lines + l].color = new Color(1f, 0f, 0f);
+                                sLeaser.sprites[tailGeckoScales.startSprite + k * tailGeckoScales.lines + l].color = new(1f, 0f, 0f);
                                 sLeaser.sprites[tailGeckoScales.startSprite + k * tailGeckoScales.lines + l].color = geckoColor;
                             }
                         }
@@ -1087,7 +1087,7 @@ internal class LizardGraphicsHooks
                                 {
                                     for (int l = k * 4; l < k * 4 + ((k == 3) ? 3 : 4); l++)
                                     {
-                                        (sLeaser.sprites[whiskers.startSprite + i * 2 + j] as TriangleMesh).verticeColors[l] = Color.Lerp(headColour, new Color(1f, 1f, 1f), (float)(k - 1) / 2f * Mathf.Lerp(whiskers.whiskerLightUp[i, j, 1], whiskers.whiskerLightUp[i, j, 0], timeStacker));
+                                        (sLeaser.sprites[whiskers.startSprite + i * 2 + j] as TriangleMesh).verticeColors[l] = Color.Lerp(headColour, new(1f, 1f, 1f), (float)(k - 1) / 2f * Mathf.Lerp(whiskers.whiskerLightUp[i, j, 1], whiskers.whiskerLightUp[i, j, 0], timeStacker));
                                     }
                                 }
                             }
@@ -1124,7 +1124,7 @@ internal class LizardGraphicsHooks
                             continue;
                         }
 
-                        sLeaser.sprites[blizzardHaloShine.startSprite].color = CamoElectric(self, graphicData, Color.Lerp(Color.white, Color.Lerp(new Color(0.9f, 0.05f, 0f), Color.Lerp(new Color(1f, 0.4f, 0f), Color.white, Mathf.Abs(Mathf.Sin((float)blizzardHaloShine.heatWiwble * 0.07f)) * 0.3f), blizzardHaloShine.heat - 1f), blizzardHaloShine.heat));
+                        sLeaser.sprites[blizzardHaloShine.startSprite].color = CamoElectric(self, graphicData, Color.Lerp(Color.white, Color.Lerp(new(0.9f, 0.05f, 0f), Color.Lerp(new(1f, 0.4f, 0f), Color.white, Mathf.Abs(Mathf.Sin((float)blizzardHaloShine.heatWiwble * 0.07f)) * 0.3f), blizzardHaloShine.heat - 1f), blizzardHaloShine.heat));
                     }
                     else if (self.cosmetics[c] is SkinkStripes skinkStripes)
                     {
@@ -1364,7 +1364,7 @@ internal class LizardGraphicsHooks
                                 {
                                     for (int l = k * 4; l < k * 4 + ((k == 3) ? 3 : 4); l++)
                                     {
-                                        (sLeaser.sprites[whiskers.startSprite + i * 2 + j] as TriangleMesh).verticeColors[l] = Color.Lerp(self.HeadColor(timeStacker), new Color(1f, 1f, 1f), (float)(k - 1) / 2f * Mathf.Lerp(whiskers.whiskerLightUp[i, j, 1], whiskers.whiskerLightUp[i, j, 0], timeStacker));
+                                        (sLeaser.sprites[whiskers.startSprite + i * 2 + j] as TriangleMesh).verticeColors[l] = Color.Lerp(self.HeadColor(timeStacker), new(1f, 1f, 1f), (float)(k - 1) / 2f * Mathf.Lerp(whiskers.whiskerLightUp[i, j, 1], whiskers.whiskerLightUp[i, j, 0], timeStacker));
                                     }
                                 }
                             }
@@ -1432,7 +1432,7 @@ internal class LizardGraphicsHooks
 
             Color Electrify(Color col)
             {
-                return Color.Lerp(col, new Color(0.7f, 0.7f, 1f), (float)(graphicData.electricColorTimer / 50f));
+                return Color.Lerp(col, new(0.7f, 0.7f, 1f), (float)(graphicData.electricColorTimer / 50f));
             }
 
             Color TailColor(float f)
@@ -1443,7 +1443,7 @@ internal class LizardGraphicsHooks
                 }
                 if (self.lizard.Template.type == CreatureTemplate.Type.WhiteLizard)
                 {
-                    return Camo(self, new Color(1f, 1f, 1f));
+                    return Camo(self, new(1f, 1f, 1f));
                 }
                 if (self.lizard.Template.type == CreatureTemplate.Type.Salamander)
                 {
@@ -1467,7 +1467,7 @@ internal class LizardGraphicsHooks
         {
             if (self.whiteFlicker > 0 && (self.whiteFlicker > 15 || self.everySecondDraw))
             {
-                return new Color(1f, 1f, 1f);
+                return new(1f, 1f, 1f);
             }
             float num = 1f - Mathf.Pow(0.5f + 0.5f * Mathf.Sin(Mathf.Lerp(self.lastBlink, self.blink, timeStacker) * 2f * 3.1415927f), 1.5f + self.lizard.AI.excitement * 1.5f);
             if (self.headColorSetter != 0f)
@@ -1479,7 +1479,7 @@ internal class LizardGraphicsHooks
                 num = self.flickerColor;
             }
             num = Mathf.Lerp(num, Mathf.Pow(Mathf.Max(0f, Mathf.Lerp(self.lastVoiceVisualization, self.voiceVisualization, timeStacker)), 0.75f), Mathf.Lerp(self.lastVoiceVisualizationIntensity, self.voiceVisualizationIntensity, timeStacker));
-            return Color.Lerp(new Color(1f, 1f, 1f), self.palette.blackColor, num);
+            return Color.Lerp(new(1f, 1f, 1f), self.palette.blackColor, num);
         }
         void HeadlessCosmetics()
         {
@@ -1537,14 +1537,14 @@ internal class LizardGraphicsHooks
                 {
                     if (!graphicstorage.TryGetValue(self, out GraphicsData data2))
                     {
-                        graphicstorage.Add(self, new GraphicsData());
+                        graphicstorage.Add(self, new());
                         graphicstorage.TryGetValue(self, out data2);
                     }
 
                     data2.eyeSprites = sLeaser.sprites.Length;
                     Array.Resize(ref sLeaser.sprites, sLeaser.sprites.Length + 2);
-                    sLeaser.sprites[data2.eyeSprites] = new FSprite("pixel", true);
-                    sLeaser.sprites[data2.eyeSprites + 1] = new FSprite("pixel", true);
+                    sLeaser.sprites[data2.eyeSprites] = new("pixel", true);
+                    sLeaser.sprites[data2.eyeSprites + 1] = new("pixel", true);
                 }
             }
 
@@ -1553,14 +1553,14 @@ internal class LizardGraphicsHooks
             {
                 if (!graphicstorage.TryGetValue(self, out GraphicsData data2))
                 {
-                    graphicstorage.Add(self, new GraphicsData());
+                    graphicstorage.Add(self, new());
                     graphicstorage.TryGetValue(self, out data2);
                 }
 
                 data2.cutHalfSprites = sLeaser.sprites.Length;
                 Array.Resize(ref sLeaser.sprites, sLeaser.sprites.Length + 2);
-                sLeaser.sprites[data2.cutHalfSprites] = new FSprite("pixel", true);
-                sLeaser.sprites[data2.cutHalfSprites + 1] = new FSprite("pixel", true);
+                sLeaser.sprites[data2.cutHalfSprites] = new("pixel", true);
+                sLeaser.sprites[data2.cutHalfSprites + 1] = new("pixel", true);
 
                 sLeaser.sprites[data2.cutHalfSprites].isVisible = false;
                 sLeaser.sprites[data2.cutHalfSprites + 1].isVisible = false;
@@ -1590,7 +1590,7 @@ internal class LizardGraphicsHooks
 
         if (ShadowOfOptions.melted_transformation.Value && lizardstorage.TryGetValue(self.lGraphics.lizard.abstractCreature, out LizardData data) && (data.transformation == "Melted" || data.transformation == "MeltedTransformation"))
         {
-            self.redderTint = new Color(float.Parse(data.liz["MeltedR"]), float.Parse(data.liz["MeltedG"]), float.Parse(data.liz["MeltedB"]));
+            self.redderTint = new(float.Parse(data.liz["MeltedR"]), float.Parse(data.liz["MeltedG"]), float.Parse(data.liz["MeltedB"]));
         }
     }
     static void NewPeachHeadStripes(On.Watcher.PeachHeadStripes.orig_ctor orig, PeachHeadStripes self, LizardGraphics lGraphics, int startSprite)
@@ -1599,7 +1599,7 @@ internal class LizardGraphicsHooks
 
         if (ShadowOfOptions.melted_transformation.Value && lizardstorage.TryGetValue(self.lGraphics.lizard.abstractCreature, out LizardData data) && (data.transformation == "Melted" || data.transformation == "MeltedTransformation"))
         {
-            self.redderTint = new Color(float.Parse(data.liz["MeltedR"]), float.Parse(data.liz["MeltedG"]), float.Parse(data.liz["MeltedB"]));
+            self.redderTint = new(float.Parse(data.liz["MeltedR"]), float.Parse(data.liz["MeltedG"]), float.Parse(data.liz["MeltedB"]));
         }
     }
     #endregion

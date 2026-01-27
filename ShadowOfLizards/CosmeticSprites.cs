@@ -177,8 +177,8 @@ public class BrokenTooth : CosmeticSprite
     public override void InitiateSprites(RoomCamera.SpriteLeaser sLeaser, RoomCamera rCam)
     {
         sLeaser.sprites = new FSprite[2];
-        sLeaser.sprites[0] = new FSprite(Futile.atlasManager.GetElementWithName(spriteName), true);
-        sLeaser.sprites[1] = new FSprite(Futile.atlasManager.GetElementWithName(spriteName + "Root"), true);
+        sLeaser.sprites[0] = new(Futile.atlasManager.GetElementWithName(spriteName), true);
+        sLeaser.sprites[1] = new(Futile.atlasManager.GetElementWithName(spriteName + "Root"), true);
 
         AddToContainer(sLeaser, rCam, null);
     }
@@ -252,7 +252,7 @@ public class BrokenTooth : CosmeticSprite
 
     Color ElectricColor(Color col)
     {
-        return Color.Lerp(col, new Color(0.7f, 0.7f, 1f), (float)electricColorTimer / 50f);
+        return Color.Lerp(col, new(0.7f, 0.7f, 1f), (float)electricColorTimer / 50f);
     }
 
     public Color HeadColor(float timeStacker)

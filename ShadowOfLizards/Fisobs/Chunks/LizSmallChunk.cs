@@ -59,7 +59,7 @@ internal sealed class LizSmallChunk : PlayerCarryableItem, IDrawable, IPlayerEdi
         Abstr = abstr;
 
         bodyChunks = new BodyChunk[1];
-        bodyChunks[0] = new BodyChunk(this, 0, Vector2.zero, 5f, 0.2f);
+        bodyChunks[0] = new(this, 0, Vector2.zero, 5f, 0.2f);
         bodyChunkConnections = new BodyChunkConnection[0];
         airFriction = 0.999f;
         gravity = 0.9f;
@@ -70,6 +70,10 @@ internal sealed class LizSmallChunk : PlayerCarryableItem, IDrawable, IPlayerEdi
         buoyancy = 0.75f;
         GoThroughFloors = false;
         lastRotation = rotation;
+
+        bodyColour = new(Abstr.bodyColourR, Abstr.bodyColourG, Abstr.bodyColourB);
+        effectColour = new(Abstr.effectColourR, Abstr.effectColourG, Abstr.effectColourB);
+        bloodColour = (Abstr.bloodColourR != -1f) ? new(Abstr.bloodColourR, Abstr.bloodColourG, Abstr.bloodColourB) : effectColour;
     }
 
     public override void PlaceInRoom(Room placeRoom)
@@ -95,7 +99,7 @@ internal sealed class LizSmallChunk : PlayerCarryableItem, IDrawable, IPlayerEdi
 
     private void BloodEmitter()
     {
-        room.AddObject(new BloodParticle(bodyChunks[0].pos, new Vector2(Random.Range(-3f, 3f), Random.Range(5f, 10f)), bloodColour, Abstr.breed, null, 2.3f));
+        room.AddObject(new BloodParticle(bodyChunks[0].pos, new(Random.Range(-3f, 3f), Random.Range(5f, 10f)), bloodColour, Abstr.breed, null, 2.3f));
     }
 
     #region Colours
@@ -121,7 +125,7 @@ internal sealed class LizSmallChunk : PlayerCarryableItem, IDrawable, IPlayerEdi
             }
             if (Abstr.breed == "WhiteLizard")
             {
-                return Abstr.canCamo ? Camo(new Color(1f, 1f, 1f)) : new Color(1f, 1f, 1f);
+                return Abstr.canCamo ? Camo(new(1f, 1f, 1f)) : new(1f, 1f, 1f);
             }
             if (Abstr.breed == "Salamander")
             {
@@ -140,7 +144,7 @@ internal sealed class LizSmallChunk : PlayerCarryableItem, IDrawable, IPlayerEdi
             {
                 return Color.Lerp(palette.blackColor, EffectColor, 0.1f);
             }
-            return Color.Lerp(new Color(0.9f, 0.9f, 0.95f), EffectColor, 0.06f);
+            return Color.Lerp(new(0.9f, 0.9f, 0.95f), EffectColor, 0.06f);
         }
     }
 
@@ -158,13 +162,9 @@ internal sealed class LizSmallChunk : PlayerCarryableItem, IDrawable, IPlayerEdi
 
     public void InitiateSprites(SpriteLeaser sLeaser, RoomCamera rCam)
     {
-        bodyColour = new Color(Abstr.bodyColourR, Abstr.bodyColourG, Abstr.bodyColourB);
-        effectColour = new Color(Abstr.effectColourR, Abstr.effectColourG, Abstr.effectColourB);
-        bloodColour = (Abstr.bloodColourR != -1f) ? new Color(Abstr.bloodColourR, Abstr.bloodColourG, Abstr.bloodColourB) : effectColour;
-
         sLeaser.sprites = new FSprite[2];
-        sLeaser.sprites[0] = new FSprite("SmallChunkInside" + Abstr.insideVariant, true);
-        sLeaser.sprites[1] = new FSprite("SmallChunkOutside" + Abstr.outsideVariant, true);
+        sLeaser.sprites[0] = new("SmallChunkInside" + Abstr.insideVariant, true);
+        sLeaser.sprites[1] = new("SmallChunkOutside" + Abstr.outsideVariant, true);
 
         sLeaser.sprites[0].color = bloodColour;
         sLeaser.sprites[1].color = bodyColour;
@@ -237,7 +237,7 @@ internal sealed class LizSmallChunk : PlayerCarryableItem, IDrawable, IPlayerEdi
 
         if (Abstr.breed == "BlizzardLizard")
         {
-            palette.blackColor = new Color(0.8f, 0.81f, 0.84f);
+            palette.blackColor = new(0.8f, 0.81f, 0.84f);
             this.palette = palette;
         }
         else if (Abstr.breed == "IndigoLizard")

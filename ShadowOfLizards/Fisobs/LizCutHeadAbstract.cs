@@ -50,6 +50,8 @@ sealed class LizCutHeadAbstract : AbstractPhysicalObject
     public float jawOpenAngle;
     public float jawOpenMoveJawsApart;
 
+    public int headAngleNum;
+
     public LizCutHeadAbstract(World world, WorldCoordinate pos, EntityID ID) : base(world, LizCutHeadFisobs.AbstrLizCutHead, null, pos, ID)
     {
     }
@@ -62,6 +64,6 @@ sealed class LizCutHeadAbstract : AbstractPhysicalObject
 
     public override string ToString()
     {
-        return this.SaveToString($"{hue};{saturation};{scaleX};{scaleY};{breed};{bodyColourR};{bodyColourG};{bodyColourB};{effectColourR};{effectColourG};{effectColourB};{eyeRightColourR};{eyeRightColourG};{eyeRightColourB};{eyeLeftColourR};{eyeLeftColourG};{eyeLeftColourB};{headSprite0};{headSprite1};{headSprite2};{headSprite3};{headSprite4};{headSprite5};{headSprite6};{blackSalamander};{rad};{mass};{bloodColourR};{bloodColourG};{bloodColourB};{canCamo};{jawOpenAngle};{jawOpenMoveJawsApart}");
+        return this.SaveToString($"{hue};{saturation};{scaleX};{scaleY};{breed};{bodyColourR};{bodyColourG};{bodyColourB};{effectColourR};{effectColourG};{effectColourB};{eyeRightColourR};{eyeRightColourG};{eyeRightColourB};{eyeLeftColourR};{eyeLeftColourG};{eyeLeftColourB};{headSprite0};{headSprite1};{headSprite2};{headSprite3};{headSprite4};{headSprite5};{headSprite6};{blackSalamander};{rad};{mass};{bloodColourR};{bloodColourG};{bloodColourB};{canCamo};{jawOpenAngle};{jawOpenMoveJawsApart};{headAngleNum}");
     }
 }

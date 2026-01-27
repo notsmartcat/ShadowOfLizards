@@ -17,7 +17,7 @@ sealed class ShadowOfBloodEmitter : BloodEmitter
             this.bleedTime = bleedTime;
             initialBleedTime = bleedTime;
             maxVelocity = velocity;
-            creatureColor = new Color(0.5f, 0f, 0f);
+            creatureColor = new(0.5f, 0f, 0f);
             splatterColor = "GreenLizard";
 
             if (this.chunk.owner is Creature && BloodMod.creatureColors.ContainsKey((this.chunk.owner as Creature).Template.type.value))

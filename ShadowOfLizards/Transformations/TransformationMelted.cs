@@ -45,7 +45,7 @@ internal class TransformationMelted
             {
                 List<TileConnectionResistance> list2 = new()
                             {
-                            new TileConnectionResistance(MovementConnection.MovementType.DropToWater, 20f, PathCost.Legality.Allowed)
+                            new(MovementConnection.MovementType.DropToWater, 20f, PathCost.Legality.Allowed)
                             };
 
                 for (int n = 0; n < list2.Count; n++)
@@ -89,7 +89,7 @@ internal class TransformationMelted
         #region Colour
         if (!data.liz.ContainsKey("MeltedR"))
         {
-            Color waterColour = (world != null && world.activeRooms[0] != null && world.activeRooms[0].waterObject != null && world.activeRooms[0].waterObject.WaterIsLethal && world.activeRooms[0].game.cameras[0].currentPalette.waterColor1 != null) ? world.activeRooms[0].game.cameras[0].currentPalette.waterColor1 : new Color(0.4078431f, 0.5843138f, 0.1843137f);
+            Color waterColour = (world != null && world.activeRooms[0] != null && world.activeRooms[0].waterObject != null && world.activeRooms[0].waterObject.WaterIsLethal && world.activeRooms[0].game.cameras[0].currentPalette.waterColor1 != null) ? world.activeRooms[0].game.cameras[0].currentPalette.waterColor1 : new(0.4078431f, 0.5843138f, 0.1843137f);
             data.liz["MeltedR"] = waterColour.r.ToString();
             data.liz["MeltedG"] = waterColour.g.ToString();
             data.liz["MeltedB"] = waterColour.b.ToString();

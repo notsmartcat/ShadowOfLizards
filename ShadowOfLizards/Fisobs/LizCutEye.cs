@@ -35,7 +35,7 @@ sealed class LizCutEye : PlayerCarryableItem, IDrawable
         Abstr = abstr;
 
         bodyChunks = new BodyChunk[1];
-        bodyChunks[0] = new BodyChunk(this, 0, new Vector2(0f, 0f), 5f, 0.07f);
+        bodyChunks[0] = new(this, 0, new Vector2(0f, 0f), 5f, 0.07f);
         bodyChunkConnections = new BodyChunkConnection[0];
         airFriction = 0.999f;
         gravity = 0.9f;
@@ -56,6 +56,10 @@ sealed class LizCutEye : PlayerCarryableItem, IDrawable
                 cords[i, j, 3] = Custom.RNV() * Random.value;
             }
         }
+
+        bodyColour = new(Abstr.bodyColourR, Abstr.bodyColourG, Abstr.bodyColourB);
+        bloodColour = new(Abstr.bloodColourR, Abstr.bloodColourG, Abstr.bloodColourB);
+        eyeColour = new(Abstr.eyeColourR, Abstr.eyeColourG, Abstr.eyeColourB);
     }
 
     public override void NewRoom(Room newRoom)
@@ -96,17 +100,13 @@ sealed class LizCutEye : PlayerCarryableItem, IDrawable
 
     public void InitiateSprites(SpriteLeaser sLeaser, RoomCamera rCam)
     {
-        bodyColour = new Color(Abstr.bodyColourR, Abstr.bodyColourG, Abstr.bodyColourB);
-        bloodColour = new Color(Abstr.bloodColourR, Abstr.bloodColourG, Abstr.bloodColourB);
-        eyeColour = new Color(Abstr.eyeColourR, Abstr.eyeColourG, Abstr.eyeColourB);
-
         sLeaser.sprites = new FSprite[5];
-        sLeaser.sprites[0] = new FSprite("mouseEyeA1", true)
+        sLeaser.sprites[0] = new("mouseEyeA1", true)
         {
             scaleX = 1.15f,
             scaleY = 1.15f
         };
-        sLeaser.sprites[1] = new FSprite("pixel", true)
+        sLeaser.sprites[1] = new("pixel", true)
         {
             scaleX = 2f,
             scaleY = 8f
@@ -117,7 +117,7 @@ sealed class LizCutEye : PlayerCarryableItem, IDrawable
             sLeaser.sprites[2 + i] = TriangleMesh.MakeLongMesh(cords.GetLength(1), false, false);
         }
 
-        sLeaser.sprites[4] = new FSprite("mouseEyeA1", true)
+        sLeaser.sprites[4] = new("mouseEyeA1", true)
         {
             scaleX = 1f,
             scaleY = 1f
@@ -296,7 +296,7 @@ sealed class LizCutEye : PlayerCarryableItem, IDrawable
                 cords[i, j, 2] += a * (3f + Mathf.Abs(rotSpeed) / 5f) * Mathf.Pow(1f - num, 3f);
                 if (j > 1 && room.GetTile(cords[i, j, 0]).Solid)
                 {
-                    SharedPhysics.TerrainCollisionData terrainCollisionData = scratchTerrainCollisionData.Set(cords[i, j, 0], cords[i, j, 1], cords[i, j, 2], 1f, new IntVector2(0, 0), lastGrabbed);
+                    SharedPhysics.TerrainCollisionData terrainCollisionData = scratchTerrainCollisionData.Set(cords[i, j, 0], cords[i, j, 1], cords[i, j, 2], 1f, new(0, 0), lastGrabbed);
                     terrainCollisionData = SharedPhysics.VerticalCollision(room, terrainCollisionData);
                     terrainCollisionData = SharedPhysics.HorizontalCollision(room, terrainCollisionData);
                     cords[i, j, 0] = terrainCollisionData.pos;

@@ -27,11 +27,11 @@ internal class CustomRelationsHooks
         {
             if (LizardSpiderMotherTemplateCheck(crit, true) && self.StaticRelationship(dRelation.trackerRep.representedCreature).type != Relationship.Type.Afraid)
             {
-                return new Relationship(Relationship.Type.StayOutOfWay, 0.9f);
+                return new(Relationship.Type.StayOutOfWay, 0.9f);
             } //Spiders Stay out of way of Spider Lizards
             else if (LizardSpiderTransformationTemplateCheck(crit, true))
             {
-                return new Relationship(Relationship.Type.Ignores, 0.0f);
+                return new(Relationship.Type.Ignores, 0.0f);
             } //Spiders Ignore Spider Transformation Lizards
         }
         else if (crit is Player)
@@ -40,7 +40,7 @@ internal class CustomRelationsHooks
             {
                 if (self.bug.room.abstractRoom.creatures[i].realizedCreature != null && self.bug.room.abstractRoom.creatures[i].realizedCreature is Lizard liz && lizardstorage.TryGetValue(liz.abstractCreature, out LizardData data) && data.spiderLikness > 0 && liz.AI != null && liz.AI.friendTracker.friend == crit && (self.bug.room.abstractRoom.creatures[i].rippleLayer == self.bug.abstractPhysicalObject.rippleLayer || self.bug.room.abstractRoom.creatures[i].rippleBothSides || self.bug.abstractPhysicalObject.rippleBothSides))
                 {
-                    return new Relationship(Relationship.Type.Ignores, 0.0f);
+                    return new(Relationship.Type.Ignores, 0.0f);
                 }
             }
         }
@@ -65,16 +65,16 @@ internal class CustomRelationsHooks
             {
                 if (LizardSpiderMotherTemplateCheck(crit, false))
                 {
-                    return new Relationship(Relationship.Type.StayOutOfWay, 0.9f);
+                    return new(Relationship.Type.StayOutOfWay, 0.9f);
                 } //Spider Lizards Stay ut of way of other Spider Lizards
                 if (LizardSpiderTransformationTemplateCheck(crit, false))
                 {
-                    return new Relationship(Relationship.Type.Attacks, 1f);
+                    return new(Relationship.Type.Attacks, 1f);
                 } //Spider Lizards Attack Spider Transformation Lizards
             }
             else if(SpiderTemplateCheck(crit))
             {
-                return new Relationship(Relationship.Type.Attacks, 1f);
+                return new(Relationship.Type.Attacks, 1f);
             } //Spider Lizards Attack Spiders
         }
         else if (data.transformation == "SpiderTransformation")
@@ -83,16 +83,16 @@ internal class CustomRelationsHooks
             {
                 if (LizardSpiderTransformationTemplateCheck(crit, true) && data.spiderLikness > 0)
                 {
-                    return new Relationship(Relationship.Type.Pack, 0.5f);
+                    return new(Relationship.Type.Pack, 0.5f);
                 } //Spider Transformation Lizards Pack with other Spider Transformation Lizards
                 else if (LizardSpiderMotherTemplateCheck(crit, true) && self.StaticRelationship(dRelation.trackerRep.representedCreature).type != Relationship.Type.Afraid)
                 {
-                    return new Relationship(Relationship.Type.StayOutOfWay, 0.9f);
+                    return new(Relationship.Type.StayOutOfWay, 0.9f);
                 } //Spider Transformation Lizards Stay out of way of Spider Mother Lizards
             }
             else if (SpiderTemplateCheck(crit) && data.spiderLikness > 0)
             {
-                return new Relationship(Relationship.Type.Ignores, 0.0f);
+                return new(Relationship.Type.Ignores, 0.0f);
             } //Spider Transformation Lizards Ignore Spiders
             else if (crit is Player)
             {
@@ -100,7 +100,7 @@ internal class CustomRelationsHooks
                 {
                     if (self.lizard.room.abstractRoom.creatures[i].realizedCreature != null && self.lizard.room.abstractRoom.creatures[i].realizedCreature is Lizard liz && lizardstorage.TryGetValue(liz.abstractCreature, out LizardData data2) && data2.spiderLikness > 0 && liz.AI != null && liz.AI.friendTracker.friend == crit && (self.lizard.room.abstractRoom.creatures[i].rippleLayer == self.lizard.abstractPhysicalObject.rippleLayer || self.lizard.room.abstractRoom.creatures[i].rippleBothSides || self.lizard.abstractPhysicalObject.rippleBothSides))
                     {
-                        return new Relationship(Relationship.Type.StayOutOfWay, 0.6f);
+                        return new(Relationship.Type.StayOutOfWay, 0.6f);
                     }
                 }
             }
@@ -109,12 +109,12 @@ internal class CustomRelationsHooks
         {
             if (CentipedeTemplateCheck(crit))
             {
-                return new Relationship(Relationship.Type.Eats, 0.9f);
+                return new(Relationship.Type.Eats, 0.9f);
             } //Electric Lizards want to Eat Centipedes
         }
         else if (data.transformation == "MeltedTransformation")
         {
-            return IsThisBigCreatureForShelter(dRelation.trackerRep.representedCreature) ? new Relationship(Relationship.Type.Attacks, 0.8f) : new Relationship(Relationship.Type.Eats, 0.9f);
+            return IsThisBigCreatureForShelter(dRelation.trackerRep.representedCreature) ? new(Relationship.Type.Attacks, 0.8f) : new Relationship(Relationship.Type.Eats, 0.9f);
         } //Melted Lizards want to Eat everyone other then Slugcats 
 
         return orig(self, dRelation);

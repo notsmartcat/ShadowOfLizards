@@ -32,6 +32,8 @@ sealed class LizCutHead : PlayerCarryableItem, IDrawable
     private Color eyeRightColour;
     private Color eyeLeftColour;
 
+    private Color redderTint;
+
     private bool flipX = false;
 
     private int whiteFlicker = 0;
@@ -66,6 +68,8 @@ sealed class LizCutHead : PlayerCarryableItem, IDrawable
     private Vector2 rotVel;
 
     private bool facingRight;
+
+    private readonly float alpha;
     #endregion
 
     public LizCutHeadAbstract Abstr { get; }
@@ -76,10 +80,8 @@ sealed class LizCutHead : PlayerCarryableItem, IDrawable
 
         var pos = abstractPhysicalObject.Room.realizedRoom.MiddleOfTile(abstractPhysicalObject.pos.Tile);
 
-        bodyChunks = new[] 
-            {
-                new BodyChunk(this, 0, pos, Abstr.rad, Abstr.mass),
-            };
+        bodyChunks = new BodyChunk[1];
+        bodyChunks[0] = new(this, 0, pos, Abstr.rad, Abstr.mass);
 
         bodyChunkConnections = new BodyChunkConnection[0];
 
@@ -101,6 +103,30 @@ sealed class LizCutHead : PlayerCarryableItem, IDrawable
         baseLastBlink = baseBlink;
 
         facingRight = Abstr.scaleX > 0f;
+
+        effectColour = new(Abstr.effectColourR, Abstr.effectColourG, Abstr.effectColourB);
+        bloodColour = (Abstr.bloodColourR != -1f) ? new(Abstr.bloodColourR, Abstr.bloodColourG, Abstr.bloodColourB) : Color.black;
+
+        bool flag = Abstr.headSprite5 != null;
+
+        eyeRightColour = flag ? new(Abstr.eyeRightColourR, Abstr.eyeRightColourG, Abstr.eyeRightColourB) : Color.black;
+        eyeLeftColour = flag ? new(Abstr.eyeLeftColourR, Abstr.eyeLeftColourG, Abstr.eyeLeftColourB) : Color.black;
+
+        if (Abstr.breed == "BlizzardLizard")
+        {
+            cosmeticSprites.Add("BlizardHaloShine");
+        }
+        else if (Abstr.breed == "PeachLizard")
+        {
+            cosmeticSprites.Add("PeachLizardStripes");
+
+            redderTint = new(effectColour.r, effectColour.g, effectColour.b);
+            redderTint.g *= 0.5f;
+            redderTint.b *= 0.5f;
+            redderTint.r = Mathf.Lerp(redderTint.r, 1f, 0.75f);
+
+            alpha = UnityEngine.Random.value;
+        }
     }
 
     private static float Rand => UnityEngine.Random.value;
@@ -114,6 +140,8 @@ sealed class LizCutHead : PlayerCarryableItem, IDrawable
     public override void HitByWeapon(Weapon weapon)
     {
         base.HitByWeapon(weapon);
+
+        Abstr.headAngleNum = UnityEngine.Random.Range(0, 4);
 
         if (Abstr.breed == "NoodleEater")
         {
@@ -184,7 +212,7 @@ sealed class LizCutHead : PlayerCarryableItem, IDrawable
 
         void TerrainImpactBloodEmitter()
         {
-            room.AddObject(new BloodParticle(bodyChunks[0].pos, new Vector2(UnityEngine.Random.Range(-3f, 3f), UnityEngine.Random.Range(5f, 10f)), new Color(Abstr.bloodColourR, Abstr.bloodColourG, Abstr.bloodColourB), Abstr.breed, null, 2.3f));
+            room.AddObject(new BloodParticle(bodyChunks[0].pos, new(UnityEngine.Random.Range(-3f, 3f), UnityEngine.Random.Range(5f, 10f)), new(Abstr.bloodColourR, Abstr.bloodColourG, Abstr.bloodColourB), Abstr.breed, null, 2.3f));
         }
     }
 
@@ -241,6 +269,8 @@ sealed class LizCutHead : PlayerCarryableItem, IDrawable
                 {
                     flipX = false;
                 }
+
+                Abstr.headAngleNum = 0;
             }
             else
             {
@@ -258,10 +288,41 @@ sealed class LizCutHead : PlayerCarryableItem, IDrawable
 
             rotation = Vector2.Lerp(rotation, b, UnityEngine.Random.value);
             rotVel *= UnityEngine.Random.value;
+
+            if(Abstr.headAngleNum == 1)
+                Abstr.headAngleNum = 0;
+            else if (Abstr.headAngleNum == 2)
+                Abstr.headAngleNum = 3;
         }
         else if (Vector2.Distance(firstChunk.lastPos, firstChunk.pos) > 5f && rotVel.magnitude < 7f)
         {
             rotVel += Custom.RNV() * (Mathf.Lerp(7f, 25f, UnityEngine.Random.value) + firstChunk.vel.magnitude * 2f);
+        }
+
+        if (firstChunk.ContactPoint.y >= 0 && grabbedBy.Count <= 0)
+        {
+            if (UnityEngine.Random.value < 0.1f)
+            {
+                if (Abstr.headAngleNum == 0)
+                {
+                    Abstr.headAngleNum++;
+                }
+                else if (Abstr.headAngleNum == 1 || Abstr.headAngleNum == 2)
+                {
+                    if (UnityEngine.Random.value < 0.5f)
+                    {
+                        Abstr.headAngleNum++;
+                    }
+                    else
+                    {
+                        Abstr.headAngleNum--;
+                    }
+                }
+                else if (Abstr.headAngleNum == 3)
+                {
+                    Abstr.headAngleNum--;
+                }
+            }
         }
 
         if (!Custom.DistLess(chunk.lastPos, chunk.pos, 3f) && room.GetTile(chunk.pos).Solid && !room.GetTile(chunk.lastPos).Solid)
@@ -312,7 +373,7 @@ sealed class LizCutHead : PlayerCarryableItem, IDrawable
         }
         else if (room.Darkness(bodyChunks[0].pos) > 0f && Abstr.breed != "Salamander" && Abstr.breed != "BlackLizard")
         {
-            lightSource = new LightSource(bodyChunks[0].pos, false, EffectColor, this)
+            lightSource = new(bodyChunks[0].pos, false, EffectColor, this)
             {
                 requireUpKeep = true
             };
@@ -345,15 +406,15 @@ sealed class LizCutHead : PlayerCarryableItem, IDrawable
     {
         get
         {
-            return Abstr.blackSalamander ? Color.Lerp(palette.blackColor, EffectColor, 0.1f) : Color.Lerp(new Color(0.9f, 0.9f, 0.95f), EffectColor, 0.06f);
+            return Abstr.blackSalamander ? Color.Lerp(palette.blackColor, EffectColor, 0.1f) : Color.Lerp(new(0.9f, 0.9f, 0.95f), EffectColor, 0.06f);
         }
     }
 
-    private Color HeadColor(float timeStacker)
+    public Color HeadColor(float timeStacker)
     {
         if (whiteFlicker > 0 && (whiteFlicker > sourceCodeLizardsWhiteFlickerThreshold || everySecondDraw))
         {
-            return new Color(1f, 1f, 1f);
+            return new(1f, 1f, 1f);
         }
         float num = 1f - Mathf.Pow(0.5f + 0.5f * Mathf.Sin(Mathf.Lerp(baseLastBlink, baseBlink, timeStacker) * 2f * 3.1415927f), 1.5f);
         if (flicker > sourceCodeLizardsFlickerThreshold)
@@ -366,7 +427,7 @@ sealed class LizCutHead : PlayerCarryableItem, IDrawable
         {
             if (Abstr.breed == "WhiteLizard" || Abstr.breed == "HunterSeeker")
             {
-                return new Color(1f, 1f, 1f);
+                return new(1f, 1f, 1f);
             }
             if (Abstr.breed == "BlackLizard")
             {
@@ -406,7 +467,7 @@ sealed class LizCutHead : PlayerCarryableItem, IDrawable
 
     private Color ElectricColor(Color col)
     {
-        return Color.Lerp(col, new Color(0.7f, 0.7f, 1f), (float)electricColorTimer / 50f);
+        return Color.Lerp(col, new(0.7f, 0.7f, 1f), (float)electricColorTimer / 50f);
     }
 
     private void Flicker(int fl)
@@ -439,12 +500,9 @@ sealed class LizCutHead : PlayerCarryableItem, IDrawable
 
     public void InitiateSprites(RoomCamera.SpriteLeaser sLeaser, RoomCamera rCam)
     {
-        //bodyColour = new Color(Abstr.bodyColourR, Abstr.bodyColourG, Abstr.bodyColourB);
-        effectColour = new Color(Abstr.effectColourR, Abstr.effectColourG, Abstr.effectColourB);
-        bloodColour = (Abstr.bloodColourR != -1f) ? new Color(Abstr.bloodColourR, Abstr.bloodColourG, Abstr.bloodColourB) : Color.black;
+        //bodyColour = new(Abstr.bodyColourR, Abstr.bodyColourG, Abstr.bodyColourB);
+
         bool flag = Abstr.headSprite5 != null;
-        eyeRightColour = flag ? new Color(Abstr.eyeRightColourR, Abstr.eyeRightColourG, Abstr.eyeRightColourB) : Color.black;
-        eyeLeftColour = flag ? new Color(Abstr.eyeLeftColourR, Abstr.eyeLeftColourG, Abstr.eyeLeftColourB) : Color.black;
 
         headSprites = flag ? new List<string>
             {
@@ -474,16 +532,11 @@ sealed class LizCutHead : PlayerCarryableItem, IDrawable
             headSpriteNum[7] = right ? 14 : 15;
         }
 
-        if (Abstr.breed == "BlizzardLizard")
-        {
-            cosmeticSprites.Add("BlizardHaloShine");
-        }
-
         sLeaser.sprites = new FSprite[headSprites.Count + cosmeticSprites.Count];
 
         for (int i = 0; i < headSprites.Count + cosmeticSprites.Count; i++)
         {
-            sLeaser.sprites[i] = new FSprite("pixel", true)
+            sLeaser.sprites[i] = new("pixel", true)
             {
                 scaleX = Abstr.scaleX,
                 scaleY = Abstr.scaleY
@@ -536,7 +589,7 @@ sealed class LizCutHead : PlayerCarryableItem, IDrawable
             Color color4 = ElectricColor(Camo(Color.Lerp(HeadColor(timeStacker), EffectColor, 0.7f)));
             if (whiteFlicker > 0 && (whiteFlicker > sourceCodeLizardsWhiteFlickerThreshold || everySecondDraw))
             {
-                color4 = ElectricColor(Camo(new Color(1f, 1f, 1f)));
+                color4 = ElectricColor(Camo(new(1f, 1f, 1f)));
             }
             sLeaser.sprites[0].color = color4;
             sLeaser.sprites[3].color = color4;
@@ -572,12 +625,6 @@ sealed class LizCutHead : PlayerCarryableItem, IDrawable
             electricColorTimer--;
 
         #region Rotation Calculation
-        string headAngleNum = "0";
-        if (Math.Abs(rotation.x) > 45f)
-            headAngleNum = "1";
-        else if (Math.Abs(rotation.x) > 90f)
-            headAngleNum = "2";
-
         float headRotation = Custom.VecToDeg(rot);
 
         float totalVel = Math.Abs(bodyChunks[0].vel.x) + Math.Abs(bodyChunks[0].vel.y);
@@ -606,8 +653,22 @@ sealed class LizCutHead : PlayerCarryableItem, IDrawable
             jawRotation = headRotation - 10;
         }
 
-        headRotation %= 360f;
-        jawRotation %= 360f;
+        if (Abstr.headAngleNum == 0)
+        {
+            jawRotation = Mathf.Lerp(jawRotation, headRotation, 0);
+        }
+        else if (Abstr.headAngleNum == 1)
+        {
+            jawRotation = Mathf.Lerp(jawRotation, headRotation, 0.33f);
+        }
+        else if (Abstr.headAngleNum == 2)
+        {
+            jawRotation = Mathf.Lerp(jawRotation, headRotation, 0.66f);
+        }
+        else if (Abstr.headAngleNum == 3)
+        {
+            jawRotation = Mathf.Lerp(jawRotation, headRotation, 1);
+        }
         #endregion
 
         lastDarkness = darkness;
@@ -628,13 +689,13 @@ sealed class LizCutHead : PlayerCarryableItem, IDrawable
                 name = headSprites[i].Remove(headSpriteNum[i], 1);
             }
 
-            if (!Futile.atlasManager.DoesContainElementWithName(name.Insert(noodleEater ? headSprites[i].Length - 1 : headSpriteNum[i], headAngleNum)))
+            if (!Futile.atlasManager.DoesContainElementWithName(name.Insert(noodleEater ? headSprites[i].Length - 1 : headSpriteNum[i], Abstr.headAngleNum.ToString())))
             {
                 Destroy();
                 return;
             }
 
-            sLeaser.sprites[i].element = Futile.atlasManager.GetElementWithName(name.Insert(noodleEater ? headSprites[i].Length - 1 : headSpriteNum[i], headAngleNum));
+            sLeaser.sprites[i].element = Futile.atlasManager.GetElementWithName(name.Insert(noodleEater ? headSprites[i].Length - 1 : headSpriteNum[i], Abstr.headAngleNum.ToString()));
             sLeaser.sprites[i].x = pos.x - camPos.x;
             sLeaser.sprites[i].y = pos.y - camPos.y;
             sLeaser.sprites[i].rotation = i < spriteJawStart ? jawRotation : headRotation;
@@ -652,15 +713,24 @@ sealed class LizCutHead : PlayerCarryableItem, IDrawable
         for (int i = 0; i < cosmeticSprites.Count; i++)
         {
             string name = cosmeticSprites[i];
-
-            if (Abstr.breed == "BlizzardLizard")
-            {
-                name += headAngleNum;
-            }
+            name += Abstr.headAngleNum;
 
             int j = i + headSprites.Count;
 
-            sLeaser.sprites[j].color = Color.white;
+            if (Abstr.breed == "BlizzardLizard")
+            {
+                sLeaser.sprites[j].color = Color.white;
+            }
+            else if(Abstr.breed == "PeachLizard")
+            {
+                Color color = new(redderTint.r, redderTint.g, redderTint.b, alpha);
+                if (rCam.room.PointSubmerged(bodyChunks[0].pos + new Vector2(0f, 25f)))
+                {
+                    color = new(0f, 0.003921569f, 0f);
+                }
+                sLeaser.sprites[j].color = color;
+            }
+
             sLeaser.sprites[j].element = Futile.atlasManager.GetElementWithName(name);
             sLeaser.sprites[j].x = pos.x - camPos.x;
             sLeaser.sprites[j].y = pos.y - camPos.y;
@@ -700,7 +770,7 @@ sealed class LizCutHead : PlayerCarryableItem, IDrawable
 
         if (Abstr.breed == "BlizzardLizard")
         {
-            palette.blackColor = new Color(0.8f, 0.81f, 0.84f);
+            palette.blackColor = new(0.8f, 0.81f, 0.84f);
             this.palette = palette;
         }
         else if (Abstr.breed == "IndigoLizard")
@@ -744,10 +814,5 @@ sealed class LizCutHead : PlayerCarryableItem, IDrawable
             fsprite.RemoveFromContainer();
             newContainer.AddChild(fsprite);
         }
-    }
-
-    public void ThrowByPlayer()
-    {
-        Flicker(20);
     }
 }

@@ -67,7 +67,7 @@ internal sealed class LizCutLeg : PlayerCarryableItem, IDrawable, IPlayerEdible
 
         float num = 0.2f;
         bodyChunks = new BodyChunk[1];
-        bodyChunks[0] = new BodyChunk(this, 0, Vector2.zero, 5f, num);
+        bodyChunks[0] = new(this, 0, Vector2.zero, 5f, num);
         bodyChunkConnections = new BodyChunkConnection[0];
         airFriction = 0.999f;
         gravity = 0.9f;
@@ -78,6 +78,10 @@ internal sealed class LizCutLeg : PlayerCarryableItem, IDrawable, IPlayerEdible
         buoyancy = 0.75f;
         GoThroughFloors = false;
         lastRotation = rotation;
+
+        bodyColour = new(Abstr.bodyColourR, Abstr.bodyColourG, Abstr.bodyColourB);
+        effectColour = new(Abstr.effectColourR, Abstr.effectColourG, Abstr.effectColourB);
+        bloodColour = (Abstr.bloodColourR != -1f) ? new(Abstr.bloodColourR, Abstr.bloodColourG, Abstr.bloodColourB) : effectColour;
     }
 
     public override void PlaceInRoom(Room placeRoom)
@@ -133,7 +137,7 @@ internal sealed class LizCutLeg : PlayerCarryableItem, IDrawable, IPlayerEdible
             }
             if (Abstr.breed == "WhiteLizard" || Abstr.breed == "HunterSeeker")
             {
-                return new Color(1f, 1f, 1f);
+                return new(1f, 1f, 1f);
             }
             if (Abstr.breed == "Salamander" || Abstr.breed == "MoleSalamander" && !Abstr.blackSalamander)
             {
@@ -148,7 +152,7 @@ internal sealed class LizCutLeg : PlayerCarryableItem, IDrawable, IPlayerEdible
     {
         get
         {
-            return Abstr.blackSalamander ? Color.Lerp(palette.blackColor, EffectColor, 0.1f) : Color.Lerp(new Color(0.9f, 0.9f, 0.95f), EffectColor, 0.06f);
+            return Abstr.blackSalamander ? Color.Lerp(palette.blackColor, EffectColor, 0.1f) : Color.Lerp(new(0.9f, 0.9f, 0.95f), EffectColor, 0.06f);
         }
     }
 
@@ -156,7 +160,7 @@ internal sealed class LizCutLeg : PlayerCarryableItem, IDrawable, IPlayerEdible
     {
         if (whiteFlicker > 0 && (whiteFlicker > sourceCodeLizardsWhiteFlickerThreshold || everySecondDraw))
         {
-            return new Color(1f, 1f, 1f);
+            return new(1f, 1f, 1f);
         }
         float num = 1f - Mathf.Pow(0.5f + 0.5f * Mathf.Sin(Mathf.Lerp(baseLastBlink, baseBlink, timeStacker) * 2f * 3.1415927f), 1.5f);
         if (flicker > sourceCodeLizardsFlickerThreshold)
@@ -169,7 +173,7 @@ internal sealed class LizCutLeg : PlayerCarryableItem, IDrawable, IPlayerEdible
         {
             if (Abstr.breed == "WhiteLizard" || Abstr.breed == "HunterSeeker")
             {
-                return new Color(1f, 1f, 1f);
+                return new(1f, 1f, 1f);
             }
             if (Abstr.breed == "BlackLizard")
             {
@@ -209,7 +213,7 @@ internal sealed class LizCutLeg : PlayerCarryableItem, IDrawable, IPlayerEdible
 
     private Color ElectricColor(Color col)
     {
-        return Color.Lerp(col, new Color(0.7f, 0.7f, 1f), (float)electricColorTimer / 50f);
+        return Color.Lerp(col, new(0.7f, 0.7f, 1f), (float)electricColorTimer / 50f);
     }
 
     private void Flicker(int fl)
@@ -221,14 +225,10 @@ internal sealed class LizCutLeg : PlayerCarryableItem, IDrawable, IPlayerEdible
 
     public void InitiateSprites(SpriteLeaser sLeaser, RoomCamera rCam)
     {
-        bodyColour = new Color(Abstr.bodyColourR, Abstr.bodyColourG, Abstr.bodyColourB);
-        effectColour = new Color(Abstr.effectColourR, Abstr.effectColourG, Abstr.effectColourB);
-        bloodColour = (Abstr.bloodColourR != -1f) ? new Color(Abstr.bloodColourR, Abstr.bloodColourG, Abstr.bloodColourB) : effectColour;
-
         sLeaser.sprites = new FSprite[3];
-        sLeaser.sprites[0] = new FSprite(Abstr.spriteName, true);
-        sLeaser.sprites[1] = new FSprite(Abstr.colourSpriteName, true);
-        sLeaser.sprites[2] = new FSprite(Abstr.colourSpriteName + "Blood", true);
+        sLeaser.sprites[0] = new(Abstr.spriteName, true);
+        sLeaser.sprites[1] = new(Abstr.colourSpriteName, true);
+        sLeaser.sprites[2] = new(Abstr.colourSpriteName + "Blood", true);
 
         sLeaser.sprites[0].color = BodyColor;
         sLeaser.sprites[1].color = EffectColor;
@@ -329,7 +329,7 @@ internal sealed class LizCutLeg : PlayerCarryableItem, IDrawable, IPlayerEdible
 
         if (Abstr.breed == "BlizzardLizard")
         {
-            palette.blackColor = new Color(0.8f, 0.81f, 0.84f);
+            palette.blackColor = new(0.8f, 0.81f, 0.84f);
             this.palette = palette;
         }
         else if (Abstr.breed == "IndigoLizard")

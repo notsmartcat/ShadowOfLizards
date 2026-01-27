@@ -150,7 +150,7 @@ internal class TransformationSpider
                     spid.RealizeInRoom();
                     ((Spider)spid.realizedCreature).bloodLust = 0f;
 
-                    spidLeg.Add((Spider)spid.realizedCreature, new SpiderAsLeg());
+                    spidLeg.Add((Spider)spid.realizedCreature, new());
                     spidLeg.TryGetValue((Spider)spid.realizedCreature, out SpiderAsLeg spidData);
 
                     spidData.liz = self.lizard;
@@ -338,7 +338,7 @@ internal class TransformationSpider
 
             for (int j = 0; j < 70; j++)
             {
-                SporeCloud sporeCloud = new(self.firstChunk.pos, Custom.RNV() * UnityEngine.Random.value * 10f, new Color(0.1f, 0.25f, 0.1f, 0.8f), 1f, null, j % 20, insectCoordinator)
+                SporeCloud sporeCloud = new(self.firstChunk.pos, Custom.RNV() * UnityEngine.Random.value * 10f, new(0.1f, 0.25f, 0.1f, 0.8f), 1f, null, j % 20, insectCoordinator)
                 {
                     nonToxic = true
                 };
@@ -353,7 +353,7 @@ internal class TransformationSpider
 
             for (int k = 0; k < 7; k++)
             {
-                self.room.AddObject(new PuffBallSkin(self.firstChunk.pos, Custom.RNV() * UnityEngine.Random.value * 16f, new Color(0.1f, 0.3f, 0.1f), new Color(0.1f, 0.1f, 0.3f)));
+                self.room.AddObject(new PuffBallSkin(self.firstChunk.pos, Custom.RNV() * UnityEngine.Random.value * 16f, new(0.1f, 0.3f, 0.1f), new(0.1f, 0.1f, 0.3f)));
             }
 
             self.room.PlaySound(SoundID.Puffball_Eplode, self.firstChunk.pos);

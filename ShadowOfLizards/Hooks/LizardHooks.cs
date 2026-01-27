@@ -37,13 +37,13 @@ internal class LizardHooks
 
         if (!lizardstorage.TryGetValue(self, out LizardData data))
         {
-            lizardstorage.Add(self, new LizardData());
+            lizardstorage.Add(self, new());
             lizardstorage.TryGetValue(self, out data);
         }
 
         try
         {
-            self.creatureTemplate = new CreatureTemplate(self.creatureTemplate);
+            self.creatureTemplate = new(self.creatureTemplate);
 
             if (ShadowOfOptions.debug_logs.Value)
                 Debug.Log(all + "First time creating Abstract " + self);
@@ -204,7 +204,7 @@ internal class LizardHooks
 
         if (!lizardstorage.TryGetValue(self.creature, out LizardData data))
         {
-            lizardstorage.Add(self.creature, new LizardData());
+            lizardstorage.Add(self.creature, new());
             lizardstorage.TryGetValue(self.creature, out data);
         }
 
@@ -214,7 +214,7 @@ internal class LizardHooks
 
         string abstractAll = all + "Abstract " + self.creature;
 
-        CreatureTemplate creatureTemplate = self.creature.creatureTemplate = new CreatureTemplate(self.creature.creatureTemplate);
+        CreatureTemplate creatureTemplate = self.creature.creatureTemplate = new(self.creature.creatureTemplate);
 
         try
         {
@@ -747,7 +747,7 @@ internal class LizardHooks
                     {
                         List<TileTypeResistance> list = new()
                             {
-                                new TileTypeResistance(AItile.Accessibility.Climb, 1f, PathCost.Legality.Allowed)
+                                new(AItile.Accessibility.Climb, 1f, PathCost.Legality.Allowed)
                             };
 
                         for (int l = 0; l < list.Count; l++)
@@ -763,7 +763,7 @@ internal class LizardHooks
                     {
                         List<TileTypeResistance> list = new()
                             {
-                                new TileTypeResistance(AItile.Accessibility.Climb, 0f, PathCost.Legality.Unallowed)
+                                new(AItile.Accessibility.Climb, 0f, PathCost.Legality.Unallowed)
                             };
 
                         for (int l = 0; l < list.Count; l++)
@@ -791,7 +791,7 @@ internal class LizardHooks
                     {
                         List<TileTypeResistance> list = new()
                             {
-                                new TileTypeResistance(AItile.Accessibility.Wall, 1f, PathCost.Legality.Allowed)
+                                new(AItile.Accessibility.Wall, 1f, PathCost.Legality.Allowed)
                             };
 
                         for (int l = 0; l < list.Count; l++)
@@ -807,7 +807,7 @@ internal class LizardHooks
                     {
                         List<TileTypeResistance> list = new()
                             {
-                                new TileTypeResistance(AItile.Accessibility.Wall, 0f, PathCost.Legality.Unallowed)
+                                new(AItile.Accessibility.Wall, 0f, PathCost.Legality.Unallowed)
                             };
 
                         for (int l = 0; l < list.Count; l++)
@@ -835,7 +835,7 @@ internal class LizardHooks
                     {
                         List<TileTypeResistance> list = new()
                             {
-                                new TileTypeResistance(AItile.Accessibility.Ceiling, 1.2f, PathCost.Legality.Allowed)
+                                new(AItile.Accessibility.Ceiling, 1.2f, PathCost.Legality.Allowed)
                             };
 
                         for (int l = 0; l < list.Count; l++)
@@ -851,7 +851,7 @@ internal class LizardHooks
                     {
                         List<TileTypeResistance> list = new()
                             {
-                                new TileTypeResistance(AItile.Accessibility.Ceiling, 0f, PathCost.Legality.Unallowed)
+                                new(AItile.Accessibility.Ceiling, 0f, PathCost.Legality.Unallowed)
                             };
 
                         for (int l = 0; l < list.Count; l++)
@@ -1288,9 +1288,9 @@ internal class LizardHooks
 
         if (ModManager.Watcher && self.LizardState.rotType == LizardState.RotType.None && (data.transformation.Contains("Rot") || ShadowOfOptions.tentacle_immune.Value && data.liz.TryGetValue("TentacleImmune", out string TentacleImmune) && TentacleImmune == "True"))
         {
-            self.LizardState.SetRotType(new LizardState.RotType("Slight", false));
+            self.LizardState.SetRotType(new("Slight", false));
 
-            self.rotModule ??= new Watcher.LizardRotModule(self);
+            self.rotModule ??= new(self);
         }
 
         if (data.isGoreHalf)
@@ -1343,7 +1343,7 @@ internal class LizardHooks
                     self.tongue = null;
 
                     BreedTongue(self);
-                    self.tongue = new LizardTongue(self);
+                    self.tongue = new(self);
                 }
                 else
                 {
@@ -1360,7 +1360,7 @@ internal class LizardHooks
 
                 if (self.jumpModule != null != canJump)
                 {
-                    self.jumpModule = canJump ? new LizardJumpModule(self) : null;
+                    self.jumpModule = canJump ? new(self) : null;
                 }
                 else
                     data.liz.Remove("CanJump");
@@ -1390,7 +1390,7 @@ internal class LizardHooks
                         {
                             List<TileConnectionResistance> list2 = new()
                             {
-                            new TileConnectionResistance(MovementConnection.MovementType.DropToWater, 20f, PathCost.Legality.Allowed)
+                                new(MovementConnection.MovementType.DropToWater, 20f, PathCost.Legality.Allowed)
                             };
                             for (int n = 0; n < list2.Count; n++)
                             {
@@ -1421,15 +1421,15 @@ internal class LizardHooks
             {
                 if (data.liz.TryGetValue("CanClimbPole", out string CanClimbPole))
                 {
-                    self.lizardParams.terrainSpeeds[(int)AItile.Accessibility.Climb] = CanClimbPole == "True" ? new LizardBreedParams.SpeedMultiplier(self.lizardParams.terrainSpeeds[(int)AItile.Accessibility.Floor].speed * 0.8f, self.lizardParams.terrainSpeeds[(int)AItile.Accessibility.Floor].horizontal, self.lizardParams.terrainSpeeds[(int)AItile.Accessibility.Floor].up, self.lizardParams.terrainSpeeds[(int)AItile.Accessibility.Floor].down) : new LizardBreedParams.SpeedMultiplier(0, 1f, 1f, 1f);
+                    self.lizardParams.terrainSpeeds[(int)AItile.Accessibility.Climb] = CanClimbPole == "True" ? new(self.lizardParams.terrainSpeeds[(int)AItile.Accessibility.Floor].speed * 0.8f, self.lizardParams.terrainSpeeds[(int)AItile.Accessibility.Floor].horizontal, self.lizardParams.terrainSpeeds[(int)AItile.Accessibility.Floor].up, self.lizardParams.terrainSpeeds[(int)AItile.Accessibility.Floor].down) : new(0, 1f, 1f, 1f);
                 }
                 if (data.liz.TryGetValue("CanClimbWall", out string CanClimbWall))
                 {
-                    self.lizardParams.terrainSpeeds[(int)AItile.Accessibility.Wall] = CanClimbWall == "True" ? new LizardBreedParams.SpeedMultiplier(self.lizardParams.terrainSpeeds[(int)AItile.Accessibility.Floor].speed * 0.6f, self.lizardParams.terrainSpeeds[(int)AItile.Accessibility.Floor].horizontal, self.lizardParams.terrainSpeeds[(int)AItile.Accessibility.Floor].up, self.lizardParams.terrainSpeeds[(int)AItile.Accessibility.Floor].down) : new LizardBreedParams.SpeedMultiplier(0, 1f, 1f, 1f);
+                    self.lizardParams.terrainSpeeds[(int)AItile.Accessibility.Wall] = CanClimbWall == "True" ? new(self.lizardParams.terrainSpeeds[(int)AItile.Accessibility.Floor].speed * 0.6f, self.lizardParams.terrainSpeeds[(int)AItile.Accessibility.Floor].horizontal, self.lizardParams.terrainSpeeds[(int)AItile.Accessibility.Floor].up, self.lizardParams.terrainSpeeds[(int)AItile.Accessibility.Floor].down) : new(0, 1f, 1f, 1f);
                 }
                 if (data.liz.TryGetValue("CanClimbCeiling", out string CanClimbCeiling))
                 {
-                    self.lizardParams.terrainSpeeds[(int)AItile.Accessibility.Ceiling] = CanClimbCeiling == "True" ? new LizardBreedParams.SpeedMultiplier(self.lizardParams.terrainSpeeds[(int)AItile.Accessibility.Wall].speed != 0f ? self.lizardParams.terrainSpeeds[(int)AItile.Accessibility.Wall].speed * 0.9f : self.lizardParams.terrainSpeeds[(int)AItile.Accessibility.Floor].speed * 0.6f, self.lizardParams.terrainSpeeds[(int)AItile.Accessibility.Floor].horizontal, self.lizardParams.terrainSpeeds[(int)AItile.Accessibility.Floor].up, self.lizardParams.terrainSpeeds[(int)AItile.Accessibility.Floor].down) : new LizardBreedParams.SpeedMultiplier(0, 1f, 1f, 1f);
+                    self.lizardParams.terrainSpeeds[(int)AItile.Accessibility.Ceiling] = CanClimbCeiling == "True" ? new(self.lizardParams.terrainSpeeds[(int)AItile.Accessibility.Wall].speed != 0f ? self.lizardParams.terrainSpeeds[(int)AItile.Accessibility.Wall].speed * 0.9f : self.lizardParams.terrainSpeeds[(int)AItile.Accessibility.Floor].speed * 0.6f, self.lizardParams.terrainSpeeds[(int)AItile.Accessibility.Floor].horizontal, self.lizardParams.terrainSpeeds[(int)AItile.Accessibility.Floor].up, self.lizardParams.terrainSpeeds[(int)AItile.Accessibility.Floor].down) : new(0, 1f, 1f, 1f);
                 }
             } //CanClimb: Set in Both
         }
@@ -1612,7 +1612,7 @@ internal class LizardHooks
         LizardBreedParams LizBread(Lizard liz)
         {
             LizardBreedParams lizardParams = liz.lizardParams;
-            return new LizardBreedParams(liz.abstractCreature.creatureTemplate.type)
+            return new(liz.abstractCreature.creatureTemplate.type)
             {
                 template = lizardParams.template,
                 toughness = lizardParams.toughness,
@@ -2381,7 +2381,7 @@ internal class LizardHooks
                 } //Chance to cut Head if hit close enough to the head
                 else if (ShadowOfOptions.dismemberment.Value && (hitChunk.index == 1 || hitChunk.index == 2) && HealthBasedChance(self, ShadowOfOptions.dismemberment_chance.Value * multiplier, "Dismembernment")) //Leg Dismembernment
                 {
-                    float num5 = Custom.Angle(new Vector2(directionAndMomentum.Value.x, directionAndMomentum.Value.y), -hitChunk.Rotation) * (hitChunk.index == 2 ? -1f : 1f);
+                    float num5 = Custom.Angle(new(directionAndMomentum.Value.x, directionAndMomentum.Value.y), -hitChunk.Rotation) * (hitChunk.index == 2 ? -1f : 1f);
                     int num8;
 
                     if (ModManager.DLCShared && self.Template.type == DLCSharedEnums.CreatureTemplateType.EelLizard)
@@ -2517,8 +2517,8 @@ internal class LizardHooks
                 data.liz["CanClimbPole"] = "False";
 
                 List<TileTypeResistance> list = new();
-                self.lizardParams.terrainSpeeds[(int)AItile.Accessibility.Climb] = new LizardBreedParams.SpeedMultiplier(0, 1f, 1f, 1f);
-                list.Add(new TileTypeResistance(AItile.Accessibility.Climb, 0f, PathCost.Legality.Unallowed));
+                self.lizardParams.terrainSpeeds[(int)AItile.Accessibility.Climb] = new(0, 1f, 1f, 1f);
+                list.Add(new(AItile.Accessibility.Climb, 0f, PathCost.Legality.Unallowed));
 
                 for (int l = 0; l < list.Count; l++)
                 {
@@ -2534,8 +2534,8 @@ internal class LizardHooks
                 data.liz["CanClimbWall"] = "False";
 
                 List<TileTypeResistance> list = new();
-                self.lizardParams.terrainSpeeds[(int)AItile.Accessibility.Wall] = new LizardBreedParams.SpeedMultiplier(0, 1f, 1f, 1f);
-                list.Add(new TileTypeResistance(AItile.Accessibility.Wall, 0f, PathCost.Legality.Unallowed));
+                self.lizardParams.terrainSpeeds[(int)AItile.Accessibility.Wall] = new(0, 1f, 1f, 1f);
+                list.Add(new(AItile.Accessibility.Wall, 0f, PathCost.Legality.Unallowed));
 
                 for (int l = 0; l < list.Count; l++)
                 {
@@ -2551,8 +2551,8 @@ internal class LizardHooks
                 data.liz["CanClimbCeiling"] = "False";
 
                 List<TileTypeResistance> list = new();
-                self.lizardParams.terrainSpeeds[(int)AItile.Accessibility.Ceiling] = new LizardBreedParams.SpeedMultiplier(0, 1f, 1f, 1f);
-                list.Add(new TileTypeResistance(AItile.Accessibility.Ceiling, 0f, PathCost.Legality.Unallowed));
+                self.lizardParams.terrainSpeeds[(int)AItile.Accessibility.Ceiling] = new(0, 1f, 1f, 1f);
+                list.Add(new(AItile.Accessibility.Ceiling, 0f, PathCost.Legality.Unallowed));
 
                 for (int l = 0; l < list.Count; l++)
                 {
@@ -2584,7 +2584,7 @@ internal class LizardHooks
             {
                 return false;
             }
-            direction = Vector3.Slerp(direction, new Vector2(0f, 1f), 0.1f);
+            direction = Vector3.Slerp(direction, new(0f, 1f), 0.1f);
             return Mathf.Abs(Vector2.Angle(direction, -self.bodyChunks[0].Rotation)) < Mathf.Lerp(-15f, 11f, self.JawOpen);
         }
 

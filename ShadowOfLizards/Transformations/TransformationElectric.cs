@@ -144,7 +144,7 @@ internal class TransformationElectric
 
         try
         {
-            Color color = Color.Lerp(self.lizardGraphics.effectColor, new Color(0.7f, 0.7f, 1f), (float)data2.electricColorTimer / 50f);
+            Color color = Color.Lerp(self.lizardGraphics.effectColor, new(0.7f, 0.7f, 1f), (float)data2.electricColorTimer / 50f);
 
             float num = 1f - Mathf.Pow(0.5f + 0.5f * Mathf.Sin(Mathf.Lerp(self.lizardGraphics.lastBlink, self.lizardGraphics.blink, timeStacker) * 2f * 3.1415927f), 1.5f + self.lizardGraphics.lizard.AI.excitement * 1.5f);
             if (self.lizardGraphics.headColorSetter != 0f)
@@ -184,7 +184,7 @@ internal class TransformationElectric
                 data2.lightSource.setAlpha = new float?(Mathf.Pow(data2.lightFlash * UnityEngine.Random.value, 0.1f));
                 float num5 = data2.lightFlash * UnityEngine.Random.value;
                 num5 = Mathf.Lerp(num5, 1f, 0.5f * (1f - self.lizard.room.Darkness(self.lizard.mainBodyChunk.pos)));
-                data2.lightSource.color = new Color(num5, num5, 1f);
+                data2.lightSource.color = new(num5, num5, 1f);
                 if (data2.lightFlash <= 0f)
                 {
                     data2.lightSource.Destroy();
@@ -196,7 +196,7 @@ internal class TransformationElectric
             }
             else if (data2.lightFlash > 0f)
             {
-                data2.lightSource = new LightSource(self.lizard.mainBodyChunk.pos, false, new Color(1f, 1f, 1f), self.lizard)
+                data2.lightSource = new LightSource(self.lizard.mainBodyChunk.pos, false, new(1f, 1f, 1f), self.lizard)
                 {
                     affectedByPaletteDarkness = 0f,
                     requireUpKeep = true
@@ -224,7 +224,7 @@ internal class TransformationElectric
 
         if (!shockSpit.TryGetValue(self, out ElectricSpit data2))
         {
-            shockSpit.Add(self, new ElectricSpit());
+            shockSpit.Add(self, new());
             shockSpit.TryGetValue(self, out data2);
         }
 
@@ -244,7 +244,7 @@ internal class TransformationElectric
                 data.once = true;
                 data.electricColorTimer--;
 
-                Color color = Color.Lerp(data.origColor, new Color(0.7f, 0.7f, 1f), (float)data.electricColorTimer / 50f);
+                Color color = Color.Lerp(data.origColor, new(0.7f, 0.7f, 1f), (float)data.electricColorTimer / 50f);
 
                 sLeaser.sprites[self.DotSprite].color = color;
             }
@@ -288,7 +288,7 @@ internal class TransformationElectric
 
                 if (owner.Submersion > 0f)
                 {
-                    self.room.AddObject(new UnderwaterShock(self.room, self.lizard, self.pos, 14, Mathf.Lerp(ModManager.MMF ? 0f : 200f, 1200f, 1400f), 2.1f, self.lizard, new Color(0.7f, 0.7f, 1f)));
+                    self.room.AddObject(new UnderwaterShock(self.room, self.lizard, self.pos, 14, Mathf.Lerp(ModManager.MMF ? 0f : 200f, 1200f, 1400f), 2.1f, self.lizard, new(0.7f, 0.7f, 1f)));
                 }
             }
             if (!data.shocked)
@@ -304,7 +304,7 @@ internal class TransformationElectric
                 data.lightSource.setAlpha = new float?(Mathf.Pow(data.lightFlash * UnityEngine.Random.value, 0.1f));
                 float num5 = data.lightFlash * UnityEngine.Random.value;
                 num5 = Mathf.Lerp(num5, 1f, 0.5f * (1f - self.lizard.room.Darkness(self.pos)));
-                data.lightSource.color = new Color(num5, num5, 1f);
+                data.lightSource.color = new(num5, num5, 1f);
                 if (data.lightFlash <= 0f)
                 {
                     data.lightSource.Destroy();
@@ -316,7 +316,7 @@ internal class TransformationElectric
             }
             else if (data.lightFlash > 0f)
             {
-                data.lightSource = new LightSource(self.lizard.mainBodyChunk.pos, false, new Color(1f, 1f, 1f), self.lizard)
+                data.lightSource = new LightSource(self.lizard.mainBodyChunk.pos, false, new(1f, 1f, 1f), self.lizard)
                 {
                     affectedByPaletteDarkness = 0f,
                     requireUpKeep = true
@@ -355,7 +355,7 @@ internal class TransformationElectric
 
                 void Spark()
                 {
-                    self.room.AddObject(new Spark(self.pos, Custom.RNV() * Mathf.Lerp(4f, 14f, UnityEngine.Random.value), new Color(0.7f, 0.7f, 1f), null, 8, 14));
+                    self.room.AddObject(new Spark(self.pos, Custom.RNV() * Mathf.Lerp(4f, 14f, UnityEngine.Random.value), new(0.7f, 0.7f, 1f), null, 8, 14));
                 }
             }
         }
@@ -399,7 +399,7 @@ internal class TransformationElectric
             if (self.Submersion > 0f)
             {
                 Room room = self.room;
-                room.AddObject(new UnderwaterShock(room, self, liz.mainBodyChunk.pos, 14, Mathf.Lerp(ModManager.MMF ? 0f : 200f, 1200f, 1400f), 2.1f, self, new Color(0.7f, 0.7f, 1f)));
+                room.AddObject(new UnderwaterShock(room, self, liz.mainBodyChunk.pos, 14, Mathf.Lerp(ModManager.MMF ? 0f : 200f, 1200f, 1400f), 2.1f, self, new(0.7f, 0.7f, 1f)));
             }
         }
         catch (Exception e) { ShadowOfLizards.Logger.LogError(e); }
@@ -474,7 +474,7 @@ internal class TransformationElectric
             BodyChunk tempChunk = chunk ?? self.bodyChunks[UnityEngine.Random.Range(0, self.bodyChunks.Length)];
             Vector2 pos = tempChunk.pos + new Vector2(tempChunk.rad * UnityEngine.Random.Range(-1f, 1f), tempChunk.rad * UnityEngine.Random.Range(-1f, 1f));
 
-            self.room.AddObject(new Spark(pos, Custom.RNV() * Mathf.Lerp(4f, 14f, UnityEngine.Random.value), new Color(0.7f, 0.7f, 1f), null, 8, 14));
+            self.room.AddObject(new Spark(pos, Custom.RNV() * Mathf.Lerp(4f, 14f, UnityEngine.Random.value), new(0.7f, 0.7f, 1f), null, 8, 14));
         }
     }
     static void Shock(Lizard self, LizardData data, GraphicsData graphicData, PhysicalObject shockObj)
@@ -561,7 +561,7 @@ internal class TransformationElectric
 
         if (shockObj.Submersion > 0f)
         {
-            self.room.AddObject(new UnderwaterShock(self.room, self, self.mainBodyChunk.pos, 14, Mathf.Lerp(ModManager.MMF ? 0f : 200f, 1200f, self.mainBodyChunk.rad), 0.2f + 1.9f * self.mainBodyChunk.rad, self, new Color(0.7f, 0.7f, 1f)));
+            self.room.AddObject(new UnderwaterShock(self.room, self, self.mainBodyChunk.pos, 14, Mathf.Lerp(ModManager.MMF ? 0f : 200f, 1200f, self.mainBodyChunk.rad), 0.2f + 1.9f * self.mainBodyChunk.rad, self, new(0.7f, 0.7f, 1f)));
         }
 
         void IncapacitationELectric()

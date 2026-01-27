@@ -234,7 +234,7 @@ public class ShadowOfLizards : BaseUnityPlugin
                     validTongues.Add("PeachLizard");
                 }
             }
-            optionsMenuInstance = new ShadowOfOptions(this);
+            optionsMenuInstance = new(this);
             MachineConnector.SetRegisteredOI("notsmartcat.shadowoflizards", optionsMenuInstance);
         }
         catch (Exception e) { Logger.LogError(e); }
@@ -746,7 +746,7 @@ public class ShadowOfLizards : BaseUnityPlugin
                 {
                     List<TileConnectionResistance> list2 = new()
                             {
-                            new TileConnectionResistance(MovementConnection.MovementType.DropToWater, 20f, PathCost.Legality.Allowed)
+                            new(MovementConnection.MovementType.DropToWater, 20f, PathCost.Legality.Allowed)
                             };
                     for (int n = 0; n < list2.Count; n++)
                     {
@@ -773,8 +773,8 @@ public class ShadowOfLizards : BaseUnityPlugin
                 if (canClimb)
                 {
                     List<TileTypeResistance> list = new();
-                    self.lizardParams.terrainSpeeds[(int)AItile.Accessibility.Climb] = new LizardBreedParams.SpeedMultiplier(self.lizardParams.terrainSpeeds[(int)AItile.Accessibility.Floor].speed * 0.8f, self.lizardParams.terrainSpeeds[(int)AItile.Accessibility.Floor].horizontal, self.lizardParams.terrainSpeeds[(int)AItile.Accessibility.Floor].up, self.lizardParams.terrainSpeeds[(int)AItile.Accessibility.Floor].down);
-                    list.Add(new TileTypeResistance(AItile.Accessibility.Climb, 1f, PathCost.Legality.Allowed));
+                    self.lizardParams.terrainSpeeds[(int)AItile.Accessibility.Climb] = new(self.lizardParams.terrainSpeeds[(int)AItile.Accessibility.Floor].speed * 0.8f, self.lizardParams.terrainSpeeds[(int)AItile.Accessibility.Floor].horizontal, self.lizardParams.terrainSpeeds[(int)AItile.Accessibility.Floor].up, self.lizardParams.terrainSpeeds[(int)AItile.Accessibility.Floor].down);
+                    list.Add(new(AItile.Accessibility.Climb, 1f, PathCost.Legality.Allowed));
 
                     for (int l = 0; l < list.Count; l++)
                     {
@@ -788,8 +788,8 @@ public class ShadowOfLizards : BaseUnityPlugin
                 else
                 {
                     List<TileTypeResistance> list = new();
-                    self.lizardParams.terrainSpeeds[(int)AItile.Accessibility.Climb] = new LizardBreedParams.SpeedMultiplier(0, 1f, 1f, 1f);
-                    list.Add(new TileTypeResistance(AItile.Accessibility.Climb, 0f, PathCost.Legality.Unallowed));
+                    self.lizardParams.terrainSpeeds[(int)AItile.Accessibility.Climb] = new(0, 1f, 1f, 1f);
+                    list.Add(new(AItile.Accessibility.Climb, 0f, PathCost.Legality.Unallowed));
 
                     for (int l = 0; l < list.Count; l++)
                     {
@@ -809,8 +809,8 @@ public class ShadowOfLizards : BaseUnityPlugin
                 if (canClimb)
                 {
                     List<TileTypeResistance> list = new();
-                    self.lizardParams.terrainSpeeds[(int)AItile.Accessibility.Wall] = new LizardBreedParams.SpeedMultiplier(self.lizardParams.terrainSpeeds[(int)AItile.Accessibility.Floor].speed * 0.6f, self.lizardParams.terrainSpeeds[(int)AItile.Accessibility.Floor].horizontal, self.lizardParams.terrainSpeeds[(int)AItile.Accessibility.Floor].up, self.lizardParams.terrainSpeeds[(int)AItile.Accessibility.Floor].down);
-                    list.Add(new TileTypeResistance(AItile.Accessibility.Wall, 1f, PathCost.Legality.Allowed));
+                    self.lizardParams.terrainSpeeds[(int)AItile.Accessibility.Wall] = new(self.lizardParams.terrainSpeeds[(int)AItile.Accessibility.Floor].speed * 0.6f, self.lizardParams.terrainSpeeds[(int)AItile.Accessibility.Floor].horizontal, self.lizardParams.terrainSpeeds[(int)AItile.Accessibility.Floor].up, self.lizardParams.terrainSpeeds[(int)AItile.Accessibility.Floor].down);
+                    list.Add(new(AItile.Accessibility.Wall, 1f, PathCost.Legality.Allowed));
 
                     for (int l = 0; l < list.Count; l++)
                     {
@@ -824,8 +824,8 @@ public class ShadowOfLizards : BaseUnityPlugin
                 else
                 {
                     List<TileTypeResistance> list = new();
-                    self.lizardParams.terrainSpeeds[(int)AItile.Accessibility.Wall] = new LizardBreedParams.SpeedMultiplier(0, 1f, 1f, 1f);
-                    list.Add(new TileTypeResistance(AItile.Accessibility.Wall, 0f, PathCost.Legality.Unallowed));
+                    self.lizardParams.terrainSpeeds[(int)AItile.Accessibility.Wall] = new(0, 1f, 1f, 1f);
+                    list.Add(new(AItile.Accessibility.Wall, 0f, PathCost.Legality.Unallowed));
 
                     for (int l = 0; l < list.Count; l++)
                     {
@@ -846,8 +846,8 @@ public class ShadowOfLizards : BaseUnityPlugin
                 {
                     List<TileTypeResistance> list = new();
 
-                    self.lizardParams.terrainSpeeds[(int)AItile.Accessibility.Ceiling] = new LizardBreedParams.SpeedMultiplier(self.lizardParams.terrainSpeeds[(int)AItile.Accessibility.Wall].speed != 0f ? self.lizardParams.terrainSpeeds[(int)AItile.Accessibility.Wall].speed * 0.9f : self.lizardParams.terrainSpeeds[(int)AItile.Accessibility.Floor].speed * 0.6f, self.lizardParams.terrainSpeeds[(int)AItile.Accessibility.Floor].horizontal, self.lizardParams.terrainSpeeds[(int)AItile.Accessibility.Floor].up, self.lizardParams.terrainSpeeds[(int)AItile.Accessibility.Floor].down);
-                    list.Add(new TileTypeResistance(AItile.Accessibility.Ceiling, 1.2f, PathCost.Legality.Allowed));
+                    self.lizardParams.terrainSpeeds[(int)AItile.Accessibility.Ceiling] = new(self.lizardParams.terrainSpeeds[(int)AItile.Accessibility.Wall].speed != 0f ? self.lizardParams.terrainSpeeds[(int)AItile.Accessibility.Wall].speed * 0.9f : self.lizardParams.terrainSpeeds[(int)AItile.Accessibility.Floor].speed * 0.6f, self.lizardParams.terrainSpeeds[(int)AItile.Accessibility.Floor].horizontal, self.lizardParams.terrainSpeeds[(int)AItile.Accessibility.Floor].up, self.lizardParams.terrainSpeeds[(int)AItile.Accessibility.Floor].down);
+                    list.Add(new(AItile.Accessibility.Ceiling, 1.2f, PathCost.Legality.Allowed));
 
                     for (int l = 0; l < list.Count; l++)
                     {
@@ -862,8 +862,8 @@ public class ShadowOfLizards : BaseUnityPlugin
                 {
                     List<TileTypeResistance> list = new();
 
-                    self.lizardParams.terrainSpeeds[(int)AItile.Accessibility.Ceiling] = new LizardBreedParams.SpeedMultiplier(0, 1f, 1f, 1f);
-                    list.Add(new TileTypeResistance(AItile.Accessibility.Ceiling, 0f, PathCost.Legality.Unallowed));
+                    self.lizardParams.terrainSpeeds[(int)AItile.Accessibility.Ceiling] = new(0, 1f, 1f, 1f);
+                    list.Add(new(AItile.Accessibility.Ceiling, 0f, PathCost.Legality.Unallowed));
 
                     for (int l = 0; l < list.Count; l++)
                     {
@@ -885,7 +885,7 @@ public class ShadowOfLizards : BaseUnityPlugin
 
     public static Color CamoElectric(LizardGraphics self, GraphicsData data, Color col)
     {
-        return Color.Lerp(Color.Lerp(col, new Color(0.7f, 0.7f, 1f), (float)(data.electricColorTimer / 50f)), self.whiteCamoColor, self.whiteCamoColorAmount);
+        return Color.Lerp(Color.Lerp(col, new(0.7f, 0.7f, 1f), (float)(data.electricColorTimer / 50f)), self.whiteCamoColor, self.whiteCamoColorAmount);
     }
 
     public static bool IsLizardValid(string type)
@@ -1265,7 +1265,7 @@ public class ShadowOfLizards : BaseUnityPlugin
 
             if (!lizardstorage.TryGetValue(abstractLizard, out LizardData data2))
             {
-                lizardstorage.Add(abstractLizard, new LizardData());
+                lizardstorage.Add(abstractLizard, new());
                 lizardstorage.TryGetValue(abstractLizard, out data2);
             }
 
@@ -1827,7 +1827,7 @@ public class ShadowOfLizards : BaseUnityPlugin
                 canCamo = CanCamoCheck(data, template),
 
                 jawOpenAngle = self.lizardParams != null ? self.lizardParams.jawOpenAngle : 100,
-                jawOpenMoveJawsApart = self.lizardParams != null ? self.lizardParams.jawOpenMoveJawsApart : 20
+                jawOpenMoveJawsApart = self.lizardParams != null ? self.lizardParams.jawOpenMoveJawsApart : 20,
             };
 
             self.room.abstractRoom.AddEntity(lizCutHeadAbstract);
@@ -1905,7 +1905,7 @@ public class ShadowOfLizards : BaseUnityPlugin
             lizCutEyeAbstract.RealizeInRoom();
 
             if (bloodModCheck && ShadowOfOptions.blood_emitter.Value)
-                EyeCutBloodEmitter(self, new Color(lizCutEyeAbstract.bloodColourR, lizCutEyeAbstract.bloodColourG, lizCutEyeAbstract.bloodColourB));
+                EyeCutBloodEmitter(self, new(lizCutEyeAbstract.bloodColourR, lizCutEyeAbstract.bloodColourG, lizCutEyeAbstract.bloodColourB));
 
             if (ShadowOfOptions.debug_logs.Value)
                 Debug.Log(all + self + "'s Cut Eye Object was Created");

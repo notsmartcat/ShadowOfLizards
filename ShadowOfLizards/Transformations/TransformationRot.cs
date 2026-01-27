@@ -33,7 +33,7 @@ internal class TransformationRot
 
         if (!graphicstorage.TryGetValue(lizGraphics, out GraphicsData data))
         {
-            graphicstorage.Add(lizGraphics, new GraphicsData());
+            graphicstorage.Add(lizGraphics, new());
             graphicstorage.TryGetValue(lizGraphics, out data);
         }
 
