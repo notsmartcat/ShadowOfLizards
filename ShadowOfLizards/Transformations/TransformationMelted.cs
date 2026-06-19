@@ -263,7 +263,7 @@ internal class TransformationMelted
             }
 
             if (crit.dead && shadowOfIncapacitationCheck)
-                Incapacitation.Incapacitation.ActuallyKill(crit);
+                InconKill();
 
             if (crit.lavaContactCount == 0)
             {

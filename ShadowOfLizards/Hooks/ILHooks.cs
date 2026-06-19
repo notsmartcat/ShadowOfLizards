@@ -912,6 +912,7 @@ internal class ILHooks
     static void ILNewLizardRotModule(ILContext il)
     {
         ILCursor val = new(il);
+
         if (val.TryGotoNext(MoveType.After, new Func<Instruction, bool>[2]
         {
             x => x.MatchDiv(),

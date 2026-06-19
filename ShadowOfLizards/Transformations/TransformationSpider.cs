@@ -302,7 +302,7 @@ internal class TransformationSpider
 
         try
         {
-            if (IncapacitationSpewBabies())
+            if (shadowOfIncapacitationCheck && IncapacitationSpewBabies())
             {
                 return;
             }

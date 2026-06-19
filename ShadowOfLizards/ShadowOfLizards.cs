@@ -217,7 +217,7 @@ public class ShadowOfLizards : BaseUnityPlugin
 
     void ModInit(On.RainWorld.orig_OnModsInit orig, RainWorld rainWorld)
     {
-        orig.Invoke(rainWorld);
+        orig(rainWorld);
         try
         {
             if (!init)
@@ -346,7 +346,7 @@ public class ShadowOfLizards : BaseUnityPlugin
                     if (creature.realizedCreature is Lizard liz && lizardstorage.TryGetValue(liz.abstractCreature, out LizardData data) && data.beheaded == false && !data.isGoreHalf)
                     {
                         if (ShadowOfOptions.debug_logs.Value)
-                            Debug.Log(all + liz.ToString() + "'s Neck Hit by Debug");
+                            Debug.Log(all + liz + "'s Neck Hit by Debug");
 
                         data.beheaded = true;
                         Decapitation(liz);
@@ -362,10 +362,10 @@ public class ShadowOfLizards : BaseUnityPlugin
                 {
                     if (creature.realizedCreature != null && creature.realizedCreature is Lizard liz && lizardstorage.TryGetValue(liz.abstractCreature, out LizardData data))
                     {
-                        if (ShadowOfOptions.tongue_ability.Value && data.liz.ContainsKey("Tongue") && liz.lizardParams.tongue)
+                        if (ShadowOfOptions.tongue_ability.Value && liz.lizardParams.tongue)
                         {
                             if (ShadowOfOptions.debug_logs.Value)
-                                Debug.Log(all + liz.ToString() + "'s Mouth Hit by Debug");
+                                Debug.Log(all + liz + "'s Mouth Hit by Debug");
 
                             data.liz["Tongue"] = "Null";
                             liz.lizardParams.tongue = false;
@@ -903,8 +903,8 @@ public class ShadowOfLizards : BaseUnityPlugin
         if (ShadowOfOptions.debug_logs.Value)
             Debug.Log(all + "EatRegroth, eater is = " + self + " and eatee is = " + dragee);
 
-        string selfTemplate = self.creatureTemplate.ToString();
-        string drageeTemplate = dragee.creatureTemplate.ToString();
+        string selfTemplate = self.creatureTemplate.type.ToString();
+        string drageeTemplate = dragee.creatureTemplate.type.ToString();
 
         bool cannibalism;
         LizardData data2 = null;
@@ -1037,7 +1037,9 @@ public class ShadowOfLizards : BaseUnityPlugin
                 if (ShadowOfOptions.debug_logs.Value)
                     Debug.Log(all + self + " was made Melted due to eating " + dragee);
             }
-            else if (ShadowOfOptions.electric_transformation.Value && ShadowOfOptions.electric_regrowth.Value && !electricPorhibited.Contains(selfTemplate) && (data.transformation == "Null" || data.transformation == "Electric" || data.transformation == "Spider") && (ElectricChance() || cannibalism && ((data2.transformation == "ElectricTransformation" && Chance(self, ShadowOfOptions.electric_regrowth_chance.Value * HalfMultiplier(), "Electric Regrowth by eating " + dragee)) || (data2.transformation == "Electric" && Chance(self, ShadowOfOptions.electric_regrowth_chance.Value * 0.5f * HalfMultiplier(), "Electric Regrowth by eating " + dragee)))))
+            else if (ShadowOfOptions.electric_transformation.Value && ShadowOfOptions.electric_regrowth.Value && !electricPorhibited.Contains(selfTemplate) && 
+                (data.transformation == "Null" || data.transformation == "Electric" || data.transformation == "Spider") && 
+                (ElectricChance() || cannibalism && ((data2.transformation == "ElectricTransformation" && Chance(self, ShadowOfOptions.electric_regrowth_chance.Value * HalfMultiplier(), "Electric Regrowth by eating " + dragee)) || (data2.transformation == "Electric" && Chance(self, ShadowOfOptions.electric_regrowth_chance.Value * 0.5f * HalfMultiplier(), "Electric Regrowth by eating " + dragee)))))
             {
                 if (data.transformation == "Electric")
                 {
@@ -1184,7 +1186,7 @@ public class ShadowOfLizards : BaseUnityPlugin
         }
         bool ElectricChance()
         {
-            return drageeTemplate == "JellyFish" && Chance(self, ShadowOfOptions.electric_regrowth_chance.Value * 0.25f, "Electric Regrowth by eating JellyFish") || drageeTemplate == "SmallCentipede" && Chance(self, ShadowOfOptions.electric_regrowth_chance.Value * 0.5f, "Electric Regrowth by eating " + dragee) || drageeTemplate == "Centipede" && Chance(self, ShadowOfOptions.electric_regrowth_chance.Value, "Electric Regrowth by eating " + dragee) || drageeTemplate == "Centiwing" && Chance(self, ShadowOfOptions.electric_regrowth_chance.Value * 1.5f, "Electric Regrowth by eating " + dragee) || drageeTemplate == "RedCentipede" && Chance(self, ShadowOfOptions.electric_regrowth_chance.Value * 2f, "Electric Regrowth by eating " + dragee) || (ModManager.DLCShared && drageeTemplate == "AquaCenti" && Chance(self, ShadowOfOptions.electric_regrowth_chance.Value * 2f, "Electric Regrowth by eating " + dragee));
+            return drageeTemplate == "JellyFish" && Chance(self, ShadowOfOptions.electric_regrowth_chance.Value * 0.25f, "Electric Regrowth by eating JellyFish") || drageeTemplate == "SmallCentipede" && Chance(self, ShadowOfOptions.electric_regrowth_chance.Value * 0.5f, "Electric Regrowth by eating " + dragee) || drageeTemplate == "Centipede" && Chance(self, ShadowOfOptions.electric_regrowth_chance.Value, "Electric Regrowth by eating " + dragee) || drageeTemplate == "Centiwing" && Chance(self, ShadowOfOptions.electric_regrowth_chance.Value * 1.5f, "Electric Regrowth by eating " + dragee) || drageeTemplate == "RedCentipede" && Chance(self, ShadowOfOptions.electric_regrowth_chance.Value * 2f, "Electric Regrowth by eating " + dragee) || ModManager.DLCShared && drageeTemplate == "AquaCenti" && Chance(self, ShadowOfOptions.electric_regrowth_chance.Value * 2f, "Electric Regrowth by eating " + dragee);
         }
         bool SpiderChance()
         {
@@ -1194,7 +1196,6 @@ public class ShadowOfLizards : BaseUnityPlugin
         {
             return cannibalism && (data2.isGoreHalf || !data2.availableBodychunks.Contains(2)) ? 0.5f : 1;
         }
-
         #endregion
     }
 
