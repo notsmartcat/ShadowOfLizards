@@ -161,9 +161,9 @@ internal class MiscHooks
                                 {
                                     for (int i = 0; i < liz.AI.modules.Count; i++)
                                     {
-                                        if (liz.AI.modules[i] is SuperHearing)
+                                        if (liz.AI.modules[i] is SuperHearing superHearing)
                                         {
-                                            (liz.AI.modules[i] as SuperHearing).superHearingSkill = 0f;
+                                            superHearing.superHearingSkill = 0f;
 
                                             break;
                                         }
@@ -176,9 +176,9 @@ internal class MiscHooks
                                 {
                                     for (int i = 0; i < liz.AI.modules.Count; i++)
                                     {
-                                        if (liz.AI.modules[i] is SuperHearing)
+                                        if (liz.AI.modules[i] is SuperHearing superHearing)
                                         {
-                                            (liz.AI.modules[i] as SuperHearing).superHearingSkill = (liz.AI.modules[i] as SuperHearing).superHearingSkill / 2;
+                                            superHearing.superHearingSkill /= 2;
 
                                             break;
                                         }
@@ -196,9 +196,9 @@ internal class MiscHooks
                                 {
                                     for (int i = 0; i < liz.AI.modules.Count; i++)
                                     {
-                                        if (liz.AI.modules[i] is SuperHearing)
+                                        if (liz.AI.modules[i] is SuperHearing superHearing)
                                         {
-                                            (liz.AI.modules[i] as SuperHearing).superHearingSkill = 0f;
+                                            superHearing.superHearingSkill = 0f;
 
                                             break;
                                         }
@@ -211,9 +211,9 @@ internal class MiscHooks
                                 {
                                     for (int i = 0; i < liz.AI.modules.Count; i++)
                                     {
-                                        if (liz.AI.modules[i] is SuperHearing)
+                                        if (liz.AI.modules[i] is SuperHearing superHearing)
                                         {
-                                            (liz.AI.modules[i] as SuperHearing).superHearingSkill = (liz.AI.modules[i] as SuperHearing).superHearingSkill / 2;
+                                            superHearing.superHearingSkill /= 2;
 
                                             break;
                                         }
@@ -320,25 +320,29 @@ internal class MiscHooks
 
                         if (ShadowOfOptions.deafen.Value && data.liz.ContainsKey("EarRight") && eyeRightBlind && eyeLeftBlind)
                         {
-                            bool superHearing = false;
+                            bool hasSuperHearing = false;
 
-                            float multiplier2 = (data.liz["EarRight"] != "Deaf" ? 1 : 0) + (data.liz["EarLeft"] != "Deaf" ? 1 : 0);
+                            float hearingMultiplier = (data.liz["EarRight"] != "Deaf" ? 1 : 0) + (data.liz["EarLeft"] != "Deaf" ? 1 : 0);
 
                             for (int j = 0; j < liz.AI.modules.Count; j++)
                             {
-                                if (liz.AI.modules[j] is SuperHearing)
+                                if (liz.AI.modules[j] is SuperHearing superHearing)
                                 {
-                                    superHearing = true;
+                                    hasSuperHearing = true;
 
-                                    (liz.AI.modules[j] as SuperHearing).superHearingSkill = multiplier2 * 175f;
+                                    superHearing.superHearingSkill = hearingMultiplier * 175f;
 
                                     break;
                                 }
                             }
 
-                            if (!superHearing)
+                            if (!hasSuperHearing)
                             {
-                                liz.AI.modules.Add(new SuperHearing(liz.AI, liz.AI.tracker, multiplier2 * 175f));
+                                SuperHearing superHearing = new(liz.AI, liz.AI.tracker, hearingMultiplier * 175f)
+                                {
+                                    room = self.room
+                                };
+                                liz.AI.modules.Add(superHearing);
                             }
                         }
                     }
