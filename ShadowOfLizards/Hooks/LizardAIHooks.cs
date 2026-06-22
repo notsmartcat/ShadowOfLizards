@@ -28,18 +28,18 @@ internal class LizardAIHooks
 
             if (eyeRightBlind && eyeLeftBlind)
             {
-                bool superHearing = false;
+                bool hasSuperHearing = false;
 
                 for (int j = 0; j < self.modules.Count; j++)
                 {
                     if (self.modules[j] is SuperHearing)
                     {
-                        superHearing = true;
+                        hasSuperHearing = true;
                         break;
                     }
                 }
 
-                if (!superHearing && (!earRightDeaf || !earLeftDeaf))
+                if (!hasSuperHearing && (!earRightDeaf || !earLeftDeaf))
                 {
                     self.modules.Add(new SuperHearing(self, self.tracker, 350f));
                 }
@@ -50,9 +50,9 @@ internal class LizardAIHooks
         {
             for (int i = 0; i < self.modules.Count; i++)
             {
-                if (self.modules[i] is SuperHearing)
+                if (self.modules[i] is SuperHearing superHearing)
                 {
-                    (self.modules[i] as SuperHearing).superHearingSkill = 0f;
+                    superHearing.superHearingSkill = 0f;
 
                     break;
                 }
@@ -63,9 +63,9 @@ internal class LizardAIHooks
         {
             for (int i = 0; i < self.modules.Count; i++)
             {
-                if (self.modules[i] is SuperHearing)
+                if (self.modules[i] is SuperHearing superHearing)
                 {
-                    (self.modules[i] as SuperHearing).superHearingSkill = (self.modules[i] as SuperHearing).superHearingSkill / 2;
+                    superHearing.superHearingSkill /= 2;
 
                     break;
                 }
