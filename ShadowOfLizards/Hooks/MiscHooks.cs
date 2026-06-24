@@ -157,71 +157,39 @@ internal class MiscHooks
                             {
                                 data.liz["EarRight"] = "Deaf";
 
-                                if (data.liz["EarLeft"] == "Deaf")
+                                float hearingMultiplier = data.liz["EarLeft"] != "Deaf" ? 1 : 0;
+
+                                for (int i = 0; i < liz.AI.modules.Count; i++)
                                 {
-                                    for (int i = 0; i < liz.AI.modules.Count; i++)
+                                    if (liz.AI.modules[i] is SuperHearing superHearing)
                                     {
-                                        if (liz.AI.modules[i] is SuperHearing superHearing)
-                                        {
-                                            superHearing.superHearingSkill = 0f;
+                                        superHearing.superHearingSkill = hearingMultiplier * 175f;
 
-                                            break;
-                                        }
+                                        break;
                                     }
-
-                                    if (ShadowOfOptions.debug_logs.Value)
-                                        Debug.Log(all + liz + " was fully Deafened");
                                 }
-                                else
-                                {
-                                    for (int i = 0; i < liz.AI.modules.Count; i++)
-                                    {
-                                        if (liz.AI.modules[i] is SuperHearing superHearing)
-                                        {
-                                            superHearing.superHearingSkill /= 2;
 
-                                            break;
-                                        }
-                                    }
-
-                                    if (ShadowOfOptions.debug_logs.Value)
-                                        Debug.Log(all + liz + " Right Ear was Deafened");
-                                }
+                                if (ShadowOfOptions.debug_logs.Value)
+                                    Debug.Log(all + liz + " Right Ear was Deafened");
                             }
                             if (data.liz["EarLeft"] == "Normal" && Chance(liz.abstractCreature, ShadowOfOptions.deafen_chance.Value * multiplier, "Explosion Defening Left Ear"))
                             {
                                 data.liz["EarLeft"] = "Deaf";
 
-                                if (data.liz["EarRight"] == "Deaf")
+                                float hearingMultiplier = data.liz["EarRight"] != "Deaf" ? 1 : 0;
+
+                                for (int i = 0; i < liz.AI.modules.Count; i++)
                                 {
-                                    for (int i = 0; i < liz.AI.modules.Count; i++)
+                                    if (liz.AI.modules[i] is SuperHearing superHearing)
                                     {
-                                        if (liz.AI.modules[i] is SuperHearing superHearing)
-                                        {
-                                            superHearing.superHearingSkill = 0f;
+                                        superHearing.superHearingSkill = hearingMultiplier * 175f;
 
-                                            break;
-                                        }
+                                        break;
                                     }
-
-                                    if (ShadowOfOptions.debug_logs.Value)
-                                        Debug.Log(all + liz + " was fully Deafened");
                                 }
-                                else
-                                {
-                                    for (int i = 0; i < liz.AI.modules.Count; i++)
-                                    {
-                                        if (liz.AI.modules[i] is SuperHearing superHearing)
-                                        {
-                                            superHearing.superHearingSkill /= 2;
 
-                                            break;
-                                        }
-                                    }
-
-                                    if (ShadowOfOptions.debug_logs.Value)
-                                        Debug.Log(all + liz + " Left Ear was Deafened");
-                                }
+                                if (ShadowOfOptions.debug_logs.Value)
+                                    Debug.Log(all + liz + " Left Ear was Deafened");
                             }
                         }
                     }
@@ -260,63 +228,53 @@ internal class MiscHooks
 
                         float multiplier = ShadowOfOptions.distance_based_blind.Value ? Custom.LerpMap(Custom.LerpMap(Vector2.Distance(self.firstChunk.pos, self.room.abstractRoom.creatures[i].realizedCreature.VisionPoint), 60f, 600f, 400f, 20f), 20, 400, 0, 2) : 1;
 
-                        bool eyeRightBlind = eye == "Blind" || eye == "BlindScar" || eye == "BlindScar2" || eye == "Cut";
-                        bool eyeLeftBlind = data.liz["EyeLeft"] == "Blind" || data.liz["EyeLeft"] == "BlindScar" || data.liz["EyeLeft"] == "BlindScar2" || data.liz["EyeLeft"] == "Cut";
+                        bool eyeRightBlind = IsEyeBlind(eye);
+                        bool eyeLeftBlind = IsEyeBlind(data.liz["EyeLeft"]);
+
                         if (!eyeRightBlind && Chance(liz.abstractCreature, ShadowOfOptions.blind_chance.Value * multiplier, "FlareBomb Blinding Right Eye"))
                         {
                             if (eye == "Normal")
                             {
                                 data.liz["EyeRight"] = "Blind";
-                                liz.Template.visualRadius -= data.visualRadius * 0.5f;
-                                liz.Template.waterVision -= data.visualRadius * 0.5f;
-                                liz.Template.throughSurfaceVision -= data.visualRadius * 0.5f;
                             }
                             else if (eye == "Scar")
                             {
                                 data.liz["EyeRight"] = "BlindScar";
-                                liz.Template.visualRadius -= data.visualRadius * 0.5f;
-                                liz.Template.waterVision -= data.visualRadius * 0.5f;
-                                liz.Template.throughSurfaceVision -= data.visualRadius * 0.5f;
                             }
                             else if (eye == "Scar2")
                             {
                                 data.liz["EyeRight"] = "BlindScar2";
-                                liz.Template.visualRadius -= data.visualRadius * 0.5f;
-                                liz.Template.waterVision -= data.visualRadius * 0.5f;
-                                liz.Template.throughSurfaceVision -= data.visualRadius * 0.5f;
                             }
+
                             if (ShadowOfOptions.debug_logs.Value)
-                                Debug.Log(all + self + " Right Eye was Blinded");
+                                Debug.Log(all + liz + " Right Eye was Blinded");
                         }
                         if (!eyeLeftBlind && Chance(liz.abstractCreature, ShadowOfOptions.blind_chance.Value * multiplier, "FlareBomb Blinding Left Eye"))
                         {
                             if (data.liz["EyeLeft"] == "Normal")
                             {
                                 data.liz["EyeLeft"] = "Blind";
-                                liz.Template.visualRadius -= data.visualRadius * 0.5f;
-                                liz.Template.waterVision -= data.visualRadius * 0.5f;
-                                liz.Template.throughSurfaceVision -= data.visualRadius * 0.5f;
                             }
                             else if (data.liz["EyeLeft"] == "Scar")
                             {
                                 data.liz["EyeLeft"] = "BlindScar";
-                                liz.Template.visualRadius -= data.visualRadius * 0.5f;
-                                liz.Template.waterVision -= data.visualRadius * 0.5f;
-                                liz.Template.throughSurfaceVision -= data.visualRadius * 0.5f;
                             }
                             else if (data.liz["EyeLeft"] == "Scar2")
                             {
                                 data.liz["EyeLeft"] = "BlindScar2";
-                                liz.Template.visualRadius -= data.visualRadius * 0.5f;
-                                liz.Template.waterVision -= data.visualRadius * 0.5f;
-                                liz.Template.throughSurfaceVision -= data.visualRadius * 0.5f;
                             }
+
                             if (ShadowOfOptions.debug_logs.Value)
-                                Debug.Log(all + self + " Left Eye was Blinded");
+                                Debug.Log(all + liz + " Left Eye was Blinded");
                         }
 
-                        eyeRightBlind = data.liz["EyeRight"] == "Blind" || data.liz["EyeRight"] == "BlindScar" || data.liz["EyeRight"] == "BlindScar2" || data.liz["EyeRight"] == "Cut";
-                        eyeLeftBlind = data.liz["EyeLeft"] == "Blind" || data.liz["EyeLeft"] == "BlindScar" || data.liz["EyeLeft"] == "BlindScar2" || data.liz["EyeLeft"] == "Cut";
+                        eyeRightBlind = IsEyeBlind(data.liz["EyeRight"]);
+
+                        float sightMultiplier = GetSightMultiplier(data.liz["EyeRight"]) + GetSightMultiplier(data.liz["EyeLeft"]);
+
+                        liz.Template.visualRadius = data.visualRadius * sightMultiplier;
+                        liz.Template.waterVision = data.waterVision * sightMultiplier;
+                        liz.Template.throughSurfaceVision = data.throughSurfaceVision * sightMultiplier;
 
                         if (ShadowOfOptions.deafen.Value && data.liz.ContainsKey("EarRight") && eyeRightBlind && eyeLeftBlind)
                         {

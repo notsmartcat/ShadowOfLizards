@@ -1455,8 +1455,9 @@ internal class LizardHooks
                 {
                     data.liz["EyeLeft"] = "Normal";
                     data.liz["EyeRight"] = "Normal";
+
                     if (ShadowOfOptions.debug_logs.Value)
-                        Debug.Log(lizardAll + " is not Blind");
+                        Debug.Log(lizardAll + " can see normally");
                 }
                 else if (data.liz["EyeRight"] == "Incompatible")
                 {
@@ -1465,8 +1466,8 @@ internal class LizardHooks
                 }
                 else
                 {
-                    bool eyeRightBlind = data.liz["EyeRight"] == "Blind" || data.liz["EyeRight"] == "BlindScar" || data.liz["EyeRight"] == "BlindScar2" || data.liz["EyeRight"] == "Cut";
-                    bool eyeLeftBlind = data.liz["EyeLeft"] == "Blind" || data.liz["EyeLeft"] == "BlindScar" || data.liz["EyeLeft"] == "BlindScar2" || data.liz["EyeLeft"] == "Cut";
+                    bool eyeRightBlind = IsEyeBlind(data.liz["EyeRight"]);
+                    bool eyeLeftBlind = IsEyeBlind(data.liz["EyeLeft"]);
 
                     if (eyeRightBlind && eyeLeftBlind)
                     {
@@ -1479,43 +1480,14 @@ internal class LizardHooks
                     }
                     else
                     {
+                        float sightMultiplier = GetSightMultiplier(data.liz["EyeRight"]) + GetSightMultiplier(data.liz["EyeLeft"]);
+
+                        self.Template.visualRadius = data.visualRadius * sightMultiplier;
+                        self.Template.waterVision = data.waterVision * sightMultiplier;
+                        self.Template.throughSurfaceVision = data.throughSurfaceVision * sightMultiplier;
+
                         if (ShadowOfOptions.debug_logs.Value && (eyeRightBlind ^ eyeLeftBlind))
-                            Debug.Log(lizardAll + "'s Vision isn't as good as it once was");
-
-                        float visualRadius = data.visualRadius;
-                        float waterVision = data.waterVision;
-                        float throughSurfaceVision = data.throughSurfaceVision;
-
-                        if (data.liz["EyeRight"] != "Normal")
-                        {
-                            if (data.liz["EyeRight"] == "Scar" || data.liz["EyeRight"] == "Scar2")
-                            {
-                                self.Template.visualRadius -= visualRadius * 0.25f;
-                                self.Template.waterVision -= waterVision * 0.25f;
-                                self.Template.throughSurfaceVision -= throughSurfaceVision * 0.25f;
-                            }
-                            else if (eyeRightBlind)
-                            {
-                                self.Template.visualRadius -= visualRadius * 0.5f;
-                                self.Template.waterVision -= waterVision * 0.5f;
-                                self.Template.throughSurfaceVision -= throughSurfaceVision * 0.5f;
-                            }
-                        }
-                        if (data.liz["EyeLeft"] != "Normal")
-                        {
-                            if (data.liz["EyeLeft"] == "Scar" || data.liz["EyeLeft"] == "Scar2")
-                            {
-                                self.Template.visualRadius -= visualRadius * 0.25f;
-                                self.Template.waterVision -= waterVision * 0.25f;
-                                self.Template.throughSurfaceVision -= throughSurfaceVision * 0.25f;
-                            }
-                            else if (eyeLeftBlind)
-                            {
-                                self.Template.visualRadius -= visualRadius * 0.5f;
-                                self.Template.waterVision -= waterVision * 0.5f;
-                                self.Template.throughSurfaceVision -= throughSurfaceVision * 0.5f;
-                            }
-                        }
+                            Debug.Log(lizardAll + " is half Blind");
                     }
                 }
             } //Blind: Set Here
@@ -2592,14 +2564,20 @@ internal class LizardHooks
         {
             bool cut = newEye == "Cut";
 
-            data.liz[eye] = !cut ? (oldEye.StartsWith("Blind") ? "Blind" : "") + newEye + (newEye == "Scar" ? (UnityEngine.Random.Range(0, 2) == 0 ? "" : "2") : "") : "Cut";
+            data.liz[eye] = !cut ? (oldEye.Contains("Blind") ? "Blind" : "") + newEye + (newEye == "Scar" ? (UnityEngine.Random.Range(0, 2) == 0 ? "" : "2") : "") : "Cut";
             self.Blind(cut ? 40 : 5);
 
             if (ShadowOfOptions.debug_logs.Value)
                 Debug.Log(all + self + "'s " + eye + " was " + oldEye + " now it's " + data.liz[eye]);
 
+            float sightMultiplier = GetSightMultiplier(data.liz["EyeRight"]) + GetSightMultiplier(data.liz["EyeLeft"]);
+
+            self.Template.visualRadius = data.visualRadius * sightMultiplier;
+            self.Template.waterVision = data.waterVision * sightMultiplier;
+            self.Template.throughSurfaceVision = data.throughSurfaceVision * sightMultiplier;
+
             if (ShadowOfOptions.dynamic_cheat_death.Value)
-                data.cheatDeathChance -= cut && !oldEye.Contains("Scar") ? 10 : 5;
+                data.cheatDeathChance -= cut && !oldEye.Contains("Scar") ? 10 : 5; //This is done so losing an eye will always reward a -10 cheatDeathChance in total. if the eye is first scarred it will be a -5 and then if a scarred eye is cut it does the other -5. however if the eye is cut without ever being scarred it is simply a -10
 
             if (cut)
                 EyeCut(self, eye);

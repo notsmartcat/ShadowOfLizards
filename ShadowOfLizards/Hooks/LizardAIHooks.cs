@@ -23,8 +23,8 @@ internal class LizardAIHooks
 
         if (ShadowOfOptions.blind.Value && data.liz.ContainsKey("EyeRight"))
         {
-            bool eyeRightBlind = data.liz["EyeRight"] == "Blind" || data.liz["EyeRight"] == "BlindScar" || data.liz["EyeRight"] == "BlindScar2" || data.liz["EyeRight"] == "Cut";
-            bool eyeLeftBlind = data.liz["EyeLeft"] == "Blind" || data.liz["EyeLeft"] == "BlindScar" || data.liz["EyeLeft"] == "BlindScar2" || data.liz["EyeLeft"] == "Cut";
+            bool eyeRightBlind = IsEyeBlind(data.liz["EyeRight"]);
+            bool eyeLeftBlind = IsEyeBlind(data.liz["EyeLeft"]);
 
             if (eyeRightBlind && eyeLeftBlind)
             {

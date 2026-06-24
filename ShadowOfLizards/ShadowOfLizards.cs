@@ -1247,6 +1247,25 @@ public class ShadowOfLizards : BaseUnityPlugin
                 break;
         }
     }
+
+    public static float GetSightMultiplier(string state)
+    {
+        if (IsEyeBlind(state))
+        {
+            return 0;
+        }
+        else if (state == "Scar" || state == "Scar2")
+        {
+            return 0.25f;
+        }
+
+        return 0.5f;
+    }
+
+    public static bool IsEyeBlind(string state)
+    {
+        return state.Contains("Blind") || state == "Cut";
+    }
     #endregion
 
     #region Gore
